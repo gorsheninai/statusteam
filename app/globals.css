@@ -1,0 +1,1646 @@
+@import "tailwindcss";
+
+/* ============================================================
+   STATUS TEAM — ПУЛЬС КОНТИНЕНТА
+   Design tokens
+   ============================================================ */
+
+:root {
+  /* Brand — carried over from the approved STATUS TEAM identity.
+     Burgundy leads. It lives in type, rules and flat fields — never
+     tinted onto the photography. */
+  --burgundy: #761028;
+  --wine: #4b0718;
+  --red: #b51f2e;
+  /* large type on ink needs a lighter red to clear WCAG AA */
+  --red-bright: #d8394a;
+
+  /* Ink is shifted a touch warm (#100d0c vs #101010) so it sits under
+     savanna imagery without going blue. */
+  --ink: #100d0c;
+  --ink-soft: #1b1614;
+  --paper: #f1eee8;
+  --white: #fffefa;
+
+  /* Sand is pulled from the campaign photography. Hairlines, small caps
+     and rules only — never a gradient, never a "gold" fill. */
+  --sand: #c6a87c;
+  --sand-dim: rgba(198, 168, 124, 0.42);
+
+  --hairline-dark: rgba(16, 13, 12, 0.18);
+  --hairline-light: rgba(255, 254, 250, 0.22);
+
+  /* Type roles */
+  --font-body: var(--ff-body), system-ui, sans-serif;
+  --font-struct: var(--ff-struct), "Arial Narrow", sans-serif;
+  --font-campaign: var(--ff-campaign), Georgia, serif;
+
+  /* Fluid scale */
+  --fs-mega: clamp(4.2rem, 15vw, 15rem);
+  --fs-display: clamp(2.6rem, 6.2vw, 6rem);
+  --fs-statement: clamp(2rem, 4.3vw, 4rem);
+  --fs-h2: clamp(2.1rem, 5.2vw, 5rem);
+  --fs-h3: clamp(1.5rem, 2.6vw, 2.5rem);
+  --fs-lead: clamp(1.05rem, 1.5vw, 1.5rem);
+  --fs-body: clamp(0.95rem, 1.05vw, 1.0625rem);
+  --fs-small: 0.8125rem;
+  --fs-micro: 0.6875rem;
+
+  /* Vertical rhythm — chapters breathe differently by intensity */
+  --chapter-pad: clamp(5rem, 11vw, 11rem);
+  --chapter-pad-quiet: clamp(7rem, 16vw, 16rem);
+  --gutter: clamp(1.25rem, 4.2vw, 5rem);
+
+  /* Motion system — one cohesive set of durations/eases used everywhere. */
+  --t-fast: 220ms;
+  --t-base: 420ms;
+  --t-slow: 900ms;
+  --t-cinematic: 1400ms;
+  --ease-out: cubic-bezier(0.22, 0.8, 0.28, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--ink);
+  /* clip (not hidden) keeps position:sticky working */
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  color: var(--paper);
+  background: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote {
+  margin: 0;
+}
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--sand);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  padding: 12px 20px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.skip-link:focus {
+  left: 12px;
+  top: 12px;
+}
+
+/* ============================================================
+   Primitives
+   ============================================================ */
+
+.shell {
+  padding-inline: var(--gutter);
+}
+
+/* Media wrapper — every photograph on the page sits in one of these. */
+.media {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink-soft);
+}
+.media > img,
+.media > video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Chapter marker. A show runs in order, so the numbering is real
+   information, not decoration. */
+.chapter {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.chapter b {
+  font-weight: 500;
+  color: var(--red);
+}
+.chapter i {
+  flex: 1;
+  height: 1px;
+  max-width: 8rem;
+  background: currentColor;
+  opacity: 0.3;
+  font-style: normal;
+}
+.chapter span {
+  opacity: 0.72;
+}
+.on-dark .chapter b {
+  color: var(--sand);
+}
+.on-dark .role-n,
+.on-dark .casting-steps b {
+  color: var(--sand);
+}
+
+/* Eyebrow / small caps label */
+.label {
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* Structural display type — condensed, tight, uppercase. */
+.struct {
+  font-family: var(--font-struct);
+  font-weight: 600;
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+/* Campaign type — the didone from the printed key art. */
+.campaign {
+  font-family: var(--font-campaign);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.45;
+}
+
+.body-text {
+  max-width: 46ch;
+  opacity: 0.82;
+}
+
+/* Buttons ---------------------------------------------------- */
+
+.btn {
+  --btn-fg: var(--paper);
+  --btn-bd: currentColor;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.05rem 1.6rem;
+  min-height: 48px;
+  color: var(--btn-fg);
+  border: 1px solid var(--btn-bd);
+  font-family: var(--font-struct);
+  font-size: var(--fs-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color var(--t-base) var(--ease-out);
+}
+/* wipe fill — one interaction idiom, reused everywhere */
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--btn-fill, var(--paper));
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform var(--t-base) var(--ease-out);
+}
+.btn:hover::before,
+.btn:focus-visible::before {
+  transform: scaleY(1);
+}
+.btn:hover,
+.btn:focus-visible {
+  color: var(--btn-hover-fg, var(--ink));
+}
+.btn .arrow {
+  transition: transform var(--t-base) var(--ease-out);
+}
+.btn:hover .arrow {
+  transform: translate(3px, -3px);
+}
+
+.btn-solid {
+  --btn-fg: var(--paper);
+  background: var(--burgundy);
+  border-color: var(--burgundy);
+  --btn-fill: var(--paper);
+  --btn-hover-fg: var(--burgundy);
+}
+.btn-ink {
+  --btn-fg: var(--ink);
+  --btn-fill: var(--ink);
+  --btn-hover-fg: var(--paper);
+}
+
+/* Text link with rule */
+.link-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 4px;
+  border-bottom: 1px solid currentColor;
+  font-family: var(--font-struct);
+  font-size: var(--fs-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.link-rule .arrow {
+  transition: transform var(--t-base) var(--ease-out);
+}
+.link-rule:hover .arrow {
+  transform: translate(3px, -3px);
+}
+
+/* Photo credit */
+.credit {
+  font-family: var(--font-struct);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.68;
+}
+
+/* ============================================================
+   SIGNATURE — the breathing title.
+   The campaign lock-up recurs three times. Its tracking expands and
+   contracts with scroll: compression and release. That is the pulse.
+   --pulse is written by GSAP (0 = compressed, 1 = open).
+   ============================================================ */
+
+.pulse-line {
+  display: block;
+  font-family: var(--font-campaign);
+  text-transform: uppercase;
+  line-height: 0.92;
+  white-space: nowrap;
+  /* the breath is narrower on small screens so the longest word
+     ("КОНТИНЕНТА") never runs under the reveal mask */
+  --pulse-spread: 0.05em;
+  letter-spacing: calc(-0.015em + var(--pulse, 0) * var(--pulse-spread));
+  will-change: letter-spacing;
+}
+/* Second word rides the inverse of the first: as one opens the other
+   closes, so the pair reads as a single breath. */
+.pulse-line + .pulse-line {
+  letter-spacing: calc(
+    var(--pulse-spread) * 0.9 - var(--pulse, 0) * var(--pulse-spread)
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-line,
+  .pulse-line + .pulse-line {
+    letter-spacing: 0.05em;
+  }
+}
+
+/* ============================================================
+   Reveal primitive — used by the motion pass.
+   Elements start hidden only when JS is driving them.
+   ============================================================ */
+
+[data-reveal] {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem var(--gutter);
+  color: var(--paper);
+  transition: background var(--t-base) var(--ease-out),
+    border-color var(--t-base) var(--ease-out),
+    padding var(--t-base) var(--ease-out);
+  border-bottom: 1px solid transparent;
+}
+.nav.is-solid {
+  background: rgba(16, 13, 12, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom-color: var(--hairline-light);
+  padding-block: 0.7rem;
+}
+
+.nav-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.86;
+  font-family: var(--font-struct);
+  font-weight: 600;
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.nav-brand span:last-child {
+  color: var(--sand);
+}
+
+.nav-links {
+  display: none;
+  gap: clamp(1.1rem, 2.4vw, 2.4rem);
+}
+.nav-links a {
+  position: relative;
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding-block: 6px;
+}
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--t-base) var(--ease-out);
+}
+.nav-links a:hover::after,
+.nav-links a:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav-end {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.nav-tickets {
+  display: none;
+  padding: 0.65rem 1.15rem;
+  border: 1px solid currentColor;
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: background var(--t-base) var(--ease-out),
+    color var(--t-base) var(--ease-out);
+}
+.nav-tickets:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.nav-burger {
+  display: grid;
+  gap: 6px;
+  width: 46px;
+  height: 46px;
+  place-content: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.nav-burger span {
+  display: block;
+  width: 26px;
+  height: 1.5px;
+  background: currentColor;
+}
+
+/* Mobile menu — same art direction as the page, not a generic overlay. */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  background: var(--wine);
+  color: var(--paper);
+}
+.menu-media {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+}
+/* keeps the wine ground dark enough for the index to stay high-contrast */
+.menu-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(30, 4, 12, 0.75), rgba(30, 4, 12, 0.25));
+}
+.menu-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+}
+.menu-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1rem var(--gutter) 2rem;
+}
+.menu-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 0.6rem 2.5rem;
+}
+.menu-close {
+  padding: 10px 4px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.menu-list li {
+  overflow: hidden;
+  border-top: 1px solid var(--hairline-light);
+}
+.menu-list li:last-child {
+  border-bottom: 1px solid var(--hairline-light);
+}
+.menu-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: clamp(0.7rem, 2.4vw, 1.1rem) 0;
+  font-family: var(--font-struct);
+  font-weight: 500;
+  font-size: clamp(2rem, 9vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+.menu-list b {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  color: var(--sand);
+  font-weight: 400;
+}
+.menu-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-block: 7rem 1.5rem;
+  overflow: hidden;
+  color: var(--paper);
+  background: var(--wine);
+}
+.hero-media {
+  position: absolute;
+  inset: 0;
+}
+.hero-media img {
+  object-position: center 46%;
+}
+/* Phone scrim: the figure keeps the top, the type gets a solid floor. */
+.hero-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(16, 13, 12, 0.97) 0%,
+    rgba(16, 13, 12, 0.9) 24%,
+    rgba(16, 13, 12, 0.5) 54%,
+    rgba(16, 13, 12, 0.16) 84%
+  );
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  margin-block: auto;
+}
+.hero-eyebrow {
+  opacity: 0.85;
+  margin-bottom: 1.1rem;
+}
+
+.hero-title {
+  margin: 0 0 1.3rem;
+  font-weight: 400;
+}
+.pulse-mask {
+  display: block;
+  overflow: hidden;
+}
+.hero-title .pulse-line {
+  font-size: clamp(1.9rem, 8.4vw, 3.4rem);
+}
+.hero-title .pulse-line:first-child {
+  color: var(--paper);
+}
+.hero-title .pulse-line + .pulse-line {
+  color: var(--sand);
+}
+
+.hero-sub {
+  max-width: 30ch;
+  margin-bottom: 2rem;
+  font-size: var(--fs-lead);
+  opacity: 0.88;
+}
+
+.hero-cta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.hero-cta .btn {
+  justify-content: space-between;
+  padding-inline: 1.1rem;
+}
+.hero-cta .btn-solid {
+  grid-column: 1 / -1;
+}
+
+.hero-meta {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.1rem;
+  margin: 2.75rem 0 0;
+  padding: 1.25rem var(--gutter) 0;
+  border-top: 1px solid var(--hairline-light);
+}
+.hero-meta dt {
+  font-family: var(--font-struct);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.35rem;
+}
+.hero-meta dd {
+  margin: 0;
+  font-family: var(--font-struct);
+  font-size: clamp(0.95rem, 2vw, 1.2rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   01 МАНИФЕСТ — quiet, paper
+   ============================================================ */
+
+.manifest {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  padding-block: var(--chapter-pad-quiet);
+  color: var(--ink);
+  background: var(--paper);
+}
+.manifest-h {
+  margin: clamp(1.5rem, 3.5vw, 2.5rem) 0 clamp(1.75rem, 4vw, 2.75rem);
+  font-size: var(--fs-statement);
+  line-height: 1.06;
+  max-width: 14ch;
+}
+.manifest-body {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 62ch;
+}
+.manifest-body p {
+  opacity: 0.78;
+}
+.manifest-figure {
+  margin: 0;
+}
+.manifest-figure .media {
+  aspect-ratio: 4 / 5;
+}
+.manifest-figure img {
+  object-position: center 35%;
+}
+.manifest-figure figcaption {
+  margin-top: 0.85rem;
+  padding-inline: var(--gutter);
+  color: var(--ink);
+}
+
+/* ============================================================
+   02 МАСШТАБ — numbers as typography
+   ============================================================ */
+
+.scale {
+  padding-block: var(--chapter-pad);
+  color: var(--paper);
+  background: var(--ink);
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+}
+.scale-list {
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+}
+.scale-list li {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hairline-light);
+}
+.scale-n {
+  font-size: clamp(3.4rem, 12vw, 8.5rem);
+  color: var(--paper);
+  letter-spacing: -0.055em;
+}
+.scale-list li:nth-child(2) .scale-n {
+  color: var(--sand);
+}
+.scale-list li:nth-child(3) .scale-n {
+  color: var(--red-bright);
+}
+.scale-l {
+  margin-top: 0.75rem;
+  max-width: 34ch;
+  font-size: var(--fs-small);
+  letter-spacing: 0.02em;
+  opacity: 0.72;
+}
+.scale-figure {
+  margin: 0;
+}
+.scale-figure .media {
+  aspect-ratio: 3 / 4;
+}
+.scale-figure img {
+  object-position: center 62%;
+}
+.scale-figure figcaption {
+  margin-top: 0.85rem;
+  padding-inline: var(--gutter);
+}
+
+/* ============================================================
+   03 ПОКАЗ — sticky chapter
+   ============================================================ */
+
+.show {
+  position: relative;
+  padding-block: var(--chapter-pad);
+  color: var(--paper);
+  background: var(--burgundy);
+}
+.show-sticky {
+  padding-inline: var(--gutter);
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+.show-title {
+  margin: 1.5rem 0 0.9rem;
+  font-weight: 400;
+}
+.show-title .pulse-line {
+  font-size: clamp(1.75rem, 8.2vw, 3.4rem);
+}
+.show-title .pulse-line + .pulse-line {
+  color: var(--sand);
+}
+.show-sticky-note {
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.show-panels {
+  display: grid;
+  gap: clamp(2.5rem, 7vw, 5rem);
+  padding-inline: var(--gutter);
+}
+.show-panel {
+  margin: 0;
+}
+.show-panel .media {
+  aspect-ratio: 3 / 4;
+}
+.show-panel figcaption {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.5rem;
+  max-width: 40ch;
+}
+.show-panel figcaption p {
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  opacity: 0.82;
+}
+
+/* ============================================================
+   04 МАТЕРИАЛЫ — quiet triptych
+   ============================================================ */
+
+.materials {
+  padding-block: var(--chapter-pad-quiet);
+  color: var(--ink);
+  background: var(--paper);
+}
+.materials-h {
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: var(--fs-h2);
+  max-width: 18ch;
+}
+/* On phones this becomes a contact sheet you swipe, not three slivers. */
+.materials-grid {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 62%;
+  gap: 0.9rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  /* let the row bleed to the screen edge while keeping the shell gutter */
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+}
+.materials-grid::-webkit-scrollbar {
+  display: none;
+}
+.materials-grid figure {
+  margin: 0;
+  scroll-snap-align: start;
+}
+.materials-grid .media {
+  aspect-ratio: 3 / 4;
+}
+.materials-grid figcaption {
+  margin-top: 0.7rem;
+}
+
+/* ============================================================
+   05 АТМОСФЕРА — proof
+   ============================================================ */
+
+.archive {
+  padding-block: var(--chapter-pad);
+  color: var(--paper);
+  background: var(--wine);
+}
+.archive-head {
+  margin-bottom: clamp(2.25rem, 5vw, 3.5rem);
+}
+.archive-h {
+  margin: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(1.75rem, 3.5vw, 2.5rem);
+  font-size: clamp(2.8rem, 7.4vw, 7rem);
+  color: var(--paper);
+}
+.archive-note {
+  opacity: 0.8;
+}
+
+.reel {
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+.reel-media {
+  aspect-ratio: 16 / 9;
+}
+.reel-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  min-height: 48px;
+  color: var(--paper);
+  background: rgba(16, 13, 12, 0.5);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--hairline-light);
+  font-family: var(--font-struct);
+  font-size: var(--fs-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--t-base) var(--ease-out);
+}
+.reel-play:hover {
+  background: rgba(118, 16, 40, 0.8);
+}
+.reel-play-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+}
+.reel-sound {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.6rem 1rem;
+  min-height: 40px;
+  color: var(--paper);
+  background: rgba(16, 13, 12, 0.55);
+  border: 1px solid var(--hairline-light);
+  font-family: var(--font-struct);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.reel-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.8rem;
+}
+
+.archive-grid {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+}
+.archive-grid figure {
+  margin: 0;
+}
+.archive-grid .media {
+  aspect-ratio: 3 / 4;
+}
+.arch-a img {
+  object-position: center 30%;
+}
+.archive-grid figcaption {
+  margin-top: 0.7rem;
+}
+.archive-credit {
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+/* ============================================================
+   06 УЧАСТНИКИ — typographic index
+   ============================================================ */
+
+.world {
+  padding-block: var(--chapter-pad-quiet);
+  color: var(--ink);
+  background: var(--paper);
+}
+.world-h {
+  margin: clamp(1.75rem, 4vw, 2.5rem) 0 clamp(2rem, 5vw, 3rem);
+  font-size: var(--fs-h2);
+}
+.roles {
+  border-top: 1px solid var(--hairline-dark);
+}
+.role {
+  border-bottom: 1px solid var(--hairline-dark);
+}
+.role h3 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: 400;
+}
+.role button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: clamp(1.1rem, 2.6vw, 1.6rem) 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  transition: color var(--t-base) var(--ease-out);
+}
+.role button:hover {
+  color: var(--burgundy);
+}
+.role-n {
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  color: var(--red);
+}
+.role-title {
+  font-size: clamp(1.5rem, 5.2vw, 3rem);
+  letter-spacing: -0.035em;
+}
+.role-en {
+  display: none;
+}
+.role-sign {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.role-sign::before,
+.role-sign::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1px;
+  background: currentColor;
+  transition: transform var(--t-base) var(--ease-out);
+}
+.role-sign::after {
+  transform: rotate(90deg);
+}
+.role.is-open .role-sign::after {
+  transform: rotate(0deg);
+}
+.role-body {
+  overflow: hidden;
+}
+.role-body p {
+  max-width: 56ch;
+  padding-bottom: 1.5rem;
+  font-size: var(--fs-small);
+  line-height: 1.65;
+  opacity: 0.78;
+}
+
+/* ============================================================
+   07 КАСТИНГ
+   ============================================================ */
+
+.casting {
+  display: grid;
+  color: var(--paper);
+  background: var(--burgundy);
+}
+.casting-figure {
+  margin: 0;
+}
+.casting-figure .media {
+  aspect-ratio: 4 / 5;
+}
+.casting-figure img {
+  object-position: center 18%;
+}
+.casting-copy {
+  padding: var(--chapter-pad) var(--gutter);
+}
+.casting-h {
+  margin: clamp(1.5rem, 4vw, 2.25rem) 0 1.5rem;
+  font-size: clamp(2.1rem, 4.4vw, 4.1rem);
+}
+.casting-lead {
+  max-width: 44ch;
+  opacity: 0.88;
+}
+.casting-steps {
+  display: grid;
+  gap: 0.85rem;
+  margin: clamp(1.75rem, 4vw, 2.5rem) 0 clamp(2.25rem, 5vw, 3rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline-light);
+}
+.casting-steps li {
+  display: flex;
+  gap: 0.9rem;
+  font-size: var(--fs-small);
+  letter-spacing: 0.02em;
+}
+.casting-steps b {
+  color: var(--sand);
+  font-family: var(--font-struct);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  padding-top: 0.25rem;
+}
+
+/* ============================================================
+   Forms
+   ============================================================ */
+
+.form-grid {
+  display: grid;
+  gap: 1.15rem;
+}
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+.field label {
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.field label i {
+  color: var(--sand);
+  font-style: normal;
+}
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 0.85rem 0;
+  min-height: 48px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  border-radius: 0;
+  font-size: 1rem;
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+.field textarea {
+  resize: vertical;
+}
+.field input::placeholder,
+.field textarea::placeholder {
+  color: currentColor;
+  opacity: 0.4;
+}
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-bottom-width: 2px;
+}
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: 2px solid var(--sand);
+  outline-offset: 4px;
+}
+.field small {
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+  opacity: 0.75;
+}
+.form-foot {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+.form-note {
+  max-width: 46ch;
+  font-size: var(--fs-micro);
+  line-height: 1.55;
+  opacity: 0.7;
+}
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* ============================================================
+   08 ПАРТНЁРАМ
+   ============================================================ */
+
+.partners {
+  padding-block: var(--chapter-pad) 0;
+  color: var(--ink);
+  background: var(--paper);
+}
+.partners-h {
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: var(--fs-h2);
+  max-width: 18ch;
+}
+.partners-figure {
+  margin: clamp(2.5rem, 6vw, 4rem) 0 0;
+}
+.partners-figure .media {
+  aspect-ratio: 4 / 3;
+}
+.partners-figure figcaption {
+  margin-top: 0.8rem;
+  padding-inline: var(--gutter);
+}
+.partners-body {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  padding-block: clamp(3rem, 7vw, 5rem) var(--chapter-pad);
+}
+.partners-list {
+  display: grid;
+  gap: 1.5rem;
+  align-content: start;
+}
+.partners-list li {
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--hairline-dark);
+}
+.partners-list h3 {
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  margin-bottom: 0.45rem;
+}
+.partners-list p {
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  opacity: 0.75;
+}
+
+/* ============================================================
+   09 БИЛЕТЫ — final payoff
+   ============================================================ */
+
+.tickets {
+  padding-block: var(--chapter-pad);
+  color: var(--paper);
+  background: var(--ink);
+  overflow: hidden;
+}
+.tickets-title {
+  margin: clamp(1.75rem, 4vw, 3rem) 0 clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+}
+.tickets-title .pulse-line {
+  font-size: clamp(1.9rem, 8.4vw, 3.4rem);
+}
+.tickets-title .pulse-line + .pulse-line {
+  color: var(--red-bright);
+}
+.tickets-bar {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  padding-block: 1.5rem;
+  border-block: 1px solid var(--hairline-light);
+}
+.tickets-bar div {
+  display: grid;
+  gap: 0.4rem;
+}
+.tickets-bar b {
+  font-family: var(--font-struct);
+  font-weight: 500;
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.tickets-cta {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: clamp(2rem, 5vw, 3rem);
+  justify-items: start;
+}
+.btn.is-pending {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+.tickets-note {
+  max-width: 48ch;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  opacity: 0.72;
+}
+.inline-link {
+  border-bottom: 1px solid currentColor;
+}
+
+.posters {
+  margin-top: clamp(3rem, 7vw, 5rem);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 74%;
+  gap: 0.9rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+}
+.posters::-webkit-scrollbar {
+  display: none;
+}
+.posters figure {
+  margin: 0;
+  scroll-snap-align: center;
+}
+.posters img {
+  width: 100%;
+  height: auto;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.foot {
+  padding-block: clamp(3rem, 7vw, 5rem);
+  color: var(--paper);
+  background: var(--ink);
+  border-top: 1px solid var(--hairline-light);
+}
+.foot-inner {
+  display: grid;
+  gap: 2.5rem;
+}
+.foot-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.86;
+  font-family: var(--font-struct);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  text-transform: uppercase;
+}
+.foot-brand span:last-child {
+  color: var(--sand);
+}
+.foot-nav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
+  font-family: var(--font-struct);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.foot-nav a:hover {
+  color: var(--sand);
+}
+.foot-end {
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* ============================================================
+   ≥ 640px — large phone / small tablet
+   ============================================================ */
+@media (min-width: 640px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem 1.75rem;
+  }
+  .field:not(.is-half) {
+    grid-column: 1 / -1;
+  }
+  .form-foot {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 1.75rem;
+  }
+
+  .hero-meta {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .tickets-bar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .materials-grid {
+    grid-auto-columns: 40%;
+  }
+  .posters {
+    grid-auto-columns: 46%;
+  }
+  .foot-nav {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ============================================================
+   ≥ 900px — tablet landscape. Compositions start to split.
+   ============================================================ */
+@media (min-width: 900px) {
+  /* The hero image is portrait. Full-bleed on a landscape screen would crop
+     it to a torso, so on wide viewports it becomes a tall frame on the right
+     and the title crosses its edge. */
+  .hero {
+    justify-content: center;
+    padding-block: 8rem 0;
+    background: var(--ink);
+  }
+  .hero-media {
+    inset: 0 0 0 auto;
+    width: 52%;
+  }
+  .hero-media img {
+    object-position: center 42%;
+  }
+  .hero-media::after {
+    background: linear-gradient(
+      90deg,
+      rgba(16, 13, 12, 0.97) 0%,
+      rgba(16, 13, 12, 0.72) 14%,
+      rgba(16, 13, 12, 0.2) 38%,
+      transparent 62%
+    );
+  }
+  .hero-inner {
+    max-width: 66%;
+  }
+  .hero-title .pulse-line {
+    --pulse-spread: 0.14em;
+    font-size: clamp(2.6rem, 5.6vw, 5.6rem);
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+  .hero-cta .btn {
+    justify-content: flex-start;
+    padding-inline: 1.6rem;
+  }
+  .tickets-title .pulse-line {
+    --pulse-spread: 0.14em;
+    font-size: clamp(3rem, 7.4vw, 7.4rem);
+  }
+  .hero-meta {
+    margin-top: auto;
+  }
+
+  .manifest {
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+    gap: clamp(2.5rem, 5vw, 5rem);
+    padding-inline: 0;
+  }
+  .manifest-figure {
+    align-self: stretch;
+    display: grid;
+    align-content: center;
+  }
+  .manifest-figure .media {
+    aspect-ratio: 3 / 4;
+  }
+
+  .scale {
+    grid-template-columns: 1fr 0.72fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  .scale-figure .media {
+    aspect-ratio: 2 / 3;
+  }
+
+  /* Sticky chapter: the name of the show holds while the show goes past. */
+  .show {
+    display: grid;
+    grid-template-columns: 46% 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .show-sticky {
+    position: sticky;
+    top: 18vh;
+    margin-bottom: 0;
+  }
+  /* sized against the sticky column, not the viewport, so the open
+     tracking never pushes the lock-up under the panels */
+  .show-title .pulse-line {
+    font-size: clamp(1.6rem, 3.4vw, 3.6rem);
+  }
+  .show-panels {
+    padding-left: 0;
+    gap: clamp(4rem, 9vw, 8rem);
+  }
+  .show-panel:nth-child(2) {
+    margin-left: clamp(2rem, 8vw, 7rem);
+  }
+
+  .materials-grid {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-columns: auto;
+    overflow: visible;
+    margin-inline: 0;
+    gap: clamp(1rem, 2.5vw, 2rem);
+  }
+  /* stagger the triptych so it reads as a spread, not a row of tiles */
+  .materials-grid figure:nth-child(2) {
+    margin-top: clamp(2rem, 6vw, 5rem);
+  }
+  .materials-grid figure:nth-child(3) {
+    margin-top: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .archive-grid {
+    grid-template-columns: 1.15fr 0.9fr 0.9fr;
+    align-items: end;
+  }
+  .arch-a .media {
+    aspect-ratio: 3 / 4;
+  }
+  .arch-b .media {
+    aspect-ratio: 3 / 4;
+    margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  }
+  .arch-c .media {
+    aspect-ratio: 4 / 5;
+  }
+
+  .partners-body {
+    grid-template-columns: 0.8fr 1.1fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+  .partners-figure .media {
+    aspect-ratio: 16 / 9;
+  }
+
+  .posters {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-columns: auto;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+    gap: clamp(1rem, 2.5vw, 2rem);
+  }
+
+  .foot-inner {
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  .foot-nav {
+    grid-template-columns: repeat(3, auto);
+    justify-content: center;
+    gap: 0.8rem clamp(1rem, 2.5vw, 2rem);
+  }
+  .foot-end {
+    text-align: right;
+  }
+
+  .role-en {
+    display: block;
+    justify-self: end;
+    padding-right: 1.5rem;
+  }
+  .role button {
+    grid-template-columns: auto 1fr auto auto;
+  }
+}
+
+/* ============================================================
+   ≥ 1024px — desktop navigation and split casting
+   ============================================================ */
+@media (min-width: 1024px) {
+  .nav-links {
+    display: flex;
+  }
+  .nav-tickets {
+    display: inline-block;
+  }
+  .nav-burger {
+    display: none;
+  }
+
+  .casting {
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: stretch;
+  }
+  .casting-figure .media {
+    height: 100%;
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+  .casting-copy {
+    padding-inline: clamp(2.5rem, 5vw, 5rem);
+    align-self: center;
+  }
+}
+
+/* ============================================================
+   ≥ 1280px — full editorial composition
+   ============================================================ */
+@media (min-width: 1280px) {
+  .hero {
+    padding-bottom: 2rem;
+  }
+  .hero-media img {
+    object-position: center 52%;
+  }
+  .hero-sub {
+    max-width: 34ch;
+  }
+
+  .manifest-body {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    max-width: none;
+  }
+
+  .show-sticky {
+    top: 22vh;
+  }
+}
+
+/* ============================================================
+   Coarse pointers: hover-only affordances get a resting state.
+   ============================================================ */
+@media (hover: none) {
+  .nav-links a::after {
+    transform: scaleX(1);
+    opacity: 0.35;
+  }
+  .btn::before {
+    display: none;
+  }
+}
