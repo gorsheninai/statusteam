@@ -9,15 +9,29 @@ component state.
 
 ```bash
 npm run dev        # local dev
-npm run build      # production build
-npm start -- -p 4311
+npm run build      # static export -> ./out
+npm start          # serve ./out on :4311  (next start does NOT work with output: export)
+npm run verify     # drive the rendered page in a browser (34 checks)
 npm run lint
 npm run typecheck
+npm run deploy     # build + wrangler deploy to Cloudflare
 ```
 
-**When verifying in a browser: build first, then start.** `next start` snapshots the
-build and the `public/` listing at boot — rebuilding or adding media underneath a
-running server serves stale CSS and 404s new files. Restart after every build.
+**Verify against a fresh build.** The static server snapshots `out/` at boot —
+rebuild, then restart, or you are testing the previous build.
+
+## Deployment — Cloudflare
+
+The site is a **static export**. `wrangler.jsonc` declares an assets-only Worker
+(no `main`), so Cloudflare serves `out/` from the edge and no Worker runs per
+request. Nothing here needs a server: no route handlers, no server actions, no
+per-request data.
+
+`npm run deploy` needs `CLOUDFLARE_API_TOKEN` in the environment — wrangler cannot
+authenticate non-interactively without it. The target Worker is named `statusteam`.
+
+Keep `output: "export"` and `images.unoptimized` together: dropping either breaks
+the other.
 
 ## Repository rules
 
