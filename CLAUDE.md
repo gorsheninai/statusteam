@@ -14,7 +14,8 @@ npm start          # serve ./out on :4311  (next start does NOT work with output
 npm run verify     # drive the rendered page in a browser (34 checks)
 npm run lint
 npm run typecheck
-npm run deploy     # build + wrangler deploy to Cloudflare
+npm run deploy         # build + wrangler deploy to Cloudflare (production)
+npm run deploy:preview # build + upload a version, production keeps serving main
 ```
 
 **Verify against a fresh build.** The static server snapshots `out/` at boot —
@@ -32,6 +33,32 @@ authenticate non-interactively without it. The target Worker is named `statustea
 
 Keep `output: "export"` and `images.unoptimized` together: dropping either breaks
 the other.
+
+### Deploys are automatic — Workers Builds
+
+The `statusteam` Worker is connected to this repository in the Cloudflare
+dashboard (*Worker → Settings → Builds*), so pushing is the deploy:
+
+| Push to | Build runs | Result |
+|---|---|---|
+| `main` | `npm run build` → `npx wrangler deploy` | the live site |
+| any other branch | `npm run build` → `npx wrangler versions upload` | preview URL, live site untouched |
+
+A preview **uploads a version without shifting traffic**. Each branch gets a
+stable `<branch>-statusteam.<subdomain>.workers.dev` alias plus a per-commit URL,
+and Cloudflare comments both onto the pull request.
+
+Two settings this depends on: *Branch control → non-production branch builds*
+must be **on** (otherwise only `main` ever builds), and the dashboard Worker name
+must stay equal to `name` in `wrangler.jsonc` — Workers Builds fails the build
+when they diverge.
+
+There is no GitHub Actions workflow, and there should not be one: it would
+deploy the same commit a second time and race the version Cloudflare uploaded.
+
+`npm run deploy` still works for a manual push to production; `deploy:preview`
+does the version-upload path by hand. Prefer just pushing — a hand-deploy from a
+feature branch promotes an unreviewed build to the live site.
 
 ## Repository rules
 
