@@ -25,44 +25,68 @@ export default function Motion() {
       const teardown: Array<() => void> = [];
 
       /* ---------- Hero entrance: LIVE CUT ----------------------------
-         The photograph opens from a narrow strip on the black/image
-         border, and the type follows it out. Everything below sets its
-         own start state here, never in CSS, so a hero with no JS is a
+         Two finished frames, two different reveals. Everything below sets
+         its own start state here, never in CSS, so a hero with no JS is a
          hero that is simply already open.
 
-         Budget: the whole first screen is assembled by ~2.1s.          */
+         Budget: the whole first screen is assembled by ~2.3s.          */
       const curtain = document.querySelector<HTMLElement>("[data-curtain]");
       const heroTitle = document.querySelector<HTMLElement>(
         ".hero [data-pulse-title]",
       );
+      const heroImg = document.querySelector<HTMLElement>(".hero .hero-layer");
+      const wide = window.matchMedia("(min-width: 900px)").matches;
 
       if (curtain) {
         const tl = gsap.timeline({ defaults: { ease: EASE } });
 
-        /* The visible sliver is a fixed 32px, so it reads the same on a
-           phone as on a wide desktop — expressed as a percentage because
-           that is what clip-path interpolates cleanly. */
-        const width = curtain.getBoundingClientRect().width || 1;
-        const sliver = gsap.utils.clamp(0, 96, (32 / width) * 100);
+        if (wide) {
+          /* Landscape: the picture is already full-bleed and its left half
+             is open dark space, so there is nothing to reveal there. The
+             draw starts where the models begin and the scene resolves out
+             of the darkness to the right, behind a soft mask edge.
 
-        gsap.set(curtain, { clipPath: `inset(0% ${100 - sliver}% 0% 0%)` });
-        tl.to(
-          curtain,
-          {
-            clipPath: "inset(0% 0% 0% 0%)",
-            duration: 1.6,
-            /* inOut, not expo.out: an out-ease front-loads so hard that the
-               frame is 80% open in the first 400ms and the draw is over
-               before it reads. This one pulls like fabric. */
-            ease: "power3.inOut",
-          },
-          0,
-        );
+             power2, not power3: with the left half empty, a harder inOut
+             spends most of a second revealing black before anything reads. */
+          tl.fromTo(
+            curtain,
+            { "--curtain": 0.5 },
+            { "--curtain": 1, duration: 1.5, ease: "power2.inOut" },
+            0,
+          );
+        } else {
+          /* Portrait: a vertical slit on a 9:16 frame reads as a glitch,
+             not as a curtain. Top-down instead, with the faces arriving
+             early — they are what the screen is for. */
+          gsap.set(curtain, { clipPath: "inset(0% 0% 42% 0%)" });
+          tl.to(
+            curtain,
+            {
+              clipPath: "inset(0% 0% 0% 0%)",
+              duration: 1.35,
+              ease: "power3.inOut",
+            },
+            0,
+          ).from(
+            curtain,
+            { opacity: 0, duration: 0.8, ease: "power2.out" },
+            0,
+          );
+        }
+
+        /* A living photograph, not a zoom: the frame settles by ~3%. */
+        if (heroImg) {
+          tl.from(
+            heroImg,
+            { scale: 1.035, duration: 2.1, ease: "power2.out" },
+            0,
+          );
+        }
 
         tl.from(
           ".hero .pulse-mask .pulse-line",
           { yPercent: 108, duration: 1.05, stagger: 0.15 },
-          0.45,
+          0.4,
         )
           .from(
             '[data-hero="statement"]',
@@ -72,7 +96,7 @@ export default function Motion() {
           .from(
             '[data-hero="where"]',
             { opacity: 0, y: 16, duration: 0.6 },
-            1.3,
+            1.32,
           )
           .from(
             '[data-hero="links"]',
@@ -117,62 +141,43 @@ export default function Motion() {
         }
       }
 
-      /* ---------- Hero depth ----------------------------------------
-         Pointer parallax, written straight to the layers with quickTo:
-         no React state, no re-render, one rAF-driven tween per axis.
-         Travel is per-layer and small — depth, not tilt.               */
-      const fine = window.matchMedia("(pointer: fine)");
-      if (fine.matches) {
-        const TRAVEL: Record<string, number> = { bg: 3, model: 6.5, fg: 10 };
-        const layers = gsap.utils
-          .toArray<HTMLElement>(".hero [data-depth]")
-          .map((el) => ({
-            travel: TRAVEL[el.dataset.depth ?? "bg"] ?? 3,
-            x: gsap.quickTo(el, "x", { duration: 0.9, ease: "power3.out" }),
-            y: gsap.quickTo(el, "y", { duration: 0.9, ease: "power3.out" }),
-          }));
-
-        if (layers.length) {
-          const onMove = (e: PointerEvent) => {
-            const nx = (e.clientX / window.innerWidth - 0.5) * 2;
-            const ny = (e.clientY / window.innerHeight - 0.5) * 2;
-            layers.forEach((l) => {
-              l.x(-nx * l.travel);
-              l.y(-ny * l.travel);
-            });
-          };
-          window.addEventListener("pointermove", onMove, { passive: true });
-          teardown.push(() =>
-            window.removeEventListener("pointermove", onMove),
-          );
-        }
+      /* ---------- Hero motion ---------------------------------------
+         One photograph, not a stack of fake layers: the models are not
+         cut out and nothing pretends to be 3D. The image drifts a few
+         pixels against the pointer — a frame that is alive, not a card
+         that tilts. Written straight to the node with quickTo, so no
+         React state and no re-render per event.                        */
+      if (heroImg && window.matchMedia("(pointer: fine)").matches) {
+        const TRAVEL = 3;
+        const px = gsap.quickTo(heroImg, "x", {
+          duration: 0.9,
+          ease: "power3.out",
+        });
+        const py = gsap.quickTo(heroImg, "y", {
+          duration: 0.9,
+          ease: "power3.out",
+        });
+        const onMove = (e: PointerEvent) => {
+          px(-(e.clientX / window.innerWidth - 0.5) * 2 * TRAVEL);
+          py(-(e.clientY / window.innerHeight - 0.5) * 2 * TRAVEL);
+        };
+        window.addEventListener("pointermove", onMove, { passive: true });
+        teardown.push(() => window.removeEventListener("pointermove", onMove));
       }
 
       /* Very slow vertical drift as the hero leaves. yPercent composes with
-         the pointer's px offset instead of fighting it. */
-      gsap.to(".hero [data-depth]", {
-        yPercent: 6,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-stage",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      /* The living edge: a band of light on the seam, drifting well below
-         the threshold of notice. Opacity and transform only. */
-      const seam = document.querySelector<HTMLElement>("[data-seam]");
-      if (seam && getComputedStyle(seam).display !== "none") {
-        gsap.to(seam, {
-          opacity: 0.55,
-          scaleX: 1.18,
-          transformOrigin: "left center",
-          duration: 5.5,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
+         the pointer's px offset and the entrance's scale instead of
+         fighting them — GSAP keeps all three as separate components. */
+      if (heroImg) {
+        gsap.to(heroImg, {
+          yPercent: 5,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero-stage",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
         });
       }
 

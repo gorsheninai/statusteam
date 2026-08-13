@@ -41,7 +41,8 @@ export const metadata: Metadata = {
       "Новый показ STATUS TEAM. Кастинг моделей, партнёрство, билеты.",
     locale: "ru_RU",
     type: "website",
-    images: ["/media/campaign-silhouette-sun-1600.webp"],
+    /* The share card should be the hero the visitor is about to land on. */
+    images: ["/media/header_16_9-1920.webp"],
   },
 };
 

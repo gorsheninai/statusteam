@@ -18,6 +18,25 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 
 ## NEW SHOW — ПУЛЬС КОНТИНЕНТА
 
+### header_16_9 / header_9_16 · **the hero, final art**
+- **Type / orientation** — `header_16_9.png` 2720×1536 landscape (1.77);
+  `header_9_16.png` 1536×2720 portrait (0.56)
+- **Content** — two models in jewellery and lingerie against a dark ground
+- **Overlay** — landscape: ★★★ on the **left half only**, which is open dark
+  space by design. The right half is the figures — **never put type there.**
+  Portrait: figures are centred; type goes *below* the frame, not on it.
+- **Best use** — **HERO, and nothing else.** Landscape ≥900px, portrait below.
+  They are two separate compositions, not two crops: never serve one from a
+  shared `srcset`, always pick by `<picture media>`.
+- **Priority** — 1
+- **Notes** — These two PNGs are the masters and stay untouched. The
+  `-{width}.webp` files beside them are derived (q88): banding-free, mean
+  preserved, with ~75% of the source grain retained in near-black. Regenerate
+  the WebPs rather than editing them, and never re-encode a WebP from a WebP.
+  The models must not be darkened by a scrim, and the faces must stay clear
+  of type at every width — the crop is held right (`object-position: 85%`)
+  below 1280px precisely to protect them.
+
 ### campaign-silhouette-sun · from `style3.png`
 - **Type / orientation** — image, portrait 816×1456 (0.56)
 - **Content** — full silhouette of a model against the setting sun, acacia behind, savanna grass

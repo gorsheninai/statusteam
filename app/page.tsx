@@ -11,26 +11,26 @@ const Arrow = () => (
 );
 
 /**
- * The hero art, as layers.
+ * The hero art.
  *
- * `base` is the photograph. `model` and `foreground` are optional transparent
- * cut-outs (PNG/WebP) that let part of the figure — hair, a shoulder, a piece
- * of jewellery — sit *outside* the media area, over the black. Both slots are
- * fully wired: markup, stacking, the overflow they need and their own parallax
- * depth. They render only when a file exists, so the hero costs nothing extra
- * until the final frame is delivered.
+ * Two finished frames, each composed for its own orientation — the landscape
+ * one carries the models on the right against open dark space, the portrait
+ * one stacks them centred. They are *not* two crops of one picture, so the
+ * browser must pick by orientation and load exactly one: <picture> with a
+ * media query, never a shared srcset.
  *
- * Depths are the pointer-parallax travel in pixels, read by Motion.tsx.
+ * The masters are the PNGs beside these files; the WebPs are derived and
+ * kept visually identical (see MEDIA_INDEX).
  */
-const HERO_ART: {
-  base: string;
-  model: string | null;
-  foreground: string | null;
-} = {
-  base: "campaign-silhouette-sun",
-  model: null,
-  foreground: null,
+const HERO_ART = {
+  wide: { name: "header_16_9", widths: [1280, 1920, 2720] },
+  tall: { name: "header_9_16", widths: [768, 1080, 1536] },
+  /* Above this the composition is landscape. Matches --hero-split in CSS. */
+  breakpoint: 900,
 };
+
+const srcSet = ({ name, widths }: { name: string; widths: number[] }) =>
+  widths.map((w) => `/media/${name}-${w}.webp ${w}w`).join(", ");
 
 export default function Home() {
   return (
@@ -44,42 +44,31 @@ export default function Home() {
             ============================================================ */}
         <div className="hero-stage">
           <section className="hero on-dark">
-            {/* The curtain: everything inside is revealed left-to-right on
-                load. The seam sits on the black/image border. */}
+            {/* The photograph is the ground of the whole screen, not a panel
+                beside the type. The curtain clips it on its own wrapper so
+                the reveal and the image's own motion never share a
+                transform. */}
             <div className="hero-frame">
               <div className="hero-curtain" data-curtain>
-                <div className="media hero-media">
+                <picture>
+                  <source
+                    media={`(min-width: ${HERO_ART.breakpoint}px)`}
+                    srcSet={srcSet(HERO_ART.wide)}
+                    sizes="100vw"
+                  />
+                  <source
+                    srcSet={srcSet(HERO_ART.tall)}
+                    sizes="100vw"
+                  />
                   <img
                     className="hero-layer"
-                    data-depth="bg"
-                    src={`/media/${HERO_ART.base}-1600.webp`}
-                    srcSet={`/media/${HERO_ART.base}-640.webp 640w, /media/${HERO_ART.base}-1000.webp 1000w, /media/${HERO_ART.base}-1600.webp 1600w`}
-                    sizes="(max-width: 900px) 100vw, 56vw"
-                    alt="Силуэт модели против заходящего солнца в саванне, рядом акация"
+                    src={`/media/${HERO_ART.tall.name}-1080.webp`}
+                    alt="Две модели в украшениях и белье коллекции «Пульс континента» на тёмном фоне"
                     fetchPriority="high"
+                    decoding="async"
                   />
-                </div>
-
-                {HERO_ART.model && (
-                  <img
-                    className="hero-layer hero-layer-model"
-                    data-depth="model"
-                    src={`/media/${HERO_ART.model}`}
-                    alt=""
-                    aria-hidden="true"
-                  />
-                )}
-                {HERO_ART.foreground && (
-                  <img
-                    className="hero-layer hero-layer-fg"
-                    data-depth="fg"
-                    src={`/media/${HERO_ART.foreground}`}
-                    alt=""
-                    aria-hidden="true"
-                  />
-                )}
+                </picture>
               </div>
-              <span className="hero-seam" data-seam aria-hidden="true" />
             </div>
 
             <div className="hero-inner shell">
@@ -93,11 +82,14 @@ export default function Home() {
               </h1>
 
               <p className="hero-statement" data-hero="statement">
-                Сценическое fashion-действие о силе, ритме и свободе.
+                Главное Fashion событие осени в мире нижнего белья.
               </p>
 
               <p className="hero-where" data-hero="where">
                 <span className="hero-city">Москва</span>
+                <span className="hero-dash" aria-hidden="true">
+                  —
+                </span>
                 <span className="hero-when">
                   {/* "Ноябрь" is the real, readable value with no JS; the two
                       earlier months sit above the clip and only roll through

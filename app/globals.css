@@ -606,21 +606,22 @@ ol {
 /* ============================================================
    HERO
 
-   Two things drive this block.
+   The photograph is the ground of the whole screen. Two finished
+   frames, one per orientation, picked by <picture>:
 
-   1. CURTAIN. The photograph opens left-to-right from a narrow strip on
-      the black/image border, like a spread or a stage curtain. The open
-      state lives here; GSAP writes the closed state on load, so with JS
-      off or still loading the hero is simply open and readable.
+     ≥ 900px  header_16_9 — models right, open dark space left,
+              type sits in that space and crosses a little.
+     < 900px  header_9_16 — models stacked and centred, the frame
+              holds the top of the screen and dissolves into black
+              above the type.
 
-   2. LAYERS. --px/--py are pointer-parallax offsets written by GSAP with
-      quickTo (never through React state). Each layer carries its own
-      travel; the values stay small enough to read as depth, not as tilt.
+   --hero-fade is where the picture stops being a picture. On the
+   phone that is a horizontal edge; on desktop there is none, the
+   composition already carries its own darkness on the left.
    ============================================================ */
 
-/* The stage is exactly one viewport tall, so the hero unsticks the moment
-   the next chapter has covered it — nothing stays pinned for the rest of
-   the page. */
+/* One viewport tall, so the hero unpins as soon as the next chapter
+   has covered it. */
 .hero-stage {
   position: relative;
   height: 100svh;
@@ -633,83 +634,65 @@ ol {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding-block: 6.5rem 3.5rem;
+  padding-block: 5.5rem 3rem;
   overflow: hidden;
   color: var(--paper);
   background: var(--ink);
 }
 
-/* --- media -------------------------------------------------- */
+/* --- the photograph ----------------------------------------- */
 
+/* Phone: the frame owns the top of the screen and fades out before
+   the type starts. It is sized in svh rather than % so the picture
+   does not resize when mobile browser chrome collapses. */
 .hero-frame {
   position: absolute;
-  inset: 0;
+  inset: 0 0 auto;
+  height: 62svh;
+  --hero-fade: 36%;
+  /* A dissolve, not a cut: no card edge, no rectangle. */
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 calc(100% - var(--hero-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 calc(100% - var(--hero-fade)),
+    transparent 100%
+  );
 }
 
-/* The element the curtain animates. Clipping here (not on the image) keeps
-   the parallax transform on the layer independent of the reveal. */
+/* The element the curtain animates. Portrait uses clip-path top-down;
+   landscape swaps it for a soft-edged mask below. */
 .hero-curtain {
   position: absolute;
   inset: 0;
   clip-path: inset(0 0 0 0);
 }
 
-.hero-media {
-  position: absolute;
-  inset: 0;
-  background: none;
+.hero-frame picture {
+  display: block;
+  height: 100%;
 }
 
-/* Layers. Each one is oversized by --bleed so a parallax offset can never
-   expose an edge. */
+/* --bleed keeps the pointer/scroll offset from ever exposing an edge.
+   The image is never stretched: only object-fit and object-position
+   decide what is kept. */
 .hero-layer {
   position: absolute;
-  inset: calc(var(--bleed, 14px) * -1);
-  width: calc(100% + var(--bleed, 14px) * 2);
-  height: calc(100% + var(--bleed, 14px) * 2);
+  inset: calc(var(--bleed, 18px) * -1);
+  width: calc(100% + var(--bleed, 18px) * 2);
+  height: calc(100% + var(--bleed, 18px) * 2);
+  /* The base `img { max-width: 100% }` would clamp the bleed away on the
+     right and leave a strip of bare background there. */
+  max-width: none;
   object-fit: cover;
-  object-position: center 46%;
-  transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
-}
-
-/* Cut-out slots. They are allowed past the media area on purpose: a
-   shoulder, hair or a piece of jewellery crossing onto the black is the
-   point. Empty until a transparent asset exists — see HERO_ART. */
-.hero-layer-model,
-.hero-layer-fg {
-  --bleed: 0px;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: bottom center;
-  pointer-events: none;
-}
-.hero-layer-fg {
-  z-index: 3;
-}
-
-/* Phone scrim: the figure keeps the top, the type gets a solid floor. */
-.hero-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  pointer-events: none;
-  background: linear-gradient(
-    0deg,
-    rgba(16, 13, 12, 0.97) 0%,
-    rgba(16, 13, 12, 0.9) 26%,
-    rgba(16, 13, 12, 0.48) 58%,
-    rgba(16, 13, 12, 0.14) 86%
-  );
-}
-
-/* The living edge. A soft band of light on the border rather than a hard
-   cut — it drifts slowly and is meant to be felt, not seen. On phones the
-   media is full-bleed, so there is no border to soften. */
-.hero-seam {
-  display: none;
+  /* Phone frame is 9:16 against a taller-than-9:16 box, so the crop
+     is vertical: hold the top, where both faces are. */
+  object-position: center 22%;
 }
 
 /* --- type --------------------------------------------------- */
@@ -722,7 +705,7 @@ ol {
 }
 
 .hero-title {
-  margin: 0 0 clamp(1.1rem, 2.6vw, 1.9rem);
+  margin: 0 0 clamp(0.9rem, 2.4vw, 1.6rem);
   font-weight: 400;
 }
 .pulse-mask {
@@ -731,20 +714,17 @@ ol {
 }
 .hero-title .pulse-line {
   font-size: clamp(2.15rem, 10.4vw, 4rem);
-}
-.hero-title .pulse-line:first-child {
+  /* Ivory throughout. The photograph already carries the gold; a gold
+     headline on top of it turns the page into a luxury template. */
   color: var(--paper);
-}
-.hero-title .pulse-line + .pulse-line {
-  color: var(--sand);
 }
 
 .hero-statement {
-  max-width: 24ch;
-  margin: 0 0 clamp(1.6rem, 4vw, 2.4rem);
+  max-width: 22ch;
+  margin: 0 0 clamp(1.3rem, 3.4vw, 2rem);
   font-size: var(--fs-lead);
   line-height: 1.35;
-  opacity: 0.9;
+  opacity: 0.88;
 }
 
 /* City and period, set into the composition rather than into a bar. */
@@ -752,25 +732,26 @@ ol {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 0.55rem 1.5rem;
-  margin: 0 0 clamp(1.7rem, 4vw, 2.6rem);
+  gap: 0.4rem 0.9rem;
+  margin: 0 0 clamp(1.5rem, 3.6vw, 2.3rem);
   font-family: var(--font-ui);
   font-size: clamp(0.8125rem, 1.6vw, 0.95rem);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
-.hero-city {
-  color: var(--sand);
+.hero-dash {
+  opacity: 0.4;
 }
 .hero-when {
   display: inline-flex;
   align-items: baseline;
   gap: 0.5em;
-  opacity: 0.9;
+  /* the one gold accent in the hero UI */
+  color: var(--sand);
 }
 
-/* The month roller. "Ноябрь" is the only real value: it needs no transform
-   to be correct, so the label reads properly before JS runs. The two
+/* The month roller. "Ноябрь" is the only real value: it needs no
+   transform to be correct, so the label reads before JS runs. The two
    earlier months sit above the clip and are pulled through once. */
 .month {
   display: inline-block;
@@ -801,10 +782,10 @@ ol {
 .hero-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.9rem 2rem;
+  gap: 0.6rem 2rem;
 }
-/* Editorial links, not a row of identical buttons. The 48px touch target is
-   kept by padding, not by a box. */
+/* Editorial links, not a row of identical buttons. The 48px touch target
+   is kept by padding, not by a box. */
 .hero-links .link-rule {
   padding-block: 14px 10px;
   border-bottom-color: var(--sand-dim);
@@ -1540,56 +1521,69 @@ ol {
    ≥ 900px — tablet landscape. Compositions start to split.
    ============================================================ */
 @media (min-width: 900px) {
-  /* The hero image is portrait. Full-bleed on a landscape screen would crop
-     it to a torso, so on wide viewports it becomes a tall frame on the right
-     and the title crosses its edge. */
+  /* Landscape frame: one full-screen spread. No panel, no column, no
+     scrim over the models — the picture's own left half is already the
+     dark ground the type sits in. */
   .hero {
-    justify-content: center;
-    padding-block: 8rem 4rem;
+    justify-content: flex-end;
+    padding-block: 8rem 4.5rem;
   }
-  /* --edge is the black/image border. The curtain opens from it, the seam
-     sits on it, and the title crosses it. */
   .hero-frame {
-    --edge: 48%;
-    inset: 0 0 0 var(--edge);
+    /* --hero-split marks where the models begin in the 16:9 frame. The
+       curtain opens from it and the type stops short of it. */
+    --hero-split: 55%;
+    inset: 0;
+    height: auto;
+    /* full bleed, no dissolve: the composition supplies its own falloff */
+    -webkit-mask-image: none;
+    mask-image: none;
   }
   .hero-layer {
-    object-position: center 42%;
+    /* The viewport is far shorter than 16:9 here, so cover throws away a
+       quarter of the width. Spending nearly all of it on the empty left
+       keeps both figures whole and hands the type more dark ground —
+       cropping evenly would eat the models instead. */
+    object-position: 85% center;
   }
-  .hero-frame::after {
-    background: linear-gradient(
+  /* The curtain draws with a soft edge rather than a hard cut: a clip-path
+     wipe puts a ruled vertical line straight through a model's body and
+     reads as a mechanism. --curtain is 0 → 1, written by GSAP; at 1 the
+     falloff has passed the right edge, so with no JS the frame is open. */
+  .hero-curtain {
+    --curtain: 1;
+    clip-path: none;
+    -webkit-mask-image: linear-gradient(
       90deg,
-      rgba(16, 13, 12, 0.94) 0%,
-      rgba(16, 13, 12, 0.6) 12%,
-      rgba(16, 13, 12, 0.16) 34%,
-      transparent 58%
+      #000 0%,
+      #000 calc(var(--curtain) * 100%),
+      transparent calc(var(--curtain) * 100% + 11%)
+    );
+    mask-image: linear-gradient(
+      90deg,
+      #000 0%,
+      #000 calc(var(--curtain) * 100%),
+      transparent calc(var(--curtain) * 100% + 11%)
     );
   }
-  /* A band of light on the seam instead of a cut edge. It drifts under
-     GSAP; the amplitude is deliberately below the threshold of notice. */
-  .hero-seam {
-    display: block;
+  /* Only enough to seat the type — the brief is explicit that the models
+     must not be darkened. It stops well short of --hero-split. */
+  .hero-frame::after {
+    content: "";
     position: absolute;
-    top: 0;
-    left: -1px;
-    z-index: 5;
-    width: clamp(28px, 3vw, 52px);
-    height: 100%;
+    inset: 0;
+    z-index: 4;
     pointer-events: none;
     background: linear-gradient(
       90deg,
-      rgba(198, 168, 124, 0.22) 0%,
-      rgba(198, 168, 124, 0.07) 42%,
-      transparent 100%
+      rgba(16, 13, 12, 0.72) 0%,
+      rgba(16, 13, 12, 0.34) 26%,
+      transparent 52%
     );
-    mix-blend-mode: screen;
-    opacity: 0.85;
   }
-  /* The type box runs past the border on purpose: "КОНТИНЕНТА" crosses onto
-     the photograph. Widen this and the word gets deeper into the image —
-     but re-run the clipped-text check, the reveal mask hides overrun. */
   .hero-inner {
-    max-width: 74%;
+    /* "КОНТИНЕНТА" is allowed a little past the split; the faces sit far
+       to the right of it and stay clear. */
+    max-width: 68%;
   }
   .nav-brand img {
     height: 21px;
@@ -1597,11 +1591,28 @@ ol {
   .hero-title .pulse-line {
     /* Delicate: the lock-up breathes, it does not stretch. */
     --pulse-spread: 0.09em;
-    /* Sized so "КОНТИНЕНТА" runs past --edge and onto the photograph. */
-    font-size: clamp(2.8rem, 6.9vw, 7.4rem);
+    font-size: clamp(2.8rem, 6.4vw, 6.8rem);
   }
   .hero-statement {
     max-width: 26ch;
+  }
+  /* Between the phone and a real desktop the frame is at its most
+     cramped: cover has eaten a quarter of the width and the models sit
+     close to the type. Hold the type back and give it a deeper ground
+     here only — above 1280 the picture reads as it was shot. */
+  @media (max-width: 1279px) {
+    .hero-title .pulse-line {
+      font-size: 5.7vw;
+    }
+    .hero-frame::after {
+      background: linear-gradient(
+        90deg,
+        rgba(16, 13, 12, 0.86) 0%,
+        rgba(16, 13, 12, 0.62) 28%,
+        rgba(16, 13, 12, 0.24) 48%,
+        transparent 66%
+      );
+    }
   }
   .tickets-title .pulse-line {
     --pulse-spread: 0.14em;
@@ -1764,13 +1775,12 @@ ol {
    ============================================================ */
 @media (min-width: 1280px) {
   .hero {
-    padding-bottom: 4.5rem;
+    padding-bottom: 5.5rem;
   }
-  .hero-frame {
-    --edge: 45%;
-  }
+  /* At 16:9 and wider nothing is cropped, so the frame can sit centred
+     and the composition arrives as it was shot. */
   .hero-layer {
-    object-position: center 52%;
+    object-position: center center;
   }
   .hero-statement {
     max-width: 30ch;
