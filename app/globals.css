@@ -486,20 +486,40 @@ ol {
   align-items: center;
   gap: 1rem;
 }
+/* Bronze wipe, not a flat colour cross-fade — the same idiom .btn already
+   uses everywhere else on the site, so the one boxed CTA left in the hero
+   still speaks the site's language instead of its own. */
 .nav-tickets {
   display: none;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   padding: 0.65rem 1.15rem;
-  border: 1px solid currentColor;
+  border: 1px solid var(--sand-dim);
   font-family: var(--font-ui);
   font-size: var(--fs-micro);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  transition: background var(--t-base) var(--ease-out),
-    color var(--t-base) var(--ease-out);
+  transition: color 380ms var(--ease-out), border-color 380ms var(--ease-out);
 }
-.nav-tickets:hover {
-  background: var(--paper);
+.nav-tickets::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--sand);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 380ms var(--ease-out);
+}
+.nav-tickets:hover,
+.nav-tickets:focus-visible {
   color: var(--ink);
+  border-color: var(--sand);
+}
+.nav-tickets:hover::before,
+.nav-tickets:focus-visible::before {
+  transform: scaleY(1);
 }
 
 .nav-burger {
@@ -676,14 +696,6 @@ ol {
   );
 }
 
-/* The element the curtain animates. Portrait uses clip-path top-down;
-   landscape swaps it for a soft-edged mask below. */
-.hero-curtain {
-  position: absolute;
-  inset: 0;
-  clip-path: inset(0 0 0 0);
-}
-
 .hero-frame picture {
   display: block;
   height: 100%;
@@ -733,8 +745,11 @@ ol {
 .hero-statement {
   max-width: 22ch;
   margin: 0 0 clamp(1.3rem, 3.4vw, 2rem);
-  font-size: var(--fs-lead);
-  line-height: 1.35;
+  /* Deliberately its own scale, smaller than --fs-lead used for running
+     copy elsewhere — a hero standfirst should read as caption to the
+     lock-up, not compete with it as another paragraph of body text. */
+  font-size: clamp(0.9375rem, 1.3vw, 1.15rem);
+  line-height: 1.42;
   opacity: 0.88;
 }
 
@@ -747,8 +762,13 @@ ol {
   margin: 0 0 clamp(1.5rem, 3.6vw, 2.3rem);
   font-family: var(--font-ui);
   font-size: clamp(0.8125rem, 1.6vw, 0.95rem);
-  letter-spacing: 0.18em;
+  /* 0.2em, not 0.18: matches every other micro-label on the site
+     (.chapter, .label) instead of sitting a hair narrower than them. */
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+}
+.hero-city {
+  font-weight: 500;
 }
 .hero-dash {
   opacity: 0.4;
@@ -800,10 +820,49 @@ ol {
 .hero-links .link-rule {
   padding-block: 14px 10px;
   border-bottom-color: var(--sand-dim);
+  transition: border-color 320ms var(--ease-out),
+    letter-spacing 320ms var(--ease-out);
 }
 .hero-links .link-rule:hover,
 .hero-links .link-rule:focus-visible {
   border-bottom-color: var(--sand);
+  /* +0.03em on hover — felt, not read, and never enough to reflow the
+     underline's width against the text above it. */
+  letter-spacing: calc(0.14em + 0.03em);
+}
+
+/* ---------- NO-FLASH ENTRANCE -----------------------------------
+   A tiny synchronous script in the document head (see layout.tsx) adds
+   .pre-hero to <html> before the browser's first paint, unless the
+   visitor has requested reduced motion. These rules put the hero's
+   animated elements in exactly the state Motion.tsx's entrance timeline
+   is about to tween them from — so the very first frame the browser
+   paints already matches what GSAP renders on mount, and hydration
+   causes no visible jump.
+
+   With JS disabled the script never runs, .pre-hero is never added, and
+   none of this ever matches — the hero renders fully visible, which is
+   what keeps it readable if JS fails. */
+.pre-hero .hero-layer {
+  opacity: 0.94;
+  transform: scale(1.015);
+}
+/* Opacity, not the transform GSAP is about to animate: a percentage-based
+   transform already on an element GSAP has never touched gets parsed into
+   a fixed pixel baseline and composed alongside the incoming yPercent
+   tween instead of being replaced by it — the title ended up permanently
+   offset by exactly its "from" position, stuck as two stacked
+   translations instead of the one GSAP thought it was writing. Hiding it
+   with opacity here sidesteps that; GSAP still owns yPercent from a clean
+   slate the moment its own timeline starts. */
+.pre-hero .hero-title .pulse-line {
+  opacity: 0;
+}
+.pre-hero .hero-statement,
+.pre-hero .hero-where,
+.pre-hero .hero-links {
+  opacity: 0;
+  transform: translateY(16px);
 }
 
 /* ============================================================
@@ -1585,26 +1644,6 @@ ol {
        cropping evenly would eat the models instead. */
     object-position: 85% center;
   }
-  /* The curtain draws with a soft edge rather than a hard cut: a clip-path
-     wipe puts a ruled vertical line straight through a model's body and
-     reads as a mechanism. --curtain is 0 → 1, written by GSAP; at 1 the
-     falloff has passed the right edge, so with no JS the frame is open. */
-  .hero-curtain {
-    --curtain: 1;
-    clip-path: none;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 calc(var(--curtain) * 100%),
-      transparent calc(var(--curtain) * 100% + 11%)
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 calc(var(--curtain) * 100%),
-      transparent calc(var(--curtain) * 100% + 11%)
-    );
-  }
   /* Only enough to seat the type — the brief is explicit that the models
      must not be darkened. It stops well short of --hero-split. */
   .hero-frame::after {
@@ -1633,8 +1672,12 @@ ol {
     --pulse-spread: 0.09em;
     font-size: clamp(2.8rem, 6.4vw, 6.8rem);
   }
+  /* 30ch is the exact width of "Главное fashion‑событие осени" — the
+     non-breaking hyphen and hard space in the markup keep that phrase
+     from splitting, so at this width or wider it reliably lands as its
+     own line, with "в мире нижнего белья." wrapping to a second. */
   .hero-statement {
-    max-width: 26ch;
+    max-width: 30ch;
   }
   /* Between the phone and a real desktop the frame is at its most
      cramped: cover has eaten a quarter of the width and the models sit
@@ -1822,8 +1865,13 @@ ol {
   .hero-layer {
     object-position: center center;
   }
-  .hero-statement {
-    max-width: 30ch;
+  /* Micro-labels read slightly small at this width; every other use of
+     this scale on the site (.chapter, .label) already sits at 0.2em, so
+     this brings the nav in line rather than inventing a new number. */
+  .nav-links a,
+  .nav-tickets {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
   }
 
   .manifest-body {

@@ -21,6 +21,7 @@ export default function Motion() {
 
     const ctx = gsap.context(() => {
       const EASE = "power3.out";
+      const root = document.documentElement;
       /* Listeners GSAP does not own, torn down with the context. */
       const teardown: Array<() => void> = [];
 
@@ -39,7 +40,6 @@ export default function Motion() {
          pass per frame, so that stays where it already is: the three
          lock-ups, which are `white-space: nowrap` and cheap to reflow. */
       {
-        const root = document.documentElement;
         let last = window.scrollY;
         let stamp = performance.now();
         let value = 0;
@@ -77,84 +77,89 @@ export default function Motion() {
         });
       }
 
-      /* ---------- Hero entrance: LIVE CUT ----------------------------
-         Two finished frames, two different reveals. Everything below sets
-         its own start state here, never in CSS, so a hero with no JS is a
-         hero that is simply already open.
+      /* ---------- Hero entrance: NO-FLASH REVEAL ----------------------
+         Used to open with a mask "curtain" sweeping the photograph into
+         view. The mask's starting value could only be applied once React
+         hydrated — tens to hundreds of ms after the browser's first paint
+         of the plain, fully-open CSS state — so visitors saw the hero
+         fully bright, then watched roughly half of it get masked back out
+         and slowly re-open. Loads bright, then visibly darkens: exactly
+         the bug this rewrite removes.
 
-         Budget: the whole first screen is assembled by ~2.3s.          */
-      const curtain = document.querySelector<HTMLElement>("[data-curtain]");
+         The fix has two halves. First, index.html itself already paints
+         every element below in its hidden starting position — see
+         .pre-hero in globals.css, set by a synchronous script in the
+         document head before first paint. Second, everything here tweens
+         FROM those exact values, so GSAP's mount-time render matches what
+         is already on screen and there is nothing left to jump. The photo
+         itself only ever moves through opacity and a 1.5% scale — never
+         a mask, never a brightness change of the frame as a whole.
+
+         Budget: the whole first screen is assembled by ~1.55s.          */
       const heroTitle = document.querySelector<HTMLElement>(
         ".hero [data-pulse-title]",
       );
       const heroImg = document.querySelector<HTMLElement>(".hero .hero-layer");
-      const wide = window.matchMedia("(min-width: 900px)").matches;
 
-      if (curtain) {
-        const tl = gsap.timeline({ defaults: { ease: EASE } });
+      if (heroImg || heroTitle) {
+        const tl = gsap.timeline({
+          defaults: { ease: EASE },
+          onComplete: () => root.classList.remove("pre-hero"),
+        });
+        teardown.push(() => root.classList.remove("pre-hero"));
 
-        if (wide) {
-          /* Landscape: the picture is already full-bleed and its left half
-             is open dark space, so there is nothing to reveal there. The
-             draw starts where the models begin and the scene resolves out
-             of the darkness to the right, behind a soft mask edge.
-
-             power2, not power3: with the left half empty, a harder inOut
-             spends most of a second revealing black before anything reads. */
-          tl.fromTo(
-            curtain,
-            { "--curtain": 0.5 },
-            { "--curtain": 1, duration: 1.5, ease: "power2.inOut" },
-            0,
-          );
-        } else {
-          /* Portrait: a vertical slit on a 9:16 frame reads as a glitch,
-             not as a curtain. Top-down instead, with the faces arriving
-             early — they are what the screen is for. */
-          gsap.set(curtain, { clipPath: "inset(0% 0% 42% 0%)" });
-          tl.to(
-            curtain,
-            {
-              clipPath: "inset(0% 0% 0% 0%)",
-              duration: 1.35,
-              ease: "power3.inOut",
-            },
-            0,
-          ).from(
-            curtain,
-            { opacity: 0, duration: 0.8, ease: "power2.out" },
-            0,
-          );
-        }
-
-        /* A living photograph, not a zoom: the frame settles by ~3%. */
+        /* fromTo, not from: .pre-hero has already set these exact opacity/
+           transform values via CSS, so a plain .from() would read them
+           back as the CURRENT computed style and treat that as both ends
+           of the tween — a silent no-op. The "to" side has to be spelled
+           out explicitly. */
         if (heroImg) {
-          tl.from(
+          tl.fromTo(
             heroImg,
-            { scale: 1.035, duration: 2.1, ease: "power2.out" },
-            0,
+            { opacity: 0.94, scale: 1.015 },
+            { opacity: 1, scale: 1, duration: 0.85, ease: "power2.out" },
+            0.05,
           );
         }
 
-        tl.from(
+        /* .pre-hero hides the title with opacity, not a matching
+           translateY(108%) — a percentage transform already sitting on an
+           element GSAP has never touched gets parsed into a fixed pixel
+           baseline and composed alongside the incoming yPercent tween
+           instead of being replaced by it, which left the title
+           permanently offset by its own "from" position: two stacked
+           translations where GSAP thought it was writing one. Animating
+           opacity here, in step with the mask slide, is what actually
+           reveals it — yPercent starts from a clean slate now, but
+           nothing else makes the title visible. */
+        tl.fromTo(
           ".hero .pulse-mask .pulse-line",
-          { yPercent: 108, duration: 1.05, stagger: 0.15 },
-          0.4,
+          { yPercent: 108, opacity: 0 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.15,
+          },
+          0.35,
         )
-          .from(
+          .fromTo(
             '[data-hero="statement"]',
-            { opacity: 0, y: 18, duration: 0.7 },
-            1.05,
+            { opacity: 0, y: 16 },
+            { opacity: 1, y: 0, duration: 0.65 },
+            0.75,
           )
-          .from(
+          .fromTo(
             '[data-hero="where"]',
-            { opacity: 0, y: 16, duration: 0.6 },
-            1.32,
+            { opacity: 0, y: 16 },
+            { opacity: 1, y: 0, duration: 0.55 },
+            0.9,
           )
-          .from(
+          .fromTo(
             '[data-hero="links"]',
-            { opacity: 0, y: 16, duration: 0.6 },
-            1.62,
+            { opacity: 0, y: 16 },
+            { opacity: 1, y: 0, duration: 0.5 },
+            1.0,
           );
 
         /* The lock-up arrives a touch open and settles. This is the only
@@ -166,12 +171,12 @@ export default function Motion() {
             open,
             {
               v: 0,
-              duration: 1.5,
+              duration: 1.3,
               ease: "power2.out",
               onUpdate: () =>
                 heroTitle.style.setProperty("--pulse", String(open.v)),
             },
-            0.65,
+            0.5,
           );
         }
 
@@ -184,12 +189,12 @@ export default function Motion() {
           gsap.set(monthInner, { yPercent: 200 });
           tl.to(
             monthInner,
-            { yPercent: 100, duration: 0.34, ease: "power2.inOut" },
-            1.42,
+            { yPercent: 100, duration: 0.3, ease: "power2.inOut" },
+            1.05,
           ).to(
             monthInner,
-            { yPercent: 0, duration: 0.44, ease: "power3.out" },
-            1.8,
+            { yPercent: 0, duration: 0.4, ease: "power3.out" },
+            1.4,
           );
         }
       }
@@ -218,19 +223,21 @@ export default function Motion() {
         teardown.push(() => window.removeEventListener("pointermove", onMove));
       }
 
-      /* THE CAMERA STEPS BACK.
-         The hero does not scroll away — the next chapter rises over it. So
-         instead of sliding out, the frame recedes: a little smaller, a
-         little darker, as though the camera pulled back to let the next
-         scene through. yPercent, scale and the pointer's x/y are separate
-         transform components in GSAP, so none of them fight. */
+      /* THE CAMERA PUSHES IN.
+         The hero does not scroll away — the next chapter rises over it —
+         so the hand-off reads as the camera moving deeper into the frame,
+         not backing out of the scene. The photograph keeps living for the
+         full pin, drifting a further 1.5svh over the scroll; the type
+         leaves first, over a shorter span, so by the time the manifest
+         card is fully over the hero, the words are already gone and only
+         the photograph is still visibly moving underneath it. */
       if (heroImg) {
         gsap.to(heroImg, {
-          yPercent: 5,
-          scale: 0.96,
+          yPercent: 3,
+          scale: 1.05,
           ease: "none",
-          /* The entrance also tweens scale (1.035 → 1). Without this the
-             scrub would capture 1.035 as its start value at creation time
+          /* The entrance also tweens scale (1.015 → 1). Without this the
+             scrub would capture 1.015 as its start value at creation time
              and the two would fight over the same property; deferred, it
              reads the settled value on first render instead. */
           immediateRender: false,
@@ -238,6 +245,43 @@ export default function Motion() {
             trigger: ".hero-stage",
             start: "top top",
             end: "bottom top",
+            scrub: true,
+          },
+        });
+      }
+
+      const heroInner = document.querySelector<HTMLElement>(".hero-inner");
+      if (heroInner) {
+        gsap.to(heroInner, {
+          opacity: 0,
+          y: -28,
+          ease: "none",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: ".hero-stage",
+            start: "top top",
+            end: "+=65%",
+            scrub: true,
+          },
+        });
+      }
+
+      /* The two lines drift apart at slightly different rates as the
+         type leaves — barely enough to feel, never enough to risk the
+         reveal mask clipping a letter (rightward only: the mask box has
+         ample room there, unlike the flush-left edge). */
+      const pulseLines = gsap.utils.toArray<HTMLElement>(
+        ".hero .pulse-mask .pulse-line",
+      );
+      if (pulseLines.length) {
+        gsap.to(pulseLines, {
+          x: (i) => 6 + i * 8,
+          ease: "none",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: ".hero-stage",
+            start: "top top",
+            end: "+=65%",
             scrub: true,
           },
         });

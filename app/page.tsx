@@ -53,30 +53,30 @@ export default function Home() {
         <div className="hero-stage">
           <section className="hero on-dark">
             {/* The photograph is the ground of the whole screen, not a panel
-                beside the type. The curtain clips it on its own wrapper so
-                the reveal and the image's own motion never share a
-                transform. */}
+                beside the type. Its entrance is a plain opacity+scale settle
+                (see .pre-hero in globals.css and the entrance timeline in
+                Motion.tsx) — there used to be a mask-sweep "curtain" here,
+                but it opened from a starting value GSAP could only apply
+                once React hydrated, which was visibly later than the
+                browser's first paint of the plain, fully-open CSS state.
+                That produced exactly the "loads bright, then goes dark a
+                beat later" flash it was meant to prevent, so it's gone. */}
             <div className="hero-frame">
-              <div className="hero-curtain" data-curtain>
-                <picture>
-                  <source
-                    media={`(min-width: ${HERO_ART.breakpoint}px)`}
-                    srcSet={srcSet(HERO_ART.wide)}
-                    sizes="100vw"
-                  />
-                  <source
-                    srcSet={srcSet(HERO_ART.tall)}
-                    sizes="100vw"
-                  />
-                  <img
-                    className="hero-layer"
-                    src={`/media/${HERO_ART.tall.name}-1080.webp`}
-                    alt="Две модели в украшениях и белье коллекции «Пульс континента» на тёмном фоне"
-                    fetchPriority="high"
-                    decoding="async"
-                  />
-                </picture>
-              </div>
+              <picture>
+                <source
+                  media={`(min-width: ${HERO_ART.breakpoint}px)`}
+                  srcSet={srcSet(HERO_ART.wide)}
+                  sizes="100vw"
+                />
+                <source srcSet={srcSet(HERO_ART.tall)} sizes="100vw" />
+                <img
+                  className="hero-layer"
+                  src={`/media/${HERO_ART.tall.name}-1080.webp`}
+                  alt="Две модели в украшениях и белье коллекции «Пульс континента» на тёмном фоне"
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              </picture>
             </div>
 
             <div className="hero-inner shell">
@@ -89,8 +89,13 @@ export default function Home() {
                 </span>
               </h1>
 
+              {/* U+2011 (non-breaking hyphen) in "fashion‑событие" and a
+                  hard space before "осени" keep that three-word phrase
+                  intact as one unit — a plain hyphen and space would let
+                  the browser break the compound apart or strand "осени" on
+                  its own line, which is the ragged wrap this replaces. */}
               <p className="hero-statement" data-hero="statement">
-                Главное Fashion событие осени в мире нижнего белья.
+                Главное fashion‑событие{" "}осени в мире нижнего белья.
               </p>
 
               <p className="hero-where" data-hero="where">

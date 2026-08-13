@@ -51,6 +51,16 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+/* Plain, blocking, no `src` — the browser executes this the instant the
+   parser reaches it, before it can paint anything. `next/script`'s
+   beforeInteractive strategy looked like the idiomatic choice here, but it
+   only guarantees "before hydration": measured against a fresh load, the
+   class it set still landed ~140ms after the browser had already painted
+   the hero fully visible, because it waits on Next's own runtime chunk to
+   parse and run first. A raw script has no such dependency. */
+const NO_FLASH_SCRIPT =
+  "try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('pre-hero')}}catch(e){}";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -59,6 +69,15 @@ export default function RootLayout({
       lang="ru"
       className={`${tenor.variable} ${onest.variable}`}
     >
+      <head>
+        {/* Sets a class that lets CSS pre-render the hero's entrance
+            starting state (see .pre-hero in globals.css), so the browser's
+            first painted frame already matches what Motion.tsx's GSAP
+            timeline is about to animate from — no jump on hydration.
+            Skipped under reduced motion; skipped entirely with JS off, so
+            a no-JS visitor always gets the hero fully visible. */}
+        <script dangerouslySetInnerHTML={{ __html: NO_FLASH_SCRIPT }} />
+      </head>
       <body>
         <a className="skip-link" href="#manifest">
           К содержанию
