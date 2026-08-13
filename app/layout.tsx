@@ -1,28 +1,33 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Oswald, Prata } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-/* Utility / body — neutral, highly legible, strong Cyrillic. */
-const geist = Geist({
-  variable: "--ff-body",
-  subsets: ["latin", "cyrillic"],
-  display: "swap",
-});
+/* Both faces are self-hosted: the production site must not depend on a font
+   CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
+   alongside), subset to Latin + Cyrillic + the punctuation this page uses. */
 
-/* Structure / scale — condensed, used for chapter titles, numerals, labels. */
-const oswald = Oswald({
-  variable: "--ff-struct",
-  subsets: ["latin", "cyrillic"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
-
-/* Campaign voice — the didone of the printed key art. Used sparingly, always large. */
-const prata = Prata({
-  variable: "--ff-campaign",
-  subsets: ["latin", "cyrillic"],
+/* DISPLAY — Tenor Sans. One weight only, by design; `font-synthesis: none`
+   in globals.css stops the browser faking the bold this face does not have. */
+const tenor = localFont({
+  src: "./fonts/TenorSans-Regular.woff2",
+  variable: "--ff-tenor",
   weight: "400",
+  style: "normal",
   display: "swap",
+  /* Fallback metrics matched to Tenor Sans, so the swap does not reflow. */
+  adjustFontFallback: "Times New Roman",
+  fallback: ["Georgia", "serif"],
+});
+
+/* BODY / UI — Onest, variable 100–900 in a single file. */
+const onest = localFont({
+  src: "./fonts/Onest-Variable.woff2",
+  variable: "--ff-onest",
+  weight: "100 900",
+  style: "normal",
+  display: "swap",
+  adjustFontFallback: "Arial",
+  fallback: ["system-ui", "sans-serif"],
 });
 
 export const metadata: Metadata = {
@@ -51,7 +56,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${geist.variable} ${oswald.variable} ${prata.variable}`}
+      className={`${tenor.variable} ${onest.variable}`}
     >
       <body>
         <a className="skip-link" href="#manifest">

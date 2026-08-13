@@ -86,17 +86,37 @@ photography.**
 No gold gradients, no black-and-gold clichés, no accent colours beyond this set. The
 photography supplies the secondary colour.
 
-### Typography — three roles, no script face
+### Typography — two faces, three roles
 
-- **`--font-campaign`** (Prata) — the didone of the printed key art. Large only.
-- **`--font-struct`** (Oswald) — condensed. Chapter titles, numerals, labels, buttons.
-- **`--font-body`** (Geist) — body, forms, navigation.
+- **`--font-display`** (Tenor Sans) — **large only.** The lock-up, chapter titles,
+  statements, composed numerals. One weight exists; there is no bold.
+- **`--font-ui`** (Onest) — small uppercase: nav, buttons, labels, chapter numbers,
+  form labels, credits, footer. Never above 500.
+- **`--font-body`** (Onest) — running copy, forms.
+
+`--font-ui` and `--font-body` resolve to the same family on purpose. They stay
+separate roles so UI tracking and weight can move without touching running copy.
+
+Both faces are **self-hosted** in `app/fonts/` (woff2, SIL OFL, licences beside
+them) and loaded with `next/font/local`. No Google Fonts `<link>`, no CDN — the
+production site must not depend on one. Onest is one variable file (100–900);
+Tenor Sans is a single static weight. Both are subset to Latin + Cyrillic + the
+punctuation this page uses; **re-subset before introducing a new glyph** (Tenor
+Sans has no `→`, `↗` or `₽` at all — those live in Onest UI only).
+
+`font-synthesis: none` is set on `body` and must stay: without it any stray
+`font-weight` renders Tenor Sans as faux bold.
 
 The reference site's Caveat script accent was **dropped deliberately**; it belonged to
 the previous Slavic show, not this one. Do not reintroduce it.
 
 Next/font variables are named `--ff-*` and set on `<html>`. Do **not** rename them to
 `--font-sans`: Tailwind v4 defines that as a theme token on `:root` and would shadow it.
+
+**Tenor Sans sets much wider than the condensed face it replaced.** Two floors are
+now pinned by the longest Cyrillic word rather than by taste — `.archive-h`
+(«СЛАВЯНСКИЙ») and the `.btn` tracking («СТАТЬ ПАРТНЁРОМ» in the 360px hero grid).
+Both clip silently. Re-run `npm run verify` after touching either.
 
 ### Signature — the breathing lock-up
 
