@@ -24,6 +24,59 @@ export default function Motion() {
       /* Listeners GSAP does not own, torn down with the context. */
       const teardown: Array<() => void> = [];
 
+      /* ---------- PULSE BUS -----------------------------------------
+         The show is called Пульс Континента, so the site has one: a
+         single document-level number, 0 → 1, derived from scroll speed
+         and smoothed so it lags the reader — it rises slower than you
+         scroll and takes longer to settle than you do.
+
+         Everything subscribes through CSS. The two hairline tokens and
+         the sand accent are defined in terms of --pulse-live, so every
+         rule already using them breathes without being touched.
+
+         Deliberately colour and opacity only. Breathing the *tracking*
+         of every heading would read beautifully and cost a full layout
+         pass per frame, so that stays where it already is: the three
+         lock-ups, which are `white-space: nowrap` and cheap to reflow. */
+      {
+        const root = document.documentElement;
+        let last = window.scrollY;
+        let stamp = performance.now();
+        let value = 0;
+        let painted = -1;
+        let frame = 0;
+
+        const tick = (now: number) => {
+          /* Measured per millisecond, not per frame, so the pulse reads the
+             same on a 60Hz laptop and a 120Hz phone. */
+          const dt = Math.max(now - stamp, 1);
+          stamp = now;
+          const y = window.scrollY;
+          const speed = Math.min(Math.abs(y - last) / dt / 1.4, 1);
+          last = y;
+
+          /* A peak follower, not a lerp: it rises readily and falls slowly.
+             The other way round — which is what a plain lerp gives — the
+             pulse never catches a flick of the wheel and reads as lag. */
+          value = speed > value ? value + (speed - value) * 0.3 : value * 0.955;
+
+          /* Repaint only on a visible change. Idle costs one comparison
+             per frame and no style recalculation at all. */
+          const next = Math.round(value * 100) / 100;
+          if (next !== painted) {
+            painted = next;
+            root.style.setProperty("--pulse-live", String(next));
+          }
+          frame = requestAnimationFrame(tick);
+        };
+
+        frame = requestAnimationFrame(tick);
+        teardown.push(() => {
+          cancelAnimationFrame(frame);
+          root.style.removeProperty("--pulse-live");
+        });
+      }
+
       /* ---------- Hero entrance: LIVE CUT ----------------------------
          Two finished frames, two different reveals. Everything below sets
          its own start state here, never in CSS, so a hero with no JS is a
@@ -165,13 +218,22 @@ export default function Motion() {
         teardown.push(() => window.removeEventListener("pointermove", onMove));
       }
 
-      /* Very slow vertical drift as the hero leaves. yPercent composes with
-         the pointer's px offset and the entrance's scale instead of
-         fighting them — GSAP keeps all three as separate components. */
+      /* THE CAMERA STEPS BACK.
+         The hero does not scroll away — the next chapter rises over it. So
+         instead of sliding out, the frame recedes: a little smaller, a
+         little darker, as though the camera pulled back to let the next
+         scene through. yPercent, scale and the pointer's x/y are separate
+         transform components in GSAP, so none of them fight. */
       if (heroImg) {
         gsap.to(heroImg, {
           yPercent: 5,
+          scale: 0.96,
           ease: "none",
+          /* The entrance also tweens scale (1.035 → 1). Without this the
+             scrub would capture 1.035 as its start value at creation time
+             and the two would fight over the same property; deferred, it
+             reads the settled value on first render instead. */
+          immediateRender: false,
           scrollTrigger: {
             trigger: ".hero-stage",
             start: "top top",
@@ -250,6 +312,86 @@ export default function Motion() {
           duration: 1,
           ease: EASE,
           scrollTrigger: { trigger: el, start: "top 85%", once: true },
+        });
+      });
+
+      /* ---------- 02 МАСШТАБ: the numerals settle --------------------
+         The same idea as the month in the hero, so the roller reads as a
+         device of the site rather than a one-off trick. Each digit spins
+         through a short strip of numerals and lands on its real value;
+         letters and signs (K, M, +) never move.
+
+         The strip is built here, not in the markup, so the DOM React
+         renders — and anything a crawler or a JS-less browser sees — is
+         the plain number. Restored on teardown. */
+      const SPIN = 6; /* digits that pass before the real one lands */
+      gsap.utils.toArray<HTMLElement>("[data-roll]").forEach((el) => {
+        const text = el.textContent ?? "";
+        if (!/\d/.test(text)) return;
+
+        const original = el.innerHTML;
+        teardown.push(() => {
+          el.innerHTML = original;
+        });
+
+        el.textContent = "";
+        const strips: HTMLElement[] = [];
+
+        for (const ch of text) {
+          if (!/\d/.test(ch)) {
+            el.append(ch);
+            continue;
+          }
+          const target = Number(ch);
+          const window_ = document.createElement("span");
+          window_.className = "roll";
+          const strip = document.createElement("span");
+          strip.className = "roll-strip";
+
+          /* Built the same way as the month in the hero: the real digit is
+             the only cell in flow, so the resting state — transform zero —
+             already shows the right number. The digits that spin past are
+             stacked above it, outside the clip, and are only seen while the
+             strip is pushed down. */
+          const real = document.createElement("span");
+          real.textContent = ch;
+          strip.append(real);
+          for (let i = 1; i <= SPIN; i++) {
+            const ghost = document.createElement("span");
+            ghost.className = "roll-ghost";
+            ghost.style.bottom = `${i * 100}%`;
+            ghost.setAttribute("aria-hidden", "true");
+            ghost.textContent = String((target - i + 10) % 10);
+            strip.append(ghost);
+          }
+
+          window_.append(strip);
+          el.append(window_);
+          strips.push(strip);
+        }
+
+        if (!strips.length) return;
+        gsap.from(strips, {
+          yPercent: 100 * SPIN,
+          duration: 1.15,
+          ease: "power3.out",
+          stagger: 0.07,
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        });
+      });
+
+      /* QUIET chapters — 01 Манифест, 04 Материалы, 08 Партнёрам.
+         These three are deliberately the least active screens on the site:
+         no mask, no travel, only a slow settle of opacity. Without them
+         nothing else reads as a peak, because a page where every chapter
+         works equally hard has no dynamics at all. Photographs in these
+         chapters carry no reveal whatsoever — they are simply there. */
+      gsap.utils.toArray<HTMLElement>('[data-reveal="quiet"]').forEach((el) => {
+        gsap.from(el, {
+          opacity: 0,
+          duration: 1.1,
+          ease: "power1.out",
+          scrollTrigger: { trigger: el, start: "top 92%", once: true },
         });
       });
 

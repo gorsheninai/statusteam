@@ -32,6 +32,14 @@ const HERO_ART = {
 const srcSet = ({ name, widths }: { name: string; widths: number[] }) =>
   widths.map((w) => `/media/${name}-${w}.webp ${w}w`).join(", ");
 
+/* 02 МАСШТАБ. Composed numerals, not a dashboard — the digits settle on
+   entry the way the month settles in the hero. */
+const SCALE = [
+  { n: "60K+", label: "человек в сообществе STATUS TEAM" },
+  { n: "10M+", label: "просмотров контента каждый месяц" },
+  { n: "03", label: "показ команды — после «Славянского взгляда»" },
+];
+
 export default function Home() {
   return (
     <>
@@ -132,18 +140,18 @@ export default function Home() {
               <span>Манифест</span>
             </p>
 
-            <h2 className="manifest-h campaign" data-reveal="lines">
+            <h2 className="manifest-h campaign" data-reveal="quiet">
               Мы делаем показ, а не съёмку.
             </h2>
 
             <div className="manifest-body">
-              <p data-reveal="up">
+              <p data-reveal="quiet">
                 STATUS TEAM собирает вечер как постановку: свет, музыка,
                 хореография и коллекции работают на один ритм. «Пульс
                 континента» — первый показ команды, полностью построенный
                 вокруг одной температуры: жара, песок, металл, движение.
               </p>
-              <p data-reveal="up">
+              <p data-reveal="quiet">
                 На подиуме — бельё, аксессуары и сценические образы. За
                 подиумом — команда, которая собирает вечер из деталей:
                 кастинг, примерки, репетиции, свет и звук.
@@ -151,7 +159,7 @@ export default function Home() {
             </div>
           </div>
 
-          <figure className="manifest-figure" data-reveal="mask">
+          <figure className="manifest-figure">
             <div className="media">
               <img
                 src="/media/campaign-sand-drape-1400.webp"
@@ -177,20 +185,18 @@ export default function Home() {
             </p>
 
             <ul className="scale-list">
-              <li data-reveal="up">
-                <span className="scale-n struct">60K+</span>
-                <span className="scale-l">человек в сообществе STATUS TEAM</span>
-              </li>
-              <li data-reveal="up">
-                <span className="scale-n struct">10M+</span>
-                <span className="scale-l">просмотров контента каждый месяц</span>
-              </li>
-              <li data-reveal="up">
-                <span className="scale-n struct">03</span>
-                <span className="scale-l">
-                  показ команды — после «Славянского взгляда»
-                </span>
-              </li>
+              {SCALE.map((s) => (
+                <li key={s.n} data-reveal="up">
+                  {/* The real value is the only text in the DOM: the digits
+                      spin through a strip of numerals that is generated and
+                      inserted by Motion.tsx, so with no JS this reads as a
+                      plain number and never as a false figure. */}
+                  <span className="scale-n struct" data-roll>
+                    {s.n}
+                  </span>
+                  <span className="scale-l">{s.label}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -278,7 +284,7 @@ export default function Home() {
               <i />
               <span>Материалы</span>
             </p>
-            <h2 className="materials-h campaign" data-reveal="lines">
+            <h2 className="materials-h campaign" data-reveal="quiet">
               Показ собирается из деталей.
             </h2>
           </div>
@@ -289,7 +295,7 @@ export default function Home() {
               { img: "detail-cuff", cap: "Металл", alt: "Деталь: массивный резной браслет и золотистая ткань" },
               { img: "detail-profile", cap: "Свет", alt: "Деталь: профиль модели в тёплом контровом свете" },
             ].map((m) => (
-              <figure key={m.img} data-reveal="mask">
+              <figure key={m.img}>
                 <div className="media">
                   <img
                     src={`/media/${m.img}-900.webp`}
@@ -454,12 +460,12 @@ export default function Home() {
               <i />
               <span>Партнёрам</span>
             </p>
-            <h2 className="partners-h campaign" data-reveal="lines">
+            <h2 className="partners-h campaign" data-reveal="quiet">
               Ваш бренд — на подиуме и в кадре.
             </h2>
           </div>
 
-          <figure className="partners-figure" data-reveal="mask">
+          <figure className="partners-figure">
             <div className="media">
               <img
                 src="/media/archive-lineup-1600.webp"
@@ -476,15 +482,15 @@ export default function Home() {
 
           <div className="shell partners-body">
             <ul className="partners-list">
-              <li data-reveal="up">
+              <li data-reveal="quiet">
                 <h3 className="struct">Коллекция</h3>
                 <p>Отдельный выход бренда с собственной сценой, светом и музыкой.</p>
               </li>
-              <li data-reveal="up">
+              <li data-reveal="quiet">
                 <h3 className="struct">Интеграция</h3>
                 <p>Присутствие в зале, в зоне гостей и в съёмке вечера.</p>
               </li>
-              <li data-reveal="up">
+              <li data-reveal="quiet">
                 <h3 className="struct">Медиа</h3>
                 <p>Контент показа: съёмка, афтермуви и публикации сообщества.</p>
               </li>

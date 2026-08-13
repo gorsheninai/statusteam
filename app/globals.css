@@ -22,13 +22,23 @@
   --paper: #f1eee8;
   --white: #fffefa;
 
+  /* THE PULSE BUS.
+     Motion.tsx writes --pulse-live (0 → 1) on <html> from scroll speed.
+     The rules and the sand accent are defined in terms of it, so every
+     hairline on the site brightens fractionally as the reader moves and
+     settles when they stop — without a single rule subscribing by hand.
+
+     0 is the resting value and the only value that exists with JS off or
+     under prefers-reduced-motion, so the calm state is the default. */
+  --pulse-live: 0;
+
   /* Sand is pulled from the campaign photography. Hairlines, small caps
      and rules only — never a gradient, never a "gold" fill. */
   --sand: #c6a87c;
-  --sand-dim: rgba(198, 168, 124, 0.42);
+  --sand-dim: rgba(198, 168, 124, calc(0.42 + var(--pulse-live) * 0.2));
 
-  --hairline-dark: rgba(16, 13, 12, 0.18);
-  --hairline-light: rgba(255, 254, 250, 0.22);
+  --hairline-dark: rgba(16, 13, 12, calc(0.18 + var(--pulse-live) * 0.1));
+  --hairline-light: rgba(255, 254, 250, calc(0.22 + var(--pulse-live) * 0.14));
 
   /* Type roles — two faces, three roles.
        DISPLAY  = Tenor Sans  (large only: the lock-up, chapter titles,
@@ -196,7 +206,8 @@ ol {
   height: 1px;
   max-width: 8rem;
   background: currentColor;
-  opacity: 0.3;
+  /* subscribes to the pulse bus */
+  opacity: calc(0.3 + var(--pulse-live) * 0.28);
   font-style: normal;
 }
 .chapter span {
@@ -872,6 +883,35 @@ ol {
   color: var(--paper);
   /* -0.055em suited the condensed face; Tenor Sans figures collide there. */
   letter-spacing: -0.02em;
+  /* Digits are proportional in Tenor Sans, so a spinning strip would jitter
+     its own width; tabular figures hold the column still. */
+  font-variant-numeric: tabular-nums;
+}
+/* One digit column of the roller. Height is exactly one line box, and the
+   line-height is pinned here rather than inherited so the window can never
+   drift out of step with the strip inside it. */
+.roll {
+  --roll-lh: 0.92;
+  display: inline-block;
+  overflow: hidden;
+  height: calc(1em * var(--roll-lh));
+  line-height: var(--roll-lh);
+  vertical-align: bottom;
+}
+.roll-strip {
+  position: relative;
+  display: block;
+}
+.roll-strip > span {
+  display: block;
+  height: calc(1em * var(--roll-lh));
+}
+/* Stacked above the real digit and outside the clip: seen only while the
+   strip is pushed down, never in the resting state. */
+.roll-ghost {
+  position: absolute;
+  left: 0;
+  width: 100%;
 }
 .scale-list li:nth-child(2) .scale-n {
   color: var(--sand);
