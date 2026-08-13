@@ -8,5 +8,13 @@
   "assets": {
     "directory": "./out",
     "not_found_handling": "404-page"
-  }
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "statusss",
+      "database_id": "279263e3-26d6-4614-8cbf-80eec0fe18a9"
+    }
+  ]
 }
