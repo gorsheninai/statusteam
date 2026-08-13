@@ -426,19 +426,18 @@ ol {
   padding-block: 0.7rem;
 }
 
+/* The wordmark is an image, so it is sized by height and never by width:
+   the lock-up is 6.43:1 and must not be squeezed. */
 .nav-brand {
   display: flex;
-  flex-direction: column;
-  line-height: 0.86;
-  font-family: var(--font-ui);
-  /* 500 is the ceiling for UI in Onest: the interface must not go heavy. */
-  font-weight: 500;
-  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  align-items: center;
+  /* 44px of vertical target without giving the header extra height */
+  padding-block: 12px;
 }
-.nav-brand span:last-child {
-  color: var(--sand);
+.nav-brand img {
+  display: block;
+  width: auto;
+  height: 17px;
 }
 
 .nav-links {
@@ -606,53 +605,124 @@ ol {
 
 /* ============================================================
    HERO
+
+   Two things drive this block.
+
+   1. CURTAIN. The photograph opens left-to-right from a narrow strip on
+      the black/image border, like a spread or a stage curtain. The open
+      state lives here; GSAP writes the closed state on load, so with JS
+      off or still loading the hero is simply open and readable.
+
+   2. LAYERS. --px/--py are pointer-parallax offsets written by GSAP with
+      quickTo (never through React state). Each layer carries its own
+      travel; the values stay small enough to read as depth, not as tilt.
    ============================================================ */
 
-.hero {
+/* The stage is exactly one viewport tall, so the hero unsticks the moment
+   the next chapter has covered it — nothing stays pinned for the rest of
+   the page. */
+.hero-stage {
   position: relative;
-  min-height: 100svh;
+  height: 100svh;
+}
+
+.hero {
+  position: sticky;
+  top: 0;
+  height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding-block: 7rem 1.5rem;
+  padding-block: 6.5rem 3.5rem;
   overflow: hidden;
   color: var(--paper);
-  background: var(--wine);
+  background: var(--ink);
 }
+
+/* --- media -------------------------------------------------- */
+
+.hero-frame {
+  position: absolute;
+  inset: 0;
+}
+
+/* The element the curtain animates. Clipping here (not on the image) keeps
+   the parallax transform on the layer independent of the reveal. */
+.hero-curtain {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 0);
+}
+
 .hero-media {
   position: absolute;
   inset: 0;
+  background: none;
 }
-.hero-media img {
+
+/* Layers. Each one is oversized by --bleed so a parallax offset can never
+   expose an edge. */
+.hero-layer {
+  position: absolute;
+  inset: calc(var(--bleed, 14px) * -1);
+  width: calc(100% + var(--bleed, 14px) * 2);
+  height: calc(100% + var(--bleed, 14px) * 2);
+  object-fit: cover;
   object-position: center 46%;
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
 }
+
+/* Cut-out slots. They are allowed past the media area on purpose: a
+   shoulder, hair or a piece of jewellery crossing onto the black is the
+   point. Empty until a transparent asset exists — see HERO_ART. */
+.hero-layer-model,
+.hero-layer-fg {
+  --bleed: 0px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  pointer-events: none;
+}
+.hero-layer-fg {
+  z-index: 3;
+}
+
 /* Phone scrim: the figure keeps the top, the type gets a solid floor. */
-.hero-media::after {
+.hero-frame::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 4;
+  pointer-events: none;
   background: linear-gradient(
     0deg,
     rgba(16, 13, 12, 0.97) 0%,
-    rgba(16, 13, 12, 0.9) 24%,
-    rgba(16, 13, 12, 0.5) 54%,
-    rgba(16, 13, 12, 0.16) 84%
+    rgba(16, 13, 12, 0.9) 26%,
+    rgba(16, 13, 12, 0.48) 58%,
+    rgba(16, 13, 12, 0.14) 86%
   );
 }
 
+/* The living edge. A soft band of light on the border rather than a hard
+   cut — it drifts slowly and is meant to be felt, not seen. On phones the
+   media is full-bleed, so there is no border to soften. */
+.hero-seam {
+  display: none;
+}
+
+/* --- type --------------------------------------------------- */
+
 .hero-inner {
   position: relative;
-  z-index: 2;
+  z-index: 5;
   width: 100%;
-  margin-block: auto;
-}
-.hero-eyebrow {
-  opacity: 0.85;
-  margin-bottom: 1.1rem;
+  margin-block: auto 0;
 }
 
 .hero-title {
-  margin: 0 0 1.3rem;
+  margin: 0 0 clamp(1.1rem, 2.6vw, 1.9rem);
   font-weight: 400;
 }
 .pulse-mask {
@@ -660,7 +730,7 @@ ol {
   overflow: hidden;
 }
 .hero-title .pulse-line {
-  font-size: clamp(1.9rem, 8.4vw, 3.4rem);
+  font-size: clamp(2.15rem, 10.4vw, 4rem);
 }
 .hero-title .pulse-line:first-child {
   color: var(--paper);
@@ -669,62 +739,99 @@ ol {
   color: var(--sand);
 }
 
-.hero-sub {
-  max-width: 30ch;
-  margin-bottom: 2rem;
+.hero-statement {
+  max-width: 24ch;
+  margin: 0 0 clamp(1.6rem, 4vw, 2.4rem);
   font-size: var(--fs-lead);
-  opacity: 0.88;
+  line-height: 1.35;
+  opacity: 0.9;
 }
 
-.hero-cta {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
-}
-.hero-cta .btn {
-  justify-content: space-between;
-  /* two-up grid at 360px: the widest label sets this */
-  padding-inline: 1rem;
-}
-.hero-cta .btn-solid {
-  grid-column: 1 / -1;
-}
-
-.hero-meta {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.1rem;
-  margin: 2.75rem 0 0;
-  padding: 1.25rem var(--gutter) 0;
-  border-top: 1px solid var(--hairline-light);
-}
-.hero-meta dt {
+/* City and period, set into the composition rather than into a bar. */
+.hero-where {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.5rem;
+  margin: 0 0 clamp(1.7rem, 4vw, 2.6rem);
   font-family: var(--font-ui);
-  font-size: 0.625rem;
+  font-size: clamp(0.8125rem, 1.6vw, 0.95rem);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  opacity: 0.6;
-  margin-bottom: 0.35rem;
 }
-.hero-meta dd {
-  margin: 0;
-  font-family: var(--font-ui);
-  font-size: clamp(0.95rem, 2vw, 1.2rem);
-  /* The technical counterpoint to the lock-up: small, spaced, uppercase. */
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+.hero-city {
+  color: var(--sand);
+}
+.hero-when {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5em;
+  opacity: 0.9;
+}
+
+/* The month roller. "Ноябрь" is the only real value: it needs no transform
+   to be correct, so the label reads properly before JS runs. The two
+   earlier months sit above the clip and are pulled through once. */
+.month {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* uppercase Cyrillic has no descenders here, so one line box is exact */
+  line-height: 1.15;
+}
+.month-inner {
+  position: relative;
+  display: block;
+}
+.month-ghost {
+  position: absolute;
+  left: 0;
+  width: max-content;
+}
+.month-ghost:nth-child(1) {
+  bottom: 200%;
+}
+.month-ghost:nth-child(2) {
+  bottom: 100%;
+}
+.month-now {
+  display: block;
+}
+
+.hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 2rem;
+}
+/* Editorial links, not a row of identical buttons. The 48px touch target is
+   kept by padding, not by a box. */
+.hero-links .link-rule {
+  padding-block: 14px 10px;
+  border-bottom-color: var(--sand-dim);
+}
+.hero-links .link-rule:hover,
+.hero-links .link-rule:focus-visible {
+  border-bottom-color: var(--sand);
 }
 
 /* ============================================================
    01 МАНИФЕСТ — quiet, paper
    ============================================================ */
 
+/* The hero is sticky for exactly one viewport (see .hero-stage). This
+   chapter rides up over it as an editorial card: it needs its own stacking
+   context and an opaque ground, or the pinned hero shows through.
+
+   The card's *content* is untouched by design. When the transition is taken
+   further, the handle is here — give this element a transform/scale on a
+   ScrollTrigger scrub; the hero underneath already unpins on its own. */
 .manifest {
+  position: relative;
+  z-index: 2;
   display: grid;
   gap: clamp(2.5rem, 6vw, 4rem);
   padding-block: var(--chapter-pad-quiet);
+  border-radius: clamp(0px, 2vw, 22px) clamp(0px, 2vw, 22px) 0 0;
   color: var(--ink);
   background: var(--paper);
 }
@@ -1415,9 +1522,6 @@ ol {
     gap: 1.75rem;
   }
 
-  .hero-meta {
-    grid-template-columns: repeat(4, 1fr);
-  }
   .tickets-bar {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1441,47 +1545,67 @@ ol {
      and the title crosses its edge. */
   .hero {
     justify-content: center;
-    padding-block: 8rem 0;
-    background: var(--ink);
+    padding-block: 8rem 4rem;
   }
-  .hero-media {
-    inset: 0 0 0 auto;
-    width: 52%;
+  /* --edge is the black/image border. The curtain opens from it, the seam
+     sits on it, and the title crosses it. */
+  .hero-frame {
+    --edge: 48%;
+    inset: 0 0 0 var(--edge);
   }
-  .hero-media img {
+  .hero-layer {
     object-position: center 42%;
   }
-  .hero-media::after {
+  .hero-frame::after {
     background: linear-gradient(
       90deg,
-      rgba(16, 13, 12, 0.97) 0%,
-      rgba(16, 13, 12, 0.72) 14%,
-      rgba(16, 13, 12, 0.2) 38%,
-      transparent 62%
+      rgba(16, 13, 12, 0.94) 0%,
+      rgba(16, 13, 12, 0.6) 12%,
+      rgba(16, 13, 12, 0.16) 34%,
+      transparent 58%
     );
   }
+  /* A band of light on the seam instead of a cut edge. It drifts under
+     GSAP; the amplitude is deliberately below the threshold of notice. */
+  .hero-seam {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -1px;
+    z-index: 5;
+    width: clamp(28px, 3vw, 52px);
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      rgba(198, 168, 124, 0.22) 0%,
+      rgba(198, 168, 124, 0.07) 42%,
+      transparent 100%
+    );
+    mix-blend-mode: screen;
+    opacity: 0.85;
+  }
+  /* The type box runs past the border on purpose: "КОНТИНЕНТА" crosses onto
+     the photograph. Widen this and the word gets deeper into the image —
+     but re-run the clipped-text check, the reveal mask hides overrun. */
   .hero-inner {
-    max-width: 66%;
+    max-width: 74%;
+  }
+  .nav-brand img {
+    height: 21px;
   }
   .hero-title .pulse-line {
-    --pulse-spread: 0.14em;
-    font-size: clamp(2.6rem, 5.6vw, 5.6rem);
+    /* Delicate: the lock-up breathes, it does not stretch. */
+    --pulse-spread: 0.09em;
+    /* Sized so "КОНТИНЕНТА" runs past --edge and onto the photograph. */
+    font-size: clamp(2.8rem, 6.9vw, 7.4rem);
   }
-  .hero-cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem;
-  }
-  .hero-cta .btn {
-    justify-content: flex-start;
-    padding-inline: 1.6rem;
+  .hero-statement {
+    max-width: 26ch;
   }
   .tickets-title .pulse-line {
     --pulse-spread: 0.14em;
     font-size: clamp(3rem, 7.4vw, 7.4rem);
-  }
-  .hero-meta {
-    margin-top: auto;
   }
 
   .manifest {
@@ -1640,13 +1764,16 @@ ol {
    ============================================================ */
 @media (min-width: 1280px) {
   .hero {
-    padding-bottom: 2rem;
+    padding-bottom: 4.5rem;
   }
-  .hero-media img {
+  .hero-frame {
+    --edge: 45%;
+  }
+  .hero-layer {
     object-position: center 52%;
   }
-  .hero-sub {
-    max-width: 34ch;
+  .hero-statement {
+    max-width: 30ch;
   }
 
   .manifest-body {

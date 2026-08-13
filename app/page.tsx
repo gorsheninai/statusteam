@@ -10,6 +10,28 @@ const Arrow = () => (
   </span>
 );
 
+/**
+ * The hero art, as layers.
+ *
+ * `base` is the photograph. `model` and `foreground` are optional transparent
+ * cut-outs (PNG/WebP) that let part of the figure — hair, a shoulder, a piece
+ * of jewellery — sit *outside* the media area, over the black. Both slots are
+ * fully wired: markup, stacking, the overflow they need and their own parallax
+ * depth. They render only when a file exists, so the hero costs nothing extra
+ * until the final frame is delivered.
+ *
+ * Depths are the pointer-parallax travel in pixels, read by Motion.tsx.
+ */
+const HERO_ART: {
+  base: string;
+  model: string | null;
+  foreground: string | null;
+} = {
+  base: "campaign-silhouette-sun",
+  model: null,
+  foreground: null,
+};
+
 export default function Home() {
   return (
     <>
@@ -20,67 +42,92 @@ export default function Home() {
         {/* ============================================================
             HERO — the thesis: a silhouette, a horizon, a title that breathes.
             ============================================================ */}
-        <section className="hero on-dark">
-          <div className="media hero-media">
-            <img
-              src="/media/campaign-silhouette-sun-1600.webp"
-              srcSet="/media/campaign-silhouette-sun-640.webp 640w, /media/campaign-silhouette-sun-1000.webp 1000w, /media/campaign-silhouette-sun-1600.webp 1600w"
-              sizes="100vw"
-              alt="Силуэт модели против заходящего солнца в саванне, рядом акация"
-              fetchPriority="high"
-            />
-          </div>
+        <div className="hero-stage">
+          <section className="hero on-dark">
+            {/* The curtain: everything inside is revealed left-to-right on
+                load. The seam sits on the black/image border. */}
+            <div className="hero-frame">
+              <div className="hero-curtain" data-curtain>
+                <div className="media hero-media">
+                  <img
+                    className="hero-layer"
+                    data-depth="bg"
+                    src={`/media/${HERO_ART.base}-1600.webp`}
+                    srcSet={`/media/${HERO_ART.base}-640.webp 640w, /media/${HERO_ART.base}-1000.webp 1000w, /media/${HERO_ART.base}-1600.webp 1600w`}
+                    sizes="(max-width: 900px) 100vw, 56vw"
+                    alt="Силуэт модели против заходящего солнца в саванне, рядом акация"
+                    fetchPriority="high"
+                  />
+                </div>
 
-          <div className="hero-inner shell">
-            <p className="hero-eyebrow label" data-hero="1">
-              Fashion show by STATUS TEAM
-            </p>
+                {HERO_ART.model && (
+                  <img
+                    className="hero-layer hero-layer-model"
+                    data-depth="model"
+                    src={`/media/${HERO_ART.model}`}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                )}
+                {HERO_ART.foreground && (
+                  <img
+                    className="hero-layer hero-layer-fg"
+                    data-depth="fg"
+                    src={`/media/${HERO_ART.foreground}`}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+              <span className="hero-seam" data-seam aria-hidden="true" />
+            </div>
 
-            <h1 className="hero-title" data-pulse-title>
-              <span className="pulse-mask" data-hero="2">
-                <span className="pulse-line">Пульс</span>
-              </span>
-              <span className="pulse-mask" data-hero="3">
-                <span className="pulse-line">Континента</span>
-              </span>
-            </h1>
+            <div className="hero-inner shell">
+              <h1 className="hero-title" data-pulse-title>
+                <span className="pulse-mask" data-hero="t1">
+                  <span className="pulse-line">Пульс</span>
+                </span>
+                <span className="pulse-mask" data-hero="t2">
+                  <span className="pulse-line">Континента</span>
+                </span>
+              </h1>
 
-            <p className="hero-sub" data-hero="4">
-              Показ белья и аксессуаров. Третья большая работа команды.
-            </p>
+              <p className="hero-statement" data-hero="statement">
+                Сценическое fashion-действие о силе, ритме и свободе.
+              </p>
 
-            <div className="hero-cta" data-hero="5">
-              <a className="btn" href="#casting">
-                Стать моделью <Arrow />
-              </a>
-              <a className="btn" href="#partners">
-                Стать партнёром <Arrow />
-              </a>
-              <a className="btn btn-solid" href="#tickets">
-                Билеты <Arrow />
-              </a>
-            </div>
-          </div>
+              <p className="hero-where" data-hero="where">
+                <span className="hero-city">Москва</span>
+                <span className="hero-when">
+                  {/* "Ноябрь" is the real, readable value with no JS; the two
+                      earlier months sit above the clip and only roll through
+                      once, on the first entrance. */}
+                  <span className="month" data-month>
+                    <span className="month-inner">
+                      <span className="month-ghost" aria-hidden="true">
+                        Сентябрь
+                      </span>
+                      <span className="month-ghost" aria-hidden="true">
+                        Октябрь
+                      </span>
+                      <span className="month-now">Ноябрь</span>
+                    </span>
+                  </span>
+                  <span className="hero-year">2026</span>
+                </span>
+              </p>
 
-          <dl className="hero-meta" data-hero="6">
-            <div>
-              <dt>Дата</dt>
-              <dd>07 ноября</dd>
+              <div className="hero-links" data-hero="links">
+                <a className="link-rule" href="#casting">
+                  Стать моделью <Arrow />
+                </a>
+                <a className="link-rule" href="#partners">
+                  Стать партнёром <Arrow />
+                </a>
+              </div>
             </div>
-            <div>
-              <dt>Площадка</dt>
-              <dd>Kinema</dd>
-            </div>
-            <div>
-              <dt>Сезон</dt>
-              <dd>Autumn 2026</dd>
-            </div>
-            <div>
-              <dt>Формат</dt>
-              <dd>Lingerie show</dd>
-            </div>
-          </dl>
-        </section>
+          </section>
+        </div>
 
         {/* ============================================================
             01 — МАНИФЕСТ (quiet chapter, paper)

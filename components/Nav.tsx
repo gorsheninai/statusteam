@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
+/* "О показе" and "Показ" named the same thing twice. One entry now covers
+   the opening chapter; the show chapter is still reachable by scrolling. */
 const LINKS = [
-  { href: "#manifest", label: "О показе" },
-  { href: "#show", label: "Показ" },
+  { href: "#manifest", label: "О проекте" },
   { href: "#archive", label: "Атмосфера" },
   { href: "#casting", label: "Кастинг" },
   { href: "#partners", label: "Партнёрам" },
@@ -49,8 +50,17 @@ export default function Nav() {
     <>
       <header className={`nav ${solid ? "is-solid" : ""}`}>
         <a className="nav-brand" href="#top" aria-label="STATUS TEAM — наверх">
-          <span>STATUS</span>
-          <span>TEAM</span>
+          {/* The real wordmark, derived from logo.PNG in the repository root.
+              Sized by height so the 6.43:1 lock-up keeps its proportions. */}
+          <img
+            src="/media/brand-status-team-320.webp"
+            srcSet="/media/brand-status-team-320.webp 320w, /media/brand-status-team-640.webp 640w"
+            sizes="(max-width: 900px) 104px, 132px"
+            width={320}
+            height={50}
+            alt="STATUS TEAM"
+            fetchPriority="high"
+          />
         </a>
 
         <nav className="nav-links" aria-label="Разделы сайта">
@@ -130,10 +140,11 @@ export default function Nav() {
                 ))}
               </ul>
 
+              {/* Date and venue are not confirmed, so the menu says only what
+                  the hero says. Put them back when they are locked. */}
               <div className="menu-foot">
-                <span>07 ноября</span>
-                <span>Kinema</span>
-                <span>Autumn 2026</span>
+                <span>Москва</span>
+                <span>Ноябрь 2026</span>
               </div>
             </div>
           </motion.div>
