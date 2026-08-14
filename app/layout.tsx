@@ -9,6 +9,7 @@ import "./intro-tight.css";
 import "./mobile-hero.css";
 import "./intro-fashion.css";
 import "./metrics-live.css";
+import "./flow-trim.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
