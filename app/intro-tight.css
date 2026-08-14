@@ -8,33 +8,39 @@
 
 .manifest {
   min-height: auto;
-  padding-top: clamp(3rem, 4.2vw, 4.75rem);
-  padding-bottom: clamp(6rem, 8.5vw, 8rem);
-  gap: clamp(2rem, 3.8vw, 4rem);
+  padding-top: clamp(1.5rem, 2.4vw, 2.75rem);
+  padding-bottom: clamp(5rem, 7vw, 6.5rem);
+  gap: clamp(1.75rem, 3vw, 3rem);
 }
 
-/* No 01 / Manifest / project eyebrow on this screen. The statement is the
-   first thing the eye sees after the hero. */
+/* The second screen has no eyebrow at all. Remove both the legacy chapter
+   marker and any nested chapter fragment so the headline is the first visible
+   element, regardless of older layout rules. */
+.manifest > .manifest-copy > .chapter,
 .manifest .chapter {
   display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .manifest-copy {
   align-self: start;
-  padding-top: 0;
+  padding-top: 0 !important;
 }
 
 .manifest-h {
-  margin-top: 0;
-  margin-bottom: clamp(1.5rem, 2.6vw, 2.5rem);
+  margin-top: 0 !important;
+  margin-bottom: clamp(1.35rem, 2.2vw, 2.15rem);
 }
 
 .manifest-body {
-  gap: 0.85rem;
+  gap: 0.8rem;
 }
 
-/* The image now starts with the copy instead of dropping halfway down the
-   screen. Its height remains cinematic but does not create dead space. */
+/* The image starts with the copy instead of dropping halfway down the screen. */
 .manifest-figure {
   align-self: start;
   min-height: 0;
@@ -44,21 +50,26 @@
   min-height: 0;
 }
 
-/* Remove the archival-style caption. This is campaign art, not a museum
-   plate, so the image should sit cleanly in the composition. */
+/* No campaign caption under the image on this screen. */
+.manifest-figure > figcaption,
 .manifest-figure figcaption {
   display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 @media (max-width: 899px) {
   .manifest {
-    padding-top: clamp(2.75rem, 9vw, 4.5rem);
-    padding-bottom: clamp(5.5rem, 15vw, 7.5rem);
-    gap: clamp(1.75rem, 6vw, 3rem);
+    padding-top: clamp(1.35rem, 5vw, 2.5rem);
+    padding-bottom: clamp(4.5rem, 12vw, 6rem);
+    gap: clamp(1.5rem, 5vw, 2.5rem);
   }
 
   .manifest-h {
-    margin-bottom: clamp(1.25rem, 5vw, 2rem);
+    margin-bottom: clamp(1.1rem, 4vw, 1.7rem);
   }
 
   .manifest-figure .media {
@@ -72,23 +83,23 @@
   }
 
   .manifest-copy {
-    padding-top: clamp(0.25rem, 0.8vw, 0.75rem);
+    padding-top: 0 !important;
   }
 
   .manifest-figure,
   .manifest-figure .media {
-    min-height: min(52rem, 68svh);
+    min-height: min(48rem, 64svh);
   }
 }
 
 @media (min-width: 1280px) {
   .manifest {
-    padding-top: clamp(3.25rem, 3.8vw, 4.5rem);
-    padding-bottom: clamp(5.75rem, 7vw, 7.5rem);
+    padding-top: clamp(1.75rem, 2vw, 2.5rem);
+    padding-bottom: clamp(4.75rem, 6vw, 6rem);
   }
 
   .manifest-figure,
   .manifest-figure .media {
-    min-height: min(54rem, 70svh);
+    min-height: min(50rem, 66svh);
   }
 }
