@@ -1,0 +1,94 @@
+/* ============================================================
+   INTRO TIGHT — direct editorial opening
+
+   The second screen starts with the statement immediately. There is no
+   chapter marker or campaign credit competing with the composition, and the
+   section height is content-driven rather than forced to a full viewport.
+   ============================================================ */
+
+.manifest {
+  min-height: auto;
+  padding-top: clamp(3rem, 4.2vw, 4.75rem);
+  padding-bottom: clamp(6rem, 8.5vw, 8rem);
+  gap: clamp(2rem, 3.8vw, 4rem);
+}
+
+/* No 01 / Manifest / project eyebrow on this screen. The statement is the
+   first thing the eye sees after the hero. */
+.manifest .chapter {
+  display: none !important;
+}
+
+.manifest-copy {
+  align-self: start;
+  padding-top: 0;
+}
+
+.manifest-h {
+  margin-top: 0;
+  margin-bottom: clamp(1.5rem, 2.6vw, 2.5rem);
+}
+
+.manifest-body {
+  gap: 0.85rem;
+}
+
+/* The image now starts with the copy instead of dropping halfway down the
+   screen. Its height remains cinematic but does not create dead space. */
+.manifest-figure {
+  align-self: start;
+  min-height: 0;
+}
+
+.manifest-figure .media {
+  min-height: 0;
+}
+
+/* Remove the archival-style caption. This is campaign art, not a museum
+   plate, so the image should sit cleanly in the composition. */
+.manifest-figure figcaption {
+  display: none !important;
+}
+
+@media (max-width: 899px) {
+  .manifest {
+    padding-top: clamp(2.75rem, 9vw, 4.5rem);
+    padding-bottom: clamp(5.5rem, 15vw, 7.5rem);
+    gap: clamp(1.75rem, 6vw, 3rem);
+  }
+
+  .manifest-h {
+    margin-bottom: clamp(1.25rem, 5vw, 2rem);
+  }
+
+  .manifest-figure .media {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+@media (min-width: 900px) {
+  .manifest {
+    align-items: start;
+  }
+
+  .manifest-copy {
+    padding-top: clamp(0.25rem, 0.8vw, 0.75rem);
+  }
+
+  .manifest-figure,
+  .manifest-figure .media {
+    min-height: min(52rem, 68svh);
+  }
+}
+
+@media (min-width: 1280px) {
+  .manifest {
+    padding-top: clamp(3.25rem, 3.8vw, 4.5rem);
+    padding-bottom: clamp(5.75rem, 7vw, 7.5rem);
+  }
+
+  .manifest-figure,
+  .manifest-figure .media {
+    min-height: min(54rem, 70svh);
+  }
+}
