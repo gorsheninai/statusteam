@@ -1,0 +1,106 @@
+/* ============================================================
+   NAV TICKETS — champagne orbit
+
+   The STATUS wordmark carries a warm champagne tone, so the ticket CTA
+   borrows it only as a moving hairline on interaction. The button remains
+   editorial and quiet at rest; no neon glow and no perpetual animation.
+   ============================================================ */
+
+.nav-tickets {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  border: 1px solid rgba(200, 183, 147, 0.5);
+  border-radius: 7px;
+  background: var(--paper);
+  color: var(--ink);
+  transition:
+    background var(--t-base) var(--ease-out),
+    color var(--t-base) var(--ease-out),
+    border-color var(--t-base) var(--ease-out),
+    letter-spacing var(--t-base) var(--ease-out),
+    transform var(--t-fast) var(--ease-out),
+    box-shadow var(--t-base) var(--ease-out);
+}
+
+.nav-tickets-label {
+  position: relative;
+  z-index: 2;
+}
+
+.nav-tickets-orbit {
+  position: absolute;
+  inset: -3px;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 260ms var(--ease-out);
+}
+
+.nav-tickets-orbit svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.nav-tickets-orbit rect {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.nav-tickets-track {
+  stroke: rgba(200, 183, 147, 0.32);
+  stroke-width: 1;
+}
+
+/* Two separate highlights are encoded into one dash pattern. Because the
+   dash runs along an actual rounded SVG rect, it bends naturally around the
+   corners instead of rotating a rectangular gradient layer. */
+.nav-tickets-streak {
+  stroke: #d8c8a5;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-dasharray: 15 30 6 49;
+  stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 2px rgba(216, 200, 165, 0.32));
+}
+
+.nav-tickets:hover,
+.nav-tickets:focus-visible {
+  background: #f4efe6;
+  color: var(--ink);
+  border-color: rgba(216, 200, 165, 0.74);
+  letter-spacing: 0.2em;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.nav-tickets:hover .nav-tickets-orbit,
+.nav-tickets:focus-visible .nav-tickets-orbit {
+  opacity: 1;
+}
+
+.nav-tickets:hover .nav-tickets-streak,
+.nav-tickets:focus-visible .nav-tickets-streak {
+  animation: nav-ticket-orbit 1.45s linear infinite;
+}
+
+@keyframes nav-ticket-orbit {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-tickets:hover,
+  .nav-tickets:focus-visible {
+    transform: none;
+  }
+
+  .nav-tickets:hover .nav-tickets-streak,
+  .nav-tickets:focus-visible .nav-tickets-streak {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
