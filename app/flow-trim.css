@@ -1,7 +1,7 @@
 /* ============================================================
    FLOW TRIM — visual campaign -> live metrics -> Slavyanskiy vzglyad
-   Removes the explanatory intro copy and retires the Show / Materials
-   chapters so the page moves directly into the archive chapter.
+   Removes the explanatory intro copy and retires the Show / Materials /
+   Participants chapters from the visible page flow.
    ============================================================ */
 
 /* The burgundy field is now image-led: no left text column. */
@@ -20,11 +20,11 @@
   height: min(56svh, 39rem);
 }
 
-/* Retire the old Show / Materials chapters from visual flow without using
-   display:none. GSAP still sees measurable elements and therefore does not
-   receive zero-sized hidden ScrollTrigger targets during refresh. */
+/* Retire old chapters from visual flow without display:none. They keep a
+   measurable 1px box so GSAP never receives zero-sized hidden targets. */
 .show,
-.materials {
+.materials,
+.world {
   position: absolute !important;
   left: -10000px !important;
   top: auto !important;
@@ -39,10 +39,13 @@
   clip-path: inset(50%) !important;
 }
 
-/* The archive follows immediately after the metrics tray. Pull its first
-   content higher so the hand-off feels intentional rather than like a new
-   deck slide. */
+/* The archive follows immediately after the metrics tray. */
 .archive {
+  margin-top: 0 !important;
+}
+
+/* After Slavyanskiy vzglyad the page now goes straight into casting. */
+.casting {
   margin-top: 0 !important;
 }
 
