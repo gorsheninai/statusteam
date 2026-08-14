@@ -1,0 +1,99 @@
+/* Living counters inside the intro metrics tray. The values advance while
+   the tray is visible; only the digits that change roll upward. */
+
+.intro-fashion-metric-live strong {
+  font-size: clamp(2.8rem, 4.35vw, 5.45rem);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.055em;
+}
+
+.living-number {
+  display: inline-flex;
+  align-items: flex-end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.living-digit {
+  position: relative;
+  display: inline-block;
+  width: 0.57em;
+  height: 0.88em;
+  overflow: hidden;
+  flex: 0 0 0.57em;
+}
+
+.living-digit-old,
+.living-digit-new {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  line-height: 0.88;
+  will-change: transform, opacity;
+}
+
+.living-digit-old {
+  animation: living-digit-out 300ms cubic-bezier(0.55, 0, 0.45, 1) forwards;
+}
+
+.living-digit-new {
+  animation: living-digit-in 300ms cubic-bezier(0.22, 0.8, 0.28, 1) both;
+}
+
+.living-number-separator {
+  display: inline-block;
+  width: 0.3em;
+  flex: 0 0 0.3em;
+}
+
+@keyframes living-digit-in {
+  from {
+    transform: translateY(105%);
+    opacity: 0.35;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes living-digit-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-105%);
+    opacity: 0.18;
+  }
+}
+
+@media (max-width: 899px) {
+  .intro-fashion-metric-live strong {
+    font-size: clamp(1.35rem, 4.4vw, 2.45rem);
+    letter-spacing: -0.065em;
+  }
+
+  .living-digit {
+    width: 0.56em;
+    flex-basis: 0.56em;
+  }
+
+  .living-number-separator {
+    width: 0.22em;
+    flex-basis: 0.22em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .living-digit-old {
+    display: none;
+  }
+
+  .living-digit-new {
+    animation: none;
+  }
+}
