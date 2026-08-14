@@ -58,15 +58,23 @@ function RollingDigit({ char }: { char: string }) {
   }, [char, current]);
 
   if (!/\d/.test(char)) {
-    return <span className="living-number-separator">{char}</span>;
+    return (
+      <span className="living-number-separator" aria-hidden="true">
+        {char}
+      </span>
+    );
   }
 
   return (
     <span className="living-digit" aria-hidden="true">
       {previous !== null && (
-        <span className="living-digit-old">{previous}</span>
+        <span className="living-digit-old" key={`old-${previous}`}>
+          {previous}
+        </span>
       )}
-      <span className="living-digit-new">{current}</span>
+      <span className="living-digit-new" key={`new-${current}`}>
+        {current}
+      </span>
     </span>
   );
 }
