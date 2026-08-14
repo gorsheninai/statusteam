@@ -1,0 +1,222 @@
+/* ============================================================
+   HERO V2 — two-model campaign frame
+
+   The new art was generated specifically for the website in two crops:
+   16:9 desktop and 9:16 mobile. It is therefore treated as the composition,
+   not as a portrait asset that needs a black/image split.
+   ============================================================ */
+
+.hero-stage {
+  min-height: 100svh;
+}
+
+.hero {
+  min-height: 100svh;
+  padding-block: 7rem 3.25rem;
+  background: #080707;
+}
+
+/* The campaign frame is full bleed at every breakpoint. This deliberately
+   overrides the old desktop portrait treatment in globals.css. */
+.hero-frame {
+  inset: 0;
+}
+
+.hero-curtain,
+.hero-media,
+.hero-media picture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-media {
+  background: #080707;
+}
+
+.hero-media picture {
+  display: block;
+}
+
+.hero-media .hero-layer {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center center;
+  transform: none;
+}
+
+/* The old split-screen light seam no longer has a structural edge to mark. */
+.hero-seam {
+  display: none !important;
+}
+
+/* Text protection is directional: preserve the faces and jewellery instead
+   of dimming the whole photograph. */
+.hero-frame::after {
+  background:
+    linear-gradient(
+      0deg,
+      rgba(8, 7, 7, 0.96) 0%,
+      rgba(8, 7, 7, 0.78) 24%,
+      rgba(8, 7, 7, 0.24) 52%,
+      rgba(8, 7, 7, 0.04) 78%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(8, 7, 7, 0.46) 0%,
+      rgba(8, 7, 7, 0.12) 55%,
+      transparent 82%
+    );
+}
+
+.hero-inner {
+  width: 100%;
+  max-width: none;
+  margin-block: auto 0;
+}
+
+.hero-title {
+  max-width: 100%;
+  margin-bottom: clamp(1rem, 2.7vw, 1.75rem);
+}
+
+.hero-title .pulse-line {
+  font-size: clamp(3.05rem, 13.4vw, 5.15rem);
+  line-height: 0.88;
+  letter-spacing: -0.025em;
+  text-wrap: nowrap;
+}
+
+.hero-title .pulse-line:first-child {
+  color: var(--paper);
+}
+
+.hero-title .pulse-line + .pulse-line {
+  color: var(--sand);
+}
+
+.hero-statement {
+  max-width: 28ch;
+  margin-bottom: clamp(1.35rem, 3.5vw, 2.1rem);
+  font-size: clamp(1rem, 3.8vw, 1.18rem);
+  line-height: 1.4;
+  opacity: 0.94;
+}
+
+.hero-where {
+  margin-bottom: clamp(1.15rem, 3vw, 1.9rem);
+}
+
+.hero-links {
+  gap: 0.4rem 1.65rem;
+}
+
+.hero-links .link-rule {
+  border-bottom-color: rgba(198, 168, 124, 0.5);
+}
+
+@media (max-width: 639px) {
+  .hero {
+    padding-top: 6.4rem;
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+
+  .hero-inner {
+    padding-right: 1rem;
+  }
+
+  .hero-title .pulse-line {
+    --pulse-spread: 0.035em;
+  }
+
+  .hero-statement {
+    max-width: 25ch;
+  }
+
+  .hero-links {
+    max-width: 21rem;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 899px) {
+  .hero-title .pulse-line {
+    font-size: clamp(4.7rem, 12vw, 6.6rem);
+  }
+
+  .hero-inner {
+    max-width: 78%;
+  }
+}
+
+@media (min-width: 900px) {
+  .hero {
+    justify-content: flex-end;
+    padding-block: 8rem 4rem;
+  }
+
+  .hero-frame {
+    --edge: 0%;
+    inset: 0;
+  }
+
+  .hero-frame::after {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(8, 7, 7, 0.88) 0%,
+        rgba(8, 7, 7, 0.69) 27%,
+        rgba(8, 7, 7, 0.28) 47%,
+        rgba(8, 7, 7, 0.04) 66%,
+        transparent 78%
+      ),
+      linear-gradient(
+        0deg,
+        rgba(8, 7, 7, 0.64) 0%,
+        rgba(8, 7, 7, 0.08) 34%,
+        transparent 58%
+      );
+  }
+
+  .hero-inner {
+    max-width: 68%;
+  }
+
+  .hero-title .pulse-line {
+    --pulse-spread: 0.065em;
+    font-size: clamp(4.8rem, 7.15vw, 7.7rem);
+    line-height: 0.86;
+  }
+
+  .hero-statement {
+    max-width: 31ch;
+    font-size: clamp(1.05rem, 1.35vw, 1.3rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero {
+    padding-bottom: 4.6rem;
+  }
+
+  .hero-frame {
+    --edge: 0%;
+  }
+
+  .hero-inner {
+    max-width: 66%;
+  }
+
+  .hero-title .pulse-line {
+    font-size: clamp(5.8rem, 7vw, 8.7rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-media .hero-layer {
+    transform: none !important;
+  }
+}
