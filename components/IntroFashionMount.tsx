@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const FRAMES = [
@@ -26,6 +26,8 @@ const FRAMES = [
   },
 ];
 
+const numberRu = new Intl.NumberFormat("ru-RU");
+
 function RailGroup({ hidden = false }: { hidden?: boolean }) {
   return (
     <div className="intro-fashion-group" aria-hidden={hidden || undefined}>
@@ -42,6 +44,65 @@ function RailGroup({ hidden = false }: { hidden?: boolean }) {
 }
 
 function IntroFashion() {
+  const metricsRef = useRef<HTMLDivElement | null>(null);
+  const [active, setActive] = useState(false);
+  const [followers, setFollowers] = useState(60_218);
+  const [views, setViews] = useState(10_482_824);
+
+  useEffect(() => {
+    const node = metricsRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting),
+      { threshold: 0.12 },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!active || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    let cancelled = false;
+    let followersTimer: ReturnType<typeof setTimeout> | undefined;
+    let viewsTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const tickFollowers = () => {
+      followersTimer = setTimeout(
+        () => {
+          if (cancelled) return;
+          setFollowers((value) => value + (Math.random() > 0.82 ? 2 : 1));
+          tickFollowers();
+        },
+        2400 + Math.random() * 3200,
+      );
+    };
+
+    const tickViews = () => {
+      viewsTimer = setTimeout(
+        () => {
+          if (cancelled) return;
+          setViews((value) => value + 7 + Math.floor(Math.random() * 29));
+          tickViews();
+        },
+        180 + Math.random() * 360,
+      );
+    };
+
+    tickFollowers();
+    tickViews();
+
+    return () => {
+      cancelled = true;
+      if (followersTimer) clearTimeout(followersTimer);
+      if (viewsTimer) clearTimeout(viewsTimer);
+    };
+  }, [active]);
+
   return (
     <div className="intro-fashion" aria-label="О концепции показа">
       <div className="intro-fashion-top">
@@ -63,18 +124,22 @@ function IntroFashion() {
         </div>
       </div>
 
-      <div className="intro-fashion-metrics" aria-label="STATUS TEAM в цифрах">
-        <div className="intro-fashion-metric">
-          <strong>60K+</strong>
-          <span>сообщество STATUS TEAM</span>
+      <div
+        className="intro-fashion-metrics"
+        aria-label="STATUS TEAM в цифрах"
+        ref={metricsRef}
+      >
+        <div className="intro-fashion-metric intro-fashion-metric-live">
+          <strong>{numberRu.format(followers)}</strong>
+          <span>в сообществе STATUS TEAM</span>
         </div>
-        <div className="intro-fashion-metric intro-fashion-metric-gold">
-          <strong>10M+</strong>
-          <span>просмотров ежемесячно</span>
+        <div className="intro-fashion-metric intro-fashion-metric-gold intro-fashion-metric-live">
+          <strong>{numberRu.format(views)}</strong>
+          <span>просмотров контента</span>
         </div>
         <div className="intro-fashion-metric intro-fashion-metric-wine">
-          <strong>03</strong>
-          <span>показ STATUS TEAM</span>
+          <strong>2</strong>
+          <span>fashion-показ STATUS TEAM</span>
         </div>
       </div>
     </div>
