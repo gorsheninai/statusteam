@@ -90,31 +90,30 @@ export default function Home() {
         </div>
 
         {/* ============================================================
-            01 — МАНИФЕСТ (quiet chapter, paper)
+            01 — NEW PROJECT. Editorial introduction to the show.
             ============================================================ */}
         <section className="manifest" id="manifest">
           <div className="manifest-copy shell">
             <p className="chapter">
               <b>01</b>
               <i />
-              <span>Манифест</span>
+              <span>Новый проект STATUS TEAM</span>
             </p>
 
             <h2 className="manifest-h campaign" data-reveal="lines">
-              Мы делаем показ, а не съёмку.
+              Не просто показ. Цельное сценическое действие.
             </h2>
 
             <div className="manifest-body">
               <p data-reveal="up">
-                STATUS TEAM собирает вечер как постановку: свет, музыка,
-                хореография и коллекции работают на один ритм. «Пульс
-                континента» — первый показ команды, полностью построенный
-                вокруг одной температуры: жара, песок, металл, движение.
+                Этой осенью STATUS TEAM представляет «Пульс Континента» —
+                fashion-шоу нижнего белья и аксессуаров, построенное на ритме,
+                движении и первозданной энергии.
               </p>
               <p data-reveal="up">
-                На подиуме — бельё, аксессуары и сценические образы. За
-                подиумом — команда, которая собирает вечер из деталей:
-                кастинг, примерки, репетиции, свет и звук.
+                Африканская эстетика здесь — не декорация, а язык силы. Свет,
+                музыка, хореография и коллекции работают как одно действие, в
+                центре которого — женщина: сильная, чувственная, свободная.
               </p>
             </div>
           </div>
@@ -134,7 +133,7 @@ export default function Home() {
         </section>
 
         {/* ============================================================
-            02 — МАСШТАБ. Numbers as typography, not a dashboard.
+            02 — МАСШТАБ. The closing card of the intro scene.
             ============================================================ */}
         <section className="scale on-dark">
           <div className="shell">
@@ -161,19 +160,6 @@ export default function Home() {
               </li>
             </ul>
           </div>
-
-          <figure className="scale-figure" data-reveal="mask">
-            <div className="media">
-              <img
-                src="/media/runway-walk-1200.webp"
-                srcSet="/media/runway-walk-700.webp 700w, /media/runway-walk-1200.webp 1200w"
-                sizes="(max-width: 900px) 100vw, 42vw"
-                alt="Модель идёт по подиуму, в зале работают фотографы"
-                loading="lazy"
-              />
-            </div>
-            <figcaption className="credit">Подиум / кампания</figcaption>
-          </figure>
         </section>
 
         {/* ============================================================
