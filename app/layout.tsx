@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import IntroMotion from "@/components/IntroMotion";
 import "./globals.css";
 import "./hero-v2.css";
+import "./nav-v2.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
