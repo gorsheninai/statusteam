@@ -10,28 +10,6 @@ const Arrow = () => (
   </span>
 );
 
-/**
- * The hero art, as layers.
- *
- * `base` is the photograph. `model` and `foreground` are optional transparent
- * cut-outs (PNG/WebP) that let part of the figure — hair, a shoulder, a piece
- * of jewellery — sit *outside* the media area, over the black. Both slots are
- * fully wired: markup, stacking, the overflow they need and their own parallax
- * depth. They render only when a file exists, so the hero costs nothing extra
- * until the final frame is delivered.
- *
- * Depths are the pointer-parallax travel in pixels, read by Motion.tsx.
- */
-const HERO_ART: {
-  base: string;
-  model: string | null;
-  foreground: string | null;
-} = {
-  base: "campaign-silhouette-sun",
-  model: null,
-  foreground: null,
-};
-
 export default function Home() {
   return (
     <>
@@ -40,46 +18,28 @@ export default function Home() {
 
       <main id="top">
         {/* ============================================================
-            HERO — the thesis: a silhouette, a horizon, a title that breathes.
+            HERO — campaign key frame. Desktop and mobile use dedicated
+            crops generated for the website; typography stays live HTML.
             ============================================================ */}
         <div className="hero-stage">
           <section className="hero on-dark">
-            {/* The curtain: everything inside is revealed left-to-right on
-                load. The seam sits on the black/image border. */}
             <div className="hero-frame">
               <div className="hero-curtain" data-curtain>
                 <div className="media hero-media">
-                  <img
-                    className="hero-layer"
-                    data-depth="bg"
-                    src={`/media/${HERO_ART.base}-1600.webp`}
-                    srcSet={`/media/${HERO_ART.base}-640.webp 640w, /media/${HERO_ART.base}-1000.webp 1000w, /media/${HERO_ART.base}-1600.webp 1600w`}
-                    sizes="(max-width: 900px) 100vw, 56vw"
-                    alt="Силуэт модели против заходящего солнца в саванне, рядом акация"
-                    fetchPriority="high"
-                  />
+                  <picture>
+                    <source
+                      media="(max-width: 899px)"
+                      srcSet="/media/header_9_16.png"
+                    />
+                    <img
+                      className="hero-layer"
+                      src="/media/header_16_9.png"
+                      alt="Две модели в чёрно-золотых couture-образах для показа «Пульс Континента»"
+                      fetchPriority="high"
+                    />
+                  </picture>
                 </div>
-
-                {HERO_ART.model && (
-                  <img
-                    className="hero-layer hero-layer-model"
-                    data-depth="model"
-                    src={`/media/${HERO_ART.model}`}
-                    alt=""
-                    aria-hidden="true"
-                  />
-                )}
-                {HERO_ART.foreground && (
-                  <img
-                    className="hero-layer hero-layer-fg"
-                    data-depth="fg"
-                    src={`/media/${HERO_ART.foreground}`}
-                    alt=""
-                    aria-hidden="true"
-                  />
-                )}
               </div>
-              <span className="hero-seam" data-seam aria-hidden="true" />
             </div>
 
             <div className="hero-inner shell">
@@ -93,7 +53,7 @@ export default function Home() {
               </h1>
 
               <p className="hero-statement" data-hero="statement">
-                Сценическое fashion-действие о силе, ритме и свободе.
+                Главное fashion-событие осени в мире нижнего белья.
               </p>
 
               <p className="hero-where" data-hero="where">
