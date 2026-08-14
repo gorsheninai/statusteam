@@ -26,7 +26,9 @@ const FRAMES = [
   },
 ];
 
-const numberRu = new Intl.NumberFormat("ru-RU");
+function formatMetric(value: number) {
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
 
 function RailGroup({ hidden = false }: { hidden?: boolean }) {
   return (
@@ -43,54 +45,6 @@ function RailGroup({ hidden = false }: { hidden?: boolean }) {
   );
 }
 
-function RollingDigit({ char }: { char: string }) {
-  const [current, setCurrent] = useState(char);
-  const [previous, setPrevious] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (char === current) return;
-
-    setPrevious(current);
-    setCurrent(char);
-
-    const timer = window.setTimeout(() => setPrevious(null), 320);
-    return () => window.clearTimeout(timer);
-  }, [char, current]);
-
-  if (!/\d/.test(char)) {
-    return (
-      <span className="living-number-separator" aria-hidden="true">
-        {char}
-      </span>
-    );
-  }
-
-  return (
-    <span className="living-digit" aria-hidden="true">
-      {previous !== null && (
-        <span className="living-digit-old" key={`old-${previous}`}>
-          {previous}
-        </span>
-      )}
-      <span className="living-digit-new" key={`new-${current}`}>
-        {current}
-      </span>
-    </span>
-  );
-}
-
-function RollingNumber({ value }: { value: number }) {
-  const formatted = numberRu.format(value);
-
-  return (
-    <span className="living-number" aria-label={formatted}>
-      {Array.from(formatted).map((char, index) => (
-        <RollingDigit char={char} key={index} />
-      ))}
-    </span>
-  );
-}
-
 function IntroFashion() {
   const metricsRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(false);
@@ -101,8 +55,13 @@ function IntroFashion() {
     const node = metricsRef.current;
     if (!node) return;
 
+    if (typeof IntersectionObserver === "undefined") {
+      setActive(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting),
+      ([entry]) => setActive(Boolean(entry?.isIntersecting)),
       { threshold: 0.12 },
     );
 
@@ -111,34 +70,31 @@ function IntroFashion() {
   }, []);
 
   useEffect(() => {
-    if (!active || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!active || reduceMotion) return;
 
     let cancelled = false;
-    let followersTimer: ReturnType<typeof setTimeout> | undefined;
-    let viewsTimer: ReturnType<typeof setTimeout> | undefined;
+    let followersTimer: number | undefined;
+    let viewsTimer: number | undefined;
 
     const tickFollowers = () => {
-      followersTimer = setTimeout(
-        () => {
-          if (cancelled) return;
-          setFollowers((value) => value + (Math.random() > 0.82 ? 2 : 1));
-          tickFollowers();
-        },
-        2400 + Math.random() * 3200,
-      );
+      followersTimer = window.setTimeout(() => {
+        if (cancelled) return;
+        setFollowers((value) => value + (Math.random() > 0.82 ? 2 : 1));
+        tickFollowers();
+      }, 2400 + Math.random() * 3200);
     };
 
     const tickViews = () => {
-      viewsTimer = setTimeout(
-        () => {
-          if (cancelled) return;
-          setViews((value) => value + 9 + Math.floor(Math.random() * 34));
-          tickViews();
-        },
-        300 + Math.random() * 260,
-      );
+      viewsTimer = window.setTimeout(() => {
+        if (cancelled) return;
+        setViews((value) => value + 9 + Math.floor(Math.random() * 34));
+        tickViews();
+      }, 320 + Math.random() * 260);
     };
 
     tickFollowers();
@@ -146,8 +102,8 @@ function IntroFashion() {
 
     return () => {
       cancelled = true;
-      if (followersTimer) clearTimeout(followersTimer);
-      if (viewsTimer) clearTimeout(viewsTimer);
+      if (followersTimer !== undefined) window.clearTimeout(followersTimer);
+      if (viewsTimer !== undefined) window.clearTimeout(viewsTimer);
     };
   }, [active]);
 
@@ -168,11 +124,15 @@ function IntroFashion() {
         ref={metricsRef}
       >
         <div className="intro-fashion-metric intro-fashion-metric-live">
-          <strong><RollingNumber value={followers} /></strong>
+          <strong className="living-number-simple" key={`followers-${followers}`}>
+            {formatMetric(followers)}
+          </strong>
           <span>в сообществе STATUS TEAM</span>
         </div>
         <div className="intro-fashion-metric intro-fashion-metric-gold intro-fashion-metric-live">
-          <strong><RollingNumber value={views} /></strong>
+          <strong className="living-number-simple living-number-views" key={`views-${views}`}>
+            {formatMetric(views)}
+          </strong>
           <span>просмотров контента</span>
         </div>
         <div className="intro-fashion-metric intro-fashion-metric-wine">
@@ -188,7 +148,8 @@ export default function IntroFashionMount() {
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    setTarget(document.querySelector<HTMLElement>(".manifest"));
+    const node = document.querySelector<HTMLElement>(".manifest");
+    setTarget(node);
   }, []);
 
   if (!target) return null;
