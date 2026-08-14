@@ -43,6 +43,46 @@ function RailGroup({ hidden = false }: { hidden?: boolean }) {
   );
 }
 
+function RollingDigit({ char }: { char: string }) {
+  const [current, setCurrent] = useState(char);
+  const [previous, setPrevious] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (char === current) return;
+
+    setPrevious(current);
+    setCurrent(char);
+
+    const timer = window.setTimeout(() => setPrevious(null), 320);
+    return () => window.clearTimeout(timer);
+  }, [char, current]);
+
+  if (!/\d/.test(char)) {
+    return <span className="living-number-separator">{char}</span>;
+  }
+
+  return (
+    <span className="living-digit" aria-hidden="true">
+      {previous !== null && (
+        <span className="living-digit-old">{previous}</span>
+      )}
+      <span className="living-digit-new">{current}</span>
+    </span>
+  );
+}
+
+function RollingNumber({ value }: { value: number }) {
+  const formatted = numberRu.format(value);
+
+  return (
+    <span className="living-number" aria-label={formatted}>
+      {Array.from(formatted).map((char, index) => (
+        <RollingDigit char={char} key={index} />
+      ))}
+    </span>
+  );
+}
+
 function IntroFashion() {
   const metricsRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(false);
@@ -86,10 +126,10 @@ function IntroFashion() {
       viewsTimer = setTimeout(
         () => {
           if (cancelled) return;
-          setViews((value) => value + 7 + Math.floor(Math.random() * 29));
+          setViews((value) => value + 9 + Math.floor(Math.random() * 34));
           tickViews();
         },
-        180 + Math.random() * 360,
+        300 + Math.random() * 260,
       );
     };
 
@@ -130,11 +170,11 @@ function IntroFashion() {
         ref={metricsRef}
       >
         <div className="intro-fashion-metric intro-fashion-metric-live">
-          <strong>{numberRu.format(followers)}</strong>
+          <strong><RollingNumber value={followers} /></strong>
           <span>в сообществе STATUS TEAM</span>
         </div>
         <div className="intro-fashion-metric intro-fashion-metric-gold intro-fashion-metric-live">
-          <strong>{numberRu.format(views)}</strong>
+          <strong><RollingNumber value={views} /></strong>
           <span>просмотров контента</span>
         </div>
         <div className="intro-fashion-metric intro-fashion-metric-wine">
