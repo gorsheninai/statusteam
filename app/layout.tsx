@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import IntroMotion from "@/components/IntroMotion";
+import IntroFashionMount from "@/components/IntroFashionMount";
 import "./globals.css";
 import "./hero-v2.css";
 import "./nav-v2.css";
 import "./intro-tight.css";
 import "./mobile-hero.css";
+import "./intro-fashion.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
@@ -68,6 +70,7 @@ export default function RootLayout({
           К содержанию
         </a>
         <IntroMotion />
+        <IntroFashionMount />
         {children}
       </body>
     </html>
