@@ -20,12 +20,23 @@
   height: min(56svh, 39rem);
 }
 
-/* Retire the presentation-style chapters between the campaign metrics and
-   the real archive. They remain in DOM for now, but have no visual/layout
-   footprint and therefore do not interrupt scrolling. */
+/* Retire the old Show / Materials chapters from visual flow without using
+   display:none. GSAP still sees measurable elements and therefore does not
+   receive zero-sized hidden ScrollTrigger targets during refresh. */
 .show,
 .materials {
-  display: none !important;
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  clip-path: inset(50%) !important;
 }
 
 /* The archive follows immediately after the metrics tray. Pull its first
