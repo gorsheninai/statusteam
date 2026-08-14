@@ -21,16 +21,11 @@ export default function Motion() {
 
     const ctx = gsap.context(() => {
       const EASE = "power3.out";
-      /* Listeners GSAP does not own, torn down with the context. */
       const teardown: Array<() => void> = [];
+      const isRetired = (el: Element) =>
+        Boolean(el.closest(".show, .materials, .world"));
 
-      /* ---------- Hero entrance: LIVE CUT ----------------------------
-         The photograph opens from a narrow strip on the black/image
-         border, and the type follows it out. Everything below sets its
-         own start state here, never in CSS, so a hero with no JS is a
-         hero that is simply already open.
-
-         Budget: the whole first screen is assembled by ~2.1s.          */
+      /* ---------- Hero entrance: LIVE CUT ---------------------------- */
       const curtain = document.querySelector<HTMLElement>("[data-curtain]");
       const heroTitle = document.querySelector<HTMLElement>(
         ".hero [data-pulse-title]",
@@ -38,10 +33,6 @@ export default function Motion() {
 
       if (curtain) {
         const tl = gsap.timeline({ defaults: { ease: EASE } });
-
-        /* The visible sliver is a fixed 32px, so it reads the same on a
-           phone as on a wide desktop — expressed as a percentage because
-           that is what clip-path interpolates cleanly. */
         const width = curtain.getBoundingClientRect().width || 1;
         const sliver = gsap.utils.clamp(0, 96, (32 / width) * 100);
 
@@ -51,9 +42,6 @@ export default function Motion() {
           {
             clipPath: "inset(0% 0% 0% 0%)",
             duration: 1.6,
-            /* inOut, not expo.out: an out-ease front-loads so hard that the
-               frame is 80% open in the first 400ms and the draw is over
-               before it reads. This one pulls like fabric. */
             ease: "power3.inOut",
           },
           0,
@@ -80,8 +68,6 @@ export default function Motion() {
             1.62,
           );
 
-        /* The lock-up arrives a touch open and settles. This is the only
-           "breath" on load — no scale, no beat, no blink. */
         if (heroTitle) {
           const open = { v: 0.5 };
           heroTitle.style.setProperty("--pulse", "0.5");
@@ -98,8 +84,6 @@ export default function Motion() {
           );
         }
 
-        /* ROLLING MONTH — сентябрь → октябрь → ноябрь, once, on entrance.
-           Not a countdown: no days, no timer, and it never repeats. */
         const monthInner = document.querySelector<HTMLElement>(
           "[data-month] .month-inner",
         );
@@ -117,10 +101,7 @@ export default function Motion() {
         }
       }
 
-      /* ---------- Hero depth ----------------------------------------
-         Pointer parallax, written straight to the layers with quickTo:
-         no React state, no re-render, one rAF-driven tween per axis.
-         Travel is per-layer and small — depth, not tilt.               */
+      /* ---------- Hero depth ---------------------------------------- */
       const fine = window.matchMedia("(pointer: fine)");
       if (fine.matches) {
         const TRAVEL: Record<string, number> = { bg: 3, model: 6.5, fg: 10 };
@@ -148,8 +129,6 @@ export default function Motion() {
         }
       }
 
-      /* Very slow vertical drift as the hero leaves. yPercent composes with
-         the pointer's px offset instead of fighting it. */
       gsap.to(".hero [data-depth]", {
         yPercent: 6,
         ease: "none",
@@ -161,8 +140,6 @@ export default function Motion() {
         },
       });
 
-      /* The living edge: a band of light on the seam, drifting well below
-         the threshold of notice. Opacity and transform only. */
       const seam = document.querySelector<HTMLElement>("[data-seam]");
       if (seam && getComputedStyle(seam).display !== "none") {
         gsap.to(seam, {
@@ -176,24 +153,19 @@ export default function Motion() {
         });
       }
 
-      /* ---------- SIGNATURE: the breathing lock-up -------------------
-         Tracking opens and closes once as each instance passes. The
-         final instance settles compressed — the pulse resolves.       */
+      /* ---------- SIGNATURE: the breathing lock-up ------------------- */
       gsap.utils.toArray<HTMLElement>("[data-pulse-title]").forEach((el) => {
+        if (isRetired(el)) return;
+
         const isFinal = el.hasAttribute("data-pulse-final");
         const isHero = Boolean(el.closest(".hero"));
         const state = { v: isFinal ? 1 : 0 };
         const write = () => el.style.setProperty("--pulse", String(state.v));
-        /* The hero instance is written by the entrance timeline instead —
-           overwriting it here would cancel the settle. */
         if (!isHero) write();
 
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: isHero ? ".hero-stage" : el,
-            /* The hero is already on screen at load, so its scrub starts at
-               the top of the page and reads 0 at rest — the same value the
-               entrance settles on. Anything else and the two fight. */
             start: isHero ? "top top" : "top bottom",
             end: "bottom top",
             scrub: 1.1,
@@ -204,8 +176,6 @@ export default function Motion() {
         if (isFinal) {
           tl.to(state, { v: 0, ease: "power2.inOut" });
         } else if (isHero) {
-          /* A third of the amplitude the later instances get: on the first
-             screen the breath should be felt, not watched. */
           tl.to(state, { v: 0.35, ease: "sine.inOut" }).to(state, {
             v: 0,
             ease: "sine.inOut",
@@ -219,9 +189,9 @@ export default function Motion() {
       });
 
       /* ---------- Reveals -------------------------------------------- */
-
-      // Masked media: the frame wipes open, the photograph settles back.
       gsap.utils.toArray<HTMLElement>('[data-reveal="mask"]').forEach((el) => {
+        if (isRetired(el)) return;
+
         const frame = el.querySelector(".media");
         const img = el.querySelector("img");
         if (!frame) return;
@@ -237,8 +207,9 @@ export default function Motion() {
         if (img) tl.from(img, { scale: 1.22, duration: 1.4, ease: EASE }, 0);
       });
 
-      // Headlines rise from behind their own edge.
       gsap.utils.toArray<HTMLElement>('[data-reveal="lines"]').forEach((el) => {
+        if (isRetired(el)) return;
+
         gsap.from(el, {
           yPercent: 26,
           opacity: 0,
@@ -248,8 +219,9 @@ export default function Motion() {
         });
       });
 
-      // Everything else: a short, uniform lift.
       gsap.utils.toArray<HTMLElement>('[data-reveal="up"]').forEach((el) => {
+        if (isRetired(el)) return;
+
         gsap.from(el, {
           y: 26,
           opacity: 0,
@@ -259,7 +231,6 @@ export default function Motion() {
         });
       });
 
-      /* Late-loading media changes page height. */
       const onLoad = () => ScrollTrigger.refresh();
       window.addEventListener("load", onLoad);
       const imgs = Array.from(document.images);
