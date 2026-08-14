@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import IntroMotion from "@/components/IntroMotion";
 import "./globals.css";
 import "./hero-v2.css";
 
@@ -63,6 +64,7 @@ export default function RootLayout({
         <a className="skip-link" href="#manifest">
           К содержанию
         </a>
+        <IntroMotion />
         {children}
       </body>
     </html>
