@@ -73,7 +73,29 @@ export default function Nav() {
 
         <div className="nav-end">
           <a className="nav-tickets" href="#tickets">
-            Билеты
+            <span className="nav-tickets-label">Билеты</span>
+            <span className="nav-tickets-orbit" aria-hidden="true">
+              <svg viewBox="0 0 100 44" preserveAspectRatio="none">
+                <rect
+                  className="nav-tickets-track"
+                  x="1"
+                  y="1"
+                  width="98"
+                  height="42"
+                  rx="7"
+                  pathLength="100"
+                />
+                <rect
+                  className="nav-tickets-streak"
+                  x="1"
+                  y="1"
+                  width="98"
+                  height="42"
+                  rx="7"
+                  pathLength="100"
+                />
+              </svg>
+            </span>
           </a>
           <button
             className="nav-burger"
