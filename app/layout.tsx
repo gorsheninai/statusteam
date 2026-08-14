@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "./hero-v2.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
@@ -34,14 +35,14 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://statusteam.show"),
   title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
   description:
-    "ПУЛЬС КОНТИНЕНТА — новый показ STATUS TEAM. Lingerie, аксессуары и визуальная культура. Кастинг моделей, партнёрство, билеты.",
+    "Главное fashion-событие осени в мире нижнего белья от STATUS TEAM. Москва, ноябрь 2026.",
   openGraph: {
     title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
     description:
-      "Новый показ STATUS TEAM. Кастинг моделей, партнёрство, билеты.",
+      "Главное fashion-событие осени в мире нижнего белья. Москва, ноябрь 2026.",
     locale: "ru_RU",
     type: "website",
-    images: ["/media/campaign-silhouette-sun-1600.webp"],
+    images: ["/media/header_16_9.png"],
   },
 };
 
