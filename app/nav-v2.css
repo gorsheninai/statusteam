@@ -1,17 +1,24 @@
 /* ============================================================
-   NAV TICKETS — champagne orbit
+   NAV TICKETS — champagne perimeter
 
-   The STATUS wordmark carries a warm champagne tone, so the ticket CTA
-   borrows it only as a moving hairline on interaction. The button remains
-   editorial and quiet at rest; no neon glow and no perpetual animation.
+   The CTA stays visually quiet. On hover/focus, two warm champagne
+   highlights travel around a thin masked ring outside the button. There is
+   no SVG and nothing can render inside the button body.
    ============================================================ */
 
+@property --ticket-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 .nav-tickets {
+  --ticket-angle: 0deg;
   position: relative;
   isolation: isolate;
   overflow: visible;
-  border: 1px solid rgba(200, 183, 147, 0.5);
-  border-radius: 7px;
+  border: 1px solid rgba(200, 183, 147, 0.38);
+  border-radius: 6px;
   background: var(--paper);
   color: var(--ink);
   transition:
@@ -23,72 +30,83 @@
     box-shadow var(--t-base) var(--ease-out);
 }
 
-.nav-tickets-label {
+.nav-tickets > span {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
-.nav-tickets-orbit {
+/* Outer quiet guide line. It appears only on interaction and sits outside
+   the physical button edge. */
+.nav-tickets::before {
+  content: "";
   position: absolute;
   inset: -3px;
   z-index: 1;
   pointer-events: none;
+  border: 1px solid rgba(200, 183, 147, 0.28);
+  border-radius: 9px;
   opacity: 0;
-  transition: opacity 260ms var(--ease-out);
+  transition: opacity 220ms var(--ease-out);
 }
 
-.nav-tickets-orbit svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.nav-tickets-orbit rect {
-  fill: none;
-  vector-effect: non-scaling-stroke;
-}
-
-.nav-tickets-track {
-  stroke: rgba(200, 183, 147, 0.32);
-  stroke-width: 1;
-}
-
-/* Two separate highlights are encoded into one dash pattern. Because the
-   dash runs along an actual rounded SVG rect, it bends naturally around the
-   corners instead of rotating a rectangular gradient layer. */
-.nav-tickets-streak {
-  stroke: #d8c8a5;
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  stroke-dasharray: 15 30 6 49;
-  stroke-dashoffset: 0;
-  filter: drop-shadow(0 0 2px rgba(216, 200, 165, 0.32));
+/* Animated ring. The mask removes the entire centre, leaving only a 1.4px
+   perimeter. The element itself never rotates; only the gradient angle does,
+   so the rounded rectangle never warps or enters the button body. */
+.nav-tickets::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  z-index: 2;
+  pointer-events: none;
+  padding: 1.4px;
+  border-radius: 9px;
+  background: conic-gradient(
+    from var(--ticket-angle),
+    transparent 0deg 42deg,
+    rgba(216, 200, 165, 0.18) 54deg,
+    #d8c8a5 69deg,
+    rgba(216, 200, 165, 0.35) 82deg,
+    transparent 94deg 208deg,
+    rgba(200, 183, 147, 0.16) 220deg,
+    #c8b793 233deg,
+    rgba(200, 183, 147, 0.3) 246deg,
+    transparent 258deg 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  filter: drop-shadow(0 0 2px rgba(216, 200, 165, 0.18));
+  transition: opacity 220ms var(--ease-out);
 }
 
 .nav-tickets:hover,
 .nav-tickets:focus-visible {
   background: #f4efe6;
   color: var(--ink);
-  border-color: rgba(216, 200, 165, 0.74);
-  letter-spacing: 0.2em;
+  border-color: rgba(216, 200, 165, 0.62);
+  letter-spacing: 0.195em;
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 7px 22px rgba(0, 0, 0, 0.12);
 }
 
-.nav-tickets:hover .nav-tickets-orbit,
-.nav-tickets:focus-visible .nav-tickets-orbit {
+.nav-tickets:hover::before,
+.nav-tickets:focus-visible::before,
+.nav-tickets:hover::after,
+.nav-tickets:focus-visible::after {
   opacity: 1;
 }
 
-.nav-tickets:hover .nav-tickets-streak,
-.nav-tickets:focus-visible .nav-tickets-streak {
-  animation: nav-ticket-orbit 1.45s linear infinite;
+.nav-tickets:hover::after,
+.nav-tickets:focus-visible::after {
+  animation: ticket-perimeter 1.55s linear infinite;
 }
 
-@keyframes nav-ticket-orbit {
+@keyframes ticket-perimeter {
   to {
-    stroke-dashoffset: -100;
+    --ticket-angle: 360deg;
   }
 }
 
@@ -98,9 +116,8 @@
     transform: none;
   }
 
-  .nav-tickets:hover .nav-tickets-streak,
-  .nav-tickets:focus-visible .nav-tickets-streak {
+  .nav-tickets:hover::after,
+  .nav-tickets:focus-visible::after {
     animation: none;
-    stroke-dashoffset: 0;
   }
 }
