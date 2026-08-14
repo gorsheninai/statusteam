@@ -152,18 +152,8 @@ function IntroFashion() {
   }, [active]);
 
   return (
-    <div className="intro-fashion" aria-label="О концепции показа">
-      <div className="intro-fashion-top">
-        <div className="intro-fashion-copy">
-          <h2>
-            В центре —
-            <br />
-            женщина
-          </h2>
-          <p className="intro-fashion-lead">Сильная. Чувственная. Свободная.</p>
-          <p className="intro-fashion-note">Она сама определяет правила.</p>
-        </div>
-
+    <div className="intro-fashion" aria-label="Кампания и STATUS TEAM в цифрах">
+      <div className="intro-fashion-top intro-fashion-top-visual-only">
         <div className="intro-fashion-carousel" aria-label="Кампания Пульс Континента">
           <div className="intro-fashion-rail">
             <RailGroup />
