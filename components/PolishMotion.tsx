@@ -7,7 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 /**
  * Final motion polish. This intentionally does not own layout or content.
  * card-stack.css still owns the Hero -> STATUS geometry; this pass only adds
- * depth while those two existing screens overlap.
+ * depth while those two existing screens overlap and removes expensive pinning
+ * from the phone presentation.
  */
 export default function PolishMotion() {
   useEffect(() => {
@@ -88,6 +89,46 @@ export default function PolishMotion() {
         ctx.revert();
         gsap.set(hero, { clearProps: "willChange" });
         gsap.set(status, { clearProps: "willChange" });
+      };
+    });
+
+    /* On a phone the pinned four-beat chapter costs several synthetic
+       viewports and fights the browser chrome. Motion.tsx builds it for every
+       width, so after all React effects have mounted we revert only that one
+       ScrollTrigger and give the exact same four beats back to normal flow.
+       This changes no markup or copy; final-polish.css gives that flow its
+       mobile editorial treatment. */
+    mm.add("(max-width: 767px)", () => {
+      let cancelled = false;
+      let raf1 = 0;
+      let raf2 = 0;
+
+      raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => {
+          if (cancelled) return;
+          const tenets = document.querySelector<HTMLElement>("[data-tenets]");
+          if (!tenets) return;
+
+          ScrollTrigger.getAll().forEach((st) => {
+            if (st.trigger === tenets) st.kill(true);
+          });
+
+          tenets.classList.remove("is-pinned");
+          gsap.set(tenets, { clearProps: "height,transform,position,top,left,width" });
+          gsap.set(tenets.querySelectorAll(".tenet"), {
+            clearProps: "position,inset,transform,opacity,visibility",
+          });
+          gsap.set(tenets.querySelectorAll(".tenet-shot,.tenet-in,.tenet-dot"), {
+            clearProps: "transform,opacity,visibility",
+          });
+          ScrollTrigger.refresh();
+        });
+      });
+
+      return () => {
+        cancelled = true;
+        cancelAnimationFrame(raf1);
+        cancelAnimationFrame(raf2);
       };
     });
 
