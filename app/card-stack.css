@@ -1,55 +1,69 @@
 /* HERO -> STATUS TEAM: stacked-card hand-off.
-   No logo interstitial, no one-shot JS transition. The first screen stays
-   pinned while the real second screen rises over it as a physical card. */
+   The overlap exists ONLY between screen 1 and screen 2.
 
-/* The animated divider would break the illusion of one card sliding over
-   another, so the two screens touch directly. */
+   Geometry on desktop:
+   - hero-stage is a 200svh track;
+   - the actual hero is sticky for the first 100svh of that track;
+   - STATUS starts 100svh early via a negative margin, so it rises over Hero;
+   - when STATUS reaches top:0, the hero has also reached the end of its sticky
+     range and immediately leaves with the document;
+   - therefore Hero can never reappear underneath screen 3. */
+
+/* No divider between the two cards. */
 .hero-stage + .pulse-rule {
   display: none !important;
 }
 
-/* The hero is the rear card. It stays in the viewport while STATUS travels
-   upward in normal document flow, then disappears naturally underneath it. */
-.hero-stage {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 0 !important;
-  height: 100svh !important;
-  margin: 0 !important;
-  transform: translateZ(0);
-  isolation: isolate;
-}
-
-/* The STATUS page is the foreground card. A soft top edge and deep shadow make
-   the overlap legible without turning it into an app-style panel. */
-.st {
-  position: relative !important;
-  z-index: 12 !important;
-  margin: 0 !important;
-  border-radius: clamp(24px, 2vw, 38px) clamp(24px, 2vw, 38px) 0 0 !important;
-  box-shadow:
-    0 -1px 0 rgba(213, 180, 123, 0.16),
-    0 -28px 72px rgba(0, 0, 0, 0.46) !important;
-  overflow: hidden !important;
-  isolation: isolate;
-}
-
-/* STATUS has already been named by the brand/nav system; keep the oversized
-   duplicate heading removed and let page two open directly on its statement. */
+/* STATUS has already been introduced by the brand/nav system. */
 .st .beat-who {
   display: none !important;
 }
 
 @media (min-width: 1200px) {
-  /* Page two resolves as a complete second screen once it reaches the top. */
-  .st {
+  /* IMPORTANT: the parent owns the sticky boundary. Do NOT make hero-stage
+     itself sticky — that pins screen 1 against the entire document and is what
+     caused Hero to reappear when scrolling from screen 2 to screen 3. */
+  .hero-stage {
+    position: relative !important;
+    z-index: 0 !important;
+    height: 200svh !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    isolation: isolate;
+    transform: none !important;
+  }
+
+  .hero-stage > .hero {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 0 !important;
     height: 100svh !important;
-    min-height: 760px !important;
+    min-height: 100svh !important;
+    margin: 0 !important;
+  }
+
+  /* Foreground card. Its normal-flow start would be after the 200svh hero
+     track; pulling it up by one viewport makes it enter from the bottom while
+     Hero is still pinned. Combined document height remains exactly two screens:
+     200svh + 100svh - 100svh = 200svh. */
+  .st {
+    position: relative !important;
+    z-index: 12 !important;
+    height: 100svh !important;
+    min-height: 100svh !important;
     max-height: 100svh !important;
+    margin: -100svh 0 0 !important;
     padding-top: clamp(34px, 4vh, 46px) !important;
     padding-bottom: 0 !important;
     grid-template-rows: minmax(0, 1fr) auto !important;
     align-content: stretch !important;
+    border-radius: clamp(24px, 2vw, 38px) clamp(24px, 2vw, 38px) 0 0 !important;
+    box-shadow:
+      0 -1px 0 rgba(213, 180, 123, 0.16),
+      0 -28px 72px rgba(0, 0, 0, 0.46) !important;
+    overflow: hidden !important;
+    isolation: isolate;
   }
 
   .st .beat-reel {
@@ -81,35 +95,53 @@
     margin-bottom: 0 !important;
   }
 
-  /* Keep the next chapter out of the second viewport. */
+  /* Screen 3 is a normal foreground chapter. At the moment it reaches the
+     viewport, Hero is already one full viewport above and cannot bleed through. */
   .st + .pulse-scene {
-    position: relative;
-    z-index: 13;
+    position: relative !important;
+    z-index: 13 !important;
     margin-top: 0 !important;
   }
 }
 
-/* Tablet/mobile still get the same stacking idea, but without forcing desktop
-   geometry on content that needs to grow vertically. */
+/* On smaller layouts the STATUS content is taller than one viewport, so do
+   not force the desktop 2-screen geometry. Keep a clean conventional flow. */
 @media (max-width: 1199px) {
   .hero-stage {
+    position: relative !important;
+    height: 100svh !important;
+    min-height: 100svh !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .hero-stage > .hero {
+    position: relative !important;
+    top: auto !important;
     height: 100svh !important;
   }
 
   .st {
+    position: relative !important;
+    z-index: 2 !important;
     min-height: 100svh !important;
+    margin: 0 !important;
     border-radius: clamp(18px, 5vw, 28px) clamp(18px, 5vw, 28px) 0 0 !important;
+    box-shadow: 0 -18px 52px rgba(0, 0, 0, 0.34) !important;
   }
 }
 
-/* Reduced motion keeps the spatial relationship but removes the sticky hold,
-   so the page remains completely conventional for users who request it. */
 @media (prefers-reduced-motion: reduce) {
   .hero-stage {
+    height: 100svh !important;
+  }
+
+  .hero-stage > .hero {
     position: relative !important;
   }
 
   .st {
+    margin-top: 0 !important;
     box-shadow: 0 -1px 0 rgba(213, 180, 123, 0.12) !important;
   }
 }
