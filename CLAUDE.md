@@ -66,6 +66,23 @@ deploy the same commit a second time and race the version Cloudflare uploaded.
 does the version-upload path by hand. Prefer just pushing — a hand-deploy from a
 feature branch promotes an unreviewed build to the live site.
 
+## Skills
+
+`.claude/skills/` holds four project-local skills. They are committed, so they load
+for anyone working in this repository — no marketplace, no per-machine setup. They
+carry the *procedural* knowledge that does not belong in this file: exact commands,
+failure modes, and the traps that have already cost a debugging session.
+
+| Skill | Reach for it when |
+|---|---|
+| `verify-ui` | running or reading `npm run verify`, or adding a check |
+| `motion-rules` | touching anything animated, pinned or scroll-driven |
+| `design-tokens` | picking a colour, a size, a spacing value or an image |
+| `responsive-audit` | writing layout CSS, or something breaks at one width |
+
+Keep them honest: when a rule here changes, change it there too, and when a bug
+turns out to have been silent, that is exactly what belongs in a skill.
+
 ## Repository rules
 
 - All work lives in **`gorsheninai/statusteam`**. `gorsheninai/statusteam-website` is
