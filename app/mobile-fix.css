@@ -1,6 +1,28 @@
-/* Narrow-screen type safety. Imported last so the animated pulse masks always
-   have enough room for the full word «КОНТИНЕНТА» at open tracking. */
+/* Final narrow-screen and STATUS composition fixes. Imported last. */
 
+/* On desktop the second screen should use its available vertical field rather
+   than leaving a large dead band between the aftermovie and the stats rail. */
+@media (min-width: 1200px) {
+  .st .reel {
+    height: clamp(445px, 61vh, 565px) !important;
+  }
+}
+
+/* Tablet/phone: the long masked portrait wipe is expensive and can leave a
+   half-revealed sliver when the user jumps to the section. Keep the same
+   photography, but make the proof grid immediately legible. */
+@media (max-width: 1199px) {
+  .st .guest .media {
+    clip-path: none !important;
+  }
+
+  .st .guest img {
+    transform: none !important;
+  }
+}
+
+/* Narrow-screen type safety: animated pulse masks always have enough room for
+   the full word «КОНТИНЕНТА» at the widest point of its tracking cycle. */
 @media (max-width: 767px) {
   .hero-title .pulse-line,
   .pulse-title .pulse-line,
