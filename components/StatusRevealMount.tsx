@@ -42,10 +42,10 @@ export default function StatusRevealMount() {
     const status = document.querySelector<HTMLElement>("#statusteam");
     if (!status || document.querySelector(".status-transition")) return;
 
-    /* This is an overlay, not a section in document flow. Page two is already
-       underneath it while the user scrolls out of the hero. The palms open
-       onto the real aftermovie/proof page instead of finishing on a separate
-       black screen and only then scrolling to the content. */
+    /* Fixed overlay: it owns the entire Hero -> STATUS hand-off. The real
+       second page moves underneath, but is NOT exposed until its top edge is
+       exactly at the viewport top. This guarantees that no strip of the Hero
+       can remain visible above page two when the reveal finishes. */
     const overlay = document.createElement("div");
     overlay.className = "status-transition";
     overlay.setAttribute("aria-hidden", "true");
@@ -115,8 +115,10 @@ export default function StatusRevealMount() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: status,
-          /* While page two travels from below the viewport to its final
-             position, this fixed overlay performs the whole logo/palm reveal. */
+          /* Progress 0 = page two just touches the viewport bottom.
+             Progress 1 = page two is perfectly aligned at top: 100% of the
+             viewport is STATUS, 0% is Hero. Only at that exact endpoint do
+             we remove the black transition overlay. */
           start: "top bottom",
           end: "top top",
           scrub: 0.72,
@@ -226,13 +228,6 @@ export default function StatusRevealMount() {
           },
           0.62,
         )
-        /* The crucial change: the black curtain disappears while the real
-           STATUS page is already underneath, so the palms literally open it. */
-        .to(
-          backdrop,
-          { opacity: 0, duration: 0.26, ease: "power2.inOut" },
-          0.64,
-        )
         .to(
           ambient,
           { opacity: 0.08, scale: 1.18, duration: 0.2, ease: "power2.out" },
@@ -260,7 +255,10 @@ export default function StatusRevealMount() {
           },
           0.68,
         )
-        .to(overlay, { autoAlpha: 0, duration: 0.06, ease: "none" }, 0.94);
+        /* Keep the curtain 100% opaque for the whole travel. At progress 1
+           STATUS is fully occupying the viewport, so this final micro-fade
+           can reveal it without ever exposing a piece of the Hero above it. */
+        .to(overlay, { autoAlpha: 0, duration: 0.002, ease: "none" }, 0.998);
     }, overlay);
 
     ScrollTrigger.refresh();
