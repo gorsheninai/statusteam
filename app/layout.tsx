@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { PULSE_PATH } from "@/lib/pulse-path";
 import "./globals.css";
+import "./hero-placement.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
