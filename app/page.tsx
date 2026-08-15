@@ -79,25 +79,21 @@ const TENETS = [
   {
     word: "Ритм",
     img: "campaign-sand-drape",
-    cap: "Свет, музыка и шаг в одном темпе",
     alt: "Модель в светлом комплекте среди скульптурных драпировок песочного цвета",
   },
   {
     word: "Движение",
     img: "campaign-silhouette-drapes",
-    cap: "Ткань двигается вместе с моделью",
     alt: "Модель в длинном платье с бахромой между тканевыми драпировками",
   },
   {
     word: "Сила",
     img: "campaign-beaded-dusk",
-    cap: "Каждый выход — отдельный образ",
     alt: "Модель в расшитом бисером образе на фоне оранжевого закатного неба",
   },
   {
     word: "Свобода",
     img: "campaign-palms-gold",
-    cap: "Финал уводит показ в тропики",
     alt: "Модель в золотом воротнике и браслетах среди крупных пальмовых листьев",
   },
 ];
@@ -210,9 +206,6 @@ export default function Home() {
             <h2 className="st-name struct" data-reveal="lines">
               Status Team
             </h2>
-            <p className="st-line" data-reveal="lines">
-              Создаём fashion-события, которые выходят за рамки обычного показа.
-            </p>
           </div>
 
           {/* --- beat 2 — the aftermovie ----------------------------- */}
@@ -281,10 +274,6 @@ export default function Home() {
           {/* --- beat 4 — the numbers -------------------------------- */}
           <div className="beat beat-numbers">
             <div className="numbers shell">
-              <p className="numbers-lead lead" data-reveal="up">
-                Прошлый показ — полный зал.
-              </p>
-
               <ul className="scale-list">
                 <li data-reveal="up">
                   <span className="scale-n struct">
@@ -341,11 +330,6 @@ export default function Home() {
             ============================================================ */}
         <section className="pulse-scene on-dark" id="pulse" data-bg="ink">
           <div className="pulse-intro shell">
-
-            <p className="pulse-kicker" data-reveal="up">
-              Следующая глава
-            </p>
-
             <h2 className="pulse-title" data-pulse-title>
               <span className="pulse-mask">
                 <span className="pulse-line">Пульс</span>
@@ -354,10 +338,6 @@ export default function Home() {
                 <span className="pulse-line">Континента</span>
               </span>
             </h2>
-
-            <p className="pulse-lead lead" data-reveal="up">
-              Новое fashion-шоу STATUS TEAM о силе, ритме и свободе.
-            </p>
 
             <p className="pulse-meta credit" data-reveal="up">
               нижнее бельё и аксессуары · Москва · Ноябрь 2026
@@ -377,7 +357,6 @@ export default function Home() {
                       loading={i === 0 ? undefined : "lazy"}
                     />
                   </div>
-                  <figcaption className="tenet-cap">{t.cap}</figcaption>
                 </figure>
 
                 <p className="tenet-word">
@@ -395,9 +374,6 @@ export default function Home() {
             </ol>
           </div>
 
-          <p className="pulse-outro campaign shell" data-reveal="lines">
-            Следующий показ будет другим.
-          </p>
         </section>
 
         <PulseRule />

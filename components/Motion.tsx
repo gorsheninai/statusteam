@@ -305,7 +305,11 @@ export default function Motion() {
           scrollTrigger: {
             trigger: tenets,
             start: "top top",
-            end: () => `+=${window.innerHeight * beats.length}`,
+            /* Scroll is spent per *transition*, not per beat: four words used
+               to cost four screens, and the three screens between them read as
+               a hole in the page rather than a held moment. */
+            end: () =>
+              `+=${Math.round(window.innerHeight * 0.7 * (beats.length - 1))}`,
             pin: true,
             scrub: 0.7,
             anticipatePin: 1,
