@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { jumpToElement, lockScroll, unlockScroll } from "@/lib/scroll";
 
 const PALM = `
 <svg viewBox="0 0 620 900" aria-hidden="true" focusable="false">
@@ -37,15 +38,37 @@ const logoLayers = Array.from({ length: 6 }, (_, i) =>
   `<span class="status-transition-logo-depth" style="--depth:${i + 1}"><img src="/media/brand-status-team-640.webp" alt="" /></span>`,
 ).join("");
 
+/**
+ * One-shot Hero → STATUS hand-off.
+ *
+ * The previous version tied the reveal to the same scroll range that moved
+ * page two into the viewport. That made it possible to expose a strip of the
+ * Hero or, after over-correcting, to hide page two until too late.
+ *
+ * This version separates the two jobs completely:
+ *  1) the first downward gesture is detected;
+ *  2) an opaque fixed layer covers the viewport immediately;
+ *  3) underneath that cover we jump STATUS to EXACTLY top:0;
+ *  4) the logo/palm animation plays in time, not against scroll;
+ *  5) the black curtain opens only onto a page that already fills 100% of the
+ *     viewport;
+ *  6) the trigger and overlay are destroyed after that first run, so scrolling
+ *     back up and down later is completely normal and never replays it.
+ */
 export default function StatusRevealMount() {
   useEffect(() => {
+    const hero = document.querySelector<HTMLElement>(".hero-stage");
     const status = document.querySelector<HTMLElement>("#statusteam");
-    if (!status || document.querySelector(".status-transition")) return;
+    if (!hero || !status || document.querySelector(".status-transition")) return;
 
-    /* Fixed overlay: it owns the entire Hero -> STATUS hand-off. The real
-       second page moves underneath, but is NOT exposed until its top edge is
-       exactly at the viewport top. This guarantees that no strip of the Hero
-       can remain visible above page two when the reveal finishes. */
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (calm) return;
+
+    /* Browser restoration / a deep link should never yank somebody back into
+       the intro. The cinematic hand-off is exclusively for the first descent
+       from the first screen. */
+    if (window.scrollY > 12) return;
+
     const overlay = document.createElement("div");
     overlay.className = "status-transition";
     overlay.setAttribute("aria-hidden", "true");
@@ -66,21 +89,13 @@ export default function StatusRevealMount() {
         <div class="status-transition-palm status-transition-palm-right status-transition-palm-front">${PALM}</div>
       </div>
     `;
-
     document.body.appendChild(overlay);
-
-    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (calm) {
-      overlay.remove();
-      return;
-    }
 
     gsap.registerPlugin(ScrollTrigger);
 
-    const stage = overlay.querySelector<HTMLElement>(".status-transition-stage");
-    const backdrop = overlay.querySelector<HTMLElement>(".status-transition-backdrop");
     const mark = overlay.querySelector<HTMLElement>(".status-transition-mark");
     const sheen = overlay.querySelector<HTMLElement>(".status-transition-sheen");
+    const backdrop = overlay.querySelector<HTMLElement>(".status-transition-backdrop");
     const ambient = overlay.querySelector<HTMLElement>(".status-transition-ambient");
     const left = gsap.utils.toArray<HTMLElement>(
       ".status-transition-palm-left",
@@ -91,13 +106,37 @@ export default function StatusRevealMount() {
       overlay,
     );
 
-    if (!stage || !backdrop || !mark || !sheen || !ambient) {
+    if (!mark || !sheen || !backdrop || !ambient) {
       overlay.remove();
       return;
     }
 
-    const ctx = gsap.context(() => {
-      gsap.set(overlay, { autoAlpha: 0 });
+    let started = false;
+    let locked = false;
+    let intro: ScrollTrigger | null = null;
+    let timeline: gsap.core.Timeline | null = null;
+
+    const finish = () => {
+      overlay.remove();
+      if (locked) {
+        locked = false;
+        unlockScroll();
+      }
+      /* The first-pass detector is gone permanently for this page load. */
+      intro?.kill();
+      intro = null;
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+    };
+
+    const run = () => {
+      if (started) return;
+      started = true;
+      intro?.kill();
+      intro = null;
+
+      /* Cover FIRST. Only after there is zero chance of seeing the document
+         move do we place page two underneath at its exact top edge. */
+      gsap.set(overlay, { autoAlpha: 1 });
       gsap.set(backdrop, { opacity: 1 });
       gsap.set(mark, {
         autoAlpha: 0,
@@ -112,161 +151,121 @@ export default function StatusRevealMount() {
       gsap.set(right, { xPercent: 132, autoAlpha: 0, rotate: 7 });
       gsap.set(ambient, { opacity: 0.22, scale: 0.88 });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: status,
-          /* Progress 0 = page two just touches the viewport bottom.
-             Progress 1 = page two is perfectly aligned at top: 100% of the
-             viewport is STATUS, 0% is Hero. Only at that exact endpoint do
-             we remove the black transition overlay. */
-          start: "top bottom",
-          end: "top top",
-          scrub: 0.72,
-          invalidateOnRefresh: true,
-        },
+      jumpToElement(status);
+      lockScroll();
+      locked = true;
+      ScrollTrigger.update();
+
+      timeline = gsap.timeline({
+        defaults: { overwrite: "auto" },
+        onComplete: finish,
       });
 
-      tl.to(overlay, { autoAlpha: 1, duration: 0.035, ease: "none" }, 0)
+      timeline
         .to(mark, {
           autoAlpha: 1,
           scale: 1,
           rotateX: 0,
           rotateY: 0,
           z: 0,
-          duration: 0.24,
+          duration: 0.48,
           ease: "power3.out",
         }, 0.04)
-        .to(
-          sheen,
-          {
-            xPercent: 155,
-            opacity: 0.82,
-            duration: 0.2,
-            ease: "power2.inOut",
-          },
-          0.16,
-        )
-        .to(
-          mark,
-          {
-            rotateY: 7,
-            rotateX: -2,
-            scale: 1.035,
-            duration: 0.12,
-            ease: "sine.inOut",
-          },
-          0.27,
-        )
-        .to(
-          left,
-          {
-            xPercent: (i) => (i === 0 ? -26 : -12),
-            autoAlpha: 1,
-            rotate: (i) => (i === 0 ? -4 : 0),
-            duration: 0.25,
-            stagger: 0.02,
-            ease: "power3.out",
-          },
-          0.34,
-        )
-        .to(
-          right,
-          {
-            xPercent: (i) => (i === 0 ? 26 : 12),
-            autoAlpha: 1,
-            rotate: (i) => (i === 0 ? 4 : 0),
-            duration: 0.25,
-            stagger: 0.02,
-            ease: "power3.out",
-          },
-          0.35,
-        )
-        .to(
-          ambient,
-          { opacity: 0.7, scale: 1.04, duration: 0.2, ease: "sine.out" },
-          0.39,
-        )
-        .to(
-          mark,
-          {
-            rotateY: 0,
-            scale: 1.08,
-            autoAlpha: 0.42,
-            duration: 0.13,
-            ease: "power2.inOut",
-          },
-          0.52,
-        )
-        .to(
-          left,
-          {
-            xPercent: (i) => (i === 0 ? -9 : 3),
-            scale: (i) => (i === 0 ? 1 : 1.04),
-            duration: 0.12,
-            ease: "power2.inOut",
-          },
-          0.54,
-        )
-        .to(
-          right,
-          {
-            xPercent: (i) => (i === 0 ? 9 : -3),
-            scale: (i) => (i === 0 ? 1 : 1.04),
-            duration: 0.12,
-            ease: "power2.inOut",
-          },
-          0.54,
-        )
-        .to(
-          mark,
-          {
-            autoAlpha: 0,
-            scale: 1.15,
-            z: 120,
-            duration: 0.1,
-            ease: "power2.in",
-          },
-          0.62,
-        )
-        .to(
-          ambient,
-          { opacity: 0.08, scale: 1.18, duration: 0.2, ease: "power2.out" },
-          0.66,
-        )
-        .to(
-          left,
-          {
-            xPercent: (i) => (i === 0 ? -104 : -126),
-            rotate: (i) => (i === 0 ? -8 : -12),
-            autoAlpha: 0,
-            duration: 0.29,
-            ease: "power2.inOut",
-          },
-          0.68,
-        )
-        .to(
-          right,
-          {
-            xPercent: (i) => (i === 0 ? 104 : 126),
-            rotate: (i) => (i === 0 ? 8 : 12),
-            autoAlpha: 0,
-            duration: 0.29,
-            ease: "power2.inOut",
-          },
-          0.68,
-        )
-        /* Keep the curtain 100% opaque for the whole travel. At progress 1
-           STATUS is fully occupying the viewport, so this final micro-fade
-           can reveal it without ever exposing a piece of the Hero above it. */
-        .to(overlay, { autoAlpha: 0, duration: 0.002, ease: "none" }, 0.998);
-    }, overlay);
+        .to(sheen, {
+          xPercent: 155,
+          opacity: 0.82,
+          duration: 0.42,
+          ease: "power2.inOut",
+        }, 0.22)
+        .to(mark, {
+          rotateY: 6,
+          rotateX: -2,
+          scale: 1.035,
+          duration: 0.28,
+          ease: "sine.inOut",
+        }, 0.48)
+        .to(left, {
+          xPercent: (i) => (i === 0 ? -25 : -11),
+          autoAlpha: 1,
+          rotate: (i) => (i === 0 ? -4 : 0),
+          duration: 0.5,
+          stagger: 0.035,
+          ease: "power3.out",
+        }, 0.55)
+        .to(right, {
+          xPercent: (i) => (i === 0 ? 25 : 11),
+          autoAlpha: 1,
+          rotate: (i) => (i === 0 ? 4 : 0),
+          duration: 0.5,
+          stagger: 0.035,
+          ease: "power3.out",
+        }, 0.58)
+        .to(ambient, {
+          opacity: 0.7,
+          scale: 1.04,
+          duration: 0.42,
+          ease: "sine.out",
+        }, 0.62)
+        .to(mark, {
+          rotateY: 0,
+          scale: 1.08,
+          autoAlpha: 0,
+          z: 100,
+          duration: 0.32,
+          ease: "power2.in",
+        }, 0.95)
+        /* Page two has been sitting at top:0 underneath since the first frame.
+           We can now expose it progressively without ever exposing Hero. */
+        .to(backdrop, {
+          opacity: 0,
+          duration: 0.42,
+          ease: "power2.inOut",
+        }, 1.08)
+        .to(left, {
+          xPercent: (i) => (i === 0 ? -108 : -130),
+          rotate: (i) => (i === 0 ? -8 : -12),
+          autoAlpha: 0,
+          duration: 0.48,
+          ease: "power2.inOut",
+        }, 1.08)
+        .to(right, {
+          xPercent: (i) => (i === 0 ? 108 : 130),
+          rotate: (i) => (i === 0 ? 8 : 12),
+          autoAlpha: 0,
+          duration: 0.48,
+          ease: "power2.inOut",
+        }, 1.08)
+        .to(ambient, {
+          opacity: 0,
+          scale: 1.16,
+          duration: 0.38,
+          ease: "power2.out",
+        }, 1.12)
+        .to(overlay, {
+          autoAlpha: 0,
+          duration: 0.1,
+          ease: "none",
+        }, 1.5);
+    };
+
+    /* One or two pixels of downward travel are enough to prove intent. The
+       overlay then takes over and the actual document position is corrected
+       invisibly underneath it. Keyboard/PageDown and inertial wheel input are
+       covered as well because this watches scroll position, not one event type. */
+    intro = ScrollTrigger.create({
+      trigger: hero,
+      start: "top top",
+      end: "+=2",
+      onLeave: run,
+    });
 
     ScrollTrigger.refresh();
 
     return () => {
-      ctx.revert();
+      intro?.kill();
+      timeline?.kill();
       overlay.remove();
-      ScrollTrigger.refresh();
+      if (locked) unlockScroll();
     };
   }, []);
 
