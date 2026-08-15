@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { PULSE_PATH } from "@/lib/pulse-path";
 import "./globals.css";
 import "./hero-placement.css";
+import "./status-team.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
@@ -62,7 +63,9 @@ const PRELOAD_ONCE = `try{if(sessionStorage.getItem('st-seen')){document.documen
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="ru" className={`${tenor.variable} ${onest.variable}`}>
       <body>
