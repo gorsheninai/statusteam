@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { PULSE_PATH } from "@/lib/pulse-path";
-import StatusRevealMount from "@/components/StatusRevealMount";
 import "./globals.css";
 import "./hero-placement.css";
 import "./status-team.css";
@@ -9,7 +8,7 @@ import "./status-team-fixes.css";
 import "./status-team-lockup.css";
 import "./experience-program.css";
 import "./status-team-final.css";
-import "./status-transition.css";
+import "./card-stack.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
@@ -98,7 +97,6 @@ export default function RootLayout({
           К содержанию
         </a>
 
-        <StatusRevealMount />
         {children}
 
         {/* Film grain over everything. Fixed, inert, and cheap: one tiling
