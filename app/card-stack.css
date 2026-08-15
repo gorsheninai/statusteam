@@ -46,8 +46,17 @@
   /* Foreground card. Its normal-flow start would be after the 200svh hero
      track; pulling it up by one viewport makes it enter from the bottom while
      Hero is still pinned. Combined document height remains exactly two screens:
-     200svh + 100svh - 100svh = 200svh. */
+     200svh + 100svh - 100svh = 200svh.
+
+     The two custom properties are the only visual values PolishMotion writes.
+     Keeping !important on the physical card while animating variables avoids
+     an inline-style specificity fight and preserves this geometry as the source
+     of truth. */
   .st {
+    --stack-radius: clamp(24px, 2vw, 38px);
+    --stack-shadow-alpha: 0.46;
+    --stack-edge-alpha: 0.16;
+
     position: relative !important;
     z-index: 12 !important;
     height: 100svh !important;
@@ -58,10 +67,10 @@
     padding-bottom: 0 !important;
     grid-template-rows: minmax(0, 1fr) auto !important;
     align-content: stretch !important;
-    border-radius: clamp(24px, 2vw, 38px) clamp(24px, 2vw, 38px) 0 0 !important;
+    border-radius: var(--stack-radius) var(--stack-radius) 0 0 !important;
     box-shadow:
-      0 -1px 0 rgba(213, 180, 123, 0.16),
-      0 -28px 72px rgba(0, 0, 0, 0.46) !important;
+      0 -1px 0 rgba(213, 180, 123, var(--stack-edge-alpha)),
+      0 -28px 72px rgba(0, 0, 0, var(--stack-shadow-alpha)) !important;
     overflow: hidden !important;
     isolation: isolate;
   }
