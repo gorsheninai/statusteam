@@ -8,6 +8,7 @@ Two distinct bodies of material exist and must never be mixed:
 
 | Set | Source | Shows | Role on site |
 |---|---|---|---|
+| `hero-*` | `header_16_9.png`, `header_9_16.png` | **ПУЛЬС КОНТИНЕНТА** (new show) | The opening frame, in two crops |
 | `campaign-*`, `poster-*`, `detail-*`, `runway-*` | `1–9.png`, `style1–7.png` | **ПУЛЬС КОНТИНЕНТА** (new show, Africa) | Desire, atmosphere, art direction |
 | `archive-*`, `show-reel*` | `pre1–4.PNG`, `video.mp4` | **СЛАВЯНСКИЙ ВЗГЛЯД** (previous show) | Proof — real photography, real audience |
 
@@ -18,14 +19,27 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 
 ## NEW SHOW — ПУЛЬС КОНТИНЕНТА
 
+### hero-wide · from `header_16_9.png` · hero-tall · from `header_9_16.png`
+- **Type / orientation** — images, 2720×1536 (1.77) and 1536×2720 (0.56); served as
+  `hero-wide-{1200,1800,2560}.webp` and `hero-tall-{720,1080,1440}.webp`
+- **Content** — two models in black couture with gold jewellery and cowrie shells, on a dark ground
+- **Mood** — the show's own poster: frontal, lit, expensive
+- **Overlay** — ★★★ on the wide crop, whose **left half is an empty field** and is where the
+  lock-up sits. ★ on the tall crop: the figures fill it, so type only sits on the scrim at the foot
+- **Best use** — **HERO**, full-bleed. A `<picture>` swaps the crops at 900px, so neither is ever
+  squeezed into the other's box
+- **Priority** — 1
+- **Notes** — Client-supplied. The originals are 6.5 / 7.1 MB PNGs and live in the repository root
+  with the other originals — **never serve them**; re-run the WebP derivation if they are replaced.
+
 ### campaign-silhouette-sun · from `style3.png`
 - **Type / orientation** — image, portrait 816×1456 (0.56)
 - **Content** — full silhouette of a model against the setting sun, acacia behind, savanna grass
 - **Mood** — graphic, hot, monumental, restrained
 - **Overlay** — ★★★ excellent. The upper ~45% is near-empty sky
-- **Best use** — **HERO**. Full-bleed, `object-position: center 62%`
+- **Best use** — the ground of the ticket scene (`#tickets`), under a heavy scrim
 - **Priority** — 1
-- **Notes** — Reads as pure shape; no face, no skin focus. Carries the opening without becoming a lingerie poster.
+- **Notes** — Reads as pure shape; no face, no skin focus. Carried the hero until the client's own header art arrived; it now closes the page instead of opening it.
 
 ### campaign-silhouette-drapes · from `style2.png`
 - **Type / orientation** — image, portrait

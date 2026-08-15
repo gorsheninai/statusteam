@@ -22,24 +22,38 @@ const Arrow = () => (
 /**
  * The hero art, as layers.
  *
- * `base` is the photograph. `model` and `foreground` are optional transparent
- * cut-outs (PNG/WebP) that let part of the figure — hair, a shoulder, a piece
- * of jewellery — sit *outside* the media area, over the black. Both slots are
- * fully wired: markup, stacking, the overflow they need and their own parallax
- * depth. They render only when a file exists, so the hero costs nothing extra
- * until the final frame is delivered.
+ * Two crops of the same frame, not two art directions: `wide` (16:9) carries
+ * the figures on the right with an empty field on the left, which is where
+ * the lock-up sits; `tall` (9:16) is the same pair recomposed for a phone.
+ * The browser picks by orientation, so neither is ever squeezed into the
+ * other's box.
  *
- * TODO: replace-content — the client supplies the final hero frame.
+ * `model` and `foreground` are optional transparent cut-outs (PNG/WebP) that
+ * let part of the figure — hair, a shoulder, a piece of jewellery — sit
+ * *outside* the media area, over the black. Both slots are fully wired:
+ * markup, stacking, the overflow they need and their own parallax depth.
+ * They render only when a file exists, so the hero costs nothing extra until
+ * such a frame is delivered.
+ *
+ * TODO: replace-content — derived from header_16_9.png / header_9_16.png in
+ * the repository root. Re-run the WebP derivation if those are replaced.
  */
 const HERO_ART: {
-  base: string;
+  wide: { name: string; widths: number[] };
+  tall: { name: string; widths: number[] };
+  alt: string;
   model: string | null;
   foreground: string | null;
 } = {
-  base: "campaign-silhouette-sun",
+  wide: { name: "hero-wide", widths: [1200, 1800, 2560] },
+  tall: { name: "hero-tall", widths: [720, 1080, 1440] },
+  alt: "Две модели в чёрных образах с золотыми украшениями и ракушечными подвесками на тёмном фоне",
   model: null,
   foreground: null,
 };
+
+const srcset = (a: { name: string; widths: number[] }) =>
+  a.widths.map((w) => `/media/${a.name}-${w}.webp ${w}w`).join(", ");
 
 /* TODO: replace-content — grey placeholders until the real logo files land. */
 const PRESS_LOGOS = [
@@ -109,20 +123,28 @@ export default function Home() {
             ============================================================ */}
         <div className="hero-stage" data-bg="ink">
           <section className="hero on-dark" id="hero">
-            {/* The curtain: two shutters part from the centre on load. */}
+            {/* The stage curtain that opens this is the preloader; here the
+                frame only settles out of a slow push-in. */}
             <div className="hero-frame">
               <div className="hero-curtain" data-curtain>
                 <div className="media hero-media">
                   {/* TODO: replace-content */}
-                  <img
-                    className="hero-layer"
-                    data-depth="bg"
-                    src={`/media/${HERO_ART.base}-1600.webp`}
-                    srcSet={`/media/${HERO_ART.base}-640.webp 640w, /media/${HERO_ART.base}-1000.webp 1000w, /media/${HERO_ART.base}-1600.webp 1600w`}
-                    sizes="(max-width: 900px) 100vw, 56vw"
-                    alt="Силуэт модели против заходящего солнца в саванне, рядом акация"
-                    fetchPriority="high"
-                  />
+                  <picture>
+                    <source
+                      media="(min-width: 900px)"
+                      srcSet={srcset(HERO_ART.wide)}
+                      sizes="100vw"
+                    />
+                    <img
+                      className="hero-layer"
+                      data-depth="bg"
+                      src={`/media/${HERO_ART.tall.name}-1080.webp`}
+                      srcSet={srcset(HERO_ART.tall)}
+                      sizes="100vw"
+                      alt={HERO_ART.alt}
+                      fetchPriority="high"
+                    />
+                  </picture>
                 </div>
 
                 {HERO_ART.model && (
@@ -144,7 +166,6 @@ export default function Home() {
                   />
                 )}
               </div>
-              <span className="hero-seam" data-seam aria-hidden="true" />
             </div>
 
             <div className="hero-inner shell">

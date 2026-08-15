@@ -17,7 +17,7 @@ transition. Do not reintroduce a component-animation dependency.
 npm run dev        # local dev
 npm run build      # static export -> ./out
 npm start          # serve ./out on :4311  (next start does NOT work with output: export)
-npm run verify     # drive the rendered page in a browser (75 checks)
+npm run verify     # drive the rendered page in a browser (85 checks)
 npm run lint
 npm run typecheck
 npm run deploy         # build + wrangler deploy to Cloudflare (production)
@@ -70,9 +70,11 @@ feature branch promotes an unreviewed build to the live site.
 
 - All work lives in **`gorsheninai/statusteam`**. `gorsheninai/statusteam-website` is
   the client-approved visual baseline and is **read-only reference**.
-- Original media (`1–9.png`, `style1–7.png`, `pre1–4.PNG`, `video.mp4`) stays in the
-  repo root, untouched. Everything served to the browser is a derivative in
-  `public/media/`.
+- Original media (`1–9.png`, `style1–7.png`, `pre1–4.PNG`, `header_16_9.png`,
+  `header_9_16.png`, `video.mp4`) stays in the repo root, untouched. Everything served
+  to the browser is a derivative in `public/media/`. The two `header_*` originals are
+  6.5 and 7.1 MB — dropping either into `public/media/` ships it to the edge and puts
+  it in front of the LCP.
 
 ## Visual identity
 
@@ -124,10 +126,11 @@ the previous Slavic show, not this one. Do not reintroduce it.
 Next/font variables are named `--ff-*` and set on `<html>`. Do **not** rename them to
 `--font-sans`: Tailwind v4 defines that as a theme token on `:root` and would shadow it.
 
-**Tenor Sans sets much wider than the condensed face it replaced.** Two floors are
-now pinned by the longest Cyrillic word rather than by taste — `.archive-h`
-(«СЛАВЯНСКИЙ») and the `.btn` tracking («СТАТЬ ПАРТНЁРОМ» in the 360px hero grid).
-Both clip silently. Re-run `npm run verify` after touching either.
+**Tenor Sans sets much wider than the condensed face it replaced.** Several sizes are
+pinned by the longest Cyrillic word rather than by taste — the `.btn` tracking, and
+above all the hero lock-up: «КОНТИНЕНТА» at ≥900px is sized against `.hero-inner`'s
+68% box **at open tracking**, which is its resting state, not its narrowest. All of
+them clip silently inside a mask. Re-run `npm run verify` after touching any of them.
 
 ### Signature — the breathing lock-up
 
@@ -136,11 +139,12 @@ opens and closes on scroll, the two words moving in opposition, so the pair read
 breath. The final instance settles compressed — the pulse resolves. GSAP writes
 `--pulse` (0–1); CSS multiplies it by `--pulse-spread`.
 
-`--pulse-spread` is `0.05em` on phones and `0.14em` from 900px. **This is a
-correctness constraint, not taste:** "КОНТИНЕНТА" at full tracking will slide under the
-reveal mask's `overflow: hidden` and clip silently — the document never scrolls, so an
-overflow check will not catch it. If you change the hero/tickets font size, re-run the
-clipped-text check.
+`--pulse-spread` is `0.05em` on phones and, from 900px, per instance: `0.09em` in the
+hero, `0.1em` in `#pulse`, `0.14em` in `#tickets` — the hero's is the tightest because
+its box is the one hemmed in by the photograph. **This is a correctness constraint, not
+taste:** "КОНТИНЕНТА" at full tracking will slide under the reveal mask's
+`overflow: hidden` and clip silently — the document never scrolls, so an overflow check
+will not catch it. If you change any of those font sizes, re-run the clipped-text check.
 
 Pulse is never drawn as an ECG line.
 
@@ -226,9 +230,22 @@ Scroll is owned by Lenis, and only by Lenis: anchors go through `lib/scroll.ts`,
 so does the menu's scroll lock (`lenis.stop()`, not a fixed body). Touch keeps the
 platform's own scrolling — `syncTouch: false` is a decision, not a default to tidy up.
 
-The preloader is **pure CSS** and shown once per session. It covers the whole page, so
-it has to lift even if the JS bundle never arrives; an inline script in `layout.tsx`
-sets `.no-preload` on repeat visits before the element is parsed.
+The page opens on a **stage curtain**: two wine wings that part after the pulse line
+writes itself across the seam. It is **pure CSS** and shown once per session — it
+covers the whole page, so it has to open even if the JS bundle never arrives, and an
+inline script in `layout.tsx` sets `.no-preload` on repeat visits before the element
+is parsed. Two details it will not survive losing:
+
+- The wings are `50.4%` wide each. They must overlap, or a strip of the page flashes
+  through the seam before they move.
+- `@keyframes pre-clear` carries `visibility: hidden` on **both** `from` and `to`.
+  `visibility` interpolates discretely, so a lone `to` leaves the element visible for
+  the whole active period — at a 1ms duration, that is the entire animation, and the
+  cleared curtain goes on eating clicks.
+
+Its schedule (line 0.1–1.05s, wings 1.05–2.0s) is what `OPEN` in `Motion.tsx` is tuned
+against: the hero starts while the wings are still travelling, so the type is already
+rising as the gap widens. Change one and change the other.
 
 ## Media policy
 

@@ -34,10 +34,13 @@ export default function Motion() {
       const wide = window.matchMedia("(min-width: 1024px)").matches;
       const fine = window.matchMedia("(pointer: fine)").matches;
 
-      /* The preloader owns the first ~1.9s. When it has been skipped (any
-         visit after the first in this session) the hero starts immediately. */
+      /* The curtain owns the first 2s (see globals.css). The hero starts
+         while the wings are still travelling, so the type is already rising
+         as the gap opens rather than waiting politely behind it. When the
+         curtain has been skipped — any visit after the first in this
+         session — the hero starts immediately. */
       const held = !root.classList.contains("no-preload");
-      const OPEN = held ? 1.72 : 0.12;
+      const OPEN = held ? 1.45 : 0.12;
 
       /* ============================================================
          HERO — live cut, then a slow breath
@@ -51,20 +54,11 @@ export default function Motion() {
       if (curtain) {
         const tl = gsap.timeline({ defaults: { ease: EASE }, delay: OPEN });
 
-        /* Two shutters part from the centre line. inset() interpolates
-           cleanly and stays on the compositor. */
-        gsap.set(curtain, { clipPath: "inset(0% 50% 0% 50%)" });
-        tl.to(
-          curtain,
-          {
-            clipPath: "inset(0% 0% 0% 0%)",
-            duration: 1.2,
-            /* inOut, not out: an out-ease front-loads so hard the frame is
-               open before the draw reads. This one pulls like fabric. */
-            ease: "power3.inOut",
-          },
-          0,
-        );
+        /* The parting curtain is the reveal; the frame behind it only comes
+           to rest, pushing back out of a slow zoom. Two clip-path reveals in
+           a row would read as the same gesture stuttering. */
+        gsap.set(curtain, { scale: 1.09 });
+        tl.to(curtain, { scale: 1, duration: 2.2, ease: "power2.out" }, 0);
 
         tl.from(
           ".hero .pulse-mask .pulse-line",
@@ -162,20 +156,6 @@ export default function Motion() {
           scrub: true,
         },
       });
-
-      /* The living edge on the black/image border. */
-      const seam = document.querySelector<HTMLElement>("[data-seam]");
-      if (seam && getComputedStyle(seam).display !== "none") {
-        gsap.to(seam, {
-          opacity: 0.55,
-          scaleX: 1.18,
-          transformOrigin: "left center",
-          duration: 5.5,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
-      }
 
       /* ============================================================
          SIGNATURE — the breathing lock-up (hero → pulse → tickets)

@@ -147,6 +147,46 @@ for (const [name, width, height] of SIZES) {
   await page.close();
 }
 
+/* ---------------- the curtain ---------------- */
+for (const [label, width, height] of [["desktop", 1440, 900], ["phone", 360, 780]]) {
+  const ctx = await browser.newContext({ viewport: { width, height } });
+  const page = await ctx.newPage();
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
+
+  const closed = await page.evaluate(() => {
+    const wings = [...document.querySelectorAll(".curtain")];
+    return {
+      n: wings.length,
+      /* Together the wings must cover the viewport, or the page flashes
+         through the seam before they move. */
+      covers: wings.reduce((w, el) => w + el.getBoundingClientRect().width, 0),
+      vw: window.innerWidth,
+    };
+  });
+  check(closed.n === 2, `[${label}] the curtain has two wings`, String(closed.n));
+  check(closed.covers >= closed.vw, `[${label}] the closed curtain covers the screen`,
+    `${Math.round(closed.covers)}px over ${closed.vw}px`);
+
+  await page.waitForTimeout(2600);
+  const open = await page.evaluate(() => {
+    const pre = document.querySelector(".preloader");
+    return {
+      gone: getComputedStyle(pre).visibility === "hidden",
+      hero: document.querySelector(".hero-title")?.getBoundingClientRect().width ?? 0,
+    };
+  });
+  check(open.gone, `[${label}] the curtain clears itself without JS`);
+  check(open.hero > 0, `[${label}] the hero is behind it`);
+
+  /* Second visit in the same session: no curtain at all. */
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(250);
+  check(await page.evaluate(() =>
+    getComputedStyle(document.querySelector(".preloader")).display === "none"),
+    `[${label}] the curtain is shown once per session`);
+  await ctx.close();
+}
+
 /* ---------------- the ticket path ---------------- */
 for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844]]) {
   const page = await browser.newPage({ viewport: { width, height } });

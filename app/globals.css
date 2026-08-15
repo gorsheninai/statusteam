@@ -448,11 +448,18 @@ ol {
 }
 
 /* ============================================================
-   PRELOADER — the pulse writes itself in, then the shutter lifts.
+   THE CURTAIN — the pulse writes itself across the seam, then the
+   two wings part and the show is behind them.
 
-   Pure CSS by necessity: it covers the whole page, so it has to clear
-   itself even if the JavaScript bundle never arrives. Shown once per
-   session (an inline script adds .no-preload on repeat visits).
+   Pure CSS by necessity: it covers the whole page, so it has to open
+   even if the JavaScript bundle never arrives. Shown once per session
+   (an inline script adds .no-preload on repeat visits).
+
+   Motion.tsx's OPEN delay is tuned against this schedule:
+     0.10 – 1.05s   the line draws
+     0.95 – 1.25s   the line fades
+     1.05 – 2.00s   the wings part
+     2.00s          the whole thing stops existing
    ============================================================ */
 
 .preloader {
@@ -461,13 +468,75 @@ ol {
   z-index: 1000;
   display: grid;
   place-items: center;
-  background: var(--ink);
-  animation: pre-lift 620ms var(--ease-inout) 1500ms forwards;
+  /* No ground of its own: the wings *are* the ground, and the page has to
+     show through the widening gap between them. */
+  animation: pre-clear 1ms linear 2000ms forwards;
 }
+/* `from` carries the value too. `visibility` interpolates discretely and a
+   lone `to` leaves the element visible for the whole active period — which,
+   at a 1ms duration, is the entire animation. */
+@keyframes pre-clear {
+  from,
+  to {
+    visibility: hidden;
+  }
+}
+
+/* Each wing is a hair over half the screen, so no daylight shows at the
+   seam before they move. The folds are wine on wine — cloth, not a
+   gradient — and the inner edge carries the sand hairline. */
+.curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.4%;
+  background-color: var(--wine);
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.34) 0 2px,
+    rgba(0, 0, 0, 0) 2px 22px,
+    rgba(255, 254, 250, 0.05) 22px 25px,
+    rgba(0, 0, 0, 0) 25px 52px
+  );
+  will-change: transform;
+}
+/* The right wing overlaps the left, so the seam is a single hairline on its
+   edge — two borders would show as a double line. The shadow is what sells
+   the part: as the wings draw back they throw it onto the stage. */
+.curtain-l {
+  left: 0;
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
+  animation: part-l 950ms cubic-bezier(0.76, 0, 0.24, 1) 1050ms forwards;
+}
+.curtain-r {
+  right: 0;
+  border-left: 1px solid var(--sand-dim);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+  animation: part-r 950ms cubic-bezier(0.76, 0, 0.24, 1) 1050ms forwards;
+}
+@keyframes part-l {
+  to {
+    transform: translate3d(-101%, 0, 0);
+  }
+}
+@keyframes part-r {
+  to {
+    transform: translate3d(101%, 0, 0);
+  }
+}
+
 .preloader-line {
+  position: relative;
+  z-index: 2;
   width: min(64vw, 520px);
   height: 44px;
   overflow: visible;
+  animation: pre-line-out 300ms var(--ease-out) 950ms forwards;
+}
+@keyframes pre-line-out {
+  to {
+    opacity: 0;
+  }
 }
 .preloader-line path {
   fill: none;
@@ -476,19 +545,14 @@ ol {
   vector-effect: non-scaling-stroke;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: pre-draw 1250ms var(--ease-out) 140ms forwards;
+  animation: pre-draw 950ms var(--ease-out) 100ms forwards;
 }
 @keyframes pre-draw {
   to {
     stroke-dashoffset: 0;
   }
 }
-@keyframes pre-lift {
-  to {
-    transform: translateY(-100%);
-    visibility: hidden;
-  }
-}
+
 .no-preload .preloader {
   display: none;
 }
@@ -979,10 +1043,13 @@ ol {
 
 /* The element the curtain animates. Clipping here (not on the image) keeps
    the parallax transform on the layer independent of the reveal. */
+/* The element GSAP settles out of its push-in. Keeping the transform here
+   rather than on the image leaves the layer's own parallax free to compose
+   with it instead of fighting it. */
 .hero-curtain {
   position: absolute;
   inset: 0;
-  clip-path: inset(0 0 0 0);
+  transform-origin: center 40%;
 }
 
 .hero-media {
@@ -1019,7 +1086,9 @@ ol {
   z-index: 3;
 }
 
-/* Phone scrim: the figure keeps the top, the type gets a solid floor. */
+/* Phone scrim: the pair keeps the top of the frame, the type gets a floor.
+   Weighted to clear the type and no more — the portrait crop puts the
+   couture in the lower half and a heavier scrim would erase it. */
 .hero-frame::after {
   content: "";
   position: absolute;
@@ -1028,18 +1097,12 @@ ol {
   pointer-events: none;
   background: linear-gradient(
     0deg,
-    rgba(16, 13, 12, 0.97) 0%,
-    rgba(16, 13, 12, 0.9) 26%,
-    rgba(16, 13, 12, 0.48) 58%,
-    rgba(16, 13, 12, 0.14) 86%
+    rgba(16, 13, 12, 0.96) 0%,
+    rgba(16, 13, 12, 0.88) 24%,
+    rgba(16, 13, 12, 0.55) 44%,
+    rgba(16, 13, 12, 0.16) 72%,
+    rgba(16, 13, 12, 0.04) 100%
   );
-}
-
-/* The living edge. A soft band of light on the border rather than a hard
-   cut — it drifts slowly and is meant to be felt, not seen. On phones the
-   media is full-bleed, so there is no border to soften. */
-.hero-seam {
-  display: none;
 }
 
 /* --- type --------------------------------------------------- */
@@ -2275,49 +2338,30 @@ ol {
     justify-content: center;
     padding-block: 8rem 4rem;
   }
-  /* --edge is the black/image border. The curtain opens from it, the seam
-     sits on it, and the title crosses it. */
-  .hero-frame {
-    --edge: 48%;
-    inset: 0 0 0 var(--edge);
-  }
+  /* The landscape crop is full-bleed: the figures already sit in its right
+     half and the left half is an empty field, so the composition is the
+     photograph's, not a box we cut around it. */
   .hero-layer {
-    object-position: center 42%;
+    object-position: center 46%;
   }
+  /* Deepens the field the type sits in without touching the figures. */
   .hero-frame::after {
     background: linear-gradient(
       90deg,
-      rgba(16, 13, 12, 0.94) 0%,
-      rgba(16, 13, 12, 0.6) 12%,
-      rgba(16, 13, 12, 0.16) 34%,
-      transparent 58%
-    );
-  }
-  /* A band of light on the seam instead of a cut edge. It drifts under
-     GSAP; the amplitude is deliberately below the threshold of notice. */
-  .hero-seam {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: -1px;
-    z-index: 5;
-    width: clamp(28px, 3vw, 52px);
-    height: 100%;
-    pointer-events: none;
-    background: linear-gradient(
-      90deg,
-      rgba(198, 168, 124, 0.22) 0%,
-      rgba(198, 168, 124, 0.07) 42%,
+      rgba(16, 13, 12, 0.92) 0%,
+      rgba(16, 13, 12, 0.72) 22%,
+      rgba(16, 13, 12, 0.3) 44%,
+      rgba(16, 13, 12, 0.05) 64%,
       transparent 100%
     );
-    mix-blend-mode: screen;
-    opacity: 0.85;
   }
-  /* The type box runs past the border on purpose: "КОНТИНЕНТА" crosses onto
-     the photograph. Widen this and the word gets deeper into the image —
-     but re-run the clipped-text check, the reveal mask hides overrun. */
+  /* The type box is wider than the photograph's empty half on purpose:
+     "КОНТИНЕНТА" runs just past it and onto the seated figure. The floor is
+     set by that word at its *open* tracking, which is its resting state —
+     re-run the clipped-text check before touching either number, the mask
+     hides overrun silently. */
   .hero-inner {
-    max-width: 74%;
+    max-width: 68%;
   }
   .nav-brand img {
     height: 21px;
@@ -2325,8 +2369,8 @@ ol {
   .hero-title .pulse-line {
     /* Delicate: the lock-up breathes, it does not stretch. */
     --pulse-spread: 0.09em;
-    /* Sized so "КОНТИНЕНТА" runs past --edge and onto the photograph. */
-    font-size: clamp(2.8rem, 6.9vw, 7.4rem);
+    /* Sized so "КОНТИНЕНТА" at full tracking still clears the mask. */
+    font-size: clamp(2.8rem, 6.2vw, 6.6rem);
   }
   .hero-statement {
     max-width: 26ch;
@@ -2534,11 +2578,8 @@ ol {
   .hero {
     padding-bottom: 4.5rem;
   }
-  .hero-frame {
-    --edge: 45%;
-  }
   .hero-layer {
-    object-position: center 52%;
+    object-position: center 50%;
   }
   .hero-statement {
     max-width: 30ch;

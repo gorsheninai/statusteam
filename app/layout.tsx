@@ -67,10 +67,13 @@ export default function RootLayout({
       <body>
         <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />
 
-        {/* The curtain is pure CSS on purpose: it must lift even if the
-            JavaScript bundle never arrives, or it would be a black screen
-            with the site behind it. */}
+        {/* The stage curtain. Pure CSS on purpose: it covers the whole page,
+            so it has to open even if the JavaScript bundle never arrives —
+            otherwise it is a closed curtain with the site behind it. The
+            pulse writes itself across the seam, then the wings part. */}
         <div className="preloader" aria-hidden="true">
+          <span className="curtain curtain-l" />
+          <span className="curtain curtain-r" />
           <svg
             className="preloader-line"
             viewBox="0 0 1200 40"
