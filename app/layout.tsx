@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { PULSE_PATH } from "@/lib/pulse-path";
-import StageTransitionMount from "@/components/StageTransitionMount";
 import "./globals.css";
 import "./hero-placement.css";
 import "./status-team.css";
@@ -10,7 +9,6 @@ import "./status-team-lockup.css";
 import "./experience-program.css";
 import "./status-team-final.css";
 import "./card-stack.css";
-import "./stage-transition.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
@@ -99,7 +97,6 @@ export default function RootLayout({
           К содержанию
         </a>
 
-        <StageTransitionMount />
         {children}
 
         {/* Film grain over everything. Fixed, inert, and cheap: one tiling
