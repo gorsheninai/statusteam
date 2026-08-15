@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FORM_ENDPOINT } from "@/lib/config";
 
 type Field = {
   name: string;
@@ -12,6 +13,8 @@ type Field = {
   half?: boolean;
   hint?: string;
 };
+
+export type FormKind = "casting" | "partner" | "press" | "access" | "subscribe";
 
 const CASTING: Field[] = [
   { name: "name", label: "Имя и фамилия", required: true, autoComplete: "name", half: true },
@@ -37,25 +40,107 @@ const PARTNER: Field[] = [
   { name: "message", label: "Коротко о задаче", type: "textarea" },
 ];
 
-const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
+const PRESS: Field[] = [
+  { name: "name", label: "Имя и фамилия", required: true, autoComplete: "name", half: true },
+  { name: "outlet", label: "Издание или площадка", required: true, half: true },
+  { name: "link", label: "Ссылка на профиль или медиа", type: "url", required: true, placeholder: "https://", half: true },
+  { name: "reach", label: "Охват аудитории", placeholder: "Подписчики или просмотры", half: true },
+  { name: "contact", label: "Почта или Telegram", required: true, autoComplete: "email" },
+];
 
-export default function ApplyForm({ kind }: { kind: "casting" | "partner" }) {
-  const fields = kind === "casting" ? CASTING : PARTNER;
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "unwired">("idle");
+const ACCESS: Field[] = [
+  { name: "name", label: "Имя", required: true, autoComplete: "name", half: true },
+  {
+    name: "contact",
+    label: "Почта или телефон",
+    required: true,
+    autoComplete: "email",
+    half: true,
+    placeholder: "you@mail.ru",
+  },
+];
+
+const SUBSCRIBE: Field[] = [
+  {
+    name: "contact",
+    label: "Почта",
+    type: "email",
+    required: true,
+    autoComplete: "email",
+    placeholder: "you@mail.ru",
+  },
+];
+
+const FIELDS: Record<FormKind, Field[]> = {
+  casting: CASTING,
+  partner: PARTNER,
+  press: PRESS,
+  access: ACCESS,
+  subscribe: SUBSCRIBE,
+};
+
+const SUBMIT: Record<FormKind, string> = {
+  casting: "Отправить заявку",
+  partner: "Отправить запрос",
+  press: "Запросить аккредитацию",
+  access: "Получить доступ первым",
+  subscribe: "Подписаться",
+};
+
+const DONE: Record<FormKind, string> = {
+  casting: "Заявка отправлена. Мы ответим на указанный контакт.",
+  partner: "Запрос отправлен. Мы свяжемся с вами по указанному контакту.",
+  press: "Заявка на аккредитацию отправлена. Ответим до показа.",
+  access: "Готово. Вы получите ссылку на билеты первыми.",
+  subscribe: "Готово. Новости показа придут на указанную почту.",
+};
+
+/**
+ * Every form on the page, including the two one-line ones. They share a
+ * single endpoint and a single set of states — loading, success and error all
+ * say what happened in words, not only in colour.
+ *
+ * With no endpoint configured the form refuses to pretend: it reports that
+ * delivery is not wired and sends nothing.
+ */
+export default function ApplyForm({
+  kind,
+  variant = "full",
+  consent = false,
+  submitLabel,
+  idPrefix,
+}: {
+  kind: FormKind;
+  /** "inline" is the one-line newsletter row; "full" is a real form grid. */
+  variant?: "full" | "inline";
+  /** Adds the personal-data checkbox. Required by the newer forms. */
+  consent?: boolean;
+  submitLabel?: string;
+  /**
+   * Field ids are deterministic so they can be targeted by tests and by
+   * `label[for]`. Pass a prefix wherever the same form kind renders twice on
+   * the page — the newsletter row does, in the ticket scene and the footer.
+   */
+  idPrefix?: string;
+}) {
+  const fields = FIELDS[kind];
+  const [state, setState] = useState<
+    "idle" | "sending" | "sent" | "error" | "unwired"
+  >("idle");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget).entries());
 
     /* No endpoint configured yet. Say so plainly rather than faking a send. */
-    if (!ENDPOINT) {
+    if (!FORM_ENDPOINT) {
       setState("unwired");
       return;
     }
 
     setState("sending");
     try {
-      const res = await fetch(ENDPOINT, {
+      const res = await fetch(FORM_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ form: kind, ...data }),
@@ -66,19 +151,25 @@ export default function ApplyForm({ kind }: { kind: "casting" | "partner" }) {
     }
   }
 
+  const fid = (name: string) => `${idPrefix ?? kind}-${name}`;
+
   return (
-    <form className="form" onSubmit={onSubmit} noValidate={false}>
+    <form
+      className={`form form-${variant}`}
+      onSubmit={onSubmit}
+      data-form={kind}
+    >
       <div className="form-grid">
         {fields.map((f) => (
           <p key={f.name} className={`field ${f.half ? "is-half" : ""}`}>
-            <label htmlFor={`${kind}-${f.name}`}>
+            <label htmlFor={fid(f.name)}>
               {f.label}
               {f.required && <i aria-hidden="true"> *</i>}
             </label>
 
             {f.type === "textarea" ? (
               <textarea
-                id={`${kind}-${f.name}`}
+                id={fid(f.name)}
                 name={f.name}
                 rows={4}
                 required={f.required}
@@ -86,7 +177,7 @@ export default function ApplyForm({ kind }: { kind: "casting" | "partner" }) {
               />
             ) : (
               <input
-                id={`${kind}-${f.name}`}
+                id={fid(f.name)}
                 name={f.name}
                 type={f.type ?? "text"}
                 required={f.required}
@@ -101,24 +192,45 @@ export default function ApplyForm({ kind }: { kind: "casting" | "partner" }) {
         ))}
       </div>
 
+      {consent && (
+        <p className="field-check">
+          <input
+            id={fid("consent")}
+            name="consent"
+            type="checkbox"
+            required
+            value="yes"
+          />
+          <label htmlFor={fid("consent")}>
+            Согласен на обработку персональных данных
+          </label>
+        </p>
+      )}
+
       <div className="form-foot">
-        <button className="btn btn-solid" type="submit" disabled={state === "sending"}>
-          {state === "sending"
-            ? "Отправляем…"
-            : kind === "casting"
-              ? "Отправить заявку"
-              : "Отправить запрос"}
+        <button
+          className="btn btn-solid"
+          type="submit"
+          disabled={state === "sending"}
+          data-magnetic={variant === "full" ? "" : undefined}
+        >
+          {state === "sending" ? "Отправляем…" : submitLabel ?? SUBMIT[kind]}
           <span className="arrow" aria-hidden="true">
             ↗
           </span>
         </button>
 
         <p className="form-note" role="status" aria-live="polite">
-          {state === "sent" && "Заявка отправлена. Мы ответим на указанный контакт."}
-          {state === "error" && "Не удалось отправить. Попробуйте ещё раз или напишите нам напрямую."}
+          {state === "sent" && DONE[kind]}
+          {state === "error" &&
+            "Не удалось отправить. Попробуйте ещё раз или напишите нам напрямую."}
           {state === "unwired" &&
             "Приём заявок пока не подключён — форма ещё не связана с почтой команды. Данные не отправлены."}
-          {state === "idle" && "Нажимая кнопку, вы соглашаетесь на обработку персональных данных."}
+          {state === "sending" && "Отправляем заявку…"}
+          {state === "idle" &&
+            (consent
+              ? "Мы пишем только по делу показа."
+              : "Нажимая кнопку, вы соглашаетесь на обработку персональных данных.")}
         </p>
       </div>
     </form>

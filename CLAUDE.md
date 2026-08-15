@@ -2,8 +2,14 @@
 
 Single-page site for the STATUS TEAM fashion show **ПУЛЬС КОНТИНЕНТА / PULSE OF THE
 CONTINENT**. Interface language is Russian. Next.js App Router, Tailwind v4 preflight
-plus a hand-written token system, GSAP for scroll choreography, Framer Motion for
-component state.
+plus a hand-written token system, GSAP + ScrollTrigger for scroll choreography, Lenis
+for inertial scroll, plain CSS for component state.
+
+**There is no animation library beyond GSAP and Lenis.** Framer Motion was removed:
+it cost ~40 KB gzip for two accordions and a menu, and this page has a 150 KB JS
+budget it is already pressing against. Disclosure widgets use the `.panel`
+primitive (`grid-template-rows: 0fr → 1fr`), the menu uses a `clip-path`
+transition. Do not reintroduce a component-animation dependency.
 
 ## Commands
 
@@ -11,7 +17,7 @@ component state.
 npm run dev        # local dev
 npm run build      # static export -> ./out
 npm start          # serve ./out on :4311  (next start does NOT work with output: export)
-npm run verify     # drive the rendered page in a browser (34 checks)
+npm run verify     # drive the rendered page in a browser (75 checks)
 npm run lint
 npm run typecheck
 npm run deploy         # build + wrangler deploy to Cloudflare (production)
@@ -86,6 +92,11 @@ photography.**
 No gold gradients, no black-and-gold clichés, no accent colours beyond this set. The
 photography supplies the secondary colour.
 
+**One sanctioned exception**, and it is deliberately narrow: the ticket cards carry a
+sand highlight that follows the pointer along their 1px border (`.tier::after`, masked
+to the border box). That is a rule lighting up, not a fill, which is the only reason it
+is allowed. Do not generalise it into card backgrounds, buttons or type.
+
 ### Typography — two faces, three roles
 
 - **`--font-display`** (Tenor Sans) — **large only.** The lock-up, chapter titles,
@@ -120,7 +131,7 @@ Both clip silently. Re-run `npm run verify` after touching either.
 
 ### Signature — the breathing lock-up
 
-`ПУЛЬС КОНТИНЕНТА` recurs exactly three times (hero → show → tickets). Its tracking
+`ПУЛЬС КОНТИНЕНТА` recurs exactly three times (hero → pulse → tickets). Its tracking
 opens and closes on scroll, the two words moving in opposition, so the pair reads as one
 breath. The final instance settles compressed — the pulse resolves. GSAP writes
 `--pulse` (0–1); CSS multiplies it by `--pulse-spread`.
@@ -133,11 +144,91 @@ clipped-text check.
 
 Pulse is never drawn as an ECG line.
 
-### Structure
+### Structure — seven scenes
 
-Numbered chapters (01–09) are legitimate here: a show runs in order. Chapters alternate
-loud and quiet — a media chapter is always followed by a breathing one. Preserve that
-rhythm when adding sections.
+The page is one long scroll, but each scene should feel like its own page. The order
+is the show's order and is a client requirement, not a preference:
+
+| # | Anchor | Scene | Ground |
+|---|---|---|---|
+| — | `#hero` | ПУЛЬС КОНТИНЕНТА — one promise, one control | ink |
+| 01 | `#statusteam` | STATUS TEAM — who / aftermovie / proof / numbers | burgundy |
+| 02 | `#pulse` | Следующая глава → the four tenets | ink |
+| 03 | `#experience` | Что вас ждёт + venue | paper |
+| 04 | `#tickets` | Билеты | ink |
+| 05 | `#join` | Стать частью пульса — model / brand / press | wine |
+| 06 | `#faq` | Вопросы, then the footer | ink |
+
+Chapters alternate loud and quiet — a media chapter is always followed by a breathing
+one. Preserve that rhythm when adding sections.
+
+**The hero carries exactly one link, and it goes to `#tickets`.** Getting from the
+first screen to the ticket scene in one click, and keeping the header's ticket button
+visible at every scroll position and every width (outside the burger on phones), is
+an acceptance criterion. `npm run verify` checks both.
+
+Scene 1's four beats run in a fixed order — phrase → aftermovie → guests → press →
+brands → numbers. Scene 4 must not send a buyer to the casting or partner forms; that
+redirect was the old site's mistake and the verify suite fails if the words come back.
+
+### Config, not code
+
+`lib/config.ts` holds everything the client changes without touching a component:
+`SALES_OPEN`, `TICKETS_URL`, the price `WAVES` (the active one and its countdown are
+derived from the clock), and the ticket `TIERS`. Flipping `SALES_OPEN` swaps the CTA
+from "получить доступ первым" + intent form to a real purchase link. Nothing in the
+ticket scene fakes a state it is not in — prices stay `— ₽` until they are real.
+
+Placeholder copy and imagery are marked `TODO: replace-content`; unconfirmed facts are
+marked `TODO: confirm-number` / `TODO: set-deadline` / `TODO: set-ticket-url`. Keep
+those markers greppable.
+
+## Motion
+
+Everything animates through `transform` and `opacity`. The two places that break that
+rule do it on purpose and are named in the brief: the disclosure panels
+(`grid-template-rows`) and the participation doors (`flex-grow`).
+
+`components/Motion.tsx` is the whole scroll pass. It returns before building a single
+tween when `prefers-reduced-motion: reduce` is set, so the reduced-motion page is not
+a degraded version — it is the plain document.
+
+Four mechanisms carry invariants that are easy to break:
+
+**The ground.** A single fixed `.bg-field` sits behind the page and interpolates
+between the scenes' colours. It works because three things line up: `Motion` adds
+`html.js-motion`, which makes `[data-bg]` sections **and `body`** transparent —
+`body` matters, because body's background paints *after* negative-z descendants and
+would otherwise cover the field. Without JS every section paints its own ground and
+the page is identical minus the blend. **A paper scene has ink-coloured type**, so if
+you touch this, check `#experience` first: a broken field turns it into black on black.
+
+**Position, not crossings.** The ground is chosen by reading `scrollY` against a table
+of section offsets measured on `ScrollTrigger` refresh — never by `onEnter` callbacks.
+A flung wheel, an anchor jump or a deep link can skip a boundary entirely; it cannot
+skip a position.
+
+**Pins refresh first.** `.tenets` and `.reel-zoom` both pin, and a pin adds several
+screens of spacer that everything below is measured against. Both carry
+`refreshPriority: 1`. Drop it and every trigger below them fires roughly one chapter
+early — silently.
+
+**The pinned chapter degrades by class.** `.tenets` is a plain vertical sequence of
+four word + frame blocks; `Motion` adds `.is-pinned`, which stacks them absolutely for
+the pin. No JS, or reduced motion, means four readable blocks rather than three
+invisible ones.
+
+Line reveals use `lib/split-lines.ts` (not GSAP's SplitText — 7 KB the budget cannot
+spare). It measures rendered line boxes, so it must run after `document.fonts.ready`,
+and it reverts to plain text once the reveal has played so headings re-wrap normally.
+
+Scroll is owned by Lenis, and only by Lenis: anchors go through `lib/scroll.ts`, and
+so does the menu's scroll lock (`lenis.stop()`, not a fixed body). Touch keeps the
+platform's own scrolling — `syncTouch: false` is a decision, not a default to tidy up.
+
+The preloader is **pure CSS** and shown once per session. It covers the whole page, so
+it has to lift even if the JS bundle never arrives; an inline script in `layout.tsx`
+sets `.no-preload` on repeat visits before the element is parsed.
 
 ## Media policy
 
@@ -164,9 +255,25 @@ faded or offset.
 Reveals set their initial state **from JS, never CSS**, so the page stays readable if
 JS fails.
 
+**Every image needs a reserved box** — an `aspect-ratio` on its `.media` frame, or
+`width`/`height` attributes (the posters are the only ones that use the latter).
+This is not only about CLS: an anchor jump computes its target before the images
+below load, so an unreserved image lands every deep link hundreds of pixels short.
+
+Bundle: **~160 KB gzip of JS on a modern browser** (a further 38 KB of `nomodule`
+polyfills legacy browsers only). The brief asks for ≤ 150 KB. React + the Next
+runtime are ~100 KB of that and GSAP core is ~40 KB, so the remaining levers are
+structural — dropping GSAP, or dropping Next for a hand-rolled static build. Nothing
+here blocks first paint: every script is deferred and LCP is the hero image.
+
 ## Not yet wired
 
-- **Ticket sales URL** — the CTA is built and styled but points nowhere by design.
-- **Form delivery** — set `NEXT_PUBLIC_FORM_ENDPOINT` and both forms POST JSON to it.
+- **Ticket sales** — `SALES_OPEN` is false and `TICKETS_URL` is empty by design. The
+  CTA collects intent instead, and says so.
+- **Form delivery** — set `NEXT_PUBLIC_FORM_ENDPOINT` and all five forms (casting,
+  partner, press, ticket access, newsletter) POST JSON to it, tagged by `form`.
   Without it they say so plainly. Never fake a successful submission.
+- **Price-wave deadlines** — placeholder dates in `lib/config.ts`.
+- **Guest names, press and brand logos** — grey placeholders; the marquee items are
+  `<span>`s waiting to become `<img>`s.
 - **Social / contact links** — omitted rather than invented.

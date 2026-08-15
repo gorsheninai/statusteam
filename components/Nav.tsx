@@ -1,43 +1,41 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { lockScroll, unlockScroll } from "@/lib/scroll";
 
-/* "О показе" and "Показ" named the same thing twice. One entry now covers
-   the opening chapter; the show chapter is still reachable by scrolling. */
+/* Four destinations plus the ticket button. Anything more and the row starts
+   competing with the show's own title. */
 const LINKS = [
-  { href: "#manifest", label: "О проекте" },
-  { href: "#archive", label: "Атмосфера" },
-  { href: "#casting", label: "Кастинг" },
-  { href: "#partners", label: "Партнёрам" },
+  { href: "#statusteam", label: "О нас" },
+  { href: "#pulse", label: "Показ" },
+  { href: "#experience", label: "Что вас ждёт" },
+  { href: "#join", label: "Участие" },
 ];
 
 export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
-  const reduce = useReducedMotion();
 
+  /* The bar is transparent over the hero and becomes a real header once the
+     first screen is behind you — keyed to the hero's height, not to a magic
+     pixel count, so it survives a change of hero. */
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 60);
+    const onScroll = () => {
+      const hero = document.querySelector<HTMLElement>(".hero-stage");
+      const edge = (hero?.offsetHeight ?? window.innerHeight) * 0.72;
+      setSolid(window.scrollY > edge);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* Lock the page behind the mobile menu without losing scroll position. */
+  /* Lock the page behind the menu. Lenis owns the scroll, so the lock goes
+     through it rather than through body positioning. */
   useEffect(() => {
     if (!open) return;
-    const y = window.scrollY;
-    const { body } = document;
-    body.style.position = "fixed";
-    body.style.top = `-${y}px`;
-    body.style.width = "100%";
-    return () => {
-      body.style.position = "";
-      body.style.top = "";
-      body.style.width = "";
-      window.scrollTo(0, y);
-    };
+    lockScroll();
+    return () => unlockScroll();
   }, [open]);
 
   useEffect(() => {
@@ -72,7 +70,9 @@ export default function Nav() {
         </nav>
 
         <div className="nav-end">
-          <a className="nav-tickets" href="#tickets">
+          {/* Never inside the burger: the ticket button is the one control
+              that has to be reachable from every pixel of the page. */}
+          <a className="nav-tickets" href="#tickets" data-magnetic>
             Билеты
           </a>
           <button
@@ -80,6 +80,7 @@ export default function Nav() {
             onClick={() => setOpen(true)}
             aria-label="Открыть меню"
             aria-expanded={open}
+            aria-controls="site-menu"
           >
             <span />
             <span />
@@ -87,69 +88,56 @@ export default function Nav() {
         </div>
       </header>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="menu"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Меню"
-            initial={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
-            animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
-            exit={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
-            transition={{ duration: reduce ? 0.15 : 0.62, ease: [0.65, 0, 0.35, 1] }}
-          >
-            <div className="menu-media" aria-hidden="true">
-              <img
-                src="/media/campaign-silhouette-drapes-640.webp"
-                alt=""
-                loading="lazy"
-              />
-            </div>
+      {/* Kept in the DOM and driven by a class: the close animation needs an
+          element to play on, and `inert` keeps it out of the tab order and
+          the accessibility tree while it is shut. */}
+      <div
+        id="site-menu"
+        className={`menu ${open ? "is-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Меню"
+        inert={!open}
+      >
+        <div className="menu-media" aria-hidden="true">
+          <img
+            src="/media/campaign-silhouette-drapes-640.webp"
+            alt=""
+            loading="lazy"
+          />
+        </div>
 
-            <div className="menu-inner">
-              <div className="menu-top">
-                <span className="label">Меню</span>
-                <button
-                  className="menu-close"
-                  onClick={() => setOpen(false)}
-                  aria-label="Закрыть меню"
-                  autoFocus
-                >
-                  Закрыть
-                </button>
-              </div>
+        <div className="menu-inner">
+          <div className="menu-top">
+            <span className="label">Меню</span>
+            <button
+              className="menu-close"
+              onClick={() => setOpen(false)}
+              aria-label="Закрыть меню"
+            >
+              Закрыть
+            </button>
+          </div>
 
-              <ul className="menu-list">
-                {[...LINKS, { href: "#tickets", label: "Билеты" }].map((l, i) => (
-                  <motion.li
-                    key={l.href}
-                    initial={reduce ? false : { y: "110%" }}
-                    animate={{ y: "0%" }}
-                    transition={{
-                      duration: 0.6,
-                      delay: reduce ? 0 : 0.16 + i * 0.055,
-                      ease: [0.22, 0.8, 0.28, 1],
-                    }}
-                  >
-                    <a onClick={() => setOpen(false)} href={l.href}>
-                      <b>{String(i + 1).padStart(2, "0")}</b>
-                      {l.label}
-                    </a>
-                  </motion.li>
-                ))}
-              </ul>
+          <ul className="menu-list">
+            {[...LINKS, { href: "#faq", label: "FAQ" }].map((l, i) => (
+              <li key={l.href} style={{ ["--i" as string]: i }}>
+                <a onClick={() => setOpen(false)} href={l.href}>
+                  <b>{String(i + 1).padStart(2, "0")}</b>
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-              {/* Date and venue are not confirmed, so the menu says only what
-                  the hero says. Put them back when they are locked. */}
-              <div className="menu-foot">
-                <span>Москва</span>
-                <span>Ноябрь 2026</span>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <div className="menu-foot">
+            <a className="menu-tickets" href="#tickets" onClick={() => setOpen(false)}>
+              Билеты
+            </a>
+            <span>Москва · Ноябрь 2026</span>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

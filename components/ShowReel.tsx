@@ -5,37 +5,18 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Aftermovie of the previous show (СЛАВЯНСКИЙ ВЗГЛЯД).
  *
- * Bandwidth policy: the file is only attached to the DOM once it is
- * actually wanted — on wide screens when the section scrolls into view,
- * on small screens only when the visitor taps play. Nothing downloads
- * on page load; the poster carries the section until then.
+ * Bandwidth policy: the file is not in the DOM until someone asks for it, on
+ * every screen size — the poster carries the block until then. A 5.7 MB
+ * download that nobody chose is the fastest way to lose a phone visitor, and
+ * the LCP budget for this page does not have room for it.
+ *
+ * Sound follows the same rule as the file: off until the visitor turns it on.
  */
 export default function ShowReel() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [active, setActive] = useState(false);
-  const [muted, setMuted] = useState(true);
-
-  useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-
-    const wide = window.matchMedia("(min-width: 1024px)");
-    const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (!wide.matches || calm.matches) return;
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setActive(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin: "200px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const [muted, setMuted] = useState(false);
 
   /* Stop decoding work while the reel is off screen. */
   useEffect(() => {
@@ -63,7 +44,7 @@ export default function ShowReel() {
 
   return (
     <div className="reel" ref={wrapRef}>
-      <div className="media reel-media">
+      <div className="media reel-media" data-cursor={active ? undefined : "PLAY"}>
         {active ? (
           <video
             ref={videoRef}
@@ -79,6 +60,7 @@ export default function ShowReel() {
           <img
             src="/media/show-reel-poster.webp"
             alt="Сцена показа «Славянский взгляд»: подиум, свет и зрительный зал"
+            loading="lazy"
           />
         )}
 

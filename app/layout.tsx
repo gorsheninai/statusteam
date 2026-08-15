@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { PULSE_PATH } from "@/lib/pulse-path";
 import "./globals.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
@@ -34,11 +35,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://statusteam.show"),
   title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
   description:
-    "ПУЛЬС КОНТИНЕНТА — новый показ STATUS TEAM. Lingerie, аксессуары и визуальная культура. Кастинг моделей, партнёрство, билеты.",
+    "Крупнейший показ нижнего белья в России. ПУЛЬС КОНТИНЕНТА — новое fashion-шоу STATUS TEAM: 07 ноября 2026, Kinema, Москва. Билеты, кастинг моделей, партнёрство и аккредитация СМИ.",
   openGraph: {
     title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
     description:
-      "Новый показ STATUS TEAM. Кастинг моделей, партнёрство, билеты.",
+      "Крупнейший показ нижнего белья в России. 07 ноября 2026, Kinema, Москва.",
     locale: "ru_RU",
     type: "website",
     images: ["/media/campaign-silhouette-sun-1600.webp"],
@@ -50,19 +51,45 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+/**
+ * Runs before the preloader element is parsed, so a repeat visit inside the
+ * same tab never sees the curtain a second time — and never flashes it
+ * either. Wrapped in try/catch because Safari's private mode throws on
+ * sessionStorage access.
+ */
+const PRELOAD_ONCE = `try{if(sessionStorage.getItem('st-seen')){document.documentElement.classList.add('no-preload')}else{sessionStorage.setItem('st-seen','1')}}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="ru"
-      className={`${tenor.variable} ${onest.variable}`}
-    >
+    <html lang="ru" className={`${tenor.variable} ${onest.variable}`}>
       <body>
-        <a className="skip-link" href="#manifest">
+        <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />
+
+        {/* The curtain is pure CSS on purpose: it must lift even if the
+            JavaScript bundle never arrives, or it would be a black screen
+            with the site behind it. */}
+        <div className="preloader" aria-hidden="true">
+          <svg
+            className="preloader-line"
+            viewBox="0 0 1200 40"
+            preserveAspectRatio="none"
+            focusable="false"
+          >
+            <path d={PULSE_PATH} pathLength={1} />
+          </svg>
+        </div>
+
+        <a className="skip-link" href="#statusteam">
           К содержанию
         </a>
+
         {children}
+
+        {/* Film grain over everything. Fixed, inert, and cheap: one tiling
+            turbulence sprite moved by transform. */}
+        <div className="grain" aria-hidden="true" />
       </body>
     </html>
   );

@@ -32,7 +32,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — figure in a fringed gown between hanging drapes, backlit acacia beyond
 - **Mood** — cinematic, theatrical, dust-and-light
 - **Overlay** — ★★★ large calm areas top and sides
-- **Best use** — sticky chapter panel in the new-show sequence
+- **Best use** — «ДВИЖЕНИЕ» in the pinned tenets chapter (`#pulse`); also the mobile menu ground
 - **Priority** — 1
 
 ### campaign-sand-drape · from `style1.png`
@@ -40,7 +40,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — model in cream lingerie among sculptural draped fabric, acacia, sand palette
 - **Mood** — quiet luxury, controlled, editorial
 - **Overlay** — ★★ upper third usable
-- **Best use** — new-show sequence, second panel
+- **Best use** — «РИТМ», the first beat of the pinned tenets chapter (`#pulse`)
 - **Priority** — 2
 
 ### campaign-beaded-dusk · from `7.png`
@@ -48,7 +48,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — beadwork and textile look, orange dusk sky, acacia silhouettes
 - **Mood** — warm, saturated, frontal
 - **Overlay** — ★ busy; use as full image, not a text bed
-- **Best use** — participants / world-of-the-show tile
+- **Best use** — «СИЛА» in the pinned tenets chapter (`#pulse`)
 - **Priority** — 2
 
 ### campaign-palms-gold · from `8.png`
@@ -56,7 +56,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — deep green palms, gold collar and cuffs, misted light
 - **Mood** — lush, jewelled, green counterpoint to the sand palette
 - **Overlay** — ★★ dark leaf areas hold text
-- **Best use** — partners section image; the only strong green in the library — use once
+- **Best use** — «СВОБОДА», the last beat of the pinned tenets chapter (`#pulse`); the only strong green in the library — use once
 - **Priority** — 2
 - **Notes** — Crop to upper body (`object-position: center 22%`).
 
@@ -65,7 +65,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — coin-and-chain silver headpiece and necklaces, vessel raised overhead, teal sky
 - **Mood** — sculptural, frontal, powerful
 - **Overlay** — ★★ flat teal sky at top
-- **Best use** — casting section — it reads as *portrait of a participant*
+- **Best use** — the «Я модель» door in `#join` — it reads as *portrait of a participant*
 - **Priority** — 1
 - **Notes** — Teal is the one cool colour in the library; it makes burgundy sing. Crop high (`center 18%`).
 
@@ -74,7 +74,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — model walking a runway, sheer train, spotlights, photographers and seated audience
 - **Mood** — live, in-motion, show-scale
 - **Overlay** — ★★ dark upper-right
-- **Best use** — scale / impact chapter — the only campaign frame containing an audience
+- **Best use** — the VENUE block closing `#experience` — the only campaign frame containing an audience, so it stands in for the Kinema photograph
 - **Priority** — 1
 
 ### detail-chains · `style4.png` · detail-cuff · `style6.png` · detail-profile · `style7.png`
@@ -82,7 +82,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — body-chain and sequin detail; carved cuff and gold fabric; profile of jaw, neck, shoulder in low light
 - **Mood** — intimate, tactile, materials-first
 - **Overlay** — ✗ never overlay type
-- **Best use** — the quiet "materials" triptych between two loud chapters. Small, never full-bleed
+- **Best use** — the trailing hover frames on the «Что вас ждёт» index (`#experience`). Small, never full-bleed
 - **Priority** — 2
 - **Notes** — These carry the craft story: beadwork, metal, textile.
 
@@ -90,7 +90,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Type / orientation** — images, portrait
 - **Content** — official campaign key art **with burned-in typography**
 - **Overlay** — ✗ **never** — they already contain the title lock-up
-- **Best use** — shown *as posters* — framed, at intrinsic ratio, in the tickets chapter
+- **Best use** — shown *as posters* — framed, at intrinsic ratio, in the gallery closing `#tickets`. **Never as the ticket scene's background**: they already carry the printed lock-up and the scene's own title would double. That ground is `campaign-silhouette-sun`, the hero frame returning as a bookend
 - **Priority** — 2
 - **Notes** — `poster-key-art` (`2.png`) carries the confirmed show data: «показ lingerie Africa Luxury», **7 ноября**, venue **kinema**. Treat as the source of truth for event facts.
 
@@ -108,7 +108,7 @@ contact sheet. Held in reserve.
 - **Content** — official aftermovie. Gold «СЛАВЯНСКИЙ» title card, then wide stage, lighting rig,
   seated audience, choreography, full finale lineup
 - **Mood** — large-scale live production
-- **Best use** — **the proof chapter.** Muted, `playsInline`, poster-first, plays on intent
+- **Best use** — beat 2 of `#statusteam`. Poster-first on every width, `playsInline`, mounted only on intent — it is never in the DOM until someone asks for it
 - **Priority** — 1
 - **Notes** — Original is 24 MB; the served file is 5.7 MB. Never ship the original to the browser.
 
@@ -117,7 +117,7 @@ contact sheet. Held in reserve.
 - **Content** — full runway lineup, wings and flower crowns, stage lighting, audience at tables
 - **Mood** — scale, occasion, real
 - **Overlay** — ★★ dark upper band
-- **Best use** — the single widest image on the page — proof of scale
+- **Best use** — the «Я бренд / партнёр» door in `#join` — proof of a full house — and a guest-wall placeholder
 - **Priority** — 1
 - **Notes** — Photographer watermark bottom-right. Do not crop it out; credit instead.
 
@@ -126,7 +126,7 @@ contact sheet. Held in reserve.
 - **Content** — black-and-white backstage portrait, veil, grain
 - **Mood** — quiet, film, intimate
 - **Overlay** — ★★★ large dark negative space at left
-- **Best use** — archive pairing; already monochrome, needs no filter
+- **Best use** — the «Я СМИ / блогер» door in `#join`, and the guest wall; already monochrome, needs no filter
 - **Priority** — 1
 
 ### archive-black-wings · from `pre3.PNG` · archive-flower-crown · from `pre4.PNG`
@@ -134,7 +134,7 @@ contact sheet. Held in reserve.
 - **Content** — black-feather wings look on the runway; flower-crown look mid-walk with audience behind
 - **Mood** — theatrical / joyful — the two poles of the previous show
 - **Overlay** — ★ figure is centred; keep captions outside the frame
-- **Best use** — archive sequence, paired
+- **Best use** — the guest wall in `#statusteam`, paired
 - **Priority** — 2
 - **Notes** — Both carry the photographer watermark.
 
