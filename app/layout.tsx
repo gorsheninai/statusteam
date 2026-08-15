@@ -7,6 +7,7 @@ import "./status-team.css";
 import "./status-team-fixes.css";
 import "./status-team-lockup.css";
 import "./experience-program.css";
+import "./status-team-final.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
