@@ -218,3 +218,8 @@
     transition: none !important;
   }
 }
+
+/* Remove the entire three-poster photo strip under the tickets block. */
+.tickets .posters {
+  display: none !important;
+}
