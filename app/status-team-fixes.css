@@ -8,20 +8,16 @@
   margin-inline: calc(0px - var(--st-inline));
 }
 
-/* Hero must flow straight into STATUS TEAM: no decorative chapter strip. */
+/* Hero flows directly into STATUS TEAM. */
 .hero-stage + .pulse-rule {
   display: none;
 }
 
-/* The reference topline was useful during composition, but the final page is
-   cleaner without chapter numbering / ABOUT. */
 .st-topline {
   display: none !important;
 }
 
-/* The legacy layout gives .reel-zoom a full viewport height from 1024px up.
-   That is what created the giant empty hole between STATUS TEAM, the copy and
-   the film. In the rebuilt editorial section the reel is normal flow content. */
+/* Kill the legacy 100svh reel wrapper. */
 .st .reel-zoom {
   height: auto !important;
   min-height: 0 !important;
@@ -30,7 +26,6 @@
   padding: 0 !important;
 }
 
-/* One compact lock-up: title -> sentence -> film. */
 .st .beat-who {
   min-height: 0 !important;
   height: auto !important;
@@ -44,32 +39,87 @@
 
 .st-intro-copy {
   max-width: none;
-  margin: 0 0 5px;
-  font-size: clamp(1.18rem, 1.3vw, 1.48rem);
-  line-height: 1.16;
+  margin: 0 0 4px;
+  font-size: clamp(1.12rem, 1.2vw, 1.36rem);
+  line-height: 1.14;
   letter-spacing: -0.012em;
 }
 
+/* The old footer under the film is gone in markup; keep a hard fallback in
+   case cached markup is briefly served during deploy. */
+.st .reel-meta {
+  display: none !important;
+}
+
 @media (min-width: 1200px) {
+  /* One-screen composition. The middle row absorbs the remaining viewport
+     height, so the film grows only into available space and the statistics
+     bar always remains visible at the bottom. */
   .st {
-    padding-top: clamp(26px, 3.2vh, 36px);
-    row-gap: 6px;
+    height: 100svh;
+    min-height: 700px;
+    padding-top: clamp(16px, 2vh, 24px);
+    grid-template-rows: auto minmax(0, 1fr) clamp(124px, 14.5vh, 142px);
+    row-gap: 4px;
+    overflow: hidden;
+  }
+
+  .st .st-name {
+    font-size: clamp(60px, 4.9vw, 96px);
+    line-height: 0.9;
   }
 
   .st .beat-reel {
-    align-self: start;
+    align-self: stretch;
+    min-height: 0;
+    height: 100%;
     margin-top: 0 !important;
   }
 
-  .st-intro-copy {
-    white-space: nowrap;
+  .st .reel-zoom {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column;
+    min-height: 0 !important;
   }
 
-  /* GUESTS — slow 3D editorial carousel. */
+  .st-intro-copy {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: clamp(1.05rem, 1.08vw, 1.28rem);
+  }
+
+  .st .reel {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .st .reel-media {
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+
+  /* Right column tightened to the same one-screen rhythm. */
+  .st .beat-proof {
+    padding-top: clamp(6px, 1vh, 12px);
+  }
+
+  .st .beat-h {
+    margin-bottom: 8px;
+    font-size: clamp(1rem, 1.12vw, 1.32rem);
+  }
+
+  .st .beat-proof .beat-h:not(:first-child) {
+    margin-top: clamp(10px, 1.3vh, 15px);
+    padding-top: clamp(8px, 1vh, 12px);
+  }
+
+  /* GUESTS — compact 3D editorial carousel. */
   .st .guests {
     position: relative;
     display: block;
-    height: clamp(220px, 27vh, 292px);
+    height: clamp(172px, 20vh, 205px);
     overflow: hidden;
     perspective: 1100px;
     perspective-origin: 50% 42%;
@@ -80,7 +130,7 @@
     position: absolute;
     top: 0;
     left: 50%;
-    width: clamp(116px, 8.5vw, 152px);
+    width: clamp(102px, 7.4vw, 132px);
     margin: 0;
     transform-style: preserve-3d;
     transform-origin: 50% 44%;
@@ -101,12 +151,36 @@
   .st .guest .media {
     width: 100%;
     aspect-ratio: 3 / 4;
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
   }
 
   .st .guest figcaption {
-    margin-top: 7px;
+    margin-top: 5px;
     text-align: left;
+  }
+
+  /* Compact full-width statistics rail. */
+  .st .beat-numbers .numbers {
+    padding: 0 var(--st-inline);
+  }
+
+  .st .scale-list li {
+    min-height: 0;
+    padding: 12px clamp(14px, 1.5vw, 24px);
+  }
+
+  .st .scale-n {
+    font-size: clamp(46px, 3.7vw, 68px);
+    line-height: 0.88;
+  }
+
+  .st .scale-l {
+    margin-top: 7px;
+  }
+
+  .st .scale-l::before {
+    font-size: clamp(0.56rem, 0.64vw, 0.7rem);
+    line-height: 1.18;
   }
 
   @keyframes st-guest-orbit {
