@@ -64,21 +64,20 @@ export default function PolishMotion() {
           );
         }
 
-        // The foreground begins as a physical card and becomes an ordinary
-        // full-screen page by the time it reaches top:0.
+        // card-stack.css owns the actual border/shadow with !important and
+        // exposes variables for us. Animating those variables keeps layout
+        // authority in CSS and avoids specificity battles with inline styles.
         tl.fromTo(
           status,
           {
-            borderTopLeftRadius: 34,
-            borderTopRightRadius: 34,
-            boxShadow:
-              "0 -1px 0 rgba(213,180,123,.18), 0 -32px 88px rgba(0,0,0,.52)",
+            "--stack-radius": "34px",
+            "--stack-shadow-alpha": 0.52,
+            "--stack-edge-alpha": 0.18,
           },
           {
-            borderTopLeftRadius: 0,
-            borderTopRightRadius: 0,
-            boxShadow:
-              "0 -1px 0 rgba(213,180,123,.05), 0 -4px 18px rgba(0,0,0,.08)",
+            "--stack-radius": "0px",
+            "--stack-shadow-alpha": 0.08,
+            "--stack-edge-alpha": 0.05,
             duration: 0.36,
           },
           0.64,
@@ -88,7 +87,9 @@ export default function PolishMotion() {
       return () => {
         ctx.revert();
         gsap.set(hero, { clearProps: "willChange" });
-        gsap.set(status, { clearProps: "willChange" });
+        gsap.set(status, {
+          clearProps: "willChange,--stack-radius,--stack-shadow-alpha,--stack-edge-alpha",
+        });
       };
     });
 
