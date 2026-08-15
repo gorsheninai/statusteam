@@ -1,0 +1,279 @@
+/* HERO -> STATUS TEAM signature transition.
+   The existing STATUS content stays intact; this adds one scroll-driven stage
+   before it and removes the duplicated giant STATUS TEAM heading from page 2. */
+
+/* The divider between the hero and the transition would interrupt the reveal. */
+.hero-stage + .pulse-rule {
+  display: none !important;
+}
+
+.status-transition {
+  position: relative;
+  height: 152svh;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background: #080706;
+  isolation: isolate;
+}
+
+.status-transition-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  perspective: 1500px;
+  transform-style: preserve-3d;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(92, 31, 36, 0.18), transparent 36%),
+    radial-gradient(circle at 50% 100%, rgba(72, 18, 28, 0.2), transparent 48%),
+    #080706;
+}
+
+.status-transition-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.55), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.55)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 25%, transparent 74%, rgba(0, 0, 0, 0.35));
+  z-index: 1;
+}
+
+.status-transition-ambient {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(62vw, 980px);
+  aspect-ratio: 1.7 / 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(183, 129, 88, 0.12), rgba(92, 23, 35, 0.05) 46%, transparent 72%);
+  filter: blur(34px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.status-transition-mark {
+  position: relative;
+  z-index: 3;
+  width: clamp(250px, 31vw, 620px);
+  aspect-ratio: 6.43 / 1;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+.status-transition-mark img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.status-transition-logo-depth {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform: translate3d(
+    calc(var(--depth) * 1.15px),
+    calc(var(--depth) * 0.72px),
+    calc(var(--depth) * -10px)
+  );
+  opacity: calc(0.22 - var(--depth) * 0.018);
+  filter: brightness(0.25) sepia(0.45) saturate(0.7);
+}
+
+.status-transition-logo-main {
+  z-index: 8;
+  filter: sepia(0.2) saturate(0.88) brightness(1.08) contrast(1.02);
+}
+
+.status-transition-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: block;
+  background: linear-gradient(
+    112deg,
+    transparent 28%,
+    rgba(255, 246, 222, 0.08) 37%,
+    rgba(255, 244, 211, 0.72) 49%,
+    rgba(255, 246, 222, 0.1) 61%,
+    transparent 72%
+  );
+  -webkit-mask: url("/media/brand-status-team-640.webp") center / contain no-repeat;
+  mask: url("/media/brand-status-team-640.webp") center / contain no-repeat;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.status-transition-palm {
+  position: absolute;
+  top: 50%;
+  width: min(48vw, 760px);
+  height: min(94svh, 920px);
+  color: #080705;
+  transform-origin: 18% 86%;
+  will-change: transform, opacity;
+  pointer-events: none;
+  z-index: 4;
+  filter:
+    drop-shadow(0 0 1px rgba(213, 180, 123, 0.48))
+    drop-shadow(0 6px 22px rgba(0, 0, 0, 0.42));
+}
+
+.status-transition-palm svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.status-transition-palm-left {
+  left: -7vw;
+  transform: translateY(-50%);
+}
+
+.status-transition-palm-right {
+  right: -7vw;
+  transform: translateY(-50%) scaleX(-1);
+  transform-origin: 82% 86%;
+}
+
+.status-transition-palm-back {
+  z-index: 2;
+  width: min(43vw, 680px);
+  color: #18100e;
+  opacity: 0.62;
+  filter: drop-shadow(0 0 1px rgba(213, 180, 123, 0.25));
+}
+
+.status-transition-palm-front {
+  z-index: 5;
+}
+
+/* STATUS TEAM has just been introduced by the transition, so the duplicated
+   giant heading on the proof page is intentionally removed. */
+.st .beat-who {
+  display: none !important;
+}
+
+@media (min-width: 1200px) {
+  .st {
+    grid-template-rows: auto auto !important;
+    padding-top: clamp(44px, 5vh, 58px) !important;
+  }
+
+  .st .beat-reel {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  .st .beat-numbers {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+  }
+
+  /* With the large heading gone, page 2 starts as an editorial film spread. */
+  .st-intro-copy {
+    margin-top: 0 !important;
+    margin-bottom: clamp(16px, 1.7vh, 20px) !important;
+    font-size: clamp(1rem, 1.06vw, 1.18rem) !important;
+  }
+
+  .st .beat-proof {
+    top: clamp(50px, 5.6vh, 66px) !important;
+  }
+
+  .st .beat-numbers {
+    margin-top: clamp(28px, 3.2vh, 38px) !important;
+  }
+}
+
+/* The transition and the proof page touch directly — no divider, no dead band. */
+.status-transition + .st {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 1199px) {
+  .status-transition {
+    height: 126svh;
+  }
+
+  .status-transition-mark {
+    width: clamp(220px, 56vw, 430px);
+  }
+
+  .status-transition-palm {
+    width: min(68vw, 620px);
+    height: min(82svh, 760px);
+  }
+
+  .status-transition-palm-left {
+    left: -24vw;
+  }
+
+  .status-transition-palm-right {
+    right: -24vw;
+  }
+
+  .st {
+    padding-top: clamp(48px, 7vw, 70px) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .status-transition {
+    height: 112svh;
+  }
+
+  .status-transition-mark {
+    width: min(72vw, 320px);
+  }
+
+  .status-transition-palm {
+    top: 54%;
+    width: 82vw;
+    height: 70svh;
+  }
+
+  .status-transition-palm-left {
+    left: -46vw;
+  }
+
+  .status-transition-palm-right {
+    right: -46vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-transition {
+    height: 72svh;
+  }
+
+  .status-transition-stage {
+    position: relative;
+    height: 72svh;
+  }
+
+  .status-transition-mark {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .status-transition-palm-left {
+    opacity: 0.7 !important;
+    transform: translateY(-50%) translateX(-36%) !important;
+  }
+
+  .status-transition-palm-right {
+    opacity: 0.7 !important;
+    transform: translateY(-50%) translateX(36%) scaleX(-1) !important;
+  }
+}
