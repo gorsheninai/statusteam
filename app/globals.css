@@ -127,6 +127,24 @@ video {
   display: block;
   max-width: 100%;
 }
+
+/* Selecting anything used to wash the page in the browser's default blue,
+   because every decorative layer is a real element the highlight can land on.
+   The mark is burgundy like the rest of the page, and the layers that carry
+   no words are out of the selection entirely. */
+::selection {
+  background: var(--burgundy);
+  color: var(--paper);
+}
+.bg-field,
+.blackout,
+.hero-frame,
+.tickets-bg,
+.zone-media,
+[aria-hidden="true"] {
+  user-select: none;
+}
+
 h1,
 h2,
 h3,
@@ -1036,6 +1054,11 @@ ol {
   inset: calc(var(--bleed, 10%) * -1);
   width: calc(100% + var(--bleed, 10%) * 2);
   height: calc(100% + var(--bleed, 10%) * 2);
+  /* The base reset caps every img at max-width:100%, which clamped this one
+     to the frame while `inset` still pulled it a full bleed to the left — the
+     figures sat off-centre and the right edge of the frame stayed black. The
+     bleed only works if the layer is allowed to be wider than its box. */
+  max-width: none;
   object-fit: cover;
   object-position: center 46%;
 }
