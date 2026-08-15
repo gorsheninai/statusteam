@@ -1,548 +1,302 @@
 import Nav from "@/components/Nav";
 import ShowReel from "@/components/ShowReel";
-import Participants from "@/components/Participants";
-import ApplyForm from "@/components/ApplyForm";
-import Motion from "@/components/Motion";
+import GuestRail from "@/components/GuestRail";
+import StatusMetrics from "@/components/StatusMetrics";
+import TicketsScene from "@/components/TicketsScene";
+import JoinScene from "@/components/JoinScene";
+import FAQScene from "@/components/FAQScene";
+import LeadForm from "@/components/LeadForm";
+import SiteMotion from "@/components/SiteMotion";
 
-const Arrow = () => (
-  <span className="arrow" aria-hidden="true">
-    ↗
-  </span>
-);
+const PULSE_BEATS = [
+  {
+    word: "РИТМ",
+    image: "/media/campaign-sand-drape-1400.webp",
+    alt: "Модель в светлом образе среди скульптурных драпировок",
+    note: "Музыка становится частью движения.",
+    legend: "СЦЕНА · РИТМ",
+  },
+  {
+    word: "ДВИЖЕНИЕ",
+    image: "/media/campaign-silhouette-drapes-1400.webp",
+    alt: "Модель среди сценических драпировок и тёплого света",
+    note: "Подиум превращается в сцену.",
+    legend: "ПОСТАНОВКА · ДВИЖЕНИЕ",
+  },
+  {
+    word: "СИЛА",
+    image: "/media/campaign-beaded-dusk-1400.webp",
+    alt: "Модель в расшитом образе на фоне вечернего света",
+    note: "Женщина не следует образу. Она создаёт его.",
+    legend: "ОБРАЗЫ · СИЛА",
+  },
+  {
+    word: "СВОБОДА",
+    image: "/media/campaign-palms-gold-1400.webp",
+    alt: "Модель в золотых украшениях среди пальмовых листьев",
+    note: "Пульс Континента.",
+    legend: "ФИНАЛ · СВОБОДА",
+  },
+];
+
+const EXPERIENCE = [
+  {
+    title: "ПОДИУМ-ШОУ",
+    text: "Новые коллекции вживую",
+    image: "/media/detail-chains-900.webp",
+  },
+  {
+    title: "LIVE-ПЕРФОРМАНС",
+    text: "Музыка, свет и постановка в одном действии",
+    image: "/media/detail-cuff-900.webp",
+  },
+  {
+    title: "ГОСТИ И АТМОСФЕРА",
+    text: "Fashion-индустрия, медийные лица и creators",
+    image: "/media/detail-profile-900.webp",
+  },
+  {
+    title: "AFTERPARTY",
+    text: "Продолжение вечера после финального выхода",
+    image: "/media/archive-black-wings-1200.webp",
+  },
+];
+
+const MEDIA_PLACEHOLDERS = ["СМИ 01", "СМИ 02", "СМИ 03", "СМИ 04", "СМИ 05", "СМИ 06"];
+const BRAND_PLACEHOLDERS = ["BRAND 01", "BRAND 02", "BRAND 03", "BRAND 04", "BRAND 05", "BRAND 06"];
 
 export default function Home() {
   return (
     <>
-      <Motion />
+      <SiteMotion />
       <Nav />
 
-      <main id="top">
+      <main>
         {/* ============================================================
-            HERO — campaign key frame. Desktop and mobile use dedicated
-            crops generated for the website; typography stays live HTML.
+            01 — HERO
             ============================================================ */}
-        <div className="hero-stage">
-          <section className="hero on-dark">
-            <div className="hero-frame">
-              <div className="hero-curtain" data-curtain>
-                <div className="media hero-media">
-                  <picture>
-                    <source
-                      media="(max-width: 899px)"
-                      srcSet="/media/header_9_16.png"
-                    />
-                    <img
-                      className="hero-layer"
-                      src="/media/header_16_9.png"
-                      alt="Две модели в чёрно-золотых couture-образах для показа «Пульс Континента»"
-                      fetchPriority="high"
-                    />
-                  </picture>
-                </div>
-              </div>
-            </div>
-
-            <div className="hero-inner shell">
-              <h1 className="hero-title" data-pulse-title>
-                <span className="pulse-mask" data-hero="t1">
-                  <span className="pulse-line">Пульс</span>
-                </span>
-                <span className="pulse-mask" data-hero="t2">
-                  <span className="pulse-line">Континента</span>
-                </span>
-              </h1>
-
-              <p className="hero-statement" data-hero="statement">
-                Главное fashion-событие осени в мире нижнего белья.
-              </p>
-
-              <p className="hero-where" data-hero="where">
-                <span className="hero-city">Москва</span>
-                <span className="hero-when">
-                  {/* "Ноябрь" is the real, readable value with no JS; the two
-                      earlier months sit above the clip and only roll through
-                      once, on the first entrance. */}
-                  <span className="month" data-month>
-                    <span className="month-inner">
-                      <span className="month-ghost" aria-hidden="true">
-                        Сентябрь
-                      </span>
-                      <span className="month-ghost" aria-hidden="true">
-                        Октябрь
-                      </span>
-                      <span className="month-now">Ноябрь</span>
-                    </span>
-                  </span>
-                  <span className="hero-year">2026</span>
-                </span>
-              </p>
-
-              <div className="hero-links" data-hero="links">
-                <a className="link-rule" href="#casting">
-                  Стать моделью <Arrow />
-                </a>
-                <a className="link-rule" href="#partners">
-                  Стать партнёром <Arrow />
-                </a>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        {/* ============================================================
-            01 — NEW PROJECT. Editorial introduction to the show.
-            ============================================================ */}
-        <section className="manifest" id="manifest">
-          <div className="manifest-copy shell">
-            <p className="chapter">
-              <b>01</b>
-              <i />
-              <span>Новый проект STATUS TEAM</span>
-            </p>
-
-            <h2 className="manifest-h campaign" data-reveal="lines">
-              Не просто показ. Цельное сценическое действие.
-            </h2>
-
-            <div className="manifest-body">
-              <p data-reveal="up">
-                Этой осенью STATUS TEAM представляет «Пульс Континента» —
-                fashion-шоу нижнего белья и аксессуаров, построенное на ритме,
-                движении и первозданной энергии.
-              </p>
-              <p data-reveal="up">
-                Африканская эстетика здесь — не декорация, а язык силы. Свет,
-                музыка, хореография и коллекции работают как одно действие, в
-                центре которого — женщина: сильная, чувственная, свободная.
-              </p>
-            </div>
-          </div>
-
-          <figure className="manifest-figure" data-reveal="mask">
-            <div className="media">
-              <img
-                src="/media/campaign-sand-drape-1400.webp"
-                srcSet="/media/campaign-sand-drape-800.webp 800w, /media/campaign-sand-drape-1400.webp 1400w"
-                sizes="(max-width: 900px) 100vw, 46vw"
-                alt="Модель в светлом комплекте среди скульптурных драпировок песочного цвета"
-                loading="lazy"
-              />
-            </div>
-            <figcaption className="credit">Пульс континента / кампания</figcaption>
-          </figure>
-        </section>
-
-        {/* ============================================================
-            02 — МАСШТАБ. The closing card of the intro scene.
-            ============================================================ */}
-        <section className="scale on-dark">
-          <div className="shell">
-            <p className="chapter">
-              <b>02</b>
-              <i />
-              <span>Масштаб</span>
-            </p>
-
-            <ul className="scale-list">
-              <li data-reveal="up">
-                <span className="scale-n struct">60K+</span>
-                <span className="scale-l">человек в сообществе STATUS TEAM</span>
-              </li>
-              <li data-reveal="up">
-                <span className="scale-n struct">10M+</span>
-                <span className="scale-l">просмотров контента каждый месяц</span>
-              </li>
-              <li data-reveal="up">
-                <span className="scale-n struct">03</span>
-                <span className="scale-l">
-                  показ команды — после «Славянского взгляда»
-                </span>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        {/* ============================================================
-            03 — ПОКАЗ. Sticky chapter: the title holds while the show
-            scrolls past it. Second recurrence of the lock-up.
-            ============================================================ */}
-        <section className="show" id="show">
-          <div className="show-sticky">
-            <p className="chapter">
-              <b>03</b>
-              <i />
-              <span>Показ</span>
-            </p>
-            <h2 className="show-title" data-pulse-title>
-              <span className="pulse-line">Пульс</span>
-              <span className="pulse-line">Континента</span>
-            </h2>
-            <p className="show-sticky-note">
-              Autumn 2026 — Kinema
-            </p>
-          </div>
-
-          <div className="show-panels">
-            {[
-              {
-                img: "campaign-silhouette-drapes",
-                n: "Сцена",
-                cap: "Показ начинается на закате. Весь свет тёплый, тени длинные, ткань двигается вместе с моделью.",
-                alt: "Модель в длинном платье с бахромой между тканевыми драпировками, за ними подсвеченная акация",
-              },
-              {
-                img: "campaign-beaded-dusk",
-                n: "Образы",
-                cap: "Бисер, металл, кожа и сетка. Каждый выход собирается как отдельный образ, а не как позиция каталога.",
-                alt: "Модель в расшитом бисером образе на фоне оранжевого закатного неба",
-              },
-              {
-                img: "campaign-palms-gold",
-                n: "Финал",
-                cap: "Зелень, латунь и вода — финальная сцена уводит показ из саванны в тропики.",
-                alt: "Модель в золотом воротнике и браслетах среди крупных пальмовых листьев",
-              },
-            ].map((p) => (
-              <figure key={p.img} className="show-panel" data-reveal="mask">
-                <div className="media">
+        <section className="hero hero-v4 on-dark" id="hero" data-bg="#100d0c">
+          <div className="hero-frame">
+            <div className="hero-curtain">
+              <div className="media hero-media">
+                <picture>
+                  <source media="(max-width: 899px)" srcSet="/media/header_9_16.png" />
                   <img
-                    src={`/media/${p.img}-1400.webp`}
-                    srcSet={`/media/${p.img}-800.webp 800w, /media/${p.img}-1400.webp 1400w`}
-                    sizes="(max-width: 900px) 100vw, 44vw"
-                    alt={p.alt}
-                    loading="lazy"
+                    className="hero-layer"
+                    src="/media/header_16_9.png"
+                    alt="Две модели в чёрно-золотых couture-образах для показа «Пульс Континента»"
+                    fetchPriority="high"
                   />
+                </picture>
+              </div>
+            </div>
+          </div>
+
+          <div className="hero-inner shell">
+            <h1 className="hero-title">
+              <span className="reveal-mask"><span>ПУЛЬС</span></span>
+              <span className="reveal-mask"><span>КОНТИНЕНТА</span></span>
+            </h1>
+
+            {/* TODO: replace-content — keep “Крупнейший” only if the claim is verifiable. */}
+            <p className="hero-statement">Крупнейший показ нижнего белья в России</p>
+            <p className="hero-where">МОСКВА · НОЯБРЬ 2026</p>
+
+            <a className="hero-ticket-cta v4-button v4-button-gold" href="#tickets" data-magnetic>
+              БИЛЕТЫ <span aria-hidden="true">↘</span>
+            </a>
+          </div>
+        </section>
+
+        {/* ============================================================
+            02 — STATUS TEAM: brand → film → social proof → numbers
+            ============================================================ */}
+        <section className="scene status-v4" id="statusteam" data-bg="#86102b">
+          <div className="status-brand-beat">
+            <div className="status-brand-media" aria-hidden="true">
+              {/* TODO: replace-content */}
+              <img src="/media/archive-lineup-1600.webp" alt="" loading="lazy" />
+            </div>
+            <div className="status-brand-shade" aria-hidden="true" />
+            <div className="shell status-brand-copy">
+              <p className="scene-kicker">КТО МЫ</p>
+              <h2 className="status-wordmark" data-reveal-heading>
+                <span className="reveal-mask"><span>STATUS</span></span>
+                <span className="reveal-mask"><span>TEAM</span></span>
+              </h2>
+              {/* TODO: replace-content */}
+              <p className="status-positioning">Создаём fashion-события, которые выходят за рамки обычного показа.</p>
+            </div>
+          </div>
+
+          <div className="status-video-beat">
+            <div className="shell status-proof-head">
+              <p className="scene-kicker">ПРЕДЫДУЩИЙ ПОКАЗ</p>
+              <h3 className="section-title" data-reveal-heading>
+                <span className="reveal-mask"><span>СЛАВЯНСКИЙ</span></span>
+                <span className="reveal-mask"><span>ВЗГЛЯД</span></span>
+              </h3>
+            </div>
+            <div className="status-video-pin">
+              <div className="status-video-zoom"><ShowReel /></div>
+            </div>
+          </div>
+
+          <div className="status-social-beat shell">
+            <div className="proof-block">
+              <div className="proof-heading">
+                <span>01</span>
+                <h3>СРЕДИ ГОСТЕЙ</h3>
+              </div>
+              <GuestRail />
+            </div>
+
+            <div className="proof-block proof-marquees">
+              <div className="proof-heading">
+                <span>02</span>
+                <h3>О НАС ГОВОРИЛИ</h3>
+              </div>
+              {/* TODO: replace-content — real media logos. */}
+              <div className="logo-marquee" aria-label="СМИ">
+                <div className="logo-marquee-track">
+                  {[...MEDIA_PLACEHOLDERS, ...MEDIA_PLACEHOLDERS].map((logo, index) => <strong key={`${logo}-${index}`}>{logo}</strong>)}
                 </div>
-                <figcaption>
-                  <span className="label">{p.n}</span>
-                  <p>{p.cap}</p>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
+              </div>
 
-        {/* ============================================================
-            04 — МАТЕРИАЛЫ. Quiet triptych between two loud chapters.
-            ============================================================ */}
-        <section className="materials">
-          <div className="shell">
-            <p className="chapter">
-              <b>04</b>
-              <i />
-              <span>Материалы</span>
-            </p>
-            <h2 className="materials-h campaign" data-reveal="lines">
-              Показ собирается из деталей.
-            </h2>
-          </div>
-
-          <div className="materials-grid shell">
-            {[
-              { img: "detail-chains", cap: "Бисер и цепь", alt: "Деталь: расшитые бисером цепочки на теле модели" },
-              { img: "detail-cuff", cap: "Металл", alt: "Деталь: массивный резной браслет и золотистая ткань" },
-              { img: "detail-profile", cap: "Свет", alt: "Деталь: профиль модели в тёплом контровом свете" },
-            ].map((m) => (
-              <figure key={m.img} data-reveal="mask">
-                <div className="media">
-                  <img
-                    src={`/media/${m.img}-900.webp`}
-                    srcSet={`/media/${m.img}-500.webp 500w, /media/${m.img}-900.webp 900w`}
-                    sizes="(max-width: 760px) 44vw, 28vw"
-                    alt={m.alt}
-                    loading="lazy"
-                  />
+              <div className="proof-heading proof-heading-second">
+                <span>03</span>
+                <h3>ВМЕСТЕ С НАМИ</h3>
+              </div>
+              {/* TODO: replace-content — real partner logos. */}
+              <div className="logo-marquee is-reverse" aria-label="Бренды-партнёры">
+                <div className="logo-marquee-track">
+                  {[...BRAND_PLACEHOLDERS, ...BRAND_PLACEHOLDERS].map((logo, index) => <strong key={`${logo}-${index}`}>{logo}</strong>)}
                 </div>
-                <figcaption className="credit">{m.cap}</figcaption>
-              </figure>
+              </div>
+            </div>
+
+            <p className="status-credit">Фото и видео показа — Паша Доренский</p>
+          </div>
+
+          <div className="status-numbers-beat">
+            <div className="shell"><StatusMetrics /></div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            03 — NEXT CHAPTER / PULSE
+            ============================================================ */}
+        <section className="scene pulse-v4 on-dark" id="pulse" data-bg="#100d0c">
+          <div className="next-chapter">
+            <div className="next-chapter-copy shell">
+              <p className="scene-kicker">СЛЕДУЮЩАЯ ГЛАВА</p>
+              <h2 className="display-title display-title-tight">
+                <span>ПУЛЬС</span>
+                <span>КОНТИНЕНТА</span>
+              </h2>
+              <p>Новое fashion-шоу STATUS TEAM о силе, ритме и свободе.</p>
+            </div>
+          </div>
+
+          <div className="pulse-pin-scroll">
+            <div className="pulse-pin-stage">
+              <div className="pulse-progress" aria-hidden="true">
+                {PULSE_BEATS.map((beat) => <i key={beat.word} />)}
+              </div>
+
+              {PULSE_BEATS.map((beat) => (
+                <article className="pulse-beat" key={beat.word}>
+                  <img src={beat.image} alt={beat.alt} loading="lazy" />
+                  <div className="pulse-beat-shade" aria-hidden="true" />
+                  <div className="pulse-beat-copy shell">
+                    <span className="pulse-beat-legend">{beat.legend}</span>
+                    <h3>{beat.word}</h3>
+                    <p>{beat.note}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="pulse-outro shell">
+            <p>НИЖНЕЕ БЕЛЬЁ И АКСЕССУАРЫ · МОСКВА · НОЯБРЬ 2026</p>
+            <h3>СЛЕДУЮЩИЙ ПОКАЗ БУДЕТ ДРУГИМ.</h3>
+          </div>
+        </section>
+
+        {/* ============================================================
+            04 — EXPERIENCE
+            ============================================================ */}
+        <section className="scene experience-v4" id="experience" data-bg="#f1ece4">
+          <div className="shell experience-head">
+            <p className="scene-kicker">07 НОЯБРЯ · KINEMA</p>
+            <h2 className="display-title display-title-dark" data-reveal-heading>
+              <span className="reveal-mask"><span>ЧТО ВАС</span></span>
+              <span className="reveal-mask"><span>ЖДЁТ</span></span>
+            </h2>
+          </div>
+
+          <div className="experience-list shell">
+            {EXPERIENCE.map((item, index) => (
+              <article className="experience-row" key={item.title} data-reveal-up>
+                <span className="experience-index">0{index + 1}</span>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+                {/* TODO: replace-content */}
+                <img className="experience-hover-media" src={item.image} alt="" loading="lazy" aria-hidden="true" />
+                <img className="experience-mobile-media" src={item.image} alt={`Визуал: ${item.title}`} loading="lazy" />
+              </article>
             ))}
           </div>
-        </section>
 
-        {/* ============================================================
-            05 — АТМОСФЕРА. The proof chapter: real footage, real photos.
-            ============================================================ */}
-        <section className="archive on-dark" id="archive">
-          <div className="shell archive-head">
-            <p className="chapter">
-              <b>05</b>
-              <i />
-              <span>Атмосфера</span>
-            </p>
-            <h2 className="archive-h struct" data-reveal="lines">
-              Славянский
-              <br />
-              взгляд
-            </h2>
-            <p className="archive-note body-text" data-reveal="up">
-              Предыдущий показ STATUS TEAM. Полный зал, живая постановка и
-              съёмочная команда, которая работала весь вечер. Ниже — реальные
-              кадры и афтермуви.
-            </p>
-          </div>
-
-          <div className="shell">
-            <ShowReel />
-          </div>
-
-          <div className="archive-grid shell">
-            <figure className="arch-a" data-reveal="mask">
-              <div className="media">
-                <img
-                  src="/media/archive-backstage-bw-1200.webp"
-                  srcSet="/media/archive-backstage-bw-700.webp 700w, /media/archive-backstage-bw-1200.webp 1200w"
-                  sizes="(max-width: 900px) 100vw, 38vw"
-                  alt="Чёрно-белый кадр: модель в вуали перед выходом на подиум"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption className="credit">Backstage</figcaption>
-            </figure>
-
-            <figure className="arch-b" data-reveal="mask">
-              <div className="media">
-                <img
-                  src="/media/archive-black-wings-1200.webp"
-                  srcSet="/media/archive-black-wings-700.webp 700w, /media/archive-black-wings-1200.webp 1200w"
-                  sizes="(max-width: 900px) 100vw, 30vw"
-                  alt="Выход на подиум в образе с большими чёрными крыльями"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption className="credit">Выход / крылья</figcaption>
-            </figure>
-
-            <figure className="arch-c" data-reveal="mask">
-              <div className="media">
-                <img
-                  src="/media/archive-flower-crown-1200.webp"
-                  srcSet="/media/archive-flower-crown-700.webp 700w, /media/archive-flower-crown-1200.webp 1200w"
-                  sizes="(max-width: 900px) 100vw, 30vw"
-                  alt="Модель в цветочном венке идёт по подиуму, за ней зрительный зал"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption className="credit">Выход / венок</figcaption>
-            </figure>
-          </div>
-
-          <p className="shell archive-credit credit">
-            Фото и видео показа — Паша Доренский
-          </p>
-        </section>
-
-        {/* ============================================================
-            06 — УЧАСТНИКИ. Typographic index, deliberately image-free:
-            the page needs a quiet beat after the archive.
-            ============================================================ */}
-        <section className="world">
-          <div className="shell">
-            <p className="chapter">
-              <b>06</b>
-              <i />
-              <span>Участники</span>
-            </p>
-            <h2 className="world-h campaign" data-reveal="lines">
-              Кто делает вечер
-            </h2>
-            <Participants />
-          </div>
-        </section>
-
-        {/* ============================================================
-            07 — КАСТИНГ
-            ============================================================ */}
-        <section className="casting on-dark" id="casting">
-          <figure className="casting-figure" data-reveal="mask">
-            <div className="media">
-              <img
-                src="/media/campaign-silver-portrait-1400.webp"
-                srcSet="/media/campaign-silver-portrait-800.webp 800w, /media/campaign-silver-portrait-1400.webp 1400w"
-                sizes="(max-width: 980px) 100vw, 44vw"
-                alt="Портрет модели в серебряном головном уборе и украшениях на фоне неба"
-                loading="lazy"
-              />
-            </div>
-          </figure>
-
-          <div className="casting-copy">
-            <p className="chapter">
-              <b>07</b>
-              <i />
-              <span>Кастинг</span>
-            </p>
-            <h2 className="casting-h struct" data-reveal="lines">
-              Стать частью
-              <br />
-              STATUS TEAM
-            </h2>
-
-            <p className="casting-lead lead" data-reveal="up">
-              Открытый кастинг для моделей. Опыт подиума желателен, но не
-              обязателен — мы смотрим на фактуру, пластику и характер.
-            </p>
-
-            <ol className="casting-steps" data-reveal="up">
-              <li>
-                <b>01</b> Заявка с параметрами и снэпами
-              </li>
-              <li>
-                <b>02</b> Онлайн-отбор и ответ на ваш контакт
-              </li>
-              <li>
-                <b>03</b> Очный кастинг, примерка и репетиция
-              </li>
-            </ol>
-
-            <ApplyForm kind="casting" />
-          </div>
-        </section>
-
-        {/* ============================================================
-            08 — ПАРТНЁРАМ. Argued with the full house, not a pitch deck.
-            ============================================================ */}
-        <section className="partners" id="partners">
-          <div className="shell partners-head">
-            <p className="chapter">
-              <b>08</b>
-              <i />
-              <span>Партнёрам</span>
-            </p>
-            <h2 className="partners-h campaign" data-reveal="lines">
-              Ваш бренд — на подиуме и в кадре.
-            </h2>
-          </div>
-
-          <figure className="partners-figure" data-reveal="mask">
-            <div className="media">
-              <img
-                src="/media/archive-lineup-1600.webp"
-                srcSet="/media/archive-lineup-640.webp 640w, /media/archive-lineup-1000.webp 1000w, /media/archive-lineup-1600.webp 1600w"
-                sizes="100vw"
-                alt="Финальный выход показа: модели на подиуме, за столами полный зал гостей"
-                loading="lazy"
-              />
-            </div>
-            <figcaption className="credit">
-              Славянский взгляд, финал — фото Паша Доренский
-            </figcaption>
-          </figure>
-
-          <div className="shell partners-body">
-            <ul className="partners-list">
-              <li data-reveal="up">
-                <h3 className="struct">Коллекция</h3>
-                <p>Отдельный выход бренда с собственной сценой, светом и музыкой.</p>
-              </li>
-              <li data-reveal="up">
-                <h3 className="struct">Интеграция</h3>
-                <p>Присутствие в зале, в зоне гостей и в съёмке вечера.</p>
-              </li>
-              <li data-reveal="up">
-                <h3 className="struct">Медиа</h3>
-                <p>Контент показа: съёмка, афтермуви и публикации сообщества.</p>
-              </li>
-            </ul>
-
-            <div className="partners-form">
-              <ApplyForm kind="partner" />
+          {/* TODO: confirm — replace AFTERPARTY if it is not part of the final event program. */}
+          <div className="venue-block">
+            {/* TODO: replace-content — replace with a real Kinema venue photograph. */}
+            <img src="/media/archive-lineup-1600.webp" alt="Площадка показа Kinema, Москва — временный кадр" loading="lazy" />
+            <div className="venue-shade" aria-hidden="true" />
+            <div className="venue-copy shell">
+              <span>ПЛОЩАДКА</span>
+              <h3>KINEMA</h3>
+              <p>МОСКВА</p>
             </div>
           </div>
         </section>
 
         {/* ============================================================
-            09 — БИЛЕТЫ. Final payoff. Third and last recurrence of the
-            lock-up, at its most compressed.
+            05 — TICKETS
             ============================================================ */}
-        <section className="tickets on-dark" id="tickets">
-          <div className="shell">
-            <p className="chapter">
-              <b>09</b>
-              <i />
-              <span>Билеты</span>
-            </p>
+        <TicketsScene />
 
-            <h2 className="tickets-title" data-pulse-title data-pulse-final>
-              <span className="pulse-line">Пульс</span>
-              <span className="pulse-line">Континента</span>
-            </h2>
+        {/* ============================================================
+            06 — JOIN
+            ============================================================ */}
+        <JoinScene />
 
-            <div className="tickets-bar">
-              <div>
-                <span className="label">Дата</span>
-                <b>07 ноября</b>
-              </div>
-              <div>
-                <span className="label">Площадка</span>
-                <b>Kinema</b>
-              </div>
-              <div>
-                <span className="label">Сезон</span>
-                <b>Autumn 2026</b>
-              </div>
-            </div>
-
-            <div className="tickets-cta">
-              {/* No ticketing URL has been provided yet. The control is present
-                  and styled; point it at the real link when it exists. */}
-              <a className="btn btn-solid is-pending" href="#tickets" aria-disabled="true">
-                Продажа откроется <Arrow />
-              </a>
-              <p className="tickets-note">
-                Ссылка на продажу появится здесь. Чтобы узнать об открытии
-                первыми — оставьте заявку в разделе{" "}
-                <a className="inline-link" href="#casting">
-                  кастинга
-                </a>{" "}
-                или{" "}
-                <a className="inline-link" href="#partners">
-                  партнёрства
-                </a>
-                .
-              </p>
-            </div>
-          </div>
-
-          <div className="posters shell" aria-label="Афиши показа">
-            {[
-              { img: "poster-key-art", alt: "Афиша показа «Пульс континента»: модель у акации, дата 7 ноября, площадка kinema" },
-              { img: "poster-train", alt: "Афиша показа «Пульс континента»: модель в леопардовом комплекте с длинным шлейфом" },
-              { img: "poster-duo-dusk", alt: "Афиша показа «Пульс континента»: две модели на фоне сумеречного неба" },
-            ].map((p) => (
-              <figure key={p.img} data-reveal="up">
-                <img
-                  src={`/media/${p.img}-1000.webp`}
-                  srcSet={`/media/${p.img}-600.webp 600w, /media/${p.img}-1000.webp 1000w`}
-                  sizes="(max-width: 760px) 74vw, 30vw"
-                  alt={p.alt}
-                  loading="lazy"
-                />
-              </figure>
-            ))}
-          </div>
-        </section>
+        {/* ============================================================
+            07 — FAQ
+            ============================================================ */}
+        <FAQScene />
       </main>
 
-      <footer className="foot on-dark">
-        <div className="shell foot-inner">
-          <a className="foot-brand" href="#top">
-            <span>STATUS</span>
-            <span>TEAM</span>
-          </a>
-
-          <nav className="foot-nav" aria-label="Навигация в подвале">
-            <a href="#manifest">О показе</a>
-            <a href="#show">Показ</a>
-            <a href="#archive">Атмосфера</a>
-            <a href="#casting">Кастинг</a>
-            <a href="#partners">Партнёрам</a>
+      <footer className="foot foot-v4 on-dark">
+        <div className="shell foot-v4-grid">
+          <a className="foot-v4-brand" href="#hero">STATUS<br />TEAM</a>
+          <nav aria-label="Навигация в подвале">
+            <a href="#statusteam">О нас</a>
+            <a href="#pulse">Показ</a>
+            <a href="#experience">Что вас ждёт</a>
             <a href="#tickets">Билеты</a>
+            <a href="#join">Участие</a>
+            <a href="#faq">FAQ</a>
           </nav>
-
-          <div className="foot-end">
-            <p className="credit">Фото и видео — Паша Доренский</p>
-            <p className="credit">© 2026 STATUS TEAM</p>
+          <div className="foot-v4-subscribe">
+            <strong>НОВОСТИ ПОКАЗА</strong>
+            <LeadForm kind="newsletter" compact />
           </div>
+        </div>
+        <div className="shell foot-v4-bottom">
+          <span>Фото и видео — Паша Доренский</span>
+          <span>© 2026 STATUS TEAM</span>
         </div>
       </footer>
     </>
