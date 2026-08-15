@@ -4,6 +4,7 @@ import { PULSE_PATH } from "@/lib/pulse-path";
 import "./globals.css";
 import "./hero-placement.css";
 import "./status-team.css";
+import "./status-team-fixes.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
