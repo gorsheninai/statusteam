@@ -4,11 +4,11 @@
 
 @media (min-width: 1200px) {
   .st {
-    /* Critical: let the section end with the stats rail. A forced 100svh left
-       a burgundy tail below the content and made the next chapter feel detached. */
+    /* Do not leave a dead tail below the stats. The available vertical room is
+       deliberately redistributed through the composition instead. */
     height: auto !important;
     min-height: 0 !important;
-    padding-top: clamp(38px, 4vh, 48px) !important;
+    padding-top: clamp(54px, 5.8vh, 66px) !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
     grid-template-rows: auto auto auto !important;
@@ -16,7 +16,7 @@
     align-content: start !important;
   }
 
-  /* Stronger magazine hierarchy without changing the lock-up. */
+  /* Strong magazine headline with a little more breathing room around it. */
   .st .st-name {
     font-size: clamp(64px, 4.45vw, 88px) !important;
     line-height: .88 !important;
@@ -25,14 +25,14 @@
 
   .st-intro-copy {
     max-width: 44rem !important;
-    margin: clamp(8px, .9vh, 11px) 0 clamp(7px, .75vh, 9px) !important;
+    margin: clamp(15px, 1.65vh, 20px) 0 clamp(14px, 1.45vh, 18px) !important;
     color: rgba(240,236,228,.80) !important;
     font-size: clamp(.94rem, .96vw, 1.08rem) !important;
     line-height: 1.25 !important;
   }
 
-  /* Film remains the hero object, but with a more cinematic proportion and
-     less visual mass than the previous near-full-height treatment. */
+  /* Film stays dominant, but the extra room is used as spacing rather than
+     making the film itself oversized. */
   .st .reel {
     height: clamp(360px, 42.5vh, 455px) !important;
   }
@@ -47,20 +47,21 @@
     filter: saturate(.88) contrast(1.055) brightness(.94) !important;
   }
 
-  /* Right column reads as one editorial composition, not three stacked UI rows. */
+  /* Right column stretches down through the same vertical field as the film,
+     so it no longer feels compressed into the top-right corner. */
   .st .beat-proof {
-    top: clamp(92px, 9.6vh, 108px) !important;
+    top: clamp(116px, 12vh, 136px) !important;
   }
 
   .st .beat-h {
     color: rgba(240,236,228,.54) !important;
     font-size: clamp(.98rem, 1.02vw, 1.16rem) !important;
-    margin-bottom: clamp(14px, 1.45vh, 18px) !important;
+    margin-bottom: clamp(18px, 1.9vh, 23px) !important;
   }
 
   .st .beat-proof .beat-h:not(:first-child) {
-    margin-top: clamp(30px, 3.25vh, 38px) !important;
-    margin-bottom: clamp(11px, 1.2vh, 14px) !important;
+    margin-top: clamp(38px, 4vh, 48px) !important;
+    margin-bottom: clamp(14px, 1.5vh, 18px) !important;
     padding-top: 0 !important;
     border: 0 !important;
   }
@@ -69,7 +70,7 @@
     display: none !important;
   }
 
-  /* Guests: a touch larger, but visually quieter than the film. */
+  /* Guests: same geometry, with more editorial breathing room. */
   .st .guests {
     gap: clamp(12px, 1vw, 17px) !important;
   }
@@ -80,6 +81,10 @@
 
   .st .guest:hover img {
     filter: saturate(.92) contrast(1.05) brightness(.96) !important;
+  }
+
+  .st .guest figcaption {
+    margin-top: 10px !important;
   }
 
   .st .guest figcaption b {
@@ -96,15 +101,15 @@
     opacity: .82 !important;
   }
 
-  /* Stats are no longer a detached black card: same values, softer join, more air. */
+  /* Use the former dead area as a deliberate pause before the numbers. */
   .st .beat-numbers {
-    margin-top: 0 !important;
+    margin-top: clamp(24px, 2.8vh, 34px) !important;
     margin-bottom: 0 !important;
   }
 
   .st .beat-numbers .numbers {
-    height: 108px !important;
-    min-height: 108px !important;
+    height: 112px !important;
+    min-height: 112px !important;
     background: #080706 !important;
     box-shadow: inset 0 1px rgba(240,236,228,.045) !important;
   }
@@ -142,21 +147,28 @@
     line-height: 1.14 !important;
   }
 
-  /* Seamless hand-off into the next chapter. */
+  /* The next chapter begins immediately; its former large top pad was the
+     other source of the apparent empty strip between pages. */
   .st + .pulse-scene {
     margin-top: 0 !important;
+    padding-top: clamp(24px, 3vh, 34px) !important;
   }
 }
 
-/* Exact desktop review sizes: keep everything visually complete without a
-   micro-scroll and without a dead strip after the stats. */
+/* Exact desktop review sizes: the same content gets more air, but remains a
+   complete editorial spread at 1600–1920px wide. */
 @media (min-width: 1600px) and (min-height: 900px) {
   .st {
-    padding-top: 42px !important;
+    padding-top: 60px !important;
   }
 
   .st .st-name {
     font-size: 84px !important;
+  }
+
+  .st-intro-copy {
+    margin-top: 18px !important;
+    margin-bottom: 16px !important;
   }
 
   .st .reel {
@@ -164,12 +176,24 @@
   }
 
   .st .beat-proof {
-    top: 96px !important;
+    top: 126px !important;
+  }
+
+  .st .beat-proof .beat-h:not(:first-child) {
+    margin-top: 44px !important;
+  }
+
+  .st .beat-numbers {
+    margin-top: 30px !important;
   }
 
   .st .beat-numbers .numbers {
-    height: 106px !important;
-    min-height: 106px !important;
+    height: 112px !important;
+    min-height: 112px !important;
+  }
+
+  .st + .pulse-scene {
+    padding-top: 28px !important;
   }
 }
 
