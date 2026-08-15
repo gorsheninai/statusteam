@@ -1,35 +1,50 @@
 /* HERO -> STATUS TEAM signature transition.
-   The existing STATUS content stays intact; this adds one scroll-driven stage
-   before it and removes the duplicated giant STATUS TEAM heading from page 2. */
+   IMPORTANT: this is a fixed overlay, not a standalone page in document flow.
+   The real STATUS page scrolls underneath it and is revealed when the palms
+   open. */
 
-/* The divider between the hero and the transition would interrupt the reveal. */
+/* The divider between hero and STATUS would cut through the transition. */
 .hero-stage + .pulse-rule {
   display: none !important;
 }
 
 .status-transition {
-  position: relative;
-  height: 152svh;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  width: 100vw;
+  height: 100svh;
   margin: 0;
   padding: 0;
-  overflow: visible;
-  background: #080706;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
   isolation: isolate;
 }
 
 .status-transition-stage {
-  position: sticky;
-  top: 0;
-  height: 100svh;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
   display: grid;
   place-items: center;
   perspective: 1500px;
   transform-style: preserve-3d;
+  background: transparent;
+}
+
+/* Opaque at the beginning; GSAP fades this away while the real second page is
+   already moving behind it. */
+.status-transition-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background:
-    radial-gradient(circle at 50% 45%, rgba(92, 31, 36, 0.18), transparent 36%),
-    radial-gradient(circle at 50% 100%, rgba(72, 18, 28, 0.2), transparent 48%),
+    radial-gradient(circle at 50% 45%, rgba(92, 31, 36, 0.2), transparent 36%),
+    radial-gradient(circle at 50% 100%, rgba(72, 18, 28, 0.22), transparent 48%),
     #080706;
+  will-change: opacity;
 }
 
 .status-transition-stage::before {
@@ -38,8 +53,8 @@
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.55), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.55)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 25%, transparent 74%, rgba(0, 0, 0, 0.35));
+    linear-gradient(90deg, rgba(0, 0, 0, 0.52), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.52)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.16), transparent 25%, transparent 74%, rgba(0, 0, 0, 0.3));
   z-index: 1;
 }
 
@@ -54,12 +69,12 @@
   background: radial-gradient(ellipse, rgba(183, 129, 88, 0.12), rgba(92, 23, 35, 0.05) 46%, transparent 72%);
   filter: blur(34px);
   pointer-events: none;
-  z-index: 0;
+  z-index: 2;
 }
 
 .status-transition-mark {
   position: relative;
-  z-index: 3;
+  z-index: 4;
   width: clamp(250px, 31vw, 620px);
   aspect-ratio: 6.43 / 1;
   transform-style: preserve-3d;
@@ -122,7 +137,7 @@
   transform-origin: 18% 86%;
   will-change: transform, opacity;
   pointer-events: none;
-  z-index: 4;
+  z-index: 5;
   filter:
     drop-shadow(0 0 1px rgba(213, 180, 123, 0.48))
     drop-shadow(0 6px 22px rgba(0, 0, 0, 0.42));
@@ -147,7 +162,7 @@
 }
 
 .status-transition-palm-back {
-  z-index: 2;
+  z-index: 3;
   width: min(43vw, 680px);
   color: #18100e;
   opacity: 0.62;
@@ -155,11 +170,11 @@
 }
 
 .status-transition-palm-front {
-  z-index: 5;
+  z-index: 6;
 }
 
-/* STATUS TEAM has just been introduced by the transition, so the duplicated
-   giant heading on the proof page is intentionally removed. */
+/* STATUS TEAM has just been introduced by the overlay, so the duplicated
+   giant heading on page two remains removed. */
 .st .beat-who {
   display: none !important;
 }
@@ -180,7 +195,6 @@
     grid-row: 2 !important;
   }
 
-  /* With the large heading gone, page 2 starts as an editorial film spread. */
   .st-intro-copy {
     margin-top: 0 !important;
     margin-bottom: clamp(16px, 1.7vh, 20px) !important;
@@ -196,16 +210,14 @@
   }
 }
 
-/* The transition and the proof page touch directly — no divider, no dead band. */
-.status-transition + .st {
-  margin-top: 0 !important;
+/* Hero and page two are now direct neighbours in the document. The overlay
+   never contributes height, so there is no extra black screen between them. */
+.hero-stage,
+.st {
+  margin-bottom: 0 !important;
 }
 
 @media (max-width: 1199px) {
-  .status-transition {
-    height: 126svh;
-  }
-
   .status-transition-mark {
     width: clamp(220px, 56vw, 430px);
   }
@@ -229,10 +241,6 @@
 }
 
 @media (max-width: 640px) {
-  .status-transition {
-    height: 112svh;
-  }
-
   .status-transition-mark {
     width: min(72vw, 320px);
   }
@@ -254,26 +262,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .status-transition {
-    height: 72svh;
-  }
-
-  .status-transition-stage {
-    position: relative;
-    height: 72svh;
-  }
-
-  .status-transition-mark {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  .status-transition-palm-left {
-    opacity: 0.7 !important;
-    transform: translateY(-50%) translateX(-36%) !important;
-  }
-
-  .status-transition-palm-right {
-    opacity: 0.7 !important;
-    transform: translateY(-50%) translateX(36%) scaleX(-1) !important;
+    display: none !important;
   }
 }
