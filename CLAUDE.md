@@ -21,6 +21,37 @@ npm run deploy:preview # build + upload a version, production keeps serving main
 **Verify against a fresh build.** The static server snapshots `out/` at boot —
 rebuild, then restart, or you are testing the previous build.
 
+## Skills
+
+`.claude/skills/` carries vendored Claude Code skills, committed so a fresh clone or
+a web session has them with no install step. Provenance, revisions, licences and the
+local patches are in `.claude/skills/VENDOR.md`.
+
+| Skill | Reach for it when |
+|---|---|
+| `frontend-design` | aesthetic direction for new or reshaped UI |
+| `ui-ux-pro-max` (+ `ui-styling`, `design-system`, `brand`, `design`, `banner-design`, `slides`) | searchable UI/UX rules, accessibility and interaction checks |
+| `gsap-framer-scroll-animation` | ScrollTrigger and Framer Motion scroll work — pinning, scrub, reveals |
+| `responsive-craft` | breakpoints, fluid type, sticky/scroll coordination, mobile fixes |
+| `webapp-testing` | driving the real page in Playwright: forms, e2e flows, screenshots, console logs |
+
+**This file outranks every one of them.** They are generic advice; the palette,
+the two faces, the pulse lock-up and the media policy below are the law here. Take
+their reasoning, not their defaults — no suggested palette, font pairing or gradient
+enters this repo because a skill proposed it.
+
+`ui-ux-pro-max` searches a local CSV corpus via Python 3 (stdlib only). `webapp-testing`
+needs the Python Playwright bindings pinned to the Chromium build already on the box:
+
+```bash
+pip install "playwright==1.56.0"   # matches the preinstalled Chromium; do NOT run `playwright install`
+python .claude/skills/ui-ux-pro-max/scripts/search.py "<query>" --domain ux
+python .claude/skills/webapp-testing/scripts/with_server.py --server "npm start" --port 4311 -- python <script>.py
+```
+
+`npm run verify` remains the gate for this page's 34 project-specific checks; the
+skills are for exploratory work, not a replacement for it.
+
 ## Deployment — Cloudflare
 
 The site is a **static export**. `wrangler.jsonc` declares an assets-only Worker

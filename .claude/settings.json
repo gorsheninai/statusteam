@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py:*)",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py:*)",
+      "Bash(python .claude/skills/webapp-testing/scripts/with_server.py:*)",
+      "Bash(python3 .claude/skills/webapp-testing/scripts/with_server.py:*)",
+      "Bash(node .claude/skills/responsive-craft/scripts/preview.cjs:*)",
+      "Bash(node .claude/skills/responsive-craft/scripts/serve-static.cjs:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run build)",
+      "Bash(npm run verify)"
+    ]
+  }
+}
