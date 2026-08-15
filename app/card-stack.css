@@ -1,0 +1,115 @@
+/* HERO -> STATUS TEAM: stacked-card hand-off.
+   No logo interstitial, no one-shot JS transition. The first screen stays
+   pinned while the real second screen rises over it as a physical card. */
+
+/* The animated divider would break the illusion of one card sliding over
+   another, so the two screens touch directly. */
+.hero-stage + .pulse-rule {
+  display: none !important;
+}
+
+/* The hero is the rear card. It stays in the viewport while STATUS travels
+   upward in normal document flow, then disappears naturally underneath it. */
+.hero-stage {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 0 !important;
+  height: 100svh !important;
+  margin: 0 !important;
+  transform: translateZ(0);
+  isolation: isolate;
+}
+
+/* The STATUS page is the foreground card. A soft top edge and deep shadow make
+   the overlap legible without turning it into an app-style panel. */
+.st {
+  position: relative !important;
+  z-index: 12 !important;
+  margin: 0 !important;
+  border-radius: clamp(24px, 2vw, 38px) clamp(24px, 2vw, 38px) 0 0 !important;
+  box-shadow:
+    0 -1px 0 rgba(213, 180, 123, 0.16),
+    0 -28px 72px rgba(0, 0, 0, 0.46) !important;
+  overflow: hidden !important;
+  isolation: isolate;
+}
+
+/* STATUS has already been named by the brand/nav system; keep the oversized
+   duplicate heading removed and let page two open directly on its statement. */
+.st .beat-who {
+  display: none !important;
+}
+
+@media (min-width: 1200px) {
+  /* Page two resolves as a complete second screen once it reaches the top. */
+  .st {
+    height: 100svh !important;
+    min-height: 760px !important;
+    max-height: 100svh !important;
+    padding-top: clamp(34px, 4vh, 46px) !important;
+    padding-bottom: 0 !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    align-content: stretch !important;
+  }
+
+  .st .beat-reel {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    align-self: start !important;
+    min-height: 0 !important;
+  }
+
+  .st-intro-copy {
+    margin-top: 0 !important;
+    margin-bottom: clamp(14px, 1.5vh, 18px) !important;
+    font-size: clamp(1rem, 1.06vw, 1.18rem) !important;
+  }
+
+  .st .reel {
+    height: clamp(430px, 50vh, 565px) !important;
+  }
+
+  .st .beat-proof {
+    top: clamp(42px, 4.8vh, 56px) !important;
+  }
+
+  .st .beat-numbers {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    align-self: end !important;
+    margin-top: clamp(18px, 2.1vh, 26px) !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Keep the next chapter out of the second viewport. */
+  .st + .pulse-scene {
+    position: relative;
+    z-index: 13;
+    margin-top: 0 !important;
+  }
+}
+
+/* Tablet/mobile still get the same stacking idea, but without forcing desktop
+   geometry on content that needs to grow vertically. */
+@media (max-width: 1199px) {
+  .hero-stage {
+    height: 100svh !important;
+  }
+
+  .st {
+    min-height: 100svh !important;
+    border-radius: clamp(18px, 5vw, 28px) clamp(18px, 5vw, 28px) 0 0 !important;
+  }
+}
+
+/* Reduced motion keeps the spatial relationship but removes the sticky hold,
+   so the page remains completely conventional for users who request it. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-stage {
+    position: relative !important;
+  }
+
+  .st {
+    box-shadow: 0 -1px 0 rgba(213, 180, 123, 0.12) !important;
+  }
+}
