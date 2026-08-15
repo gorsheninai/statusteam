@@ -20,28 +20,27 @@ export const SHOW = {
 };
 
 /* --- content gates ---------------------------------------------------
-   A block is either carrying real content or it does not exist. Grey
-   placeholder logos, a carousel of «Имя Фамилия» and a countdown made of
-   em dashes all read as an unfinished page, which is worse than a shorter
-   one. Flip a flag the day the real thing arrives — the markup is already
-   written and waiting behind it.
+   STATUS TEAM proof is visible in the rebuilt section even before the final
+   guest portraits and logo files arrive. Guests/press/brands use explicitly
+   neutral placeholders in their components, so no unconfirmed real person,
+   publication or partner is presented as production content.
    -------------------------------------------------------------------- */
 
 export const CONTENT: {
-  /** Guest wall — needs real portraits and real names. */
+  /** Guest wall — neutral placeholders until real portraits/names arrive. */
   guests: boolean;
-  /** «О нас говорили» — needs the actual press logos. */
+  /** «О нас говорили» — neutral wordmarks until actual press logos arrive. */
   pressLogos: boolean;
-  /** «Вместе с нами» — needs the actual brand logos. */
+  /** «Вместе с нами» — neutral wordmarks until actual partner logos arrive. */
   brandLogos: boolean;
   /** Early bird → Regular → Last call, and the countdown. Needs real deadlines. */
   priceWaves: boolean;
   /** Per-tier prices. Until then the tiers show what is included, not "— ₽". */
   tierPrices: boolean;
 } = {
-  guests: false,
-  pressLogos: false,
-  brandLogos: false,
+  guests: true,
+  pressLogos: true,
+  brandLogos: true,
   priceWaves: false,
   tierPrices: false,
 };
