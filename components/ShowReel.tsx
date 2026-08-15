@@ -2,96 +2,100 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/**
- * Aftermovie of the previous show (СЛАВЯНСКИЙ ВЗГЛЯД).
- *
- * Bandwidth policy: the file is not in the DOM until someone asks for it, on
- * every screen size — the poster carries the block until then. A 5.7 MB
- * download that nobody chose is the fastest way to lose a phone visitor, and
- * the LCP budget for this page does not have room for it.
- *
- * Sound follows the same rule as the file: off until the visitor turns it on.
- */
 export default function ShowReel() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [active, setActive] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true);
 
-  /* Stop decoding work while the reel is off screen. */
   useEffect(() => {
-    if (!active) return;
     const el = wrapRef.current;
-    const v = videoRef.current;
-    if (!el || !v) return;
+    const video = videoRef.current;
+    if (!el || !video) return;
+
+    video.muted = true;
+    void video.play().catch(() => {});
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) void v.play().catch(() => {});
-        else v.pause();
+        if (entry.isIntersecting) void video.play().catch(() => {});
+        else video.pause();
       },
-      { threshold: 0.15 },
+      { threshold: 0.12 },
     );
+
     io.observe(el);
     return () => io.disconnect();
-  }, [active]);
+  }, []);
 
-  const start = () => {
-    setActive(true);
-    setMuted(false);
-    requestAnimationFrame(() => void videoRef.current?.play().catch(() => {}));
+  const toggleSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const nextMuted = !muted;
+    video.muted = nextMuted;
+    setMuted(nextMuted);
+    if (!nextMuted) void video.play().catch(() => {});
   };
 
   return (
-    <div className="reel" ref={wrapRef}>
-      <div className="media reel-media" data-cursor={active ? undefined : "PLAY"}>
-        {active ? (
+    <>
+      <div className="st-topline" aria-label="Раздел 02, STATUS TEAM">
+        <span>02 / STATUS TEAM</span>
+        <span>ABOUT</span>
+      </div>
+
+      <p className="st-intro-copy" data-reveal="up">
+        Создаём fashion-события, которые выходят за рамки обычного показа.
+      </p>
+
+      <div className="reel" ref={wrapRef} data-reveal="mask">
+        <div className="media reel-media">
           <video
             ref={videoRef}
             src="/media/show-reel.mp4"
             poster="/media/show-reel-poster.webp"
+            autoPlay
             muted={muted}
             loop
             playsInline
             preload="metadata"
             aria-label="Афтермуви показа «Славянский взгляд»"
           />
-        ) : (
-          <img
-            src="/media/show-reel-poster.webp"
-            alt="Сцена показа «Славянский взгляд»: подиум, свет и зрительный зал"
-            loading="lazy"
-          />
-        )}
 
-        {!active && (
-          <button className="reel-play" onClick={start}>
-            <span className="reel-play-dot" aria-hidden="true" />
-            Смотреть афтермуви
-          </button>
-        )}
-
-        {active && (
           <button
             className="reel-sound"
-            onClick={() => {
-              const v = videoRef.current;
-              if (!v) return;
-              const next = !muted;
-              setMuted(next);
-              v.muted = next;
-              if (!next) void v.play().catch(() => {});
-            }}
+            type="button"
+            onClick={toggleSound}
+            aria-label={muted ? "Включить звук афтермуви" : "Выключить звук афтермуви"}
+            aria-pressed={!muted}
           >
-            {muted ? "Включить звук" : "Выключить звук"}
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 10v4h4l5 4V6L8 10H4Z" />
+              {!muted && <path d="M16 9.2c1.1 1.55 1.1 4.05 0 5.6M18.6 6.8c2.45 2.9 2.45 7.5 0 10.4" />}
+              {muted && <path d="m16.2 9.2 4.6 5.6m0-5.6-4.6 5.6" />}
+            </svg>
+            <span className="sr-only">{muted ? "Звук выключен" : "Звук включён"}</span>
           </button>
-        )}
+        </div>
       </div>
 
-      <div className="reel-meta">
-        <span className="credit">Славянский взгляд / афтермуви</span>
-        <span className="credit">46 сек</span>
+      <div className="reel-meta" aria-label="Информация об афтермуви">
+        <div className="reel-meta-title">
+          <span>ПРЕДЫДУЩИЙ ПОКАЗ</span>
+          <b>СЛАВЯНСКИЙ ВЗГЛЯД</b>
+        </div>
+        <div className="reel-meta-sound" aria-hidden="true">
+          <span>00:46</span>
+          <span>SOUND</span>
+          <span className="reel-wave">
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
