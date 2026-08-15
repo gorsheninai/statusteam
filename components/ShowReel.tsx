@@ -85,24 +85,6 @@ export default function ShowReel() {
           </button>
         </div>
       </div>
-
-      <div className="reel-meta" aria-label="Информация об афтермуви">
-        <div className="reel-meta-title">
-          <span>ПРЕДЫДУЩИЙ ПОКАЗ</span>
-          <b>СЛАВЯНСКИЙ ВЗГЛЯД</b>
-        </div>
-        <div className="reel-meta-sound" aria-hidden="true">
-          <span>00:46</span>
-          <span>SOUND</span>
-          <span className="reel-wave">
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-          </span>
-        </div>
-      </div>
     </>
   );
 }
