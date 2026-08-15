@@ -35,7 +35,6 @@ export default function SiteMotion() {
     const cleanup: Array<() => void> = [];
     const ctx = gsap.context(() => {
       if (!reduced) {
-        /* HERO — short entrance after the sub-second pulse preloader. */
         const heroDelay = showPreloader ? 0.72 : 0.08;
         gsap.fromTo(
           ".hero-v4 .hero-curtain",
@@ -54,7 +53,6 @@ export default function SiteMotion() {
           scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true },
         });
 
-        /* Major headings: lines are already split in JSX, no runtime text splitter. */
         gsap.utils.toArray<HTMLElement>("[data-reveal-heading]").forEach((heading) => {
           const lines = heading.querySelectorAll<HTMLElement>(".reveal-mask > span");
           if (!lines.length) return;
@@ -77,7 +75,6 @@ export default function SiteMotion() {
           });
         });
 
-        /* Soft body palette hand-off; sections keep their own explicit backgrounds. */
         gsap.utils.toArray<HTMLElement>("[data-bg]").forEach((section) => {
           const color = section.dataset.bg;
           if (!color) return;
@@ -90,7 +87,6 @@ export default function SiteMotion() {
           });
         });
 
-        /* Previous-show aftermovie grows from editorial frame to near-full viewport. */
         if (desktop) {
           const videoShell = document.querySelector<HTMLElement>(".status-video-zoom");
           if (videoShell) {
@@ -114,7 +110,6 @@ export default function SiteMotion() {
           }
         }
 
-        /* Proof → new chapter blackout. */
         gsap.fromTo(
           ".next-chapter-copy",
           { opacity: 0, y: 60 },
@@ -126,7 +121,6 @@ export default function SiteMotion() {
           },
         );
 
-        /* Main pinned statement sequence. */
         const pin = document.querySelector<HTMLElement>(".pulse-pin-stage");
         const beats = gsap.utils.toArray<HTMLElement>(".pulse-beat");
         const dots = gsap.utils.toArray<HTMLElement>(".pulse-progress i");
@@ -161,7 +155,6 @@ export default function SiteMotion() {
           }
         }
 
-        /* Poster gallery: fashion spread, not a uniform grid entrance. */
         gsap.from(".ticket-posters figure", {
           opacity: 0,
           y: 70,
@@ -174,20 +167,29 @@ export default function SiteMotion() {
       }
 
       if (desktop && !reduced) {
-        /* Custom cursor. */
         const cursor = document.querySelector<HTMLElement>(".site-cursor");
         if (cursor) {
           const xTo = gsap.quickTo(cursor, "x", { duration: 0.22, ease: "power3.out" });
           const yTo = gsap.quickTo(cursor, "y", { duration: 0.22, ease: "power3.out" });
-          const onMove = (event: PointerEvent) => { xTo(event.clientX); yTo(event.clientY); };
+          const onMove = (event: PointerEvent) => {
+            cursor.classList.add("is-visible");
+            xTo(event.clientX);
+            yTo(event.clientY);
+          };
+          const onLeaveWindow = () => cursor.classList.remove("is-visible");
           window.addEventListener("pointermove", onMove, { passive: true });
-          cleanup.push(() => window.removeEventListener("pointermove", onMove));
+          document.documentElement.addEventListener("pointerleave", onLeaveWindow);
+          cleanup.push(() => {
+            window.removeEventListener("pointermove", onMove);
+            document.documentElement.removeEventListener("pointerleave", onLeaveWindow);
+          });
 
           const interactive = document.querySelectorAll<HTMLElement>("a, button, [data-cursor]");
           interactive.forEach((element) => {
             const enter = () => {
               cursor.classList.add("is-active");
-              cursor.dataset.label = element.dataset.cursor ?? "";
+              const labelled = element.closest<HTMLElement>("[data-cursor]");
+              cursor.dataset.label = element.dataset.cursor ?? labelled?.dataset.cursor ?? "";
             };
             const leave = () => {
               cursor.classList.remove("is-active");
@@ -202,7 +204,6 @@ export default function SiteMotion() {
           });
         }
 
-        /* Magnetic primary buttons. */
         document.querySelectorAll<HTMLElement>("[data-magnetic]").forEach((button) => {
           const move = (event: PointerEvent) => {
             const rect = button.getBoundingClientRect();
@@ -219,7 +220,6 @@ export default function SiteMotion() {
           });
         });
 
-        /* Ticket tilt, deliberately capped at six degrees. */
         document.querySelectorAll<HTMLElement>("[data-tilt]").forEach((card) => {
           const move = (event: PointerEvent) => {
             const rect = card.getBoundingClientRect();
@@ -238,7 +238,6 @@ export default function SiteMotion() {
           });
         });
 
-        /* Experience image follows pointer with a small lag. */
         document.querySelectorAll<HTMLElement>(".experience-row").forEach((row) => {
           const media = row.querySelector<HTMLElement>(".experience-hover-media");
           if (!media) return;
@@ -274,7 +273,6 @@ export default function SiteMotion() {
       {showPreloader && (
         <div className="site-preloader" aria-hidden="true">
           <div className="preloader-pulse">
-            <span />
             <svg viewBox="0 0 220 32" preserveAspectRatio="none">
               <path d="M0 16 H72 L82 16 L88 5 L96 27 L105 11 L112 16 H220" />
             </svg>
