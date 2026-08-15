@@ -15,7 +15,7 @@ export function registerLenis(instance: Lenis | null) {
   lenis = instance;
 }
 
-/** Freeze the page behind the mobile menu. */
+/** Freeze the page behind the mobile menu / a cinematic hand-off. */
 export function lockScroll() {
   lenis?.stop();
   document.documentElement.classList.add("is-locked");
@@ -24,6 +24,26 @@ export function lockScroll() {
 export function unlockScroll() {
   lenis?.start();
   document.documentElement.classList.remove("is-locked");
+}
+
+/**
+ * Put an element exactly on the viewport top, synchronously.
+ *
+ * This is intentionally NOT an anchor helper: there is no sticky-header
+ * offset and no easing. It is used while an opaque transition covers the
+ * screen, so the destination can be placed perfectly underneath before the
+ * curtain opens. Updating Lenis through its own API also keeps its internal
+ * target in sync; a naked window.scrollTo while Lenis is running can be
+ * pulled back towards the previous target on the next frame.
+ */
+export function jumpToElement(target: HTMLElement) {
+  if (lenis) {
+    lenis.scrollTo(target, { immediate: true, force: true });
+    return;
+  }
+
+  const y = target.getBoundingClientRect().top + window.scrollY;
+  window.scrollTo({ top: y, behavior: "auto" });
 }
 
 /**
