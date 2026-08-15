@@ -1,0 +1,154 @@
+/* ============================================================
+   MOBILE HERO — vertical editorial poster
+
+   On phones the 9:16 campaign frame is content, not a cover background.
+   Keeping the image in normal document flow preserves the full two-model
+   composition; the title and event information follow beneath it on ink.
+   Desktop keeps the full-bleed hero from hero-v2.css unchanged.
+   ============================================================ */
+
+@media (max-width: 899px) {
+  .hero-stage {
+    height: auto;
+    min-height: 0;
+    background: #080707;
+  }
+
+  .hero {
+    position: relative;
+    top: auto;
+    display: block;
+    height: auto;
+    min-height: 0;
+    padding: 0 0 clamp(3rem, 10vw, 4.5rem);
+    overflow: hidden;
+    background: #080707;
+  }
+
+  /* A quiet black masthead remains behind the fixed STATUS navigation.
+     The photograph begins below it, like the supplied editorial reference. */
+  .hero-frame {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    padding-top: clamp(4.9rem, 15vw, 5.8rem);
+    background: #080707;
+  }
+
+  /* Text is no longer laid over the photograph, so the old readability
+     scrims are unnecessary and would only flatten the jewellery/skin tones. */
+  .hero-frame::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .hero-curtain,
+  .hero-media,
+  .hero-media picture {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+  }
+
+  .hero-media {
+    overflow: hidden;
+    background: #080707;
+  }
+
+  .hero-media picture {
+    display: block;
+  }
+
+  /* Critical mobile fix: never crop the dedicated 9:16 artwork. */
+  .hero-media .hero-layer {
+    position: relative !important;
+    inset: auto !important;
+    display: block;
+    width: 100%;
+    height: auto !important;
+    max-width: none;
+    object-fit: contain;
+    object-position: center center;
+    transform: none !important;
+  }
+
+  /* Editorial copy becomes its own black chapter under the image. */
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: clamp(1.8rem, 7vw, 2.8rem) var(--gutter) 0;
+    text-align: center;
+  }
+
+  .hero-title {
+    max-width: 100%;
+    margin: 0 auto clamp(1.25rem, 5vw, 1.9rem);
+  }
+
+  .hero-title .pulse-mask {
+    display: block;
+    overflow: hidden;
+  }
+
+  .hero-title .pulse-line {
+    --pulse-spread: 0.03em;
+    display: block;
+    font-size: clamp(2.85rem, 12.8vw, 5rem);
+    line-height: 0.86;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+  }
+
+  .hero-statement {
+    max-width: 29ch;
+    margin: 0 auto clamp(1.45rem, 5vw, 2rem);
+    font-size: clamp(1rem, 4vw, 1.18rem);
+    line-height: 1.45;
+    opacity: 0.88;
+  }
+
+  .hero-where {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.7rem 1.35rem;
+    margin: 0 auto clamp(1.8rem, 6vw, 2.5rem);
+  }
+
+  .hero-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: 22rem;
+    margin-inline: auto;
+  }
+
+  .hero-links .link-rule {
+    width: 100%;
+    justify-content: space-between;
+    padding-block: 0.75rem;
+    text-align: left;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-frame {
+    padding-top: 4.65rem;
+  }
+
+  .hero-inner {
+    padding-top: 1.6rem;
+  }
+
+  .hero-title .pulse-line {
+    font-size: clamp(2.7rem, 12.4vw, 3.8rem);
+  }
+}

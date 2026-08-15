@@ -45,9 +45,9 @@ export default function ApplyForm({ kind }: { kind: "casting" | "partner" }) {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
 
-    /* No endpoint configured yet. Say so plainly rather than faking a send. */
     if (!ENDPOINT) {
       setState("unwired");
       return;
@@ -60,30 +60,25 @@ export default function ApplyForm({ kind }: { kind: "casting" | "partner" }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ form: kind, ...data }),
       });
-      setState(res.ok ? "sent" : "error");
+      if (!res.ok) throw new Error("Request failed");
+      form.reset();
+      setState("sent");
     } catch {
       setState("error");
     }
   }
 
   return (
-    <form className="form" onSubmit={onSubmit} noValidate={false}>
+    <form className="form" onSubmit={onSubmit}>
       <div className="form-grid">
         {fields.map((f) => (
           <p key={f.name} className={`field ${f.half ? "is-half" : ""}`}>
             <label htmlFor={`${kind}-${f.name}`}>
-              {f.label}
-              {f.required && <i aria-hidden="true"> *</i>}
+              {f.label}{f.required && <i aria-hidden="true"> *</i>}
             </label>
 
             {f.type === "textarea" ? (
-              <textarea
-                id={`${kind}-${f.name}`}
-                name={f.name}
-                rows={4}
-                required={f.required}
-                placeholder={f.placeholder}
-              />
+              <textarea id={`${kind}-${f.name}`} name={f.name} rows={4} required={f.required} placeholder={f.placeholder} />
             ) : (
               <input
                 id={`${kind}-${f.name}`}
@@ -95,30 +90,26 @@ export default function ApplyForm({ kind }: { kind: "casting" | "partner" }) {
                 inputMode={f.type === "number" ? "numeric" : undefined}
               />
             )}
-
             {f.hint && <small>{f.hint}</small>}
           </p>
         ))}
       </div>
 
+      <label className="form-consent">
+        <input type="checkbox" name="consent" value="yes" required />
+        <span>Согласен на обработку персональных данных</span>
+      </label>
+
       <div className="form-foot">
         <button className="btn btn-solid" type="submit" disabled={state === "sending"}>
-          {state === "sending"
-            ? "Отправляем…"
-            : kind === "casting"
-              ? "Отправить заявку"
-              : "Отправить запрос"}
-          <span className="arrow" aria-hidden="true">
-            ↗
-          </span>
+          {state === "sending" ? "Отправляем…" : kind === "casting" ? "Отправить заявку" : "Отправить запрос"}
+          <span className="arrow" aria-hidden="true">↗</span>
         </button>
 
         <p className="form-note" role="status" aria-live="polite">
           {state === "sent" && "Заявка отправлена. Мы ответим на указанный контакт."}
           {state === "error" && "Не удалось отправить. Попробуйте ещё раз или напишите нам напрямую."}
-          {state === "unwired" &&
-            "Приём заявок пока не подключён — форма ещё не связана с почтой команды. Данные не отправлены."}
-          {state === "idle" && "Нажимая кнопку, вы соглашаетесь на обработку персональных данных."}
+          {state === "unwired" && "Форма подготовлена, но endpoint пока не подключён. Данные не отправлены."}
         </p>
       </div>
     </form>

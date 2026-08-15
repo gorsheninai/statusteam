@@ -1,0 +1,61 @@
+/* ============================================================
+   FLOW TRIM — visual campaign -> live metrics -> Slavyanskiy vzglyad
+   Removes the explanatory intro copy and retires the Show / Materials /
+   Participants chapters from the visible page flow.
+   ============================================================ */
+
+/* The burgundy field is now image-led: no left text column. */
+.intro-fashion-top-visual-only {
+  display: block;
+  padding: clamp(2.2rem, 3.8vw, 4rem) 0 clamp(1.4rem, 2.4vw, 2.5rem);
+}
+
+.intro-fashion-top-visual-only .intro-fashion-carousel {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.intro-fashion-top-visual-only .intro-fashion-rail {
+  height: min(56svh, 39rem);
+}
+
+/* Retire old chapters from visual flow without display:none. They keep a
+   measurable 1px box so GSAP never receives zero-sized hidden targets. */
+.show,
+.materials,
+.world {
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  clip-path: inset(50%) !important;
+}
+
+/* The archive follows immediately after the metrics tray. */
+.archive {
+  margin-top: 0 !important;
+}
+
+/* After Slavyanskiy vzglyad the page now goes straight into casting. */
+.casting {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 899px) {
+  .intro-fashion-top-visual-only {
+    padding: 1.35rem 0 0.8rem;
+  }
+
+  .intro-fashion-top-visual-only .intro-fashion-rail {
+    height: 100%;
+    min-height: 0;
+  }
+}

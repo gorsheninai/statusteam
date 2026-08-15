@@ -1,0 +1,105 @@
+/* ============================================================
+   INTRO TIGHT — direct editorial opening
+
+   The second screen starts with the statement immediately. There is no
+   chapter marker or campaign credit competing with the composition, and the
+   section height is content-driven rather than forced to a full viewport.
+   ============================================================ */
+
+.manifest {
+  min-height: auto;
+  padding-top: clamp(1.5rem, 2.4vw, 2.75rem);
+  padding-bottom: clamp(5rem, 7vw, 6.5rem);
+  gap: clamp(1.75rem, 3vw, 3rem);
+}
+
+/* The second screen has no eyebrow at all. Remove both the legacy chapter
+   marker and any nested chapter fragment so the headline is the first visible
+   element, regardless of older layout rules. */
+.manifest > .manifest-copy > .chapter,
+.manifest .chapter {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.manifest-copy {
+  align-self: start;
+  padding-top: 0 !important;
+}
+
+.manifest-h {
+  margin-top: 0 !important;
+  margin-bottom: clamp(1.35rem, 2.2vw, 2.15rem);
+}
+
+.manifest-body {
+  gap: 0.8rem;
+}
+
+/* The image starts with the copy instead of dropping halfway down the screen. */
+.manifest-figure {
+  align-self: start;
+  min-height: 0;
+}
+
+.manifest-figure .media {
+  min-height: 0;
+}
+
+/* No campaign caption under the image on this screen. */
+.manifest-figure > figcaption,
+.manifest-figure figcaption {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 899px) {
+  .manifest {
+    padding-top: clamp(1.35rem, 5vw, 2.5rem);
+    padding-bottom: clamp(4.5rem, 12vw, 6rem);
+    gap: clamp(1.5rem, 5vw, 2.5rem);
+  }
+
+  .manifest-h {
+    margin-bottom: clamp(1.1rem, 4vw, 1.7rem);
+  }
+
+  .manifest-figure .media {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+@media (min-width: 900px) {
+  .manifest {
+    align-items: start;
+  }
+
+  .manifest-copy {
+    padding-top: 0 !important;
+  }
+
+  .manifest-figure,
+  .manifest-figure .media {
+    min-height: min(48rem, 64svh);
+  }
+}
+
+@media (min-width: 1280px) {
+  .manifest {
+    padding-top: clamp(1.75rem, 2vw, 2.5rem);
+    padding-bottom: clamp(4.75rem, 6vw, 6rem);
+  }
+
+  .manifest-figure,
+  .manifest-figure .media {
+    min-height: min(50rem, 66svh);
+  }
+}

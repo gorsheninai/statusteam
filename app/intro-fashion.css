@@ -1,0 +1,325 @@
+/* ============================================================
+   INTRO FASHION — one viewport, one composition
+   Burgundy campaign field + moving editorial rail + black metrics tray.
+   Existing Manifest/Scale markup is visually retired; this pass is mounted
+   into the same section so anchors and document order remain stable.
+   ============================================================ */
+
+.manifest {
+  position: relative;
+  z-index: 4;
+  display: block !important;
+  width: 100%;
+  height: 100svh;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  border-radius: clamp(26px, 2.4vw, 38px) clamp(26px, 2.4vw, 38px) 0 0;
+  color: var(--paper);
+  background: #86102b;
+}
+
+/* Old presentation-style content is removed from the visual composition. */
+.manifest > .manifest-copy,
+.manifest > .manifest-figure,
+.scale {
+  display: none !important;
+}
+
+.intro-fashion {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 72% 28%;
+  overflow: hidden;
+  background: #86102b;
+}
+
+.intro-fashion-top {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.38fr) minmax(0, 0.62fr);
+  align-items: stretch;
+  gap: clamp(2rem, 4vw, 5rem);
+  padding: clamp(3.4rem, 5vw, 5.5rem) 0 clamp(2.2rem, 3.6vw, 3.8rem)
+    var(--gutter);
+}
+
+.intro-fashion-copy {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  max-width: 34rem;
+  padding-right: 1rem;
+}
+
+.intro-fashion-copy h2 {
+  margin: 0;
+  max-width: 7.4ch;
+  color: #fff8ef;
+  font-family: var(--font-display);
+  font-size: clamp(3.7rem, 6.2vw, 7.4rem);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.intro-fashion-lead {
+  margin-top: clamp(1.45rem, 2.6vw, 2.4rem);
+  color: #fff8ef;
+  font-family: var(--font-body);
+  font-size: clamp(1.05rem, 1.45vw, 1.35rem);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.intro-fashion-note {
+  margin-top: 0.45rem;
+  color: rgba(255, 248, 239, 0.62);
+  font-size: clamp(0.78rem, 0.9vw, 0.95rem);
+  letter-spacing: 0.02em;
+}
+
+/* Editorial conveyor. No UI chrome, no dots, no ecommerce slider language. */
+.intro-fashion-carousel {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.intro-fashion-carousel::before,
+.intro-fashion-carousel::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  z-index: 3;
+  width: clamp(1.2rem, 3vw, 4rem);
+  pointer-events: none;
+}
+
+.intro-fashion-carousel::before {
+  left: 0;
+  background: linear-gradient(90deg, #86102b, rgba(134, 16, 43, 0));
+}
+
+.intro-fashion-carousel::after {
+  right: 0;
+  background: linear-gradient(270deg, #86102b, rgba(134, 16, 43, 0));
+}
+
+.intro-fashion-rail {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.65rem, 1vw, 1rem);
+  width: max-content;
+  height: min(52svh, 36rem);
+  will-change: transform;
+  animation: intro-fashion-flow 24s linear infinite;
+}
+
+.intro-fashion-carousel:hover .intro-fashion-rail {
+  animation-play-state: paused;
+}
+
+.intro-fashion-group {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.65rem, 1vw, 1rem);
+  height: 100%;
+}
+
+.intro-fashion-card {
+  position: relative;
+  flex: 0 0 auto;
+  height: 82%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  margin: 0;
+  background: #140d0e;
+}
+
+.intro-fashion-card-2,
+.intro-fashion-card-4 {
+  height: 100%;
+}
+
+.intro-fashion-card-3 {
+  height: 90%;
+}
+
+.intro-fashion-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 900ms var(--ease-out), filter 700ms var(--ease-out);
+}
+
+.intro-fashion-card:hover img {
+  transform: scale(1.035);
+}
+
+@keyframes intro-fashion-flow {
+  from {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Bottom tray lives inside the same viewport. */
+.intro-fashion-metrics {
+  position: relative;
+  z-index: 5;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  padding: clamp(1.6rem, 2.5vw, 2.8rem) var(--gutter);
+  border-radius: clamp(24px, 2vw, 34px) clamp(24px, 2vw, 34px) 0 0;
+  color: #fff8ef;
+  background: #0d0b0a;
+}
+
+.intro-fashion-metric {
+  min-width: 0;
+  height: 72%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-inline: clamp(1.5rem, 3vw, 3.8rem);
+  border-left: 1px solid rgba(255, 248, 239, 0.16);
+}
+
+.intro-fashion-metric:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.intro-fashion-metric strong {
+  display: block;
+  color: #fff8ef;
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 5.8vw, 7rem);
+  font-weight: 400;
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
+.intro-fashion-metric-gold strong {
+  color: #c9a876;
+}
+
+.intro-fashion-metric-wine strong {
+  color: #d92d49;
+}
+
+.intro-fashion-metric span {
+  display: block;
+  max-width: 24ch;
+  margin-top: clamp(0.85rem, 1.4vw, 1.25rem);
+  color: rgba(255, 248, 239, 0.55);
+  font-family: var(--font-ui);
+  font-size: clamp(0.66rem, 0.75vw, 0.82rem);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 899px) {
+  .manifest {
+    border-radius: 22px 22px 0 0;
+  }
+
+  .intro-fashion {
+    grid-template-rows: 72% 28%;
+  }
+
+  .intro-fashion-top {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 1.1rem;
+    padding: clamp(2.1rem, 7vw, 3rem) 0 0.85rem var(--gutter);
+  }
+
+  .intro-fashion-copy {
+    align-self: start;
+    max-width: none;
+    padding-right: var(--gutter);
+  }
+
+  .intro-fashion-copy h2 {
+    max-width: none;
+    font-size: clamp(2.65rem, 11vw, 4.9rem);
+    line-height: 0.9;
+  }
+
+  .intro-fashion-lead {
+    margin-top: 0.9rem;
+    font-size: clamp(0.92rem, 3.6vw, 1.08rem);
+  }
+
+  .intro-fashion-note {
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+  }
+
+  .intro-fashion-carousel {
+    min-height: 0;
+  }
+
+  .intro-fashion-rail {
+    height: 100%;
+    min-height: 0;
+    animation-duration: 20s;
+  }
+
+  .intro-fashion-card {
+    height: 84%;
+  }
+
+  .intro-fashion-card-2,
+  .intro-fashion-card-4 {
+    height: 100%;
+  }
+
+  .intro-fashion-metrics {
+    padding: 1rem var(--gutter);
+    border-radius: 22px 22px 0 0;
+  }
+
+  .intro-fashion-metric {
+    height: 76%;
+    padding-inline: clamp(0.65rem, 3vw, 1rem);
+  }
+
+  .intro-fashion-metric strong {
+    font-size: clamp(2.15rem, 9vw, 3.9rem);
+  }
+
+  .intro-fashion-metric span {
+    margin-top: 0.55rem;
+    font-size: clamp(0.48rem, 1.7vw, 0.62rem);
+    line-height: 1.3;
+    letter-spacing: 0.045em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-fashion-rail {
+    animation: none;
+    transform: translateX(-12%);
+  }
+
+  .intro-fashion-card img {
+    transition: none;
+  }
+}

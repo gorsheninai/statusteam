@@ -1,34 +1,37 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-/* "О показе" and "Показ" named the same thing twice. One entry now covers
-   the opening chapter; the show chapter is still reachable by scrolling. */
 const LINKS = [
-  { href: "#manifest", label: "О проекте" },
-  { href: "#archive", label: "Атмосфера" },
-  { href: "#casting", label: "Кастинг" },
-  { href: "#partners", label: "Партнёрам" },
+  { href: "#statusteam", label: "О нас" },
+  { href: "#pulse", label: "Показ" },
+  { href: "#experience", label: "Что вас ждёт" },
+  { href: "#join", label: "Участие" },
 ];
 
 export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
-  const reduce = useReducedMotion();
 
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 60);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const hero = document.querySelector<HTMLElement>("#hero");
+    if (!hero) {
+      setSolid(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setSolid(!entry.isIntersecting || entry.intersectionRatio < 0.12),
+      { threshold: [0, 0.12, 0.5] },
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
   }, []);
 
-  /* Lock the page behind the mobile menu without losing scroll position. */
   useEffect(() => {
     if (!open) return;
     const y = window.scrollY;
-    const { body } = document;
+    const body = document.body;
     body.style.position = "fixed";
     body.style.top = `-${y}px`;
     body.style.width = "100%";
@@ -41,17 +44,15 @@ export default function Nav() {
   }, [open]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const close = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
   }, []);
 
   return (
     <>
-      <header className={`nav ${solid ? "is-solid" : ""}`}>
-        <a className="nav-brand" href="#top" aria-label="STATUS TEAM — наверх">
-          {/* The real wordmark, derived from logo.PNG in the repository root.
-              Sized by height so the 6.43:1 lock-up keeps its proportions. */}
+      <header className={`nav nav-v4 ${solid ? "is-solid" : ""}`}>
+        <a className="nav-brand" href="#hero" aria-label="STATUS TEAM — наверх">
           <img
             src="/media/brand-status-team-320.webp"
             srcSet="/media/brand-status-team-320.webp 320w, /media/brand-status-team-640.webp 640w"
@@ -64,22 +65,22 @@ export default function Nav() {
         </a>
 
         <nav className="nav-links" aria-label="Разделы сайта">
-          {LINKS.map((l) => (
-            <a key={l.href} href={l.href}>
-              {l.label}
-            </a>
+          {LINKS.map((link) => (
+            <a key={link.href} href={link.href}>{link.label}</a>
           ))}
         </nav>
 
         <div className="nav-end">
-          <a className="nav-tickets" href="#tickets">
-            Билеты
+          <a className="nav-tickets" href="#tickets" data-magnetic>
+            БИЛЕТЫ
           </a>
           <button
             className="nav-burger"
+            type="button"
             onClick={() => setOpen(true)}
             aria-label="Открыть меню"
             aria-expanded={open}
+            aria-controls="mobile-menu"
           >
             <span />
             <span />
@@ -87,69 +88,26 @@ export default function Nav() {
         </div>
       </header>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="menu"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Меню"
-            initial={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
-            animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
-            exit={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
-            transition={{ duration: reduce ? 0.15 : 0.62, ease: [0.65, 0, 0.35, 1] }}
-          >
-            <div className="menu-media" aria-hidden="true">
-              <img
-                src="/media/campaign-silhouette-drapes-640.webp"
-                alt=""
-                loading="lazy"
-              />
-            </div>
-
-            <div className="menu-inner">
-              <div className="menu-top">
-                <span className="label">Меню</span>
-                <button
-                  className="menu-close"
-                  onClick={() => setOpen(false)}
-                  aria-label="Закрыть меню"
-                  autoFocus
-                >
-                  Закрыть
-                </button>
-              </div>
-
-              <ul className="menu-list">
-                {[...LINKS, { href: "#tickets", label: "Билеты" }].map((l, i) => (
-                  <motion.li
-                    key={l.href}
-                    initial={reduce ? false : { y: "110%" }}
-                    animate={{ y: "0%" }}
-                    transition={{
-                      duration: 0.6,
-                      delay: reduce ? 0 : 0.16 + i * 0.055,
-                      ease: [0.22, 0.8, 0.28, 1],
-                    }}
-                  >
-                    <a onClick={() => setOpen(false)} href={l.href}>
-                      <b>{String(i + 1).padStart(2, "0")}</b>
-                      {l.label}
-                    </a>
-                  </motion.li>
-                ))}
-              </ul>
-
-              {/* Date and venue are not confirmed, so the menu says only what
-                  the hero says. Put them back when they are locked. */}
-              <div className="menu-foot">
-                <span>Москва</span>
-                <span>Ноябрь 2026</span>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className={`menu menu-v4 ${open ? "is-open" : ""}`} id="mobile-menu" aria-hidden={!open}>
+        <div className="menu-v4-bg" aria-hidden="true">
+          <img src="/media/campaign-silhouette-drapes-640.webp" alt="" loading="lazy" />
+        </div>
+        <div className="menu-v4-inner">
+          <div className="menu-v4-top">
+            <span>STATUS TEAM</span>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Закрыть меню">ЗАКРЫТЬ</button>
+          </div>
+          <nav aria-label="Мобильная навигация">
+            {[...LINKS, { href: "#tickets", label: "Билеты" }, { href: "#faq", label: "FAQ" }].map((link, index) => (
+              <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
+                <small>{String(index + 1).padStart(2, "0")}</small>
+                <span>{link.label}</span>
+              </a>
+            ))}
+          </nav>
+          <div className="menu-v4-foot"><span>МОСКВА</span><span>НОЯБРЬ 2026</span></div>
+        </div>
+      </div>
     </>
   );
 }

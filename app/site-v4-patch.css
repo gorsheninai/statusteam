@@ -1,0 +1,38 @@
+/* Small acceptance/compatibility patches kept separate from the main scene sheet. */
+
+.form-consent {
+  margin: 1.1rem 0 0;
+  display: flex;
+  align-items: flex-start;
+  gap: .65rem;
+  color: rgba(255, 248, 239, .58);
+  font-size: .68rem;
+  line-height: 1.4;
+}
+.form-consent input {
+  flex: 0 0 auto;
+  margin-top: .2rem;
+  accent-color: var(--v4-gold);
+}
+
+.site-cursor.is-visible { opacity: 1; }
+.site-cursor.is-visible.is-active { opacity: 1; }
+
+/* The pulse motif returns as a subtle separator, never as a filler screen. */
+.status-v4::after,
+.experience-v4::after,
+.join-v4::after {
+  content: "";
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 0;
+  height: 1px;
+  opacity: .35;
+  background: linear-gradient(90deg, transparent, var(--v4-gold), transparent);
+  pointer-events: none;
+}
+
+@media (max-width: 899px) {
+  .form-consent { font-size: .64rem; }
+}
