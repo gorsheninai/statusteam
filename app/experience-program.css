@@ -1,0 +1,232 @@
+/* WHAT TO EXPECT — editorial program / accordion treatment. */
+
+.exp-scene {
+  position: relative;
+  color: #121110;
+  background: #f3f1ec !important;
+  padding: clamp(56px, 7vw, 92px) var(--gutter) clamp(64px, 8vw, 110px) !important;
+}
+
+.exp-scene > .shell {
+  padding-inline: 0 !important;
+}
+
+.exp-scene > .shell:first-child {
+  margin: 0 !important;
+}
+
+.exp-h {
+  margin: 0 !important;
+  color: #11100f;
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 5.2vw, 6rem) !important;
+  font-weight: 400;
+  line-height: 0.94 !important;
+  letter-spacing: -0.045em;
+  text-transform: none;
+}
+
+.exp-accordion {
+  width: 100%;
+  border-top: 1px solid rgba(18, 17, 16, 0.14);
+}
+
+.exp-item {
+  border-bottom: 1px solid rgba(18, 17, 16, 0.14);
+}
+
+.exp-trigger {
+  width: 100%;
+  min-height: clamp(92px, 9.6vh, 112px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #11100f;
+  text-align: left;
+  cursor: pointer;
+}
+
+.exp-title {
+  font-family: var(--font-ui);
+  font-size: clamp(1.75rem, 2.15vw, 2.7rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.exp-toggle {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(18, 17, 16, 0.14);
+  border-radius: 50%;
+  transition: background 420ms var(--ease-out), color 420ms var(--ease-out), border-color 420ms var(--ease-out);
+}
+
+.exp-toggle i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+  transition: transform 420ms var(--ease-out), opacity 420ms var(--ease-out);
+}
+
+.exp-toggle i:last-child {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.exp-item.is-open .exp-toggle {
+  background: #11100f;
+  color: #f3f1ec;
+  border-color: #11100f;
+}
+
+.exp-item.is-open .exp-toggle i:last-child {
+  transform: translate(-50%, -50%) rotate(0deg);
+  opacity: 0;
+}
+
+.exp-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 560ms cubic-bezier(.16,1,.3,1);
+}
+
+.exp-item.is-open .exp-panel {
+  grid-template-rows: 1fr;
+}
+
+.exp-panel-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.exp-sub {
+  max-width: 58ch;
+  margin: 0;
+  padding: 0 84px clamp(28px, 3vw, 42px) 0;
+  color: rgba(18, 17, 16, 0.66);
+  font-family: var(--font-body);
+  font-size: clamp(0.96rem, 1vw, 1.1rem);
+  line-height: 1.55;
+}
+
+.exp-trigger:hover .exp-title,
+.exp-trigger:focus-visible .exp-title {
+  opacity: 0.62;
+}
+
+.exp-trigger:hover .exp-toggle,
+.exp-trigger:focus-visible .exp-toggle {
+  border-color: rgba(18, 17, 16, 0.42);
+}
+
+/* The venue remains part of the chapter, but no longer creates a second huge
+   blank stage under the program list. */
+.exp-scene .venue {
+  margin-top: clamp(46px, 6vw, 80px) !important;
+  padding: clamp(28px, 3.5vw, 48px) 0 0 !important;
+  border-top-color: rgba(18, 17, 16, 0.14) !important;
+}
+
+.exp-scene .venue-name {
+  font-size: clamp(3.6rem, 9vw, 9rem) !important;
+}
+
+@media (min-width: 1024px) {
+  .exp-scene {
+    display: grid;
+    grid-template-columns: minmax(280px, 30%) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: clamp(72px, 9vw, 170px);
+    align-items: start;
+  }
+
+  .exp-scene > .shell:first-child {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 110px;
+  }
+
+  .exp-scene > .shell:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .exp-scene .venue {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 1023px) {
+  .exp-scene {
+    padding-top: 54px !important;
+  }
+
+  .exp-h {
+    margin-bottom: 38px !important;
+  }
+
+  .exp-trigger {
+    min-height: 82px;
+  }
+
+  .exp-title {
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+  }
+
+  .exp-toggle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .exp-sub {
+    padding-right: 0;
+    padding-bottom: 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .exp-scene {
+    padding-top: 42px !important;
+    padding-bottom: 64px !important;
+  }
+
+  .exp-h {
+    font-size: clamp(2.8rem, 14vw, 4.4rem) !important;
+    margin-bottom: 30px !important;
+  }
+
+  .exp-trigger {
+    min-height: 74px;
+    gap: 16px;
+  }
+
+  .exp-title {
+    font-size: clamp(1.25rem, 6vw, 1.75rem);
+    letter-spacing: -0.035em;
+  }
+
+  .exp-toggle {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exp-panel,
+  .exp-toggle,
+  .exp-toggle i {
+    transition: none !important;
+  }
+}
