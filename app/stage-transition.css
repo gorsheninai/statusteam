@@ -1,0 +1,178 @@
+/* HERO -> STATUS TEAM — fashion stage reveal.
+   This file only adds art-direction layers. Scroll geometry remains in
+   card-stack.css, where Hero pins for exactly one viewport and STATUS rises
+   over it. Nothing here changes document height. */
+
+@media (min-width: 1200px) {
+  /* STATUS behaves like the stage surface itself: initially a narrow central
+     opening, then full bleed. GSAP only writes the three custom properties. */
+  .st {
+    --stage-clip-x: 0%;
+    --stage-radius: 0px;
+    --stage-shadow: 0;
+
+    clip-path: inset(
+      0 var(--stage-clip-x) 0 var(--stage-clip-x)
+      round var(--stage-radius) var(--stage-radius) 0 0
+    ) !important;
+    border-radius: var(--stage-radius) var(--stage-radius) 0 0 !important;
+    box-shadow:
+      0 -1px 0 rgba(213, 180, 123, calc(var(--stage-shadow) * .28)),
+      0 -30px 86px rgba(0, 0, 0, calc(var(--stage-shadow) * .78)) !important;
+    will-change: clip-path, border-radius;
+  }
+
+  /* Fixed only visually, never in layout. The overlay exists solely during
+     the one-viewport Hero -> STATUS travel and is completely transparent at
+     both ends, so page 2 -> page 3 stays ordinary document flow. */
+  .stage-proscenium {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    width: 100vw;
+    height: 100svh;
+    overflow: hidden;
+    pointer-events: none;
+    perspective: 1500px;
+    transform-style: preserve-3d;
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .stage-wing {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 54vw;
+    overflow: hidden;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(5, 4, 4, .995) 0%,
+        rgba(18, 7, 10, .99) 24%,
+        rgba(42, 10, 18, .98) 48%,
+        rgba(15, 7, 9, .995) 73%,
+        rgba(5, 4, 4, 1) 100%
+      );
+    box-shadow: 0 0 80px rgba(0, 0, 0, .56);
+  }
+
+  /* Fabric suggestion without a literal theatre curtain. These are large,
+     soft tonal bands, closer to a runway set wall than red velvet. */
+  .stage-wing::before {
+    content: "";
+    position: absolute;
+    inset: -6% -10%;
+    opacity: .36;
+    background:
+      repeating-linear-gradient(
+        93deg,
+        transparent 0 7%,
+        rgba(255, 238, 211, .028) 9%,
+        rgba(0, 0, 0, .16) 12%,
+        transparent 17%
+      );
+    filter: blur(4px);
+  }
+
+  .stage-wing::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.42), transparent 20%, transparent 72%, rgba(0,0,0,.52)),
+      radial-gradient(circle at 50% 45%, rgba(118,16,40,.15), transparent 48%);
+  }
+
+  .stage-wing > span {
+    position: absolute;
+    inset-block: 0;
+    width: 1px;
+    z-index: 3;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(213, 180, 123, .08) 18%,
+      rgba(213, 180, 123, .26) 48%,
+      rgba(213, 180, 123, .07) 78%,
+      transparent 100%
+    );
+  }
+
+  .stage-wing-left {
+    left: 0;
+  }
+  .stage-wing-left > span {
+    right: 0;
+  }
+
+  .stage-wing-right {
+    right: 0;
+    background:
+      linear-gradient(
+        270deg,
+        rgba(5, 4, 4, .995) 0%,
+        rgba(18, 7, 10, .99) 24%,
+        rgba(42, 10, 18, .98) 48%,
+        rgba(15, 7, 9, .995) 73%,
+        rgba(5, 4, 4, 1) 100%
+      );
+  }
+  .stage-wing-right > span {
+    left: 0;
+  }
+
+  /* A thin rising runway edge. It appears before the wings, so the user first
+     reads "stage" and only then gets the curtain movement. */
+  .stage-apron {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: clamp(42px, 5.4vh, 62px);
+    z-index: 4;
+    border-top: 1px solid rgba(213, 180, 123, .28);
+    background:
+      linear-gradient(180deg, rgba(20, 8, 10, .96), rgba(5, 4, 4, .995));
+    box-shadow: 0 -24px 54px rgba(0, 0, 0, .34);
+    will-change: transform, opacity;
+  }
+
+  /* One soft diagonal light pass. No spotlight circle, glow, neon or lens
+     flare: just the suggestion that stage lighting has come on. */
+  .stage-light-sweep {
+    position: absolute;
+    z-index: 5;
+    top: -22vh;
+    left: 5vw;
+    width: 34vw;
+    height: 150vh;
+    transform: rotate(-13deg);
+    transform-origin: center;
+    opacity: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 239, 209, .02) 22%,
+      rgba(255, 232, 194, .22) 50%,
+      rgba(255, 239, 209, .025) 78%,
+      transparent 100%
+    );
+    filter: blur(18px);
+    mix-blend-mode: screen;
+    will-change: transform, opacity;
+  }
+}
+
+@media (max-width: 1199px), (prefers-reduced-motion: reduce) {
+  .stage-proscenium {
+    display: none !important;
+  }
+
+  .st {
+    clip-path: none !important;
+  }
+}
