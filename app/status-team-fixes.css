@@ -1,0 +1,15 @@
+/* Small structural corrections kept separate from the main art-direction file. */
+
+.st .beat-reel {
+  position: static;
+}
+
+.st .beat-numbers {
+  margin-inline: calc(0px - var(--st-inline));
+}
+
+@media (max-width: 1199px) {
+  .st .beat-numbers {
+    margin-inline: calc(0px - var(--gutter));
+  }
+}
