@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "./site-v4.css";
+import "./site-v4-patch.css";
 
 const tenor = localFont({
   src: "./fonts/TenorSans-Regular.woff2",
