@@ -11,6 +11,7 @@ import "./experience-program.css";
 import "./status-team-final.css";
 import "./card-stack.css";
 import "./final-polish.css";
+import "./mobile-fix.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
