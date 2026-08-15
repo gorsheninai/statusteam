@@ -19,9 +19,24 @@
   display: none !important;
 }
 
+/* Stronger intro copy and a tighter hand-off into the aftermovie. */
+.st-intro-copy {
+  max-width: 660px;
+  margin-bottom: clamp(6px, 0.7vh, 10px);
+  font-size: clamp(1.18rem, 1.32vw, 1.52rem);
+  line-height: 1.22;
+  letter-spacing: -0.012em;
+}
+
 @media (min-width: 1200px) {
   .st {
-    padding-top: clamp(38px, 4.8vh, 54px);
+    padding-top: clamp(30px, 3.8vh, 42px);
+    row-gap: clamp(4px, 0.7vh, 9px);
+  }
+
+  .st .beat-reel {
+    align-self: start;
+    margin-top: -2px;
   }
 
   /* GUESTS — slow 3D editorial carousel.
@@ -100,11 +115,37 @@
 
 @media (max-width: 1199px) {
   .st {
-    padding-top: clamp(42px, 7vw, 58px);
+    padding-top: clamp(28px, 4.5vw, 40px);
+  }
+
+  .st .beat-reel {
+    margin-top: 2px;
+  }
+
+  .st-intro-copy {
+    max-width: 700px;
+    margin-bottom: 7px;
+    font-size: clamp(1.16rem, 2.25vw, 1.42rem);
+    line-height: 1.24;
   }
 
   .st .beat-numbers {
     margin-inline: calc(0px - var(--gutter));
+  }
+}
+
+@media (max-width: 700px) {
+  .st {
+    padding-top: 24px;
+  }
+
+  .st .beat-reel {
+    margin-top: 0;
+  }
+
+  .st-intro-copy {
+    margin-bottom: 6px;
+    font-size: clamp(1.08rem, 5vw, 1.28rem);
   }
 }
 
