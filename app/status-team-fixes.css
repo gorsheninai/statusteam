@@ -19,24 +19,28 @@
   display: none !important;
 }
 
-/* Stronger intro copy and a tighter hand-off into the aftermovie. */
+/* Intro copy sits directly under STATUS TEAM and directly above the film. */
 .st-intro-copy {
-  max-width: 660px;
-  margin-bottom: clamp(6px, 0.7vh, 10px);
-  font-size: clamp(1.18rem, 1.32vw, 1.52rem);
-  line-height: 1.22;
+  max-width: none;
+  margin: 0 0 clamp(4px, 0.45vh, 7px);
+  font-size: clamp(1.18rem, 1.3vw, 1.48rem);
+  line-height: 1.18;
   letter-spacing: -0.012em;
 }
 
 @media (min-width: 1200px) {
   .st {
-    padding-top: clamp(30px, 3.8vh, 42px);
-    row-gap: clamp(4px, 0.7vh, 9px);
+    padding-top: clamp(26px, 3.2vh, 36px);
+    row-gap: clamp(2px, 0.4vh, 6px);
   }
 
   .st .beat-reel {
     align-self: start;
-    margin-top: -2px;
+    margin-top: -4px;
+  }
+
+  .st-intro-copy {
+    white-space: nowrap;
   }
 
   /* GUESTS — slow 3D editorial carousel.
@@ -113,20 +117,34 @@
   }
 }
 
-@media (max-width: 1199px) {
+/* This is the width shown in the supplied screenshot. The old tablet stack
+   left a large visual hole between the display heading and the reel. Pull the
+   complete reel block upward so copy + film form one lock-up under the title. */
+@media (min-width: 701px) and (max-width: 1199px) {
   .st {
-    padding-top: clamp(28px, 4.5vw, 40px);
+    padding-top: clamp(22px, 3vw, 30px);
+  }
+
+  .st .beat-who {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .st .st-name {
+    margin-bottom: 0 !important;
+    line-height: 0.9;
   }
 
   .st .beat-reel {
-    margin-top: 2px;
+    margin-top: clamp(-132px, -12vw, -96px) !important;
   }
 
   .st-intro-copy {
-    max-width: 700px;
-    margin-bottom: 7px;
-    font-size: clamp(1.16rem, 2.25vw, 1.42rem);
-    line-height: 1.24;
+    max-width: none;
+    white-space: nowrap;
+    margin-bottom: 5px;
+    font-size: clamp(1.08rem, 2vw, 1.34rem);
+    line-height: 1.16;
   }
 
   .st .beat-numbers {
@@ -136,7 +154,7 @@
 
 @media (max-width: 700px) {
   .st {
-    padding-top: 24px;
+    padding-top: 22px;
   }
 
   .st .beat-reel {
@@ -144,8 +162,14 @@
   }
 
   .st-intro-copy {
-    margin-bottom: 6px;
+    max-width: 100%;
+    white-space: normal;
+    margin-bottom: 5px;
     font-size: clamp(1.08rem, 5vw, 1.28rem);
+  }
+
+  .st .beat-numbers {
+    margin-inline: calc(0px - var(--gutter));
   }
 }
 
