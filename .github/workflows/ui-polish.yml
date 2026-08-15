@@ -1,0 +1,58 @@
+name: UI Polish Verify
+
+on:
+  push:
+    branches:
+      - claude/pulse-continenta-rebuild-brd6bj
+  workflow_dispatch:
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Start static preview
+        shell: bash
+        run: |
+          nohup npm start > /tmp/statusteam-preview.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:4311 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/statusteam-preview.log
+          exit 1
+
+      - name: Run browser verification
+        run: node tests/polish-verify.mjs http://127.0.0.1:4311
+
+      - name: Upload browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-polish-screenshots
+          path: test-results/polish
+          if-no-files-found: ignore
