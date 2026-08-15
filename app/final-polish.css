@@ -1,0 +1,623 @@
+/* ============================================================
+   FINAL POLISH — visual hierarchy, responsive craft, touch quality.
+   Imported last. No content, section order or semantic structure changes.
+   ============================================================ */
+
+:root {
+  --polish-ivory: #f2eee7;
+  --polish-champagne: #d5b47b;
+  --polish-ink: #080706;
+  --polish-wine: #18070c;
+}
+
+/* Anchor landings should never disappear under the fixed navigation. */
+#statusteam,
+#pulse,
+#experience,
+#tickets,
+#join,
+#faq {
+  scroll-margin-top: 82px;
+}
+
+/* ------------------------------------------------------------
+   NAV — less chrome, better touch targets, calmer glass state
+   ------------------------------------------------------------ */
+
+.nav {
+  padding-top: calc(0.78rem + env(safe-area-inset-top));
+  padding-bottom: 0.78rem;
+}
+
+.nav.is-solid {
+  background: rgba(8, 7, 6, 0.78);
+  border-bottom-color: rgba(242, 238, 231, 0.10);
+  backdrop-filter: blur(18px) saturate(115%);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+}
+
+.nav-tickets {
+  min-height: 42px;
+  border-color: rgba(213, 180, 123, 0.62);
+  background: rgba(8, 7, 6, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.nav-links a {
+  opacity: 0.82;
+  transition: opacity 300ms ease;
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------
+   HERO — stronger fashion hierarchy without adding anything
+   ------------------------------------------------------------ */
+
+.hero-title {
+  text-wrap: balance;
+  text-shadow: 0 12px 42px rgba(0, 0, 0, 0.18);
+}
+
+.hero-statement {
+  color: rgba(242, 238, 231, 0.90);
+  text-wrap: balance;
+}
+
+.hero-where {
+  color: rgba(242, 238, 231, 0.82);
+}
+
+.hero .btn-solid {
+  --btn-fill: var(--polish-champagne);
+  --btn-hover-fg: var(--polish-ink);
+  background: rgba(8, 7, 6, 0.66);
+  border-color: rgba(213, 180, 123, 0.52);
+  color: var(--polish-ivory);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ------------------------------------------------------------
+   STATUS TEAM — make the proof page feel like one editorial spread
+   ------------------------------------------------------------ */
+
+/* This utility line was part of an older direction and is intentionally not
+   visible in the final composition at any breakpoint. */
+.st-topline {
+  display: none !important;
+}
+
+.st-intro-copy {
+  text-wrap: balance;
+}
+
+.st .reel-media {
+  background: #080706 !important;
+}
+
+.st .reel-sound {
+  touch-action: manipulation;
+}
+
+/* ------------------------------------------------------------
+   PULSE — mobile becomes a native editorial sequence instead of a pin
+   ------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .pulse-scene {
+    padding-top: 48px !important;
+    padding-bottom: 58px !important;
+  }
+
+  .pulse-intro {
+    margin-bottom: 30px !important;
+  }
+
+  .pulse-title .pulse-line {
+    font-size: clamp(2.55rem, 12.4vw, 3.65rem) !important;
+  }
+
+  .pulse-meta {
+    max-width: 30ch;
+    margin-top: 16px !important;
+    line-height: 1.45;
+  }
+
+  .tenets:not(.is-pinned) {
+    gap: 18px !important;
+  }
+
+  .tenets:not(.is-pinned) .tenet {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: #0b0908;
+    border-radius: 18px;
+  }
+
+  .tenets:not(.is-pinned) .tenet-shot {
+    position: relative;
+    margin: 0;
+  }
+
+  .tenets:not(.is-pinned) .tenet-shot .media {
+    aspect-ratio: 4 / 5 !important;
+  }
+
+  .tenets:not(.is-pinned) .tenet-shot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      0deg,
+      rgba(8, 7, 6, 0.88) 0%,
+      rgba(8, 7, 6, 0.42) 28%,
+      rgba(8, 7, 6, 0.04) 62%,
+      transparent 100%
+    );
+  }
+
+  .tenets:not(.is-pinned) .tenet-word {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 18px 18px;
+  }
+
+  .tenets:not(.is-pinned) .tenet-in {
+    font-size: clamp(2.6rem, 14vw, 4.4rem) !important;
+    line-height: 0.92;
+    text-shadow: 0 8px 28px rgba(0, 0, 0, 0.36);
+  }
+}
+
+/* ------------------------------------------------------------
+   EXPERIENCE — tap targets and spacing
+   ------------------------------------------------------------ */
+
+.exp-trigger {
+  touch-action: manipulation;
+}
+
+.exp-title {
+  transition: opacity 320ms ease, transform 420ms cubic-bezier(.16,1,.3,1);
+}
+
+.exp-trigger:hover .exp-title,
+.exp-trigger:focus-visible .exp-title {
+  transform: translateX(4px);
+}
+
+/* ------------------------------------------------------------
+   TICKETS — editorial columns instead of dashboard cards
+   ------------------------------------------------------------ */
+
+.tiers {
+  gap: 0 !important;
+  perspective: none !important;
+  border-top: 1px solid rgba(242, 238, 231, 0.16);
+  border-bottom: 1px solid rgba(242, 238, 231, 0.16);
+}
+
+.tier {
+  background: transparent !important;
+  border: 0 !important;
+  transform: none !important;
+  transform-style: flat !important;
+}
+
+.tier::after {
+  display: none !important;
+}
+
+.tier-inner {
+  height: 100%;
+  padding: clamp(24px, 2.7vw, 38px) !important;
+}
+
+.tier-name {
+  color: var(--polish-champagne) !important;
+  font-size: clamp(1.3rem, 2vw, 1.85rem) !important;
+  line-height: 1.05;
+}
+
+.tier-list {
+  margin-top: clamp(18px, 2.1vw, 30px);
+  gap: 0.62rem !important;
+  color: rgba(242, 238, 231, 0.78);
+  line-height: 1.5;
+  opacity: 1 !important;
+}
+
+.tier-list li::before {
+  width: 10px;
+  background: rgba(213, 180, 123, 0.62);
+}
+
+.btn-buy {
+  min-height: 54px;
+}
+
+/* ------------------------------------------------------------
+   PARTICIPATION / FAQ — calmer surfaces and clearer interaction
+   ------------------------------------------------------------ */
+
+.zone {
+  background: #18070c !important;
+}
+
+.zone-media::after {
+  background: rgba(17, 5, 9, 0.72) !important;
+}
+
+.zone-head,
+.faq-q {
+  touch-action: manipulation;
+}
+
+.zone-title,
+.faq-q {
+  text-wrap: balance;
+}
+
+.faq-row.is-open .faq-q {
+  color: var(--polish-champagne);
+}
+
+/* ------------------------------------------------------------
+   TABLET + DESKTOP
+   ------------------------------------------------------------ */
+
+@media (min-width: 900px) {
+  .tier + .tier {
+    border-left: 1px solid rgba(242, 238, 231, 0.16) !important;
+  }
+
+  .tier-inner {
+    min-height: 250px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .st .reel-media {
+    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18) !important;
+  }
+
+  .st .guest .media {
+    overflow: hidden !important;
+  }
+
+  .st .guest img {
+    transform-origin: 50% 38% !important;
+  }
+
+  .zones.has-open .zone.is-open {
+    flex-grow: 2.35 !important;
+  }
+
+  .zones.has-open .zone:not(.is-open) .zone-sub {
+    opacity: 0.72 !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   PHONE / SMALL TABLET
+   ------------------------------------------------------------ */
+
+@media (max-width: 899px) {
+  :root {
+    --gutter: clamp(18px, 5vw, 26px);
+  }
+
+  .nav {
+    gap: 10px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .nav-brand {
+    min-width: 0;
+    padding-block: 10px;
+  }
+
+  .nav-brand img {
+    height: 16px;
+  }
+
+  .nav-end {
+    gap: 6px;
+  }
+
+  .nav-tickets {
+    min-height: 38px;
+    padding: 0.52rem 0.78rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+  }
+
+  .nav-burger {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-burger span {
+    width: 23px;
+  }
+
+  .menu {
+    height: 100dvh;
+  }
+
+  .menu-inner {
+    padding-top: calc(0.8rem + env(safe-area-inset-top));
+    padding-bottom: calc(1.4rem + env(safe-area-inset-bottom));
+  }
+
+  .menu-list a {
+    font-size: clamp(1.7rem, 8.4vw, 2.65rem);
+    padding-block: clamp(0.72rem, 2.8vw, 1rem);
+  }
+
+  .hero {
+    padding-top: calc(5.6rem + env(safe-area-inset-top)) !important;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .hero-inner {
+    max-width: 100%;
+  }
+
+  .hero-title {
+    margin-bottom: 18px !important;
+  }
+
+  .hero-title .pulse-line {
+    --pulse-spread: 0.045em;
+    font-size: clamp(2.55rem, 11.8vw, 3.45rem) !important;
+    line-height: 0.91;
+  }
+
+  .hero-statement {
+    max-width: 21ch;
+    margin-bottom: 18px !important;
+    font-size: clamp(1rem, 4.1vw, 1.12rem);
+    line-height: 1.34;
+  }
+
+  .hero-where {
+    margin-bottom: 20px !important;
+    gap: 6px 14px;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+  }
+
+  .hero .btn {
+    min-height: 50px;
+    padding: 0.9rem 1.35rem;
+  }
+
+  .st {
+    padding-top: clamp(50px, 9vw, 68px) !important;
+  }
+
+  .st::before {
+    background:
+      radial-gradient(circle at 84% 18%, rgba(92, 18, 38, 0.28), transparent 42%),
+      linear-gradient(145deg, #120608 0%, #1b070c 56%, #100607 100%) !important;
+  }
+
+  .st-intro-copy {
+    max-width: 31ch !important;
+    margin: 0 0 16px !important;
+    color: rgba(242, 238, 231, 0.86) !important;
+    font-size: clamp(1rem, 3.8vw, 1.12rem) !important;
+    line-height: 1.38 !important;
+    white-space: normal !important;
+  }
+
+  .st .reel-media {
+    aspect-ratio: 16 / 10 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28) !important;
+  }
+
+  .st .reel-sound {
+    width: 44px !important;
+    height: 44px !important;
+    opacity: 0.92 !important;
+    border-color: rgba(242, 238, 231, 0.34) !important;
+  }
+
+  .st .beat-proof {
+    margin-top: 34px !important;
+  }
+
+  .st .guest .media {
+    border-radius: 12px !important;
+  }
+
+  .st .beat-numbers {
+    margin-top: 38px !important;
+  }
+
+  .st .scale-list li {
+    min-height: 132px !important;
+    padding: 20px 10px !important;
+  }
+
+  .st .scale-n {
+    font-size: clamp(44px, 13vw, 62px) !important;
+  }
+
+  .st .scale-l::before {
+    font-size: clamp(0.57rem, 2.25vw, 0.66rem) !important;
+    line-height: 1.22 !important;
+  }
+
+  .exp-scene {
+    padding-left: var(--gutter) !important;
+    padding-right: var(--gutter) !important;
+  }
+
+  .exp-trigger {
+    min-height: 76px !important;
+  }
+
+  .exp-toggle {
+    flex: none;
+  }
+
+  .tickets {
+    padding-top: 58px !important;
+    padding-bottom: 64px !important;
+  }
+
+  .tickets-title {
+    margin-top: 22px !important;
+  }
+
+  .tickets-title .pulse-line {
+    font-size: clamp(2.65rem, 11vw, 4rem) !important;
+  }
+
+  .tier-inner {
+    min-height: 0;
+    padding: 24px 0 !important;
+  }
+
+  .tier + .tier {
+    border-top: 1px solid rgba(242, 238, 231, 0.16) !important;
+  }
+
+  .tickets-cta {
+    margin-top: 30px !important;
+  }
+
+  .btn-buy {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .join,
+  .faq-scene {
+    padding-top: 60px !important;
+    padding-bottom: 64px !important;
+  }
+
+  .join-head {
+    margin-bottom: 28px !important;
+  }
+
+  .join-h,
+  .faq-h {
+    font-size: clamp(2.65rem, 12vw, 4.6rem) !important;
+    line-height: 0.94;
+  }
+
+  .zone-head {
+    min-height: 116px;
+    padding-top: 22px;
+    padding-bottom: 22px;
+  }
+
+  .zone-title {
+    font-size: clamp(1.45rem, 6vw, 1.9rem) !important;
+    line-height: 1.02;
+  }
+
+  .zone-sub {
+    max-width: 32ch;
+  }
+
+  .zone-sign {
+    width: 22px;
+    height: 22px;
+  }
+
+  .faq {
+    width: 100% !important;
+  }
+
+  .faq-q {
+    min-height: 68px;
+    gap: 18px;
+    font-size: clamp(1rem, 4vw, 1.14rem);
+    line-height: 1.35;
+  }
+
+  .faq-sign {
+    width: 18px;
+    height: 18px;
+  }
+
+  .foot {
+    padding-top: 48px;
+    padding-bottom: calc(44px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 639px) {
+  .tickets-bar {
+    display: block !important;
+    padding-block: 0 !important;
+  }
+
+  .tickets-bar > div {
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(242, 238, 231, 0.12);
+  }
+
+  .tickets-bar > div:last-child {
+    border-bottom: 0;
+  }
+
+  .tickets-bar b {
+    font-size: 0.98rem;
+    line-height: 1.3;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero-title .pulse-line {
+    font-size: clamp(2.42rem, 11.5vw, 3.05rem) !important;
+  }
+
+  .hero-statement {
+    font-size: 1rem;
+  }
+
+  .st .scale-list li {
+    min-height: 122px !important;
+  }
+
+  .exp-h {
+    font-size: clamp(2.65rem, 13.2vw, 3.65rem) !important;
+  }
+}
+
+/* Touch screens should not depend on hover-only visual states. */
+@media (hover: none) {
+  .exp-trigger:hover .exp-title {
+    transform: none;
+    opacity: 1;
+  }
+
+  .nav-tickets {
+    background: rgba(8, 7, 6, 0.48);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exp-title,
+  .nav-links a {
+    transition: none !important;
+  }
+}
