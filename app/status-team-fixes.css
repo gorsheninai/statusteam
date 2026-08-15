@@ -59,6 +59,7 @@
     height: 100svh;
     min-height: 700px;
     padding-top: clamp(32px, 3.5vh, 40px);
+    padding-bottom: clamp(26px, 3vh, 34px);
     grid-template-rows: auto minmax(0, 1fr) clamp(104px, 11.5vh, 118px);
     row-gap: 6px;
     overflow: hidden;
@@ -269,6 +270,7 @@
 @media (min-width: 1600px) and (min-height: 900px) {
   .st {
     padding-top: 38px;
+    padding-bottom: 32px;
     grid-template-rows: auto minmax(0, 1fr) 112px;
   }
 
