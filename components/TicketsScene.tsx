@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
 import LeadForm from "@/components/LeadForm";
 
@@ -84,7 +85,7 @@ export default function TicketsScene() {
             <strong>LAST CALL</strong>
           </div>
           <div className="ticket-countdown" aria-label="До конца текущей волны">
-            {[ [time.days, "дн"], [time.hours, "ч"], [time.minutes, "мин"], [time.seconds, "сек"] ].map(([value, label]) => (
+            {[[time.days, "дн"], [time.hours, "ч"], [time.minutes, "мин"], [time.seconds, "сек"]].map(([value, label]) => (
               <div key={String(label)}>
                 <b>{String(value).padStart(2, "0")}</b>
                 <span>{label}</span>
@@ -128,7 +129,7 @@ export default function TicketsScene() {
             ["poster-train", "Афиша с моделью и шлейфом"],
             ["poster-duo-dusk", "Афиша с двумя моделями"],
           ].map(([image, alt], index) => (
-            <figure key={image} style={{ "--poster-rotation": `${[-3, 0, 3][index]}deg` } as React.CSSProperties}>
+            <figure key={image} style={{ "--poster-rotation": `${[-3, 0, 3][index]}deg` } as CSSProperties}>
               <img
                 src={`/media/${image}-1000.webp`}
                 srcSet={`/media/${image}-600.webp 600w, /media/${image}-1000.webp 1000w`}
