@@ -1049,15 +1049,26 @@ ol {
 
 /* Layers. Each one is oversized by --bleed so the scroll parallax and the
    Ken Burns can never expose an edge. */
+/* The bleed is what the motion needs to move into, and the two axes need
+   very different amounts: the scroll parallax travels 8% of the layer's
+   height, while the pointer offset is 3px and the Ken Burns only ever scales
+   up. A single 10% bleed on both axes was a 20% zoom charged to the
+   photograph for nothing — it pushed the figures past the frame. Horizontal
+   room is now nominal, vertical covers the travel, and the pair is in frame. */
 .hero-layer {
+  --bleed-x: 1.5%;
+  --bleed-y: 9%;
   position: absolute;
-  inset: calc(var(--bleed, 10%) * -1);
-  width: calc(100% + var(--bleed, 10%) * 2);
-  height: calc(100% + var(--bleed, 10%) * 2);
+  left: calc(var(--bleed-x) * -1);
+  right: calc(var(--bleed-x) * -1);
+  top: calc(var(--bleed-y) * -1);
+  bottom: calc(var(--bleed-y) * -1);
+  width: calc(100% + var(--bleed-x) * 2);
+  height: calc(100% + var(--bleed-y) * 2);
   /* The base reset caps every img at max-width:100%, which clamped this one
-     to the frame while `inset` still pulled it a full bleed to the left — the
-     figures sat off-centre and the right edge of the frame stayed black. The
-     bleed only works if the layer is allowed to be wider than its box. */
+     to the frame while the inset still pulled it a full bleed to the left —
+     the figures sat off-centre and the right edge of the frame stayed black.
+     The bleed only works if the layer may be wider than its box. */
   max-width: none;
   object-fit: cover;
   object-position: center 46%;
@@ -1068,7 +1079,8 @@ ol {
    point. Empty until a transparent asset exists — see HERO_ART. */
 .hero-layer-model,
 .hero-layer-fg {
-  --bleed: 0px;
+  --bleed-x: 0px;
+  --bleed-y: 0px;
   inset: 0;
   width: 100%;
   height: 100%;
