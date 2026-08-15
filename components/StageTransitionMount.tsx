@@ -107,37 +107,19 @@ export default function StageTransitionMount() {
                 duration: 0.68,
               },
               0.06,
-            )
-            .to(
-              heroInner,
-              heroInner
-                ? { opacity: 0.42, y: -18, duration: 0.62 }
-                : { duration: 0 },
-              0.08,
-            )
+            );
 
+          if (heroInner) {
+            tl.to(heroInner, { opacity: 0.42, y: -18, duration: 0.62 }, 0.08);
+          }
+
+          tl
             /* Abstract fashion curtains enter from the wings and briefly
                compress the view into a central vertical opening. */
-            .to(
-              left,
-              { xPercent: -54, rotateY: -5, duration: 0.25 },
-              0.08,
-            )
-            .to(
-              right,
-              { xPercent: 54, rotateY: 5, duration: 0.25 },
-              0.08,
-            )
-            .to(
-              left,
-              { xPercent: -18, rotateY: 0, duration: 0.18 },
-              0.31,
-            )
-            .to(
-              right,
-              { xPercent: 18, rotateY: 0, duration: 0.18 },
-              0.31,
-            )
+            .to(left, { xPercent: -54, rotateY: -5, duration: 0.25 }, 0.08)
+            .to(right, { xPercent: 54, rotateY: 5, duration: 0.25 }, 0.08)
+            .to(left, { xPercent: -18, rotateY: 0, duration: 0.18 }, 0.31)
+            .to(right, { xPercent: 18, rotateY: 0, duration: 0.18 }, 0.31)
 
             /* STATUS itself is the stage behind them. It expands from a slim
                centre opening while the real section continues rising in flow. */
@@ -163,16 +145,8 @@ export default function StageTransitionMount() {
             /* Curtains now open hard to the sides. The second page is already
                behind them, so this reads as a real stage reveal rather than an
                interstitial animation. */
-            .to(
-              left,
-              { xPercent: -116, rotateY: -15, duration: 0.34 },
-              0.50,
-            )
-            .to(
-              right,
-              { xPercent: 116, rotateY: 15, duration: 0.34 },
-              0.50,
-            )
+            .to(left, { xPercent: -116, rotateY: -15, duration: 0.34 }, 0.50)
+            .to(right, { xPercent: 116, rotateY: 15, duration: 0.34 }, 0.50)
             .to(
               status,
               {
