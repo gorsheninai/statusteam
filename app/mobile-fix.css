@@ -1,0 +1,28 @@
+/* Narrow-screen type safety. Imported last so the animated pulse masks always
+   have enough room for the full word «КОНТИНЕНТА» at open tracking. */
+
+@media (max-width: 767px) {
+  .hero-title .pulse-line,
+  .pulse-title .pulse-line,
+  .tickets-title .pulse-line {
+    --pulse-spread: 0.035em !important;
+    font-size: clamp(2.18rem, 10.6vw, 3.2rem) !important;
+    letter-spacing: calc(-0.018em + var(--pulse, 0) * var(--pulse-spread)) !important;
+  }
+
+  .hero-title .pulse-line + .pulse-line,
+  .pulse-title .pulse-line + .pulse-line,
+  .tickets-title .pulse-line + .pulse-line {
+    letter-spacing: calc(
+      var(--pulse-spread) * 0.72 - var(--pulse, 0) * var(--pulse-spread)
+    ) !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .hero-title .pulse-line,
+  .pulse-title .pulse-line,
+  .tickets-title .pulse-line {
+    font-size: clamp(2.05rem, 10.2vw, 2.72rem) !important;
+  }
+}
