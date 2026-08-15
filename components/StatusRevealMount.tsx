@@ -42,11 +42,16 @@ export default function StatusRevealMount() {
     const status = document.querySelector<HTMLElement>("#statusteam");
     if (!status || document.querySelector(".status-transition")) return;
 
-    const section = document.createElement("section");
-    section.className = "status-transition";
-    section.setAttribute("aria-hidden", "true");
-    section.innerHTML = `
+    /* This is an overlay, not a section in document flow. Page two is already
+       underneath it while the user scrolls out of the hero. The palms open
+       onto the real aftermovie/proof page instead of finishing on a separate
+       black screen and only then scrolling to the content. */
+    const overlay = document.createElement("div");
+    overlay.className = "status-transition";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
       <div class="status-transition-stage">
+        <div class="status-transition-backdrop"></div>
         <div class="status-transition-ambient"></div>
 
         <div class="status-transition-mark">
@@ -62,32 +67,38 @@ export default function StatusRevealMount() {
       </div>
     `;
 
-    status.before(section);
+    document.body.appendChild(overlay);
 
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (calm) {
-      section.classList.add("is-calm");
-      return () => section.remove();
+      overlay.remove();
+      return;
     }
 
     gsap.registerPlugin(ScrollTrigger);
 
-    const stage = section.querySelector<HTMLElement>(".status-transition-stage");
-    const mark = section.querySelector<HTMLElement>(".status-transition-mark");
-    const sheen = section.querySelector<HTMLElement>(".status-transition-sheen");
-    const ambient = section.querySelector<HTMLElement>(".status-transition-ambient");
+    const stage = overlay.querySelector<HTMLElement>(".status-transition-stage");
+    const backdrop = overlay.querySelector<HTMLElement>(".status-transition-backdrop");
+    const mark = overlay.querySelector<HTMLElement>(".status-transition-mark");
+    const sheen = overlay.querySelector<HTMLElement>(".status-transition-sheen");
+    const ambient = overlay.querySelector<HTMLElement>(".status-transition-ambient");
     const left = gsap.utils.toArray<HTMLElement>(
       ".status-transition-palm-left",
-      section,
+      overlay,
     );
     const right = gsap.utils.toArray<HTMLElement>(
       ".status-transition-palm-right",
-      section,
+      overlay,
     );
 
-    if (!stage || !mark || !sheen || !ambient) return () => section.remove();
+    if (!stage || !backdrop || !mark || !sheen || !ambient) {
+      overlay.remove();
+      return;
+    }
 
     const ctx = gsap.context(() => {
+      gsap.set(overlay, { autoAlpha: 0 });
+      gsap.set(backdrop, { opacity: 1 });
       gsap.set(mark, {
         autoAlpha: 0,
         scale: 0.58,
@@ -99,36 +110,39 @@ export default function StatusRevealMount() {
       gsap.set(sheen, { xPercent: -145, opacity: 0 });
       gsap.set(left, { xPercent: -132, autoAlpha: 0, rotate: -7 });
       gsap.set(right, { xPercent: 132, autoAlpha: 0, rotate: 7 });
-      gsap.set(ambient, { opacity: 0.25, scale: 0.88 });
+      gsap.set(ambient, { opacity: 0.22, scale: 0.88 });
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.75,
+          trigger: status,
+          /* While page two travels from below the viewport to its final
+             position, this fixed overlay performs the whole logo/palm reveal. */
+          start: "top bottom",
+          end: "top top",
+          scrub: 0.72,
           invalidateOnRefresh: true,
         },
       });
 
-      tl.to(mark, {
-        autoAlpha: 1,
-        scale: 1,
-        rotateX: 0,
-        rotateY: 0,
-        z: 0,
-        duration: 0.24,
-        ease: "power3.out",
-      })
+      tl.to(overlay, { autoAlpha: 1, duration: 0.035, ease: "none" }, 0)
+        .to(mark, {
+          autoAlpha: 1,
+          scale: 1,
+          rotateX: 0,
+          rotateY: 0,
+          z: 0,
+          duration: 0.24,
+          ease: "power3.out",
+        }, 0.04)
         .to(
           sheen,
           {
             xPercent: 155,
             opacity: 0.82,
-            duration: 0.22,
+            duration: 0.2,
             ease: "power2.inOut",
           },
-          0.15,
+          0.16,
         )
         .to(
           mark,
@@ -136,10 +150,10 @@ export default function StatusRevealMount() {
             rotateY: 7,
             rotateX: -2,
             scale: 1.035,
-            duration: 0.13,
+            duration: 0.12,
             ease: "sine.inOut",
           },
-          0.26,
+          0.27,
         )
         .to(
           left,
@@ -147,8 +161,8 @@ export default function StatusRevealMount() {
             xPercent: (i) => (i === 0 ? -26 : -12),
             autoAlpha: 1,
             rotate: (i) => (i === 0 ? -4 : 0),
-            duration: 0.28,
-            stagger: 0.025,
+            duration: 0.25,
+            stagger: 0.02,
             ease: "power3.out",
           },
           0.34,
@@ -159,24 +173,24 @@ export default function StatusRevealMount() {
             xPercent: (i) => (i === 0 ? 26 : 12),
             autoAlpha: 1,
             rotate: (i) => (i === 0 ? 4 : 0),
-            duration: 0.28,
-            stagger: 0.025,
+            duration: 0.25,
+            stagger: 0.02,
             ease: "power3.out",
           },
-          0.36,
+          0.35,
         )
         .to(
           ambient,
-          { opacity: 0.72, scale: 1.04, duration: 0.24, ease: "sine.out" },
-          0.38,
+          { opacity: 0.7, scale: 1.04, duration: 0.2, ease: "sine.out" },
+          0.39,
         )
         .to(
           mark,
           {
             rotateY: 0,
             scale: 1.08,
-            autoAlpha: 0.48,
-            duration: 0.16,
+            autoAlpha: 0.42,
+            duration: 0.13,
             ease: "power2.inOut",
           },
           0.52,
@@ -184,9 +198,9 @@ export default function StatusRevealMount() {
         .to(
           left,
           {
-            xPercent: (i) => (i === 0 ? -10 : 2),
+            xPercent: (i) => (i === 0 ? -9 : 3),
             scale: (i) => (i === 0 ? 1 : 1.04),
-            duration: 0.14,
+            duration: 0.12,
             ease: "power2.inOut",
           },
           0.54,
@@ -194,9 +208,9 @@ export default function StatusRevealMount() {
         .to(
           right,
           {
-            xPercent: (i) => (i === 0 ? 10 : -2),
+            xPercent: (i) => (i === 0 ? 9 : -3),
             scale: (i) => (i === 0 ? 1 : 1.04),
-            duration: 0.14,
+            duration: 0.12,
             ease: "power2.inOut",
           },
           0.54,
@@ -207,43 +221,53 @@ export default function StatusRevealMount() {
             autoAlpha: 0,
             scale: 1.15,
             z: 120,
-            duration: 0.12,
+            duration: 0.1,
             ease: "power2.in",
           },
+          0.62,
+        )
+        /* The crucial change: the black curtain disappears while the real
+           STATUS page is already underneath, so the palms literally open it. */
+        .to(
+          backdrop,
+          { opacity: 0, duration: 0.26, ease: "power2.inOut" },
           0.64,
+        )
+        .to(
+          ambient,
+          { opacity: 0.08, scale: 1.18, duration: 0.2, ease: "power2.out" },
+          0.66,
         )
         .to(
           left,
           {
-            xPercent: (i) => (i === 0 ? -96 : -118),
+            xPercent: (i) => (i === 0 ? -104 : -126),
             rotate: (i) => (i === 0 ? -8 : -12),
+            autoAlpha: 0,
             duration: 0.29,
             ease: "power2.inOut",
           },
-          0.69,
+          0.68,
         )
         .to(
           right,
           {
-            xPercent: (i) => (i === 0 ? 96 : 118),
+            xPercent: (i) => (i === 0 ? 104 : 126),
             rotate: (i) => (i === 0 ? 8 : 12),
+            autoAlpha: 0,
             duration: 0.29,
             ease: "power2.inOut",
           },
-          0.69,
+          0.68,
         )
-        .to(
-          ambient,
-          { opacity: 0.14, scale: 1.16, duration: 0.24, ease: "power2.out" },
-          0.72,
-        );
-    }, section);
+        .to(overlay, { autoAlpha: 0, duration: 0.06, ease: "none" }, 0.94);
+    }, overlay);
 
     ScrollTrigger.refresh();
 
     return () => {
       ctx.revert();
-      section.remove();
+      overlay.remove();
       ScrollTrigger.refresh();
     };
   }, []);
