@@ -14,38 +14,58 @@
 }
 
 /* The reference topline was useful during composition, but the final page is
-   cleaner without chapter numbering / ABOUT. Reclaim the vertical space too. */
+   cleaner without chapter numbering / ABOUT. */
 .st-topline {
   display: none !important;
 }
 
-/* Intro copy sits directly under STATUS TEAM and directly above the film. */
+/* The legacy layout gives .reel-zoom a full viewport height from 1024px up.
+   That is what created the giant empty hole between STATUS TEAM, the copy and
+   the film. In the rebuilt editorial section the reel is normal flow content. */
+.st .reel-zoom {
+  height: auto !important;
+  min-height: 0 !important;
+  display: block !important;
+  align-content: normal !important;
+  padding: 0 !important;
+}
+
+/* One compact lock-up: title -> sentence -> film. */
+.st .beat-who {
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.st .st-name {
+  margin: 0 !important;
+}
+
 .st-intro-copy {
   max-width: none;
-  margin: 0 0 clamp(4px, 0.45vh, 7px);
+  margin: 0 0 5px;
   font-size: clamp(1.18rem, 1.3vw, 1.48rem);
-  line-height: 1.18;
+  line-height: 1.16;
   letter-spacing: -0.012em;
 }
 
 @media (min-width: 1200px) {
   .st {
     padding-top: clamp(26px, 3.2vh, 36px);
-    row-gap: clamp(2px, 0.4vh, 6px);
+    row-gap: 6px;
   }
 
   .st .beat-reel {
     align-self: start;
-    margin-top: -4px;
+    margin-top: 0 !important;
   }
 
   .st-intro-copy {
     white-space: nowrap;
   }
 
-  /* GUESTS — slow 3D editorial carousel.
-     Four portraits orbit one focal position instead of reading like employee
-     cards. Pure transform/opacity animation keeps it smooth and cheap. */
+  /* GUESTS — slow 3D editorial carousel. */
   .st .guests {
     position: relative;
     display: block;
@@ -117,12 +137,9 @@
   }
 }
 
-/* This is the width shown in the supplied screenshot. The old tablet stack
-   left a large visual hole between the display heading and the reel. Pull the
-   complete reel block upward so copy + film form one lock-up under the title. */
 @media (min-width: 701px) and (max-width: 1199px) {
   .st {
-    padding-top: clamp(22px, 3vw, 30px);
+    padding-top: clamp(20px, 2.7vw, 28px);
   }
 
   .st .beat-who {
@@ -131,12 +148,11 @@
   }
 
   .st .st-name {
-    margin-bottom: 0 !important;
     line-height: 0.9;
   }
 
   .st .beat-reel {
-    margin-top: clamp(-132px, -12vw, -96px) !important;
+    margin-top: 8px !important;
   }
 
   .st-intro-copy {
@@ -144,7 +160,7 @@
     white-space: nowrap;
     margin-bottom: 5px;
     font-size: clamp(1.08rem, 2vw, 1.34rem);
-    line-height: 1.16;
+    line-height: 1.14;
   }
 
   .st .beat-numbers {
@@ -158,7 +174,7 @@
   }
 
   .st .beat-reel {
-    margin-top: 0;
+    margin-top: 7px !important;
   }
 
   .st-intro-copy {
