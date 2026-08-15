@@ -8,8 +8,108 @@
   margin-inline: calc(0px - var(--st-inline));
 }
 
+/* Hero must flow straight into STATUS TEAM: no decorative chapter strip. */
+.hero-stage + .pulse-rule {
+  display: none;
+}
+
+/* The reference topline was useful during composition, but the final page is
+   cleaner without chapter numbering / ABOUT. Reclaim the vertical space too. */
+.st-topline {
+  display: none !important;
+}
+
+@media (min-width: 1200px) {
+  .st {
+    padding-top: clamp(38px, 4.8vh, 54px);
+  }
+
+  /* GUESTS — slow 3D editorial carousel.
+     Four portraits orbit one focal position instead of reading like employee
+     cards. Pure transform/opacity animation keeps it smooth and cheap. */
+  .st .guests {
+    position: relative;
+    display: block;
+    height: clamp(220px, 27vh, 292px);
+    overflow: hidden;
+    perspective: 1100px;
+    perspective-origin: 50% 42%;
+    isolation: isolate;
+  }
+
+  .st .guest {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: clamp(116px, 8.5vw, 152px);
+    margin: 0;
+    transform-style: preserve-3d;
+    transform-origin: 50% 44%;
+    will-change: transform, opacity, filter;
+    animation: st-guest-orbit 16s cubic-bezier(0.45, 0, 0.18, 1) infinite;
+  }
+
+  .st .guest:nth-child(1) { animation-delay: 0s; }
+  .st .guest:nth-child(2) { animation-delay: -4s; }
+  .st .guest:nth-child(3) { animation-delay: -8s; }
+  .st .guest:nth-child(4) { animation-delay: -12s; }
+
+  .st .guests:hover .guest,
+  .st .guests:focus-within .guest {
+    animation-play-state: paused;
+  }
+
+  .st .guest .media {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+  }
+
+  .st .guest figcaption {
+    margin-top: 7px;
+    text-align: left;
+  }
+
+  @keyframes st-guest-orbit {
+    0%, 100% {
+      z-index: 4;
+      opacity: 1;
+      filter: saturate(1) brightness(1);
+      transform: translateX(-50%) translateZ(20px) rotateY(0deg) scale(1);
+    }
+    25% {
+      z-index: 2;
+      opacity: 0.7;
+      filter: saturate(0.72) brightness(0.86);
+      transform: translateX(95%) translateZ(-90px) rotateY(-24deg) scale(0.86);
+    }
+    50% {
+      z-index: 1;
+      opacity: 0.18;
+      filter: saturate(0.55) brightness(0.7);
+      transform: translateX(-50%) translateZ(-220px) rotateY(0deg) scale(0.72);
+    }
+    75% {
+      z-index: 2;
+      opacity: 0.7;
+      filter: saturate(0.72) brightness(0.86);
+      transform: translateX(-195%) translateZ(-90px) rotateY(24deg) scale(0.86);
+    }
+  }
+}
+
 @media (max-width: 1199px) {
+  .st {
+    padding-top: clamp(42px, 7vw, 58px);
+  }
+
   .st .beat-numbers {
     margin-inline: calc(0px - var(--gutter));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st .guest {
+    animation: none !important;
   }
 }
