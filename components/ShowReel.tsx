@@ -1,11 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export default function ShowReel() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
+
+  /* The previous STATUS TEAM version marked this block for a pinned GSAP
+     zoom. The new art direction is one static editorial composition, so the
+     marker must be gone before Motion's passive effect builds ScrollTriggers. */
+  useLayoutEffect(() => {
+    wrapRef.current?.closest("[data-reel-zoom]")?.removeAttribute("data-reel-zoom");
+  }, []);
 
   useEffect(() => {
     const el = wrapRef.current;
