@@ -7,3 +7,6 @@ next-env.d.ts
 test-results/
 playwright-report/
 test-results/
+shots/
+cap.mjs
+flow.mjs

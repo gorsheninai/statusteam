@@ -130,14 +130,38 @@ for (const [name, width, height] of SIZES) {
 
   check(await page.locator(".faq-row").count() === 6, "FAQ has six questions");
   check(await page.locator(".tier").count() === 3, "three ticket categories");
-  check(await page.locator(".wave").count() === 3, "three price waves");
   check(await page.locator(".zone").count() === 3, "three ways in, including press");
   check(await page.locator(".zone [data-form='press']").count() === 1, "press accreditation form present");
-  check(await page.locator("#tickets [data-form='subscribe']").count() === 1, "newsletter form in the ticket scene");
+  check(await page.locator("#tickets form").count() === 1,
+    "the ticket scene asks once, not twice");
   check(await page.locator(".foot [data-form='subscribe']").count() === 1, "newsletter form in the footer");
   check(await page.locator(".tenet").count() === 4, "four tenets in the pinned chapter");
   check((await page.locator("#tickets").innerText()).match(/кастинг|партнёрств/i) === null,
     "the ticket scene does not redirect a buyer to casting");
+
+  /* A block is either carrying real content or it does not exist. */
+  const ghosts = await page.evaluate(() => {
+    const body = document.body.innerText;
+    return ["Имя Фамилия", "MEDIA ONE", "BRAND 01", "— ₽", "Волна закрыта",
+            "Early bird", "Среди гостей", "О нас говорили", "Вместе с нами"]
+      .filter((t) => body.includes(t));
+  });
+  check(ghosts.length === 0, "no placeholder content is rendered", ghosts.join(", "));
+
+  /* Numbered section labels are the template tell. Order is only allowed to
+     show where it carries meaning — the casting steps. */
+  check(await page.locator(".chapter").count() === 0, "no numbered section labels");
+  const strayNumbers = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("main h2, main h3, .zone-head, .exp-line, .menu-list a"))
+      .filter((el) => /^\s*0?[1-9][\s.)]/.test(el.textContent || ""))
+      .map((el) => (el.textContent || "").trim().slice(0, 24)));
+  check(strayNumbers.length === 0, "no numbering leaks into headings or menu",
+    strayNumbers.join(" | "));
+
+  /* The pinned chapter's progress marks must be drawn, never read. */
+  const dotsText = await page.evaluate(() =>
+    (document.querySelector(".tenet-dots")?.innerText || "").trim());
+  check(dotsText === "", "tenet progress marks carry no text", dotsText.slice(0, 20));
 
   const navHrefs = await page.evaluate(() =>
     Array.from(document.querySelectorAll(".nav-links a, .nav-tickets")).map((a) => a.getAttribute("href")));

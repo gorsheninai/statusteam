@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import ApplyForm from "./ApplyForm";
-import { SALES_OPEN, SHOW, TICKETS_URL, TIERS, WAVES } from "@/lib/config";
+import { CONTENT, SALES_OPEN, SHOW, TICKETS_URL, TIERS, WAVES } from "@/lib/config";
 
 /* ---------------------------------------------------------------- waves */
 
@@ -100,6 +100,8 @@ export default function Tickets() {
   const [askOpen, setAskOpen] = useState(false);
 
   useEffect(() => {
+    /* No clock while the waves are hidden — there is nothing to count to. */
+    if (!CONTENT.priceWaves) return;
     const tick = () => {
       const now = Date.now();
       const i = WAVES.findIndex((w) => new Date(w.endsAt).getTime() > now);
@@ -139,7 +141,7 @@ export default function Tickets() {
           <article className="tier" key={t.id} data-reveal="up">
             <div className="tier-inner">
               <h3 className="tier-name struct">{t.name}</h3>
-              <p className="tier-price">{t.price}</p>
+              {CONTENT.tierPrices && <p className="tier-price">{t.price}</p>}
               <ul className="tier-list">
                 {t.includes.map((line) => (
                   <li key={line}>{line}</li>
@@ -150,47 +152,55 @@ export default function Tickets() {
         ))}
       </div>
 
-      {/* ---- price waves ------------------------------------------ */}
-      <div className="waves" data-reveal="up">
-        <ol className="wave-row" aria-label="Волны цен">
-          {WAVES.map((w, i) => (
-            <li
-              key={w.id}
-              className={`wave ${i === wave ? "is-active" : ""} ${
-                i < wave ? "is-past" : ""
-              }`}
-              aria-current={i === wave ? "step" : undefined}
-            >
-              {w.name}
-            </li>
-          ))}
-        </ol>
+      {/* ---- price waves ------------------------------------------
+          A countdown made of em dashes is worse than no countdown, and
+          the wave names mean nothing without real deadlines behind them.
+          Set them in lib/config.ts, flip CONTENT.priceWaves, and this
+          comes back exactly as written. */}
+      {CONTENT.priceWaves && (
+        <>
+        <div className="waves" data-reveal="up">
+          <ol className="wave-row" aria-label="Волны цен">
+            {WAVES.map((w, i) => (
+              <li
+                key={w.id}
+                className={`wave ${i === wave ? "is-active" : ""} ${
+                  i < wave ? "is-past" : ""
+                }`}
+                aria-current={i === wave ? "step" : undefined}
+              >
+                {w.name}
+              </li>
+            ))}
+          </ol>
 
-        <div className="wave-clock" role="timer" aria-live="off">
-          <span className="label">
-            {left ? `До конца волны «${WAVES[wave].name}»` : "Волна закрыта"}
-          </span>
-          <div className="wave-timer">
-            {left ? (
-              <>
-                <Unit value={pad(left.d)} label="дн" />
-                <Unit value={pad(left.h)} label="ч" />
-                <Unit value={pad(left.m)} label="мин" />
-                <Unit value={pad(left.s)} label="сек" />
-              </>
-            ) : (
-              /* Rendered on the server and until the clock runs: dashes, never
-                 a fake countdown. */
-              <>
-                <Unit value="—" label="дн" />
-                <Unit value="—" label="ч" />
-                <Unit value="—" label="мин" />
-                <Unit value="—" label="сек" />
-              </>
-            )}
+          <div className="wave-clock" role="timer" aria-live="off">
+            <span className="label">
+              {left ? `До конца волны «${WAVES[wave].name}»` : "Волна закрыта"}
+            </span>
+            <div className="wave-timer">
+              {left ? (
+                <>
+                  <Unit value={pad(left.d)} label="дн" />
+                  <Unit value={pad(left.h)} label="ч" />
+                  <Unit value={pad(left.m)} label="мин" />
+                  <Unit value={pad(left.s)} label="сек" />
+                </>
+              ) : (
+                /* Rendered on the server and until the clock runs: dashes, never
+                   a fake countdown. */
+                <>
+                  <Unit value="—" label="дн" />
+                  <Unit value="—" label="ч" />
+                  <Unit value="—" label="мин" />
+                  <Unit value="—" label="сек" />
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+        </>
+      )}
 
       {/* ---- the one control ------------------------------------- */}
       <div className="tickets-cta">
@@ -236,16 +246,6 @@ export default function Tickets() {
           </div>
         </div>
 
-        {/* Stays after sales open: the newsletter is not the waiting list. */}
-        <div className="tickets-sub">
-          <p className="label">Узнавать новости показа</p>
-          <ApplyForm
-            kind="subscribe"
-            variant="inline"
-            idPrefix="news"
-            submitLabel="Подписаться"
-          />
-        </div>
       </div>
     </>
   );

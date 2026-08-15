@@ -9,15 +9,13 @@ import gsap from "gsap";
  */
 const ITEMS = [
   {
-    n: "01",
     title: "Подиум-шоу",
     sub: "Новая коллекция вживую",
-    img: "campaign-sand-drape",
-    w: [800, 1400],
-    alt: "Модель в светлом комплекте среди скульптурных драпировок песочного цвета",
+    img: "runway-walk",
+    w: [700, 1200],
+    alt: "Модель идёт по подиуму, в зале работают фотографы",
   },
   {
-    n: "02",
     title: "Live-перформанс",
     sub: "Музыка и постановка как часть шоу",
     img: "detail-profile",
@@ -25,7 +23,6 @@ const ITEMS = [
     alt: "Профиль модели в тёплом контровом свете",
   },
   {
-    n: "03",
     title: "Гости и атмосфера",
     sub: "Вечер среди медийных лиц и индустрии",
     img: "detail-chains",
@@ -35,7 +32,6 @@ const ITEMS = [
   {
     /* TODO: confirm — если afterparty не будет, заменить пункт на
        «Съёмка и фотозона». */
-    n: "04",
     title: "Afterparty",
     sub: "Продолжение вечера",
     img: "detail-cuff",
@@ -143,9 +139,8 @@ export default function Experience() {
   return (
     <ul className="exp-list" ref={listRef}>
       {ITEMS.map((it) => (
-        <li className="exp-row" key={it.n} data-reveal="up">
+        <li className="exp-row" key={it.title} data-reveal="up">
           <div className="exp-line">
-            <span className="exp-n">{it.n}</span>
             <span className="exp-title struct">{it.title}</span>
             <span className="exp-sub">{it.sub}</span>
           </div>

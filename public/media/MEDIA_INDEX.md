@@ -46,7 +46,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — figure in a fringed gown between hanging drapes, backlit acacia beyond
 - **Mood** — cinematic, theatrical, dust-and-light
 - **Overlay** — ★★★ large calm areas top and sides
-- **Best use** — «ДВИЖЕНИЕ» in the pinned tenets chapter (`#pulse`); also the mobile menu ground
+- **Best use** — «ДВИЖЕНИЕ» in the pinned tenets chapter (`#pulse`)
 - **Priority** — 1
 
 ### campaign-sand-drape · from `style1.png`
@@ -88,7 +88,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — model walking a runway, sheer train, spotlights, photographers and seated audience
 - **Mood** — live, in-motion, show-scale
 - **Overlay** — ★★ dark upper-right
-- **Best use** — the VENUE block closing `#experience` — the only campaign frame containing an audience, so it stands in for the Kinema photograph
+- **Best use** — «Подиум-шоу», the first row of `#experience`
 - **Priority** — 1
 
 ### detail-chains · `style4.png` · detail-cuff · `style6.png` · detail-profile · `style7.png`
@@ -96,7 +96,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — body-chain and sequin detail; carved cuff and gold fabric; profile of jaw, neck, shoulder in low light
 - **Mood** — intimate, tactile, materials-first
 - **Overlay** — ✗ never overlay type
-- **Best use** — the trailing hover frames on the «Что вас ждёт» index (`#experience`). Small, never full-bleed
+- **Best use** — the trailing hover frames on the «Что вас ждёт» index (`#experience`), rows 2–4. Small, never full-bleed
 - **Priority** — 2
 - **Notes** — These carry the craft story: beadwork, metal, textile.
 
@@ -131,7 +131,7 @@ contact sheet. Held in reserve.
 - **Content** — full runway lineup, wings and flower crowns, stage lighting, audience at tables
 - **Mood** — scale, occasion, real
 - **Overlay** — ★★ dark upper band
-- **Best use** — the «Я бренд / партнёр» door in `#join` — proof of a full house — and a guest-wall placeholder
+- **Best use** — the «Я бренд / партнёр» door in `#join` — proof of a full house
 - **Priority** — 1
 - **Notes** — Photographer watermark bottom-right. Do not crop it out; credit instead.
 
@@ -140,7 +140,7 @@ contact sheet. Held in reserve.
 - **Content** — black-and-white backstage portrait, veil, grain
 - **Mood** — quiet, film, intimate
 - **Overlay** — ★★★ large dark negative space at left
-- **Best use** — the «Я СМИ / блогер» door in `#join`, and the guest wall; already monochrome, needs no filter
+- **Best use** — the «Я СМИ / блогер» door in `#join`; already monochrome, needs no filter
 - **Priority** — 1
 
 ### archive-black-wings · from `pre3.PNG` · archive-flower-crown · from `pre4.PNG`
@@ -148,7 +148,7 @@ contact sheet. Held in reserve.
 - **Content** — black-feather wings look on the runway; flower-crown look mid-walk with audience behind
 - **Mood** — theatrical / joyful — the two poles of the previous show
 - **Overlay** — ★ figure is centred; keep captions outside the frame
-- **Best use** — the guest wall in `#statusteam`, paired
+- **Best use** — held in reserve. They were the guest-wall placeholders; the wall is gated off until real portraits arrive
 - **Priority** — 2
 - **Notes** — Both carry the photographer watermark.
 
@@ -156,6 +156,8 @@ contact sheet. Held in reserve.
 
 ## Art-direction rules for this library
 
+0. **One placement per frame.** Nothing appears twice on the page; the build is
+   grepped to prove it. Where no frame fits, the answer is type on a flat ground.
 1. **Never** put type over `poster-*` or `detail-*`.
 2. Campaign imagery is warm sand / ochre / dusk. Burgundy is the *brand* colour and lives in type,
    rules and flat fields — it is not tinted onto the photography.

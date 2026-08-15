@@ -6,7 +6,6 @@ import ApplyForm from "./ApplyForm";
 const ZONES = [
   {
     id: "model",
-    n: "01",
     title: "Я модель",
     sub: "Подиум. Съёмка. Команда STATUS TEAM.",
     img: "campaign-silver-portrait",
@@ -22,7 +21,6 @@ const ZONES = [
   },
   {
     id: "brand",
-    n: "02",
     title: "Я бренд / партнёр",
     sub: "Интеграция в шоу, контент и аудитория STATUS TEAM.",
     img: "archive-lineup",
@@ -38,7 +36,6 @@ const ZONES = [
   },
   {
     id: "press",
-    n: "03",
     title: "Я СМИ / блогер",
     sub: "Аккредитация на показ.",
     img: "archive-backstage-bw",
@@ -91,7 +88,6 @@ export default function Join() {
               aria-expanded={isOpen}
               aria-controls={`zone-${z.id}`}
             >
-              <span className="zone-n">{z.n}</span>
               <span className="zone-title struct" id={`zone-${z.id}-t`}>
                 {z.title}
               </span>

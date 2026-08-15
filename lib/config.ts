@@ -19,6 +19,33 @@ export const SHOW = {
   startsAt: "2026-11-07T18:00:00+03:00",
 };
 
+/* --- content gates ---------------------------------------------------
+   A block is either carrying real content or it does not exist. Grey
+   placeholder logos, a carousel of «Имя Фамилия» and a countdown made of
+   em dashes all read as an unfinished page, which is worse than a shorter
+   one. Flip a flag the day the real thing arrives — the markup is already
+   written and waiting behind it.
+   -------------------------------------------------------------------- */
+
+export const CONTENT: {
+  /** Guest wall — needs real portraits and real names. */
+  guests: boolean;
+  /** «О нас говорили» — needs the actual press logos. */
+  pressLogos: boolean;
+  /** «Вместе с нами» — needs the actual brand logos. */
+  brandLogos: boolean;
+  /** Early bird → Regular → Last call, and the countdown. Needs real deadlines. */
+  priceWaves: boolean;
+  /** Per-tier prices. Until then the tiers show what is included, not "— ₽". */
+  tierPrices: boolean;
+} = {
+  guests: false,
+  pressLogos: false,
+  brandLogos: false,
+  priceWaves: false,
+  tierPrices: false,
+};
+
 /* --- sales ----------------------------------------------------------- */
 
 /** Flip to true the day the ticket operator goes live. */

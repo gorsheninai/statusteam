@@ -99,14 +99,6 @@ export default function Nav() {
         aria-label="Меню"
         inert={!open}
       >
-        <div className="menu-media" aria-hidden="true">
-          <img
-            src="/media/campaign-silhouette-drapes-640.webp"
-            alt=""
-            loading="lazy"
-          />
-        </div>
-
         <div className="menu-inner">
           <div className="menu-top">
             <span className="label">Меню</span>
@@ -123,7 +115,6 @@ export default function Nav() {
             {[...LINKS, { href: "#faq", label: "FAQ" }].map((l, i) => (
               <li key={l.href} style={{ ["--i" as string]: i }}>
                 <a onClick={() => setOpen(false)} href={l.href}>
-                  <b>{String(i + 1).padStart(2, "0")}</b>
                   {l.label}
                 </a>
               </li>

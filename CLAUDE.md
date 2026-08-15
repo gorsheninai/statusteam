@@ -17,7 +17,7 @@ transition. Do not reintroduce a component-animation dependency.
 npm run dev        # local dev
 npm run build      # static export -> ./out
 npm start          # serve ./out on :4311  (next start does NOT work with output: export)
-npm run verify     # drive the rendered page in a browser (85 checks)
+npm run verify     # drive the rendered page in a browser (88 checks)
 npm run lint
 npm run typecheck
 npm run deploy         # build + wrangler deploy to Cloudflare (production)
@@ -165,6 +165,26 @@ will not catch it. If you change any of those font sizes, re-run the clipped-tex
 
 Pulse is never drawn as an ECG line.
 
+### No section labels, no placeholder blocks
+
+Two rules keep the page from reading as generated:
+
+**Chapters are not numbered and not labelled.** «01 STATUS TEAM», «02 Показ» and
+the rest are gone, including the numbering in the mobile menu, the participation
+doors and the programme list. A scene is separated by its ground, its scale and its
+composition — that is what the change of colour and the full-bleed frames are for.
+Order survives in exactly one place, because there it is information: the three
+casting steps. `npm run verify` fails if numbering creeps back into a heading, a
+door or the menu.
+
+**A block either carries real content or it does not exist.** `CONTENT` in
+`lib/config.ts` gates the guest wall, both logo marquees, the price waves with their
+countdown, and the per-tier prices. All of them are written and waiting; none of them
+render while the real material is missing, because a wall of «Имя Фамилия» and a
+countdown of em dashes say *unfinished* louder than a shorter page says anything.
+Flip the flag the day the content lands. The suite greps the rendered page for those
+placeholders and fails if any reaches the browser.
+
 ### Structure — seven scenes
 
 The page is one long scroll, but each scene should feel like its own page. The order
@@ -182,6 +202,12 @@ is the show's order and is a client requirement, not a preference:
 
 Chapters alternate loud and quiet — a media chapter is always followed by a breathing
 one. Preserve that rhythm when adding sections.
+
+Nothing is centred by default. Each scene is anchored to a different edge and the
+offsets are fractions of the measure, not round numbers (see the ASYMMETRY block at
+the end of `globals.css`). Campaign frames run full-bleed — a photograph inside a
+padded container reads as a CMS. The vertical rhythm is deliberately tight: the
+change of ground carries the transition, so air between chapters is just scroll.
 
 **The hero carries exactly one link, and it goes to `#tickets`.** Getting from the
 first screen to the ticket scene in one click, and keeping the header's ticket button
@@ -278,6 +304,9 @@ Non-negotiables:
 - Campaign imagery and archive imagery are two different shows. Do not mix them in one
   chapter.
 - Curate. Three unused key-art variants are held in reserve on purpose.
+- **No frame is used twice.** One placement each — the build is grepped for it.
+  Where the library has no right frame, the answer is type on a flat ground, not a
+  second outing for a photograph: that is what the KINEMA venue block is.
 
 ## Quality floor
 

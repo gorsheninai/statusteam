@@ -11,7 +11,7 @@ import Join from "@/components/Join";
 import Faq from "@/components/Faq";
 import ApplyForm from "@/components/ApplyForm";
 import PulseRule from "@/components/PulseRule";
-import { SHOW } from "@/lib/config";
+import { CONTENT, SHOW } from "@/lib/config";
 
 const Arrow = () => (
   <span className="arrow" aria-hidden="true">
@@ -207,11 +207,6 @@ export default function Home() {
         <section className="st" id="statusteam" data-bg="burgundy">
           {/* --- beat 1 — who ---------------------------------------- */}
           <div className="beat beat-who shell">
-            <p className="chapter">
-              <b>01</b>
-              <i />
-              <span>Status Team</span>
-            </p>
             <h2 className="st-name struct" data-reveal="lines">
               Status Team
             </h2>
@@ -232,34 +227,56 @@ export default function Home() {
             <div className="reel-zoom" data-reel-zoom>
               <ShowReel />
             </div>
-          </div>
-
-          {/* --- beat 3 — proof -------------------------------------- */}
-          <div className="beat beat-proof">
-            <h3 className="beat-h struct shell" data-reveal="lines">
-              Среди гостей
-            </h3>
-            <Guests />
-
-            <h3 className="beat-h struct shell" data-reveal="lines">
-              О нас говорили
-            </h3>
-            <Marquee items={PRESS_LOGOS} direction="left" label="СМИ о STATUS TEAM" />
-
-            <h3 className="beat-h struct shell" data-reveal="lines">
-              Вместе с нами
-            </h3>
-            <Marquee
-              items={BRAND_LOGOS}
-              direction="right"
-              label="Бренды, работавшие со STATUS TEAM"
-              speed={38}
-            />
 
             <p className="shell credit beat-credit">
               Фото и видео показа — Паша Доренский
             </p>
           </div>
+
+          {/* --- beat 3 — proof --------------------------------------
+              Every block here is waiting on real material. Until it lands
+              the beat does not render at all: a wall of «Имя Фамилия» and
+              grey logo boxes says "unfinished", which is a worse thing to
+              say than nothing. See CONTENT in lib/config.ts. */}
+          {(CONTENT.guests || CONTENT.pressLogos || CONTENT.brandLogos) && (
+            <div className="beat beat-proof">
+              {CONTENT.guests && (
+                <>
+                  <h3 className="beat-h struct shell" data-reveal="lines">
+                    Среди гостей
+                  </h3>
+                  <Guests />
+                </>
+              )}
+
+              {CONTENT.pressLogos && (
+                <>
+                  <h3 className="beat-h struct shell" data-reveal="lines">
+                    О нас говорили
+                  </h3>
+                  <Marquee
+                    items={PRESS_LOGOS}
+                    direction="left"
+                    label="СМИ о STATUS TEAM"
+                  />
+                </>
+              )}
+
+              {CONTENT.brandLogos && (
+                <>
+                  <h3 className="beat-h struct shell" data-reveal="lines">
+                    Вместе с нами
+                  </h3>
+                  <Marquee
+                    items={BRAND_LOGOS}
+                    direction="right"
+                    label="Бренды, работавшие со STATUS TEAM"
+                    speed={38}
+                  />
+                </>
+              )}
+            </div>
+          )}
 
           {/* --- beat 4 — the numbers -------------------------------- */}
           <div className="beat beat-numbers">
@@ -324,11 +341,6 @@ export default function Home() {
             ============================================================ */}
         <section className="pulse-scene on-dark" id="pulse" data-bg="ink">
           <div className="pulse-intro shell">
-            <p className="chapter">
-              <b>02</b>
-              <i />
-              <span>Показ</span>
-            </p>
 
             <p className="pulse-kicker" data-reveal="up">
               Следующая глава
@@ -395,11 +407,6 @@ export default function Home() {
             ============================================================ */}
         <section className="exp-scene" id="experience" data-bg="paper">
           <div className="shell">
-            <p className="chapter">
-              <b>03</b>
-              <i />
-              <span>Программа</span>
-            </p>
             <h2 className="exp-h campaign" data-reveal="lines">
               Что вас ждёт
             </h2>
@@ -409,22 +416,17 @@ export default function Home() {
             <Experience />
           </div>
 
-          <figure className="venue" data-reveal="mask">
-            <div className="media">
-              {/* TODO: replace-content — кадр площадки Kinema */}
-              <img
-                src="/media/runway-walk-1200.webp"
-                srcSet="/media/runway-walk-700.webp 700w, /media/runway-walk-1200.webp 1200w"
-                sizes="100vw"
-                alt="Зал показа: подиум, свет, фотографы и зрители"
-                loading="lazy"
-              />
-            </div>
-            <figcaption className="venue-cap shell">
-              <span className="label">Площадка</span>
-              <b>Kinema, Москва</b>
-            </figcaption>
-          </figure>
+          {/* The Kinema photograph does not exist yet, and a stand-in frame
+              here would be a second use of a campaign shot. Type carries it
+              instead — which is also the louder move. */}
+          <div className="venue">
+            <p className="venue-label label">Площадка</p>
+            <p className="venue-name struct" data-reveal="lines">
+              Kinema
+            </p>
+            <p className="venue-where">Москва · 07 ноября 2026</p>
+          </div>
+
         </section>
 
         {/* ============================================================
@@ -446,11 +448,6 @@ export default function Home() {
           </div>
 
           <div className="shell tickets-inner">
-            <p className="chapter">
-              <b>04</b>
-              <i />
-              <span>Билеты</span>
-            </p>
 
             <h2 className="tickets-title" data-pulse-title data-pulse-final>
               <span className="pulse-mask">
@@ -505,11 +502,6 @@ export default function Home() {
             ============================================================ */}
         <section className="join on-dark" id="join" data-bg="wine">
           <div className="shell join-head">
-            <p className="chapter">
-              <b>05</b>
-              <i />
-              <span>Участие</span>
-            </p>
             <h2 className="join-h struct" data-reveal="lines">
               Стать частью пульса
             </h2>
@@ -523,11 +515,6 @@ export default function Home() {
             ============================================================ */}
         <section className="faq-scene on-dark" id="faq" data-bg="ink">
           <div className="shell">
-            <p className="chapter">
-              <b>06</b>
-              <i />
-              <span>Вопросы</span>
-            </p>
             <h2 className="faq-h campaign" data-reveal="lines">
               Что нужно знать
             </h2>

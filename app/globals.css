@@ -56,8 +56,10 @@
   --fs-micro: 0.6875rem;
 
   /* Vertical rhythm — chapters breathe differently by intensity */
-  --chapter-pad: clamp(5rem, 11vw, 11rem);
-  --chapter-pad-quiet: clamp(7rem, 16vw, 16rem);
+  /* Cut ~30% from both: the change of ground is what separates chapters
+     here, so the air between them was doing nothing but adding scroll. */
+  --chapter-pad: clamp(3.5rem, 7.5vw, 7.5rem);
+  --chapter-pad-quiet: clamp(4.5rem, 10vw, 10.5rem);
   --gutter: clamp(1.25rem, 4.2vw, 5rem);
 
   /* Motion system — one cohesive set of durations/eases used everywhere. */
@@ -185,37 +187,6 @@ ol {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* Chapter marker. A show runs in order, so the numbering is real
-   information, not decoration. */
-.chapter {
-  display: flex;
-  align-items: baseline;
-  gap: 0.9rem;
-  font-family: var(--font-ui);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-.chapter b {
-  font-weight: 500;
-  color: var(--red);
-}
-.chapter i {
-  flex: 1;
-  height: 1px;
-  max-width: 8rem;
-  background: currentColor;
-  opacity: 0.3;
-  font-style: normal;
-}
-.chapter span {
-  opacity: 0.72;
-}
-.on-dark .chapter b,
-.st .chapter b {
-  color: var(--sand);
 }
 
 /* Eyebrow / small caps label */
@@ -1171,7 +1142,7 @@ ol {
   padding-block: var(--chapter-pad) var(--chapter-pad);
 }
 .beat + .beat {
-  margin-top: clamp(4.5rem, 12vw, 11rem);
+  margin-top: clamp(3rem, 8vw, 7rem);
 }
 
 /* --- beat 1 — who ------------------------------------------- */
@@ -1183,8 +1154,8 @@ ol {
   justify-content: center;
 }
 .st-name {
-  margin: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(1.5rem, 3.5vw, 2.25rem);
-  font-size: clamp(2.6rem, 11vw, 9rem);
+  margin: 0 0 clamp(1.25rem, 3vw, 2rem);
+  font-size: clamp(3rem, 13vw, 11rem);
 }
 .st-line {
   max-width: 26ch;
@@ -1264,6 +1235,7 @@ ol {
   justify-content: space-between;
   gap: 1rem;
   margin-top: 0.8rem;
+  padding-inline: var(--gutter);
 }
 
 /* --- beat 3 — social proof ---------------------------------- */
@@ -1437,7 +1409,7 @@ ol {
   position: relative;
   color: var(--paper);
   /* The blackout needs somewhere to be black. This is that room. */
-  padding-block: clamp(9rem, 34vh, 22rem) var(--chapter-pad);
+  padding-block: clamp(6rem, 22vh, 14rem) var(--chapter-pad);
 }
 .pulse-intro {
   margin-bottom: clamp(3rem, 9vw, 7rem);
@@ -1487,6 +1459,9 @@ ol {
 .tenet-shot .media {
   aspect-ratio: 4 / 5;
 }
+.tenets:not(.is-pinned) .tenet-shot .media {
+  aspect-ratio: 3 / 4;
+}
 .tenet-cap {
   margin-top: 0.85rem;
   padding-inline: var(--gutter);
@@ -1512,6 +1487,7 @@ ol {
 }
 .tenet-dots {
   display: none;
+  list-style: none;
 }
 
 /* Pinned: the four beats become one screen that changes under you. */
@@ -1578,10 +1554,15 @@ ol {
   background: var(--sand);
 }
 
+/* Set against the right edge — the one right-aligned block on the page, so
+   the eye is handed across before the next ground arrives. */
 .pulse-outro {
-  margin-top: clamp(3.5rem, 10vw, 7rem);
-  max-width: 16ch;
-  font-size: var(--fs-statement);
+  margin-top: clamp(2.5rem, 7vw, 5rem);
+  max-width: 15ch;
+  margin-left: auto;
+  text-align: right;
+  font-size: clamp(1.9rem, 7vw, 4.5rem);
+  line-height: 1.02;
   color: var(--sand);
 }
 
@@ -1594,8 +1575,9 @@ ol {
   padding-block: var(--chapter-pad-quiet) 0;
 }
 .exp-h {
-  margin: clamp(1.75rem, 4vw, 2.5rem) 0 clamp(2.5rem, 6vw, 4rem);
-  font-size: var(--fs-h2);
+  margin: 0 0 clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(2.6rem, 11vw, 9rem);
+  line-height: 0.94;
 }
 
 .exp-list {
@@ -1607,22 +1589,13 @@ ol {
 }
 .exp-line {
   display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: baseline;
-  gap: 0.5rem 1rem;
-  padding: clamp(1.25rem, 3.5vw, 2.25rem) 0;
-}
-.exp-n {
-  font-family: var(--font-ui);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.16em;
-  color: var(--red);
+  gap: 0.4rem 1rem;
+  padding: clamp(1.1rem, 3vw, 2rem) 0;
 }
 .exp-title {
   font-size: clamp(1.6rem, 5.6vw, 3.4rem);
 }
 .exp-sub {
-  grid-column: 2;
   font-size: var(--fs-small);
   line-height: 1.6;
   opacity: 0.7;
@@ -1630,30 +1603,34 @@ ol {
 .exp-media {
   margin: 0 0 clamp(1.25rem, 3vw, 2rem);
 }
+/* Phone: the frame is the row, so it runs edge to edge. Escaping the shell
+   with a negative margin, never width: 100vw — that counts the scrollbar. */
+@media (max-width: 1023px) {
+  .exp-media {
+    margin-inline: calc(var(--gutter) * -1);
+  }
+}
 .exp-media .media {
   aspect-ratio: 4 / 3;
 }
 
 .venue {
-  margin: clamp(3.5rem, 9vw, 7rem) 0 0;
+  margin-top: clamp(3rem, 8vw, 6rem);
+  padding: clamp(2.5rem, 7vw, 5rem) var(--gutter) var(--chapter-pad-quiet);
+  border-top: 1px solid var(--hairline-dark);
+  text-align: center;
 }
-.venue .media {
-  aspect-ratio: 16 / 10;
+.venue-name {
+  margin: 0.4em 0 0.25em;
+  font-size: clamp(3.5rem, 16vw, 14rem);
+  line-height: 0.86;
 }
-.venue-cap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.4rem 1.25rem;
-  margin-top: 0.9rem;
-  padding-bottom: var(--chapter-pad-quiet);
-}
-.venue-cap b {
+.venue-where {
   font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: clamp(1rem, 2.2vw, 1.35rem);
-  letter-spacing: 0.04em;
+  font-size: var(--fs-small);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+  opacity: 0.7;
 }
 
 /* ============================================================
@@ -1948,8 +1925,8 @@ ol {
   margin-bottom: clamp(2.5rem, 6vw, 4rem);
 }
 .join-h {
-  margin-top: clamp(1.5rem, 4vw, 2.5rem);
-  font-size: clamp(2.1rem, 7vw, 5.5rem);
+  margin: 0;
+  font-size: clamp(2.4rem, 10vw, 8rem);
 }
 
 .zones {
@@ -1988,27 +1965,21 @@ ol {
   z-index: 2;
   width: 100%;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 0.5rem 1rem;
-  padding: clamp(1.5rem, 4vw, 2.5rem) var(--gutter);
+  gap: 0.4rem 1rem;
+  padding: clamp(1.25rem, 3.2vw, 2.25rem) var(--gutter);
   background: none;
   border: 0;
   text-align: left;
   color: inherit;
   cursor: pointer;
 }
-.zone-n {
-  font-family: var(--font-ui);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.16em;
-  color: var(--sand);
-}
 .zone-title {
   font-size: clamp(1.4rem, 5vw, 2.4rem);
 }
 .zone-sub {
-  grid-column: 2;
+  grid-column: 1;
   font-size: var(--fs-small);
   line-height: 1.55;
   opacity: 0.75;
@@ -2016,7 +1987,7 @@ ol {
 .zone-sign {
   position: relative;
   grid-row: 1;
-  grid-column: 3;
+  grid-column: 2;
   width: 18px;
   height: 18px;
   flex: none;
@@ -2088,8 +2059,9 @@ ol {
   color: var(--paper);
 }
 .faq-h {
-  margin: clamp(1.75rem, 4vw, 2.5rem) 0 clamp(2rem, 5vw, 3rem);
-  font-size: var(--fs-h2);
+  margin: 0 0 clamp(2rem, 5vw, 3rem);
+  font-size: clamp(2.4rem, 10vw, 8rem);
+  line-height: 0.94;
 }
 .faq {
   border-top: 1px solid var(--hairline-light);
@@ -2385,7 +2357,7 @@ ol {
   }
 
   .beat-who {
-    min-height: 78svh;
+    min-height: 62svh;
   }
 
   .numbers .scale-list {
@@ -2397,11 +2369,11 @@ ol {
   }
 
   .exp-line {
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
   }
   .exp-sub {
-    grid-column: 3;
+    grid-column: 2;
     text-align: right;
     max-width: 26ch;
   }
@@ -2483,8 +2455,12 @@ ol {
      frames stay in the flow, but a full-width photograph per row turns the
      index into a contact sheet. */
   .exp-media {
-    max-width: 26rem;
+    max-width: 20rem;
     margin-left: auto;
+    margin-right: 0;
+  }
+  .exp-media .media {
+    aspect-ratio: 3 / 2;
   }
 
   /* The photograph leaves the layout and rides the pointer instead. */
@@ -2590,7 +2566,6 @@ ol {
     align-items: end;
     column-gap: 4rem;
   }
-  .pulse-intro .chapter,
   .pulse-intro .pulse-kicker,
   .pulse-intro .pulse-title {
     grid-column: 1;
@@ -2623,5 +2598,46 @@ ol {
   }
   .tier::after {
     opacity: 0.35;
+  }
+}
+
+/* ============================================================
+   ASYMMETRY — the scenes stop sharing one centred column.
+   Each block is anchored to a different edge, and the offsets are
+   fractions of the measure rather than round numbers, so the rhythm
+   reads as composed rather than as a grid setting.
+   ============================================================ */
+@media (min-width: 900px) {
+  .beat-who {
+    padding-right: 22%;
+  }
+  .st-line {
+    margin-left: 14%;
+  }
+  .beat-label {
+    padding-left: 8%;
+  }
+  .exp-scene .shell:first-child {
+    padding-right: 26%;
+  }
+  .exp-sub {
+    padding-right: 2%;
+  }
+  .join-head {
+    padding-left: 12%;
+  }
+  .faq-h {
+    padding-right: 30%;
+  }
+  .faq {
+    margin-left: auto;
+    width: min(60rem, 82%);
+  }
+  .numbers-lead {
+    margin-left: 6%;
+  }
+  .venue {
+    text-align: left;
+    padding-left: 8%;
   }
 }
