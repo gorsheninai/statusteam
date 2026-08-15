@@ -1,36 +1,40 @@
 /* Desktop hero art placement.
-   Keep the text lock-up untouched; only recompose the supplied 16:9 image so
-   both models read smaller and sit in the visual corridor between the
-   "УЧАСТИЕ" nav item and the "БИЛЕТЫ" CTA. The inner image remains free for
-   its existing GSAP parallax because sizing/placement happens on <picture>. */
+   Keep the hero full-bleed: no boxed image, no empty strip on the right or
+   bottom. The supplied 16:9 artwork fills the stage and the composition is
+   nudged inward so the models sit between the "УЧАСТИЕ" nav item and the
+   "БИЛЕТЫ" CTA. */
 @media (min-width: 1100px) {
   .hero-media picture {
     position: absolute;
-    top: 1.5vh;
-    right: 9vw;
-    bottom: 1.5vh;
-    left: 15vw;
+    inset: 0;
     display: block;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .hero-media picture .hero-layer {
-    --bleed-x: 0%;
-    --bleed-y: 0%;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    --bleed-x: 0.5%;
+    --bleed-y: 2.5%;
+    position: absolute;
+    left: calc(var(--bleed-x) * -1);
+    right: calc(var(--bleed-x) * -1);
+    top: calc(var(--bleed-y) * -1);
+    bottom: calc(var(--bleed-y) * -1);
+    width: calc(100% + var(--bleed-x) * 2);
+    height: calc(100% + var(--bleed-y) * 2);
     max-width: none;
-    object-fit: contain;
-    object-position: right center;
+    object-fit: cover;
+    object-position: 69% 43%;
   }
 }
 
-/* Ultra-wide screens otherwise make the pair drift too close to the ticket
-   button. Hold the portrait group a little farther inward. */
+@media (min-width: 1360px) {
+  .hero-media picture .hero-layer {
+    object-position: 68% 42.5%;
+  }
+}
+
 @media (min-width: 1700px) {
-  .hero-media picture {
-    right: 10.5vw;
-    left: 16vw;
+  .hero-media picture .hero-layer {
+    object-position: 66.8% 42%;
   }
 }
