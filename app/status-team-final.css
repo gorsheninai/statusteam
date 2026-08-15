@@ -153,6 +153,13 @@
     margin-top: 0 !important;
     padding-top: clamp(24px, 3vh, 34px) !important;
   }
+
+  /* Keep the final proof group safely above the stats rail. The generic
+     spacing above secondary headings was too generous for the partner row. */
+  .st .beat-proof > .beat-h:nth-of-type(3) {
+    margin-top: clamp(14px, 1.8vh, 20px) !important;
+    margin-bottom: clamp(9px, 1vh, 12px) !important;
+  }
 }
 
 /* Exact desktop review sizes: the same content gets more air, but remains a
@@ -181,6 +188,12 @@
 
   .st .beat-proof .beat-h:not(:first-child) {
     margin-top: 44px !important;
+  }
+
+  /* Partner heading must not inherit the 44px desktop gap above. */
+  .st .beat-proof > .beat-h:nth-of-type(3) {
+    margin-top: 16px !important;
+    margin-bottom: 10px !important;
   }
 
   .st .beat-numbers {
