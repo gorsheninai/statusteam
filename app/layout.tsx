@@ -9,6 +9,8 @@ import "./status-team-lockup.css";
 import "./experience-program.css";
 import "./status-team-final.css";
 import "./card-stack.css";
+import "./premium-polish.css";
+import "./status-team-page-two.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
@@ -56,6 +58,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#100d0c",
   colorScheme: "dark",
+  viewportFit: "cover",
 };
 
 /**

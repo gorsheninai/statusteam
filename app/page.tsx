@@ -2,16 +2,14 @@ import Nav from "@/components/Nav";
 import Motion from "@/components/Motion";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
-import ShowReel from "@/components/ShowReel";
-import Guests from "@/components/Guests";
-import Marquee from "@/components/Marquee";
+import StatusTeamScene from "@/components/StatusTeamScene";
 import Experience from "@/components/Experience";
 import Tickets from "@/components/Tickets";
 import Join from "@/components/Join";
 import Faq from "@/components/Faq";
 import ApplyForm from "@/components/ApplyForm";
 import PulseRule from "@/components/PulseRule";
-import { CONTENT, SHOW } from "@/lib/config";
+import { SHOW } from "@/lib/config";
 
 const Arrow = () => (
   <span className="arrow" aria-hidden="true">
@@ -54,24 +52,6 @@ const HERO_ART: {
 
 const srcset = (a: { name: string; widths: number[] }) =>
   a.widths.map((w) => `/media/${a.name}-${w}.webp ${w}w`).join(", ");
-
-/* TODO: replace-content — grey placeholders until the real logo files land. */
-const PRESS_LOGOS = [
-  "MEDIA ONE",
-  "ГЛЯНЕЦ",
-  "FASHION DAILY",
-  "СТОЛИЦА",
-  "PODIUM",
-  "VECTOR",
-];
-const BRAND_LOGOS = [
-  "BRAND 01",
-  "ATELIER",
-  "STUDIO NORD",
-  "LINGERIE CO",
-  "AURUM",
-  "KINEMA",
-];
 
 /* The four beats of the pinned chapter. Campaign imagery only — the archive
    belongs to the previous show and lives in the STATUS TEAM scene. */
@@ -196,132 +176,7 @@ export default function Home() {
 
         <PulseRule />
 
-        {/* ============================================================
-            01 — STATUS TEAM. Four beats, each about one screen: who we
-            are, what we made, who was there, what it added up to.
-            ============================================================ */}
-        <section className="st" id="statusteam" data-bg="burgundy">
-          {/* --- beat 1 — who ---------------------------------------- */}
-          <div className="beat beat-who shell">
-            <h2 className="st-name struct" data-reveal="lines">
-              Status Team
-            </h2>
-          </div>
-
-          {/* --- beat 2 — the aftermovie ----------------------------- */}
-          <div className="beat beat-reel">
-            <p className="beat-label shell">
-              <span className="label">Предыдущий показ</span>
-              <span className="beat-label-t struct">Славянский взгляд</span>
-            </p>
-
-            {/* Pinned and scaled to full width on desktop; a plain block on
-                a phone, where a pinned zoom is only a way to lose the scroll. */}
-            <div className="reel-zoom" data-reel-zoom>
-              <ShowReel />
-            </div>
-
-            <p className="shell credit beat-credit">
-              Фото и видео показа — Паша Доренский
-            </p>
-          </div>
-
-          {/* --- beat 3 — proof --------------------------------------
-              Every block here is waiting on real material. Until it lands
-              the beat does not render at all: a wall of «Имя Фамилия» and
-              grey logo boxes says "unfinished", which is a worse thing to
-              say than nothing. See CONTENT in lib/config.ts. */}
-          {(CONTENT.guests || CONTENT.pressLogos || CONTENT.brandLogos) && (
-            <div className="beat beat-proof">
-              {CONTENT.guests && (
-                <>
-                  <h3 className="beat-h struct shell" data-reveal="lines">
-                    Среди гостей
-                  </h3>
-                  <Guests />
-                </>
-              )}
-
-              {CONTENT.pressLogos && (
-                <>
-                  <h3 className="beat-h struct shell" data-reveal="lines">
-                    О нас говорили
-                  </h3>
-                  <Marquee
-                    items={PRESS_LOGOS}
-                    direction="left"
-                    label="СМИ о STATUS TEAM"
-                  />
-                </>
-              )}
-
-              {CONTENT.brandLogos && (
-                <>
-                  <h3 className="beat-h struct shell" data-reveal="lines">
-                    Вместе с нами
-                  </h3>
-                  <Marquee
-                    items={BRAND_LOGOS}
-                    direction="right"
-                    label="Бренды, работавшие со STATUS TEAM"
-                    speed={38}
-                  />
-                </>
-              )}
-            </div>
-          )}
-
-          {/* --- beat 4 — the numbers -------------------------------- */}
-          <div className="beat beat-numbers">
-            <div className="numbers shell">
-              <ul className="scale-list">
-                <li data-reveal="up">
-                  <span className="scale-n struct">
-                    <span data-count="60" data-suffix="K+">
-                      60K+
-                    </span>
-                  </span>
-                  <span className="scale-l">
-                    человек в сообществе STATUS TEAM
-                  </span>
-                </li>
-                <li data-reveal="up">
-                  <span className="scale-n struct">
-                    <span data-count="10" data-suffix="M+">
-                      10M+
-                    </span>
-                  </span>
-                  <span className="scale-l">
-                    просмотров контента каждый месяц
-                  </span>
-                </li>
-                <li data-reveal="up">
-                  {/* TODO: confirm-number — структура ТЗ говорит «2», на
-                      текущем сайте стоит «03». */}
-                  <span className="scale-n struct">
-                    <span data-count="2" data-suffix="">
-                      2
-                    </span>
-                  </span>
-                  <span className="scale-l">
-                    fashion-показ STATUS TEAM — после «Славянского взгляда»
-                  </span>
-                </li>
-                <li data-reveal="up">
-                  {/* TODO: replace-content — точное число гостей */}
-                  <span className="scale-n struct">
-                    <span data-count="600" data-suffix="+">
-                      600+
-                    </span>
-                  </span>
-                  <span className="scale-l">
-                    гостей на прошлом показе
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
+        <StatusTeamScene />
 
         {/* ============================================================
             02 — ПУЛЬС КОНТИНЕНТА. The page goes black, the chapter is
