@@ -146,8 +146,8 @@ for (const [name, width, height] of viewports) {
     `${geometry.titleGap}px`,
   );
   expect(
-    geometry.statsGap >= 47 && geometry.statsGap <= 49,
-    `[${name}] stats follow the carousel within 48px`,
+    geometry.statsGap >= -1 && geometry.statsGap <= (width >= 700 ? 1 : 17),
+    `[${name}] stats podium is lifted directly beneath the carousel`,
     `${geometry.statsGap}px`,
   );
 

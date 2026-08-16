@@ -587,47 +587,117 @@ export default function Motion() {
           });
         }
 
-        const statCells = gsap.utils.toArray<HTMLElement>(
-          "[data-st2-stat]",
-          statusScene,
+        const statsPodium = statusScene.querySelector<HTMLElement>(
+          "[data-st2-stats-podium]",
         );
-        if (statCells.length) {
-          ScrollTrigger.batch(statCells, {
-            start: "top 88%",
-            once: true,
-            onEnter: (batch) =>
-              gsap.from(batch, {
+        if (statsPodium) {
+          const statCells = gsap.utils.toArray<HTMLElement>(
+            "[data-st2-stat]",
+            statsPodium,
+          );
+          const statCounters = gsap.utils.toArray<HTMLElement>(
+            "[data-st2-count]",
+            statsPodium,
+          );
+          const statSuffixes = gsap.utils.toArray<HTMLElement>(
+            "[data-st2-stat-suffix]",
+            statsPodium,
+          );
+          const statSheens = gsap.utils.toArray<HTMLElement>(
+            "[data-st2-stat-sheen]",
+            statsPodium,
+          );
+
+          statCounters.forEach((counter) => {
+            counter.textContent = "0";
+          });
+          gsap.set(statSuffixes, { autoAlpha: 0, y: "0.22em" });
+          gsap.set(statSheens, { autoAlpha: 0, xPercent: -240, skewX: -18 });
+
+          const statsTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: statsPodium,
+              start: "top 88%",
+              once: true,
+            },
+          });
+
+          statsTimeline
+            .from(statsPodium, {
+              opacity: 0,
+              y: 30,
+              duration: 0.8,
+              ease: EASE,
+              clearProps: "transform,opacity",
+            })
+            .from(
+              statCells,
+              {
                 opacity: 0,
-                y: 22,
-                duration: 0.7,
+                y: 14,
+                duration: 0.58,
                 stagger: 0.06,
                 ease: EASE,
-              }),
+              },
+              0.12,
+            );
+
+          statCounters.forEach((counter, index) => {
+            const target = Number(counter.dataset.count ?? 0);
+            const count = { value: 0 };
+            statsTimeline.to(
+              count,
+              {
+                value: target,
+                duration: 1.8,
+                ease: "power2.out",
+                onUpdate: () => {
+                  counter.textContent = String(Math.round(count.value));
+                },
+                onComplete: () => {
+                  counter.textContent = String(target);
+                },
+              },
+              0.18 + index * 0.04,
+            );
           });
+
+          statsTimeline
+            .to(
+              statSuffixes,
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.34,
+                stagger: 0.05,
+                ease: EASE,
+              },
+              1.72,
+            )
+            .fromTo(
+              statSheens,
+              { autoAlpha: 0, xPercent: -240, skewX: -18 },
+              {
+                autoAlpha: 0.78,
+                xPercent: 310,
+                skewX: -18,
+                duration: 0.78,
+                stagger: 0.05,
+                ease: "power2.inOut",
+              },
+              2.04,
+            )
+            .to(
+              statSheens,
+              {
+                autoAlpha: 0,
+                duration: 0.18,
+                stagger: 0.05,
+              },
+              2.66,
+            );
         }
       }
-
-      /* ============================================================
-         COUNTERS
-         ============================================================ */
-
-      gsap.utils.toArray<HTMLElement>("[data-count]").forEach((el) => {
-        const to = Number(el.dataset.count ?? 0);
-        const suffix = el.dataset.suffix ?? "";
-        const n = { v: 0 };
-        gsap.to(n, {
-          v: to,
-          duration: 1.2,
-          ease: "power2.out",
-          scrollTrigger: { trigger: el, start: "top 88%", once: true },
-          onUpdate: () => {
-            el.textContent = Math.round(n.v) + suffix;
-          },
-          onComplete: () => {
-            el.textContent = to + suffix;
-          },
-        });
-      });
 
       /* ============================================================
          REVEALS
