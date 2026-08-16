@@ -291,7 +291,7 @@
 .st-page-two .st2-vanguard {
   position: relative;
   margin-block-start: 0;
-  padding-block: 3rem;
+  padding-block: 3rem 0;
   isolation: isolate;
 }
 
@@ -338,7 +338,7 @@
 
 .st-page-two .st2-guest-viewport {
   position: relative;
-  block-size: min(26.5rem, calc(96vw + 2rem));
+  block-size: min(30rem, calc(106vw + 2rem));
   margin-inline: calc(var(--st2-gutter) * -1);
   overflow: clip;
   perspective: 900px;
@@ -504,29 +504,15 @@
 
 .st-page-two .st2-scale {
   position: relative;
-  z-index: 6;
-  margin-block-start: -2rem;
+  margin-block-start: 4rem;
   padding-block: 0 clamp(4.5rem, 7vw, 6rem);
   background: transparent;
 }
 
 .st-page-two .st2-scale-shell {
   max-inline-size: 78rem;
-}
-
-.st-page-two .st2-scale-podium {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(0.75rem, 2.8vw, 2rem);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
+  padding-block-start: clamp(2rem, 4vw, 2.75rem);
+  border-block-start: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .st-page-two .st2-stats {
@@ -539,11 +525,10 @@
 .st-page-two .st2-stats li {
   position: relative;
   min-inline-size: 0;
-  padding: clamp(1.25rem, 3vw, 2rem) clamp(0.5rem, 2vw, 1.25rem);
+  padding: clamp(1rem, 2.4vw, 1.75rem) clamp(0.5rem, 2vw, 1.25rem);
   text-align: center;
 }
 
-.st-page-two .st2-stats li::before,
 .st-page-two .st2-stats li::after {
   content: "";
   position: absolute;
@@ -557,18 +542,11 @@
   background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.15), transparent);
 }
 
-.st-page-two .st2-stats li:nth-child(n + 3)::before {
-  inset-block-start: 0;
-  inset-inline: 12%;
-  block-size: 1px;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.12), transparent);
-}
-
 .st-page-two .st2-stat-number {
   display: block;
   color: var(--st2-champagne);
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 1.82rem + 3vw, 4.5rem);
+  font-size: clamp(3.5rem, 3.32rem + 0.82vw, 4rem);
   font-weight: 400;
   line-height: 0.92;
   letter-spacing: -0.035em;
@@ -640,7 +618,7 @@
   }
 
   .st-page-two .st2-guest-viewport {
-    block-size: clamp(23rem, 34vw, 32.5rem);
+    block-size: clamp(26rem, 39vw, 36rem);
     margin-inline: 0;
     perspective: 1200px;
   }
@@ -650,19 +628,11 @@
     inline-size: clamp(16rem, 24vw, 23rem);
   }
 
-  .st-page-two .st2-scale {
-    margin-block-start: -3rem;
-  }
-
 }
 
 @media (min-width: 768px) {
   .st-page-two .st2-stats {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .st-page-two .st2-stats li::before {
-    display: none;
   }
 
   .st-page-two .st2-stats li:nth-child(odd)::after {

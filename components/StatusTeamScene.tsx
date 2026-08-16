@@ -255,33 +255,31 @@ export default function StatusTeamScene() {
       )}
 
       <section className="st2-scale" aria-label="Масштаб STATUS TEAM в цифрах">
-        <div className="st2-shell st2-scale-shell">
-          <div className="st2-scale-podium" data-st2-stats-podium>
-            <ul className="st2-stats">
-              {STATS.map((stat) => (
-                <li key={stat.label} data-st2-stat>
-                  <span className="st2-stat-number">
-                    <span className="st2-stat-figure">
-                      <span data-count={stat.value} data-st2-count>
-                        {stat.value}
-                      </span>
-                      {stat.suffix && (
-                        <span className="st2-stat-suffix" data-st2-stat-suffix>
-                          {stat.suffix}
-                        </span>
-                      )}
-                      <span
-                        className="st2-stat-sheen"
-                        data-st2-stat-sheen
-                        aria-hidden="true"
-                      />
+        <div className="st2-shell st2-scale-shell" data-st2-stats-band>
+          <ul className="st2-stats">
+            {STATS.map((stat) => (
+              <li key={stat.label} data-st2-stat>
+                <span className="st2-stat-number">
+                  <span className="st2-stat-figure">
+                    <span data-count={stat.value} data-st2-count>
+                      {stat.value}
                     </span>
+                    {stat.suffix && (
+                      <span className="st2-stat-suffix" data-st2-stat-suffix>
+                        {stat.suffix}
+                      </span>
+                    )}
+                    <span
+                      className="st2-stat-sheen"
+                      data-st2-stat-sheen
+                      aria-hidden="true"
+                    />
                   </span>
-                  <span className="st2-stat-label">{stat.label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+                </span>
+                <span className="st2-stat-label">{stat.label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </section>

@@ -31,30 +31,33 @@ for (const [name, width, height] of viewports) {
   page.on("pageerror", (error) => errors.push(error.message));
 
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  const podium = page.locator("[data-st2-stats-podium]");
-  await podium.scrollIntoViewIfNeeded();
+  const band = page.locator("[data-st2-stats-band]");
+  await band.scrollIntoViewIfNeeded();
   await page.waitForTimeout(200);
 
   const state = await page.evaluate(() => {
-    const podium = document.querySelector("[data-st2-stats-podium]");
+    const band = document.querySelector("[data-st2-stats-band]");
     const grid = document.querySelector(".st2-stats");
-    const style = podium ? getComputedStyle(podium) : null;
+    const style = band ? getComputedStyle(band) : null;
     const columns = grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").length : 0;
     const stage = document.querySelector(".st2-guest-stage");
-    const podiumBox = podium?.getBoundingClientRect();
+    const bandBox = band?.getBoundingClientRect();
     const stageBox = stage?.getBoundingClientRect();
     return {
       columns,
       radius: parseFloat(style?.borderRadius || "0"),
       background: style?.backgroundColor,
-      border: style?.borderColor,
+      borderTop: style?.borderTopColor,
+      borderRightWidth: style?.borderRightWidth,
+      borderBottomWidth: style?.borderBottomWidth,
+      borderLeftWidth: style?.borderLeftWidth,
       backdrop: style?.backdropFilter || style?.webkitBackdropFilter,
       shadow: style?.boxShadow,
       numbers: [...document.querySelectorAll(".st2-stat-figure")].map((el) => el.textContent?.trim()),
       labelsUppercase: [...document.querySelectorAll(".st2-stat-label")].every(
         (el) => getComputedStyle(el).textTransform === "uppercase",
       ),
-      integrationGap: podiumBox && stageBox ? podiumBox.top - stageBox.bottom : Infinity,
+      integrationGap: bandBox && stageBox ? bandBox.top - stageBox.bottom : Infinity,
       noOverflow:
         document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
     };
@@ -62,21 +65,25 @@ for (const [name, width, height] of viewports) {
 
   expect(errors.length === 0, `[${name}] no browser errors`, errors.join(" | "));
   expect(state.columns === (width >= 768 ? 4 : 2), `[${name}] responsive stats grid is correct`, String(state.columns));
-  expect(state.radius === 16, `[${name}] podium uses a 16px radius`, `${state.radius}px`);
-  expect(state.background === "rgba(255, 255, 255, 0.02)", `[${name}] podium uses 2% glass fill`, state.background);
-  expect(state.border === "rgba(212, 175, 55, 0.25)", `[${name}] podium has a subtle metallic edge`, state.border);
-  expect(state.backdrop.includes("blur(24px)"), `[${name}] backdrop blur is active`, state.backdrop);
-  expect(state.shadow.includes("rgba(0, 0, 0, 0.7)"), `[${name}] floating shadow is present`, state.shadow);
+  expect(state.radius === 0, `[${name}] stats band has no rounded container`, `${state.radius}px`);
+  expect(state.background === "rgba(0, 0, 0, 0)", `[${name}] stats band has no card fill`, state.background);
+  expect(state.borderTop === "rgba(255, 255, 255, 0.1)", `[${name}] stats band uses one subtle top rule`, state.borderTop);
+  expect(
+    [state.borderRightWidth, state.borderBottomWidth, state.borderLeftWidth].every((value) => value === "0px"),
+    `[${name}] stats band has no enclosing border`,
+  );
+  expect(state.backdrop === "none", `[${name}] stats band has no dashboard blur`, state.backdrop);
+  expect(state.shadow === "none", `[${name}] stats band has no widget shadow`, state.shadow);
   expect(JSON.stringify(state.numbers) === JSON.stringify(expectedNumbers), `[${name}] metric values remain unchanged`, state.numbers.join(" | "));
   expect(state.labelsUppercase, `[${name}] labels remain uppercase utility type`);
   expect(
-    state.integrationGap >= -1 && state.integrationGap <= (width >= 700 ? 1 : 17),
-    `[${name}] podium is integrated directly under the carousel`,
+    state.integrationGap >= 63 && state.integrationGap <= 65,
+    `[${name}] stats band begins 64px below the carousel`,
     `${state.integrationGap}px`,
   );
   expect(state.noOverflow, `[${name}] no horizontal overflow`);
 
-  await podium.screenshot({ path: `${OUT}/stats-podium-${name}.png` });
+  await band.screenshot({ path: `${OUT}/stats-band-${name}.png` });
   await context.close();
 }
 
@@ -88,8 +95,8 @@ for (const [name, width, height] of viewports) {
   const firstCounter = page.locator("[data-st2-count]").first();
   expect((await firstCounter.textContent()) === "0", "count-up starts at zero before entering view");
 
-  const podium = page.locator("[data-st2-stats-podium]");
-  await podium.scrollIntoViewIfNeeded();
+  const band = page.locator("[data-st2-stats-band]");
+  await band.scrollIntoViewIfNeeded();
   await page.waitForTimeout(900);
   const midValue = Number(await firstCounter.textContent());
   expect(midValue > 0 && midValue < 60, "counter progresses through an intermediate value", String(midValue));
@@ -115,5 +122,5 @@ if (failures.length) {
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exitCode = 1;
 } else {
-  console.log("Stats podium: PASS (desktop, tablet, mobile, count-up, shimmer)");
+  console.log("Stats band: PASS (desktop, tablet, mobile, count-up, shimmer)");
 }

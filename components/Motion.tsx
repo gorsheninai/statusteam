@@ -587,25 +587,25 @@ export default function Motion() {
           });
         }
 
-        const statsPodium = statusScene.querySelector<HTMLElement>(
-          "[data-st2-stats-podium]",
+        const statsBand = statusScene.querySelector<HTMLElement>(
+          "[data-st2-stats-band]",
         );
-        if (statsPodium) {
+        if (statsBand) {
           const statCells = gsap.utils.toArray<HTMLElement>(
             "[data-st2-stat]",
-            statsPodium,
+            statsBand,
           );
           const statCounters = gsap.utils.toArray<HTMLElement>(
             "[data-st2-count]",
-            statsPodium,
+            statsBand,
           );
           const statSuffixes = gsap.utils.toArray<HTMLElement>(
             "[data-st2-stat-suffix]",
-            statsPodium,
+            statsBand,
           );
           const statSheens = gsap.utils.toArray<HTMLElement>(
             "[data-st2-stat-sheen]",
-            statsPodium,
+            statsBand,
           );
 
           statCounters.forEach((counter) => {
@@ -616,14 +616,14 @@ export default function Motion() {
 
           const statsTimeline = gsap.timeline({
             scrollTrigger: {
-              trigger: statsPodium,
+              trigger: statsBand,
               start: "top 88%",
               once: true,
             },
           });
 
           statsTimeline
-            .from(statsPodium, {
+            .from(statsBand, {
               opacity: 0,
               y: 30,
               duration: 0.8,

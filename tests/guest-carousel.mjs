@@ -88,6 +88,10 @@ for (const [name, width, height] of viewports) {
         }),
       center: box ? box.left + box.width / 2 : 0,
       viewportCenter: window.innerWidth / 2,
+      cardTop: box?.top ?? Infinity,
+      cardBottom: box?.bottom ?? Infinity,
+      viewportTop: viewportBox?.top ?? -Infinity,
+      viewportBottom: viewportBox?.bottom ?? -Infinity,
       perspective: viewport ? getComputedStyle(viewport).perspective : "none",
       titleGap: titleBox && viewportBox ? viewportBox.top - titleBox.bottom : Infinity,
       statsGap: stageBox && statsBox ? statsBox.top - stageBox.bottom : Infinity,
@@ -139,6 +143,11 @@ for (const [name, width, height] of viewports) {
   expect(geometry.outerTransform.includes("-380px)"), `[${name}] outer cards sit at -380px depth`, geometry.outerTransform);
   expect(geometry.allVisibleCardsClickable, `[${name}] every visible card is interactive`);
   expect(Math.abs(geometry.center - geometry.viewportCenter) < 3, `[${name}] active card is centered`);
+  expect(
+    geometry.cardTop >= geometry.viewportTop - 1 && geometry.cardBottom <= geometry.viewportBottom + 1,
+    `[${name}] the complete active card remains inside the carousel viewport`,
+    `${geometry.cardTop}px–${geometry.cardBottom}px inside ${geometry.viewportTop}px–${geometry.viewportBottom}px`,
+  );
   expect(geometry.perspective !== "none", `[${name}] 3D perspective is active`);
   expect(
     geometry.titleGap >= 24 && geometry.titleGap <= 33,
@@ -146,8 +155,8 @@ for (const [name, width, height] of viewports) {
     `${geometry.titleGap}px`,
   );
   expect(
-    geometry.statsGap >= -1 && geometry.statsGap <= (width >= 700 ? 1 : 17),
-    `[${name}] stats podium is lifted directly beneath the carousel`,
+    geometry.statsGap >= 63 && geometry.statsGap <= 65,
+    `[${name}] stats begin 64px below the full carousel`,
     `${geometry.statsGap}px`,
   );
 
