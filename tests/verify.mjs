@@ -32,6 +32,7 @@ const SIZES = [
   ["430", 430, 932],
   ["390", 390, 844],
   ["360", 360, 780],
+  ["320", 320, 720],
 ];
 
 /* The seven scenes, in the order the show runs. */
@@ -83,6 +84,44 @@ for (const [name, width, height] of SIZES) {
       .filter((el) => el.scrollWidth > el.clientWidth + 1)
       .map((el) => `${el.textContent.trim().slice(0, 18)} ${el.scrollWidth}>${el.clientWidth}`));
   check(clipped.length === 0, `[${name}] no mask-clipped text`, clipped.join(" | "));
+
+  const joinHeading = await page.evaluate(() => {
+    const join = document.querySelector(".join");
+    const heading = document.querySelector(".join-h");
+    const zones = document.querySelector(".zones");
+    if (!join || !heading || !zones) return null;
+    const joinBox = join.getBoundingClientRect();
+    const headingBox = heading.getBoundingClientRect();
+    const zonesBox = zones.getBoundingClientRect();
+    const style = getComputedStyle(heading);
+    return {
+      text: heading.textContent?.trim(),
+      whiteSpace: style.whiteSpace,
+      textTransform: style.textTransform,
+      centered: Math.abs(headingBox.left + headingBox.width / 2 - innerWidth / 2) < 1,
+      fits: heading.scrollWidth <= heading.clientWidth + 1,
+      topPadding: headingBox.top - joinBox.top,
+      categoriesGap: zonesBox.top - headingBox.bottom,
+      previousIsDivider: join.previousElementSibling?.matches(".pulse-rule") ?? false,
+    };
+  });
+  check(joinHeading?.text === "Стать частью пульса", `[${name}] join heading text is unchanged`);
+  check(
+    joinHeading?.whiteSpace === "nowrap" && joinHeading?.textTransform === "uppercase",
+    `[${name}] join heading stays uppercase on one line`,
+  );
+  check(joinHeading?.centered && joinHeading?.fits, `[${name}] join heading is centered without clipping`);
+  check(
+    Math.abs((joinHeading?.topPadding ?? 0) - (width >= 768 ? 64 : 48)) < 1,
+    `[${name}] join section uses compact top padding`,
+    `${joinHeading?.topPadding}px`,
+  );
+  check(
+    Math.abs((joinHeading?.categoriesGap ?? 0) - (width >= 768 ? 32 : 24)) < 1,
+    `[${name}] categories follow the join heading closely`,
+    `${joinHeading?.categoriesGap}px`,
+  );
+  check(!joinHeading?.previousIsDivider, `[${name}] broken divider before join is removed`);
 
   const missing = await page.evaluate(() =>
     Array.from(document.images).filter((i) => i.complete && i.naturalWidth === 0)

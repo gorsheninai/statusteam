@@ -489,7 +489,6 @@ select:focus {
     transform: none;
   }
 
-  .join-h,
   .faq-h {
     font-size: clamp(2.4rem, 11.5vw, 3.35rem);
   }

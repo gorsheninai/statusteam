@@ -1972,15 +1972,39 @@ ol {
    ============================================================ */
 
 .join {
-  padding-block: var(--chapter-pad);
+  padding-block: 3rem var(--chapter-pad);
   color: var(--paper);
 }
 .join-head {
-  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  margin-bottom: 1.5rem;
+  overflow: clip;
+  text-align: center;
 }
 .join-h {
+  max-inline-size: 100%;
   margin: 0;
-  font-size: clamp(2.4rem, 10vw, 8rem);
+  color: #fff;
+  font-size: clamp(1.1rem, 5.7vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+  .join-h {
+    font-size: clamp(1.75rem, 3.2vw, 3rem);
+  }
+}
+
+@media (min-width: 768px) {
+  .join {
+    padding-block-start: 4rem;
+  }
+
+  .join-head {
+    margin-bottom: 2rem;
+  }
 }
 
 .zones {
@@ -2650,9 +2674,6 @@ ol {
   }
   .exp-sub {
     padding-right: 2%;
-  }
-  .join-head {
-    padding-left: 12%;
   }
   .faq-h {
     padding-right: 30%;
