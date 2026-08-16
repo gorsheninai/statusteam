@@ -36,8 +36,8 @@ const interpolateDepth = (distance: number) => {
   const x = direction * (abs <= 1 ? abs * 93 : 93 + (abs - 1) * 68);
   const rotate = -direction * (abs <= 1 ? abs * 25 : 25 + (abs - 1) * 20);
   const z = abs <= 1 ? abs * -200 : -200 - (abs - 1) * 180;
-  const scale = abs <= 1 ? 1.08 - abs * 0.18 : 0.9 - (abs - 1) * 0.15;
-  const opacity = abs <= 1 ? 1 - abs * 0.6 : 0.4 - (abs - 1) * 0.2;
+  const scale = abs <= 1 ? 1.1 - abs * 0.2 : 0.9 - (abs - 1) * 0.15;
+  const opacity = abs <= 1 ? 1 - abs * 0.55 : 0.45 - (abs - 1) * 0.25;
   const grayscale = abs <= 1 ? abs * 40 : 40 + (abs - 1) * 40;
   const brightness = abs <= 1 ? 1 - abs * 0.2 : 0.8 - (abs - 1) * 0.12;
 
@@ -68,7 +68,9 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [touching, setTouching] = useState(false);
+  const [focusPaused, setFocusPaused] = useState(false);
   const [inView, setInView] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
 
@@ -100,17 +102,26 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   }, []);
 
   useEffect(() => {
-    if (reducedMotion || paused || dragging || !inView || !pageVisible || guests.length < 2) {
+    if (
+      reducedMotion ||
+      hovered ||
+      touching ||
+      focusPaused ||
+      dragging ||
+      !inView ||
+      !pageVisible ||
+      guests.length < 2
+    ) {
       return;
     }
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => wrapIndex(current + 1, guests.length));
       setDragX(0);
-    }, 3250);
+    }, 3500);
 
     return () => window.clearInterval(timer);
-  }, [dragging, guests.length, inView, pageVisible, paused, reducedMotion]);
+  }, [dragging, focusPaused, guests.length, hovered, inView, pageVisible, reducedMotion, touching]);
 
   const cardStep = () => {
     const viewportWidth = viewportRef.current?.clientWidth ?? 390;
@@ -135,6 +146,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       axis: "",
     };
     didDragRef.current = false;
+    if (event.pointerType !== "mouse") setTouching(true);
     setDragging(true);
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -173,6 +185,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     }
 
     setDragging(false);
+    if (event.pointerType !== "mouse") setTouching(false);
     pointerRef.current.id = -1;
     window.setTimeout(() => {
       didDragRef.current = false;
@@ -198,13 +211,19 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       aria-roledescription="carousel"
       aria-label="Гости STATUS TEAM"
       tabIndex={0}
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={(event) => {
-        if (!event.currentTarget.contains(document.activeElement)) setPaused(false);
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setHovered(true);
       }}
-      onFocusCapture={() => setPaused(true)}
+      onPointerLeave={(event) => {
+        if (event.pointerType === "mouse") setHovered(false);
+      }}
+      onFocusCapture={(event) => {
+        if ((event.target as HTMLElement).matches(":focus-visible")) setFocusPaused(true);
+      }}
       onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false);
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setFocusPaused(false);
+        }
       }}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") {

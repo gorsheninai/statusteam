@@ -88,7 +88,7 @@ for (const [name, width, height] of viewports) {
   );
 
   const beforeAutoplay = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
-  await page.waitForTimeout(3500);
+  await page.waitForTimeout(3750);
   expect(
     (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== beforeAutoplay,
     `[${name}] autoplay advances carousel`,
@@ -97,7 +97,7 @@ for (const [name, width, height] of viewports) {
   await page.locator(".st2-guest-stage").hover();
   await page.waitForTimeout(750);
   const pausedIndex = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
-  await page.waitForTimeout(3500);
+  await page.waitForTimeout(3750);
   expect(
     (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === pausedIndex,
     `[${name}] autoplay pauses on hover`,
@@ -115,12 +115,29 @@ for (const [name, width, height] of viewports) {
     `[${name}] keyboard advances carousel`,
   );
 
-  const fourthCard = page.getByRole("button", { name: "Гость 04. Показать в центре" });
-  await fourthCard.dispatchEvent("click");
-  await page.waitForTimeout(650);
+  const beforeClick = Number(
+    await page.locator(".st2-guest-stage").getAttribute("data-active-index"),
+  );
+  const sideIndex = (beforeClick + 1) % 8;
+  const sideCard = page.locator(".st2-guest").nth(sideIndex);
+  const sideCardBehavior = await sideCard.evaluate((card) => ({
+    pointerEvents: getComputedStyle(card).pointerEvents,
+    visibility: getComputedStyle(card).visibility,
+    cursor: getComputedStyle(card.querySelector("button")).cursor,
+    customCursor: document.documentElement.classList.contains("has-cursor"),
+  }));
   expect(
-    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "3",
-    `[${name}] clicking a card centers it`,
+    sideCardBehavior.pointerEvents === "auto" &&
+      sideCardBehavior.visibility === "visible" &&
+      (sideCardBehavior.cursor === "pointer" || sideCardBehavior.customCursor),
+    `[${name}] visible side card is clickable and tappable`,
+    JSON.stringify(sideCardBehavior),
+  );
+  await sideCard.locator("button").dispatchEvent("click");
+  await page.waitForTimeout(750);
+  expect(
+    Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === sideIndex,
+    `[${name}] clicking a visible side card centers it`,
   );
 
   const viewportBox = await page.locator(".st2-guest-viewport").boundingBox();
@@ -131,9 +148,9 @@ for (const [name, width, height] of viewports) {
     await page.mouse.down();
     await page.mouse.move(startX - Math.min(280, viewportBox.width * 0.5), y, { steps: 12 });
     await page.mouse.up();
-    await page.waitForTimeout(650);
+    await page.waitForTimeout(750);
     expect(
-      (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== "3",
+      Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== sideIndex,
       `[${name}] drag gesture rotates carousel`,
     );
   }
