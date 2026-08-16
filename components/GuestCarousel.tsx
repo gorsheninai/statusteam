@@ -74,9 +74,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const [touching, setTouching] = useState(false);
-  const [focusPaused, setFocusPaused] = useState(false);
   const [inView, setInView] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
 
@@ -110,10 +107,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   useEffect(() => {
     if (
       reducedMotion ||
-      hovered ||
-      touching ||
-      focusPaused ||
-      dragging ||
       !inView ||
       !pageVisible ||
       guests.length < 2
@@ -121,13 +114,13 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       return;
     }
 
-    const timer = window.setInterval(() => {
+    const timer = window.setTimeout(() => {
       setActiveIndex((current) => wrapIndex(current + 1, guests.length));
       setDragX(0);
-    }, 3200);
+    }, 3000);
 
-    return () => window.clearInterval(timer);
-  }, [dragging, focusPaused, guests.length, hovered, inView, pageVisible, reducedMotion, touching]);
+    return () => window.clearTimeout(timer);
+  }, [activeIndex, guests.length, inView, pageVisible, reducedMotion]);
 
   const cardStep = () => {
     const viewportWidth = viewportRef.current?.clientWidth ?? 390;
@@ -152,7 +145,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       axis: "",
     };
     didDragRef.current = false;
-    if (event.pointerType !== "mouse") setTouching(true);
     setDragging(true);
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -191,7 +183,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     }
 
     setDragging(false);
-    if (event.pointerType !== "mouse") setTouching(false);
     pointerRef.current.id = -1;
     window.setTimeout(() => {
       didDragRef.current = false;
@@ -217,20 +208,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       aria-roledescription="carousel"
       aria-label="Гости STATUS TEAM"
       tabIndex={0}
-      onPointerEnter={(event) => {
-        if (event.pointerType === "mouse") setHovered(true);
-      }}
-      onPointerLeave={(event) => {
-        if (event.pointerType === "mouse") setHovered(false);
-      }}
-      onFocusCapture={(event) => {
-        if ((event.target as HTMLElement).matches(":focus-visible")) setFocusPaused(true);
-      }}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-          setFocusPaused(false);
-        }
-      }}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") {
           event.preventDefault();

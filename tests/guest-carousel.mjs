@@ -68,8 +68,13 @@ for (const [name, width, height] of viewports) {
       activeZ: active ? getComputedStyle(active).zIndex : "0",
       activeTransform: active?.style.transform || "",
       activeRim: active ? getComputedStyle(active.querySelector(".st2-guest-card"), "::after").borderColor : "",
+      cardRadius: active ? parseFloat(getComputedStyle(active.querySelector(".st2-guest-card")).borderRadius) : 0,
+      cardOverflow: active ? getComputedStyle(active.querySelector(".st2-guest-card")).overflow : "",
+      cardIsolation: active ? getComputedStyle(active.querySelector(".st2-guest-card")).isolation : "",
+      cardBorder: active ? getComputedStyle(active.querySelector(".st2-guest-card")).borderColor : "",
       transitionDuration: active ? getComputedStyle(active).transitionDuration : "",
       sideOpacity: side ? Number(getComputedStyle(side).opacity) : 1,
+      sideBorder: side ? getComputedStyle(side.querySelector(".st2-guest-card")).borderColor : "",
       sideFilter: side ? getComputedStyle(side).filter : "none",
       sideTransform: side?.style.transform || "",
       outerOpacity: outer ? Number(getComputedStyle(outer).opacity) : 1,
@@ -102,11 +107,31 @@ for (const [name, width, height] of viewports) {
     geometry.activeRim,
   );
   expect(
-    geometry.transitionDuration.split(",")[0].trim() === "0.75s",
-    `[${name}] 3D movement settles over 750ms`,
+    geometry.transitionDuration.split(",")[0].trim() === "0.7s",
+    `[${name}] 3D movement settles over 700ms`,
     geometry.transitionDuration,
   );
+  expect(
+    geometry.cardRadius >= 16 && geometry.cardRadius <= 20,
+    `[${name}] cards use an elegant 16–20px radius`,
+    `${geometry.cardRadius}px`,
+  );
+  expect(
+    geometry.cardOverflow === "hidden" && geometry.cardIsolation === "isolate",
+    `[${name}] card media and overlays clip cleanly inside an isolated layer`,
+    `${geometry.cardOverflow} / ${geometry.cardIsolation}`,
+  );
+  expect(
+    geometry.cardBorder === "rgba(212, 175, 55, 0.4)",
+    `[${name}] active card keeps the refined gold border`,
+    geometry.cardBorder,
+  );
   expect(geometry.sideOpacity < 0.7, `[${name}] side cards are visually recessed`);
+  expect(
+    geometry.sideBorder === "rgba(212, 175, 55, 0.3)",
+    `[${name}] every side card keeps the subtle 30% gold border`,
+    geometry.sideBorder,
+  );
   expect(geometry.sideFilter.includes("grayscale(0.3)"), `[${name}] side cards use 30% grayscale`, geometry.sideFilter);
   expect(geometry.sideTransform.includes("-200px)"), `[${name}] side cards sit at -200px depth`, geometry.sideTransform);
   expect(geometry.outerOpacity === 0.2, `[${name}] outer cards recede to 20% opacity`);
@@ -127,27 +152,30 @@ for (const [name, width, height] of viewports) {
   );
 
   const beforeAutoplay = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
-  await page.waitForTimeout(3450);
+  await page.waitForTimeout(3250);
   expect(
     (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== beforeAutoplay,
     `[${name}] autoplay advances carousel`,
   );
 
   await page.locator(".st2-guest-stage").hover();
-  await page.waitForTimeout(750);
-  const pausedIndex = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
-  await page.waitForTimeout(3450);
+  const hoveredIndex = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
+  await page.waitForTimeout(3250);
   expect(
-    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === pausedIndex,
-    `[${name}] autoplay pauses on hover`,
+    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== hoveredIndex,
+    `[${name}] autoplay remains active on hover`,
   );
 
   await page.locator(".st2-guest").nth(7).locator("button").dispatchEvent("click");
-  await page.mouse.move(1, 1);
-  await page.waitForTimeout(3450);
+  await page.waitForTimeout(100);
+  expect(
+    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "7",
+    `[${name}] Guest 08 moves directly to the front`,
+  );
+  await page.waitForTimeout(3150);
   expect(
     (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "0",
-    `[${name}] infinite loop crosses Guest 08 → Guest 01 without resetting the track`,
+    `[${name}] autoplay immediately continues Guest 08 → Guest 01 after click`,
   );
 
   await page.locator(".st2-guest-stage").focus();
@@ -181,10 +209,16 @@ for (const [name, width, height] of viewports) {
     JSON.stringify(sideCardBehavior),
   );
   await sideCard.locator("button").dispatchEvent("click");
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(100);
   expect(
     Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === sideIndex,
     `[${name}] clicking a visible side card centers it`,
+  );
+  await page.waitForTimeout(3150);
+  expect(
+    Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) ===
+      (sideIndex + 1) % 8,
+    `[${name}] autoplay continues after click without disabling`,
   );
 
   const viewportBox = await page.locator(".st2-guest-viewport").boundingBox();
