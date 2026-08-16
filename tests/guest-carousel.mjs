@@ -33,6 +33,18 @@ for (const [name, width, height] of viewports) {
   expect(errors.length === 0, `[${name}] no browser errors`, errors.join(" | "));
   expect(await section.isVisible(), `[${name}] carousel section is visible`);
   expect(
+    (await page.locator(".st2-guest").count()) === 8,
+    `[${name}] carousel contains eight guest cards`,
+  );
+  expect(
+    (await page.locator(".st2-vanguard-head p").count()) === 0,
+    `[${name}] carousel subtitle is removed`,
+  );
+  expect(
+    (await page.locator(".st2-guest-nav, .st2-guest-footer").count()) === 0,
+    `[${name}] arrows and isolated footer controls are removed`,
+  );
+  expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1),
     `[${name}] no horizontal overflow`,
   );
@@ -40,38 +52,66 @@ for (const [name, width, height] of viewports) {
   const geometry = await page.evaluate(() => {
     const active = document.querySelector(".st2-guest.is-active");
     const side = [...document.querySelectorAll(".st2-guest")].find((card) => card !== active);
-    const nav = document.querySelector(".st2-guest-nav");
     const viewport = document.querySelector(".st2-guest-viewport");
+    const stage = document.querySelector(".st2-guest-stage");
+    const stats = document.querySelector(".st2-scale");
+    const title = document.querySelector(".st2-vanguard-head h2");
     const box = active?.getBoundingClientRect();
+    const stageBox = stage?.getBoundingClientRect();
+    const statsBox = stats?.getBoundingClientRect();
+    const titleBox = title?.getBoundingClientRect();
+    const viewportBox = viewport?.getBoundingClientRect();
     return {
       activeOpacity: active ? getComputedStyle(active).opacity : "0",
       sideOpacity: side ? Number(getComputedStyle(side).opacity) : 1,
       center: box ? box.left + box.width / 2 : 0,
       viewportCenter: window.innerWidth / 2,
-      navWidth: nav?.getBoundingClientRect().width ?? 0,
-      navHeight: nav?.getBoundingClientRect().height ?? 0,
       perspective: viewport ? getComputedStyle(viewport).perspective : "none",
+      titleGap: titleBox && viewportBox ? viewportBox.top - titleBox.bottom : Infinity,
+      statsGap: stageBox && statsBox ? statsBox.top - stageBox.bottom : Infinity,
     };
   });
 
   expect(geometry.activeOpacity === "1", `[${name}] active card is fully opaque`);
   expect(geometry.sideOpacity < 0.7, `[${name}] side cards are visually recessed`);
   expect(Math.abs(geometry.center - geometry.viewportCenter) < 3, `[${name}] active card is centered`);
-  expect(geometry.navWidth >= 44 && geometry.navHeight >= 44, `[${name}] navigation touch target is at least 44px`);
   expect(geometry.perspective !== "none", `[${name}] 3D perspective is active`);
-
-  await page.locator(".st2-guest-nav.is-next").click();
-  await page.waitForTimeout(650);
   expect(
-    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "1",
-    `[${name}] arrow advances carousel`,
+    geometry.titleGap >= 24 && geometry.titleGap <= 33,
+    `[${name}] title-to-carousel spacing is 24–32px`,
+    `${geometry.titleGap}px`,
+  );
+  expect(
+    geometry.statsGap >= 47 && geometry.statsGap <= 49,
+    `[${name}] stats follow the carousel within 48px`,
+    `${geometry.statsGap}px`,
+  );
+
+  const beforeAutoplay = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
+  await page.waitForTimeout(3500);
+  expect(
+    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== beforeAutoplay,
+    `[${name}] autoplay advances carousel`,
+  );
+
+  await page.locator(".st2-guest-stage").hover();
+  await page.waitForTimeout(750);
+  const pausedIndex = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
+  await page.waitForTimeout(3500);
+  expect(
+    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === pausedIndex,
+    `[${name}] autoplay pauses on hover`,
   );
 
   await page.locator(".st2-guest-stage").focus();
+  const beforeKeyboard = Number(
+    await page.locator(".st2-guest-stage").getAttribute("data-active-index"),
+  );
   await page.keyboard.press("ArrowRight");
   await page.waitForTimeout(650);
   expect(
-    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "2",
+    Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) ===
+      (beforeKeyboard + 1) % 8,
     `[${name}] keyboard advances carousel`,
   );
 

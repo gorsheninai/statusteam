@@ -36,8 +36,8 @@ const interpolateDepth = (distance: number) => {
   const x = direction * (abs <= 1 ? abs * 93 : 93 + (abs - 1) * 68);
   const rotate = -direction * (abs <= 1 ? abs * 25 : 25 + (abs - 1) * 20);
   const z = abs <= 1 ? abs * -200 : -200 - (abs - 1) * 180;
-  const scale = abs <= 1 ? 1.1 - abs * 0.2 : 0.9 - (abs - 1) * 0.15;
-  const opacity = abs <= 1 ? 1 - abs * 0.55 : 0.45 - (abs - 1) * 0.25;
+  const scale = abs <= 1 ? 1.08 - abs * 0.18 : 0.9 - (abs - 1) * 0.15;
+  const opacity = abs <= 1 ? 1 - abs * 0.6 : 0.4 - (abs - 1) * 0.2;
   const grayscale = abs <= 1 ? abs * 40 : 40 + (abs - 1) * 40;
   const brightness = abs <= 1 ? 1 - abs * 0.2 : 0.8 - (abs - 1) * 0.12;
 
@@ -52,6 +52,7 @@ const interpolateDepth = (distance: number) => {
 };
 
 export default function GuestCarousel({ guests }: GuestCarouselProps) {
+  const stageRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef({
     id: -1,
@@ -67,6 +68,9 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -75,6 +79,38 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     query.addEventListener("change", update);
     return () => query.removeEventListener("change", update);
   }, []);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.2 },
+    );
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const updateVisibility = () => setPageVisible(document.visibilityState === "visible");
+    updateVisibility();
+    document.addEventListener("visibilitychange", updateVisibility);
+    return () => document.removeEventListener("visibilitychange", updateVisibility);
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion || paused || dragging || !inView || !pageVisible || guests.length < 2) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => wrapIndex(current + 1, guests.length));
+      setDragX(0);
+    }, 3250);
+
+    return () => window.clearInterval(timer);
+  }, [dragging, guests.length, inView, pageVisible, paused, reducedMotion]);
 
   const cardStep = () => {
     const viewportWidth = viewportRef.current?.clientWidth ?? 390;
@@ -89,9 +125,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   const move = (direction: -1 | 1) => goTo(activeIndex + direction);
 
   const beginDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLElement;
-    if (target.closest(".st2-guest-nav, .st2-guest-pagination")) return;
-
     pointerRef.current = {
       id: event.pointerId,
       startX: event.clientX,
@@ -158,12 +191,21 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   return (
     <div
       className={`st2-guest-stage${dragging ? " is-dragging" : ""}`}
+      ref={stageRef}
       data-st2-guest-stage
       data-active-index={activeIndex}
       role="region"
       aria-roledescription="carousel"
       aria-label="Гости STATUS TEAM"
       tabIndex={0}
+      onPointerEnter={() => setPaused(true)}
+      onPointerLeave={(event) => {
+        if (!event.currentTarget.contains(document.activeElement)) setPaused(false);
+      }}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false);
+      }}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") {
           event.preventDefault();
@@ -223,14 +265,12 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
                   </span>
 
                   <span className="st2-guest-badge" aria-hidden="true">
-                    <span>Guest {guestNumber}</span>
-                    <span>VIP attendee</span>
+                    Guest {guestNumber}
                   </span>
 
                   <span className="st2-guest-shade" aria-hidden="true" />
                   <span className="st2-guest-copy">
                     <strong>{guest.label}</strong>
-                    <span>VIP · Front row</span>
                   </span>
                 </button>
               </div>
@@ -238,54 +278,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
           })}
         </div>
 
-        <button
-          className="st2-guest-nav is-prev"
-          type="button"
-          aria-label="Предыдущий гость"
-          onClick={() => move(-1)}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m14.5 5-7 7 7 7" />
-          </svg>
-        </button>
-        <button
-          className="st2-guest-nav is-next"
-          type="button"
-          aria-label="Следующий гость"
-          onClick={() => move(1)}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m9.5 5 7 7-7 7" />
-          </svg>
-        </button>
       </div>
-
-      <div className="st2-guest-footer">
-        <span className="st2-guest-index" aria-hidden="true">
-          {String(activeIndex + 1).padStart(2, "0")}
-          <i />
-          {String(guests.length).padStart(2, "0")}
-        </span>
-        <div className="st2-guest-pagination" aria-label="Выбрать гостя">
-          {guests.map((guest, index) => (
-            <button
-              key={guest.label}
-              className={index === activeIndex ? "is-active" : ""}
-              type="button"
-              aria-label={`Показать ${guest.label.toLowerCase()}`}
-              aria-current={index === activeIndex ? "true" : undefined}
-              onClick={() => goTo(index)}
-            >
-              <span />
-            </button>
-          ))}
-        </div>
-        <span className="st2-guest-hint">Drag · Swipe</span>
-      </div>
-
-      <p className="sr-only" aria-live="polite">
-        В центре: {guests[activeIndex]?.label}
-      </p>
     </div>
   );
 }

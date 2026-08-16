@@ -47,6 +47,30 @@ const GUESTS: GuestCarouselItem[] = [
     label: "Гость 04",
     alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
   },
+  {
+    img: "runway-walk",
+    widths: [700, 1200],
+    label: "Гость 05",
+    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
+  },
+  {
+    img: "campaign-silver-portrait",
+    widths: [800, 1400],
+    label: "Гость 06",
+    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
+  },
+  {
+    img: "detail-profile",
+    widths: [500, 900],
+    label: "Гость 07",
+    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
+  },
+  {
+    img: "poster-duo-dusk",
+    widths: [600, 1000],
+    label: "Гость 08",
+    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
+  },
 ];
 
 const STATS = [
@@ -224,7 +248,6 @@ export default function StatusTeamScene() {
         <section className="st2-vanguard st2-shell" aria-labelledby="st2-vanguard-title">
           <header className="st2-vanguard-head" data-st2-section-title>
             <h2 id="st2-vanguard-title">Среди гостей</h2>
-            <p>VIP &amp; Front Row Attendees</p>
           </header>
 
           <GuestCarousel guests={GUESTS} />
