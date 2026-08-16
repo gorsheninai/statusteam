@@ -1,36 +1,83 @@
-/* FAQ — compact editorial coda. Kept isolated so legacy chapter sizing
-   cannot turn this quiet section into another full-screen scene. */
+/* FAQ — an editorial split: a quiet, sticky introduction beside the details. */
 
 .faq-scene,
 .faq-scene[data-bg] {
-  padding-block: 4rem;
+  padding-block: 5rem;
   color: #fff;
   background: #0a0a0a;
 }
 
-.faq-scene > .shell {
+.faq-scene > .faq-shell {
   max-inline-size: 80rem;
-  padding-inline: clamp(1rem, 2.2vw, 1.5rem);
+  padding-inline: 1.5rem;
+}
+
+.faq-scene .faq-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3rem;
+  align-items: start;
+}
+
+.faq-scene .faq-intro {
+  min-inline-size: 0;
 }
 
 .faq-scene .faq-h {
-  max-inline-size: 100%;
-  margin: 0 auto clamp(2rem, 2.55vw, 3rem);
+  max-inline-size: 12ch;
+  margin: 0;
   padding: 0;
   color: #fff;
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 1.45rem + 1.3vw, 2.75rem);
+  font-size: clamp(1.875rem, 1.45rem + 1.8vw, 3rem);
   font-weight: 400;
   line-height: 1.08;
-  letter-spacing: 0.04em;
-  text-align: center;
-  text-wrap: nowrap;
-  white-space: nowrap;
+  letter-spacing: 0.08em;
+  text-align: start;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.faq-scene .faq-copy {
+  max-inline-size: 31rem;
+  margin: 1rem 0 0;
+  color: #a3a3a3;
+  font-family: var(--font-ui);
+  font-size: clamp(0.875rem, 0.82rem + 0.22vw, 1rem);
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.faq-scene .faq-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-block-size: 2.75rem;
+  margin-block-start: 1.25rem;
+  color: #c5a880;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1;
+  text-decoration: underline;
+  text-decoration-color: rgba(197, 168, 128, 0.42);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35rem;
+  transition:
+    color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    text-decoration-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-scene .faq-contact-arrow {
+  display: inline-block;
+  font-size: 1rem;
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .faq-scene .faq {
-  max-inline-size: 56rem;
-  margin-inline: auto;
+  inline-size: 100%;
+  min-inline-size: 0;
+  margin: 0;
   border-block-start: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -43,8 +90,8 @@
   align-items: center;
   justify-content: space-between;
   gap: clamp(1rem, 3vw, 2rem);
-  min-block-size: 4rem;
-  padding-block: 1.25rem;
+  min-block-size: 4.5rem;
+  padding-block: 1.5rem;
   color: #e5e5e5;
   font-family: var(--font-ui);
   font-size: clamp(1rem, 0.94rem + 0.28vw, 1.125rem);
@@ -66,11 +113,27 @@
 }
 
 .faq-scene .faq-sign {
-  inline-size: 1.125rem;
-  block-size: 1.125rem;
+  flex: 0 0 auto;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
   color: currentColor;
   transform: rotate(0deg);
   transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-scene .faq-sign::before,
+.faq-scene .faq-sign::after {
+  content: none;
+}
+
+.faq-scene .faq-sign svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1;
 }
 
 .faq-scene .faq-row:hover .faq-sign {
@@ -102,19 +165,47 @@
   .faq-scene .faq-q:hover {
     color: #c5a880;
   }
+
+  .faq-scene .faq-contact:hover {
+    color: #fff;
+    text-decoration-color: rgba(255, 255, 255, 0.72);
+  }
+
+  .faq-scene .faq-contact:hover .faq-contact-arrow {
+    transform: translate(0.18rem, -0.18rem);
+  }
 }
 
 @media (min-width: 768px) {
   .faq-scene,
   .faq-scene[data-bg] {
-    padding-block: 5rem;
+    padding-block: 7rem;
+  }
+
+  .faq-scene .faq-layout {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 3rem;
+  }
+
+  .faq-scene .faq-intro {
+    position: sticky;
+    inset-block-start: 7rem;
+    align-self: start;
+  }
+}
+
+@media (min-width: 1100px) {
+  .faq-scene .faq-layout {
+    gap: 5rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .faq-scene .faq-q,
   .faq-scene .faq-sign,
-  .faq-scene .faq .panel {
+  .faq-scene .faq .panel,
+  .faq-scene .faq-contact,
+  .faq-scene .faq-contact-arrow {
     transition-duration: 0.01ms !important;
   }
 }

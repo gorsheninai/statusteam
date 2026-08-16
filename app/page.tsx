@@ -334,12 +334,29 @@ export default function Home() {
             06 — ВОПРОСЫ. The last quiet beat before the footer.
             ============================================================ */}
         <section className="faq-scene on-dark" id="faq" data-bg="ink">
-          <div className="shell">
-            <h2 className="faq-h campaign" data-reveal="up">
-              Что нужно знать
-            </h2>
+          <div className="shell faq-shell">
+            <div className="faq-layout">
+              <div className="faq-intro" data-reveal="up">
+                <h2 className="faq-h campaign">Что нужно знать</h2>
+                <p className="faq-copy">
+                  Ответы на главные вопросы о шоу, дресс-коде и билетах.
+                  Остались вопросы?
+                </p>
+                <a
+                  className="faq-contact"
+                  href="https://t.me/statusteamru"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>Служба заботы / Telegram</span>
+                  <span className="faq-contact-arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </div>
 
-            <Faq />
+              <Faq />
+            </div>
           </div>
         </section>
       </main>
