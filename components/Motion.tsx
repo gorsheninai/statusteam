@@ -118,6 +118,77 @@ export default function Motion() {
           .to(heroTitle, { scale: 1, duration: 0.3, ease: "sine.inOut" });
       }
 
+      /* ============================================================
+         PULSE TITLE — sand haze sweeps once across the lock-up
+         ============================================================ */
+
+      const sandReveal = document.querySelector<HTMLElement>(
+        "[data-sand-reveal]",
+      );
+      const sandTitle = sandReveal?.querySelector<HTMLElement>(
+        "[data-sand-title]",
+      );
+      const sandSheen = sandTitle?.querySelector<HTMLElement>(
+        ".pulse-title-fit",
+      );
+
+      if (sandReveal && sandTitle) {
+        gsap.set(sandTitle, {
+          y: 28,
+          opacity: 0,
+          filter: "blur(14px)",
+          "--sand-mask": "0%",
+        });
+
+        if (sandSheen) {
+          gsap.set(sandSheen, {
+            filter: "drop-shadow(0 0 20px rgba(197, 168, 128, 0.45))",
+          });
+        }
+
+        const sandTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: sandReveal,
+            start: "top 75%",
+            once: true,
+          },
+        });
+
+        sandTimeline
+          .to(
+            sandTitle,
+            {
+              "--sand-mask": "100%",
+              duration: 1.4,
+              ease: "power2.inOut",
+            },
+            0,
+          )
+          .to(
+            sandTitle,
+            {
+              y: 0,
+              opacity: 1,
+              filter: "blur(0px)",
+              duration: 1.2,
+              ease: EASE,
+            },
+            0,
+          );
+
+        if (sandSheen) {
+          sandTimeline.to(
+            sandSheen,
+            {
+              filter: "drop-shadow(0 0 0 rgba(197, 168, 128, 0))",
+              duration: 0.72,
+              ease: "power2.out",
+            },
+            0.7,
+          );
+        }
+      }
+
       /* Pointer parallax, written straight to the layers with quickTo: no
          React state, no re-render, one rAF-driven tween per axis. */
       if (fine) {

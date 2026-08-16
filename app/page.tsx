@@ -184,19 +184,10 @@ export default function Home() {
             Second recurrence of the lock-up.
             ============================================================ */}
         <section className="pulse-scene on-dark" id="pulse" data-bg="ink">
-          <div className="pulse-intro shell">
-            <h2 className="pulse-title" data-pulse-title>
-              <span className="pulse-mask">
-                <span className="pulse-line">Пульс</span>
-              </span>
-              <span className="pulse-mask">
-                <span className="pulse-line">Континента</span>
-              </span>
+          <div className="pulse-intro" data-sand-reveal>
+            <h2 className="pulse-title" data-sand-title>
+              <span className="pulse-title-fit">ПУЛЬС КОНТИНЕНТА</span>
             </h2>
-
-            <p className="pulse-meta credit" data-reveal="up">
-              нижнее бельё и аксессуары · Москва · Ноябрь 2026
-            </p>
           </div>
 
           <div className="tenets" data-tenets>

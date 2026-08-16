@@ -441,11 +441,6 @@ select:focus {
     font-size: 0.56rem !important;
   }
 
-  .pulse-scene {
-    padding-top: 3.4rem;
-  }
-
-  .pulse-title .pulse-line,
   .tickets-title .pulse-line {
     white-space: normal;
     overflow-wrap: normal;
