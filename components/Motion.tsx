@@ -499,22 +499,20 @@ export default function Motion() {
           });
         }
 
-        const guestCards = gsap.utils.toArray<HTMLElement>(
-          "[data-st2-guest]",
-          statusScene,
+        const guestStage = statusScene.querySelector<HTMLElement>(
+          "[data-st2-guest-stage]",
         );
-        if (guestCards.length) {
-          ScrollTrigger.batch(guestCards, {
-            start: "top 86%",
-            once: true,
-            onEnter: (batch) =>
-              gsap.from(batch, {
-                opacity: 0,
-                y: 32,
-                duration: 0.78,
-                stagger: 0.06,
-                ease: EASE,
-              }),
+        if (guestStage) {
+          gsap.from(guestStage, {
+            opacity: 0,
+            y: 28,
+            duration: 0.86,
+            ease: EASE,
+            scrollTrigger: {
+              trigger: guestStage,
+              start: "top 88%",
+              once: true,
+            },
           });
         }
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CONTENT } from "@/lib/config";
+import GuestCarousel, { type GuestCarouselItem } from "@/components/GuestCarousel";
 
 const PRESS_LOGOS = [
   "MEDIA 01",
@@ -21,7 +22,7 @@ const BRAND_LOGOS = [
   "PARTNER 06",
 ];
 
-const GUESTS = [
+const GUESTS: GuestCarouselItem[] = [
   {
     img: "archive-flower-crown",
     widths: [700, 1200],
@@ -221,29 +222,12 @@ export default function StatusTeamScene() {
 
       {CONTENT.guests && (
         <section className="st2-vanguard st2-shell" aria-labelledby="st2-vanguard-title">
-          <h2 id="st2-vanguard-title" data-st2-section-title>
-            Среди гостей
-          </h2>
+          <header className="st2-vanguard-head" data-st2-section-title>
+            <h2 id="st2-vanguard-title">Среди гостей</h2>
+            <p>VIP &amp; Front Row Attendees</p>
+          </header>
 
-          <div className="st2-guests" role="list" aria-label="Гости STATUS TEAM">
-            {GUESTS.map((guest) => (
-              <figure className="st2-guest" key={guest.label} role="listitem" data-st2-guest>
-                <div className="st2-guest-media">
-                  <img
-                    src={`/media/${guest.img}-${guest.widths[1]}.webp`}
-                    srcSet={`/media/${guest.img}-${guest.widths[0]}.webp ${guest.widths[0]}w, /media/${guest.img}-${guest.widths[1]}.webp ${guest.widths[1]}w`}
-                    sizes="(min-width: 900px) 22vw, 46vw"
-                    width={guest.widths[1]}
-                    height={Math.round((guest.widths[1] * 4) / 3)}
-                    alt={guest.alt}
-                    loading="lazy"
-                    draggable={false}
-                  />
-                </div>
-                <figcaption>{guest.label}</figcaption>
-              </figure>
-            ))}
-          </div>
+          <GuestCarousel guests={GUESTS} />
         </section>
       )}
 

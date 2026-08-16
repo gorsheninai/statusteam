@@ -384,7 +384,7 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
       const r = el.getBoundingClientRect();
       if (r.width < 4 || r.height < 4) return;
       // text over imagery is scrim-dependent and can't be judged statically
-      if (el.closest(".hero, .media, .menu, .tenets, .posters, .zone, .preloader")) return;
+      if (el.closest(".hero, .media, .menu, .tenets, .posters, .zone, .preloader, .st2-guest-card")) return;
       const cs = getComputedStyle(el), bg = solid(el);
       const col = parse(cs.color);
       const fg = over({ ...col, a: col.a * eff(el) }, bg);
