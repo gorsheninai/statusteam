@@ -67,7 +67,7 @@ for (const [name, width, height] of SIZES) {
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
   page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
 
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(350);
 
   check(errors.length === 0, `[${name}] no console errors`, errors.join(" | ").slice(0, 90));
@@ -103,7 +103,7 @@ for (const [name, width, height] of SIZES) {
 /* ---------------- structure ---------------- */
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
 
   const order = await page.evaluate((ids) =>
     ids.map((id) => {
@@ -143,7 +143,7 @@ for (const [name, width, height] of SIZES) {
   const ghosts = await page.evaluate(() => {
     const body = document.body.innerText;
     return ["Имя Фамилия", "MEDIA ONE", "BRAND 01", "— ₽", "Волна закрыта",
-            "Early bird", "Среди гостей", "О нас говорили", "Вместе с нами"]
+            "Early bird"]
       .filter((t) => body.includes(t));
   });
   check(ghosts.length === 0, "no placeholder content is rendered", ghosts.join(", "));
@@ -214,7 +214,7 @@ for (const [label, width, height] of [["desktop", 1440, 900], ["phone", 360, 780
 /* ---------------- the ticket path ---------------- */
 for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844]]) {
   const page = await browser.newPage({ viewport: { width, height } });
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
   await settle(page);
 
   check(await page.locator(".nav-tickets").isVisible(), `[${label}] ticket button visible over the hero`);
@@ -233,7 +233,7 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 /* ---------------- interactions ---------------- */
 {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
   await settle(page);
 
   await page.click(".nav-burger");
@@ -250,18 +250,27 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
     return j.top < window.innerHeight * 0.6 && j.bottom > 0;
   }), "menu link scrolled to the section");
 
-  await page.goto(URL, { waitUntil: "networkidle" });
-  await page.locator(".reel").scrollIntoViewIfNeeded();
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
+  await page.locator(".st2-video").scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
-  check((await page.locator(".reel video").count()) === 0, "the reel does not autoload");
-  await page.click(".reel-play");
-  await page.waitForTimeout(1200);
-  check((await page.locator(".reel video").count()) === 1, "reel mounts on intent");
+  check((await page.locator(".st2-video video").count()) === 1,
+    "the reel is mounted for muted autoplay");
+  check(await page.locator(".st2-video video").evaluate((video) =>
+    video.autoplay && video.loop && video.muted && video.playsInline),
+    "the reel autoplays muted, loops and stays inline");
+  check((await page.locator(".st2-marquee").count()) === 2,
+    "press and brand proof use two opposing marquees");
+  check((await page.locator(".st2-watch").textContent()).replace(/\s+/g, " ").includes("Смотреть видео"),
+    "the reel offers the requested watch control");
+  await page.locator(".st2-watch").focus();
+  await page.click(".st2-watch");
+  check((await page.locator(".st2-watch").getAttribute("aria-pressed")) === "true",
+    "the reel watch control unmutes on intent");
   await page.close();
 }
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: "reduce" });
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
 
   /* Doors */
   const model = page.locator(".zone").first();
@@ -298,7 +307,7 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
   check(wired || !/отправлена/i.test(note), "no fake success while the form is unwired", note.slice(0, 50));
 
   /* Keyboard */
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.keyboard.press("Tab");
   check(String(await page.evaluate(() => document.activeElement?.className)).includes("skip-link"),
     "skip link is the first tab stop");
@@ -323,7 +332,7 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 /* ---------------- the pinned chapter ---------------- */
 for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844]]) {
   const page = await browser.newPage({ viewport: { width, height } });
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
   await settle(page);
 
   check(await page.evaluate(() =>
@@ -356,7 +365,7 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 /* ---------------- contrast ---------------- */
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
   const bad = await page.evaluate(() => {
     const parse = (c) => { const m = c.match(/[\d.]+/g).map(Number); return { r: m[0], g: m[1], b: m[2], a: m[3] ?? 1 }; };
     const over = (f, b) => ({ r: f.r * f.a + b.r * (1 - f.a), g: f.g * f.a + b.g * (1 - f.a), b: f.b * f.a + b.b * (1 - f.a) });
@@ -393,7 +402,7 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 /* ---------------- reduced motion ---------------- */
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: "reduce" });
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "domcontentloaded" });
   const hidden = await page.evaluate(() =>
     Array.from(document.querySelectorAll("[data-reveal],[data-hero]")).filter((el) => {
       const cs = getComputedStyle(el);

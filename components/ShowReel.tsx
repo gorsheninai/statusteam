@@ -1,23 +1,17 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function ShowReel() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
   const [muted, setMuted] = useState(true);
-
-  /* The previous STATUS TEAM version marked this block for a pinned GSAP
-     zoom. The new art direction is one static editorial composition, so the
-     marker must be gone before Motion's passive effect builds ScrollTriggers. */
-  useLayoutEffect(() => {
-    wrapRef.current?.closest("[data-reel-zoom]")?.removeAttribute("data-reel-zoom");
-  }, []);
 
   useEffect(() => {
     const el = wrapRef.current;
     const video = videoRef.current;
-    if (!el || !video) return;
+    if (!started || !el || !video) return;
 
     video.muted = true;
     void video.play().catch(() => {});
@@ -32,7 +26,7 @@ export default function ShowReel() {
 
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [started]);
 
   const toggleSound = () => {
     const video = videoRef.current;
@@ -57,32 +51,53 @@ export default function ShowReel() {
 
       <div className="reel" ref={wrapRef} data-reveal="mask">
         <div className="media reel-media">
-          <video
-            ref={videoRef}
-            src="/media/show-reel.mp4"
-            poster="/media/show-reel-poster.webp"
-            autoPlay
-            muted={muted}
-            loop
-            playsInline
-            preload="metadata"
-            aria-label="Афтермуви показа «Славянский взгляд»"
-          />
+          {started ? (
+            <video
+              ref={videoRef}
+              src="/media/show-reel.mp4"
+              poster="/media/show-reel-poster.webp"
+              autoPlay
+              muted={muted}
+              loop
+              playsInline
+              preload="metadata"
+              aria-label="Афтермуви показа «Славянский взгляд»"
+            />
+          ) : (
+            <img
+              src="/media/show-reel-poster.webp"
+              width={1600}
+              height={900}
+              alt="Кадр из афтермуви показа «Славянский взгляд»"
+              loading="lazy"
+            />
+          )}
 
-          <button
-            className="reel-sound"
-            type="button"
-            onClick={toggleSound}
-            aria-label={muted ? "Включить звук афтермуви" : "Выключить звук афтермуви"}
-            aria-pressed={!muted}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 10v4h4l5 4V6L8 10H4Z" />
-              {!muted && <path d="M16 9.2c1.1 1.55 1.1 4.05 0 5.6M18.6 6.8c2.45 2.9 2.45 7.5 0 10.4" />}
-              {muted && <path d="m16.2 9.2 4.6 5.6m0-5.6-4.6 5.6" />}
-            </svg>
-            <span className="sr-only">{muted ? "Звук выключен" : "Звук включён"}</span>
-          </button>
+          {!started ? (
+            <button
+              className="reel-play"
+              type="button"
+              onClick={() => setStarted(true)}
+              aria-label="Воспроизвести афтермуви"
+            >
+              <span className="reel-play-icon" aria-hidden="true" />
+            </button>
+          ) : (
+            <button
+              className="reel-sound"
+              type="button"
+              onClick={toggleSound}
+              aria-label={muted ? "Включить звук афтермуви" : "Выключить звук афтермуви"}
+              aria-pressed={!muted}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 10v4h4l5 4V6L8 10H4Z" />
+                {!muted && <path d="M16 9.2c1.1 1.55 1.1 4.05 0 5.6M18.6 6.8c2.45 2.9 2.45 7.5 0 10.4" />}
+                {muted && <path d="m16.2 9.2 4.6 5.6m0-5.6-4.6 5.6" />}
+              </svg>
+              <span className="sr-only">{muted ? "Звук выключен" : "Звук включён"}</span>
+            </button>
+          )}
         </div>
       </div>
     </>

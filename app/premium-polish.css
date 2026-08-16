@@ -1,0 +1,631 @@
+/* Final premium pass.
+   No copy or section order changes: this layer only resolves hierarchy,
+   responsive composition and the shared motion language. */
+
+:root {
+  --ink-deep: #090706;
+  --wine-deep: #21070d;
+  --wine-live: #5b0d20;
+  --champagne: #d7b77f;
+  --ivory: #f2eee7;
+  --premium-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  scroll-padding-top: calc(72px + env(safe-area-inset-top));
+}
+
+[id] {
+  scroll-margin-top: calc(72px + env(safe-area-inset-top));
+}
+
+.nav {
+  padding-top: calc(0.8rem + env(safe-area-inset-top));
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+}
+
+.nav::before {
+  background: linear-gradient(
+    180deg,
+    rgba(9, 7, 6, 0.82) 0%,
+    rgba(9, 7, 6, 0.34) 56%,
+    transparent 100%
+  );
+}
+
+.nav.is-solid {
+  background: rgba(9, 7, 6, 0.86);
+  border-bottom-color: rgba(215, 183, 127, 0.16);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.nav-tickets,
+.btn {
+  border-radius: 3px;
+}
+
+.nav-tickets {
+  position: relative;
+  overflow: hidden;
+  transition:
+    color 420ms var(--premium-ease),
+    background 420ms var(--premium-ease),
+    transform 180ms ease-out;
+}
+
+.nav-tickets:active,
+.btn:active {
+  transform: scale(0.975);
+}
+
+.menu-inner {
+  min-width: 0;
+  padding-top: calc(1rem + env(safe-area-inset-top));
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+}
+
+/* HERO — the photograph stays dominant while the text gains a cleaner floor. */
+.hero-frame::after {
+  background:
+    linear-gradient(0deg, rgba(9, 7, 6, 0.97) 0%, rgba(9, 7, 6, 0.78) 27%, rgba(9, 7, 6, 0.18) 62%, transparent 84%),
+    linear-gradient(90deg, rgba(9, 7, 6, 0.18), transparent 64%);
+}
+
+.hero-title {
+  text-wrap: balance;
+}
+
+.hero-statement {
+  max-width: 27ch;
+  color: rgba(242, 238, 231, 0.88);
+}
+
+.hero-where {
+  color: rgba(215, 183, 127, 0.94);
+}
+
+.hero .btn-solid,
+.tickets .btn-solid {
+  box-shadow: 0 12px 34px rgba(91, 13, 32, 0.24);
+}
+
+/* STATUS TEAM — restore the supplied heading and make the proof scene read
+   as a complete editorial spread instead of a card with a dead lower half. */
+.st .beat-who {
+  display: block !important;
+}
+
+.st .st-name {
+  color: var(--ivory) !important;
+  text-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+}
+
+.st-intro-copy {
+  color: rgba(242, 238, 231, 0.78) !important;
+}
+
+.st .reel-media {
+  isolation: isolate;
+}
+
+.st .reel-media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border: 1px solid rgba(215, 183, 127, 0.16);
+}
+
+.st .reel-media > img,
+.st .reel-media > video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.st .reel-play {
+  left: 50%;
+  top: 50%;
+  width: clamp(62px, 6vw, 86px);
+  height: clamp(62px, 6vw, 86px);
+  min-height: 62px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border-color: rgba(242, 238, 231, 0.54);
+  background: rgba(9, 7, 6, 0.34);
+  backdrop-filter: blur(12px);
+  transition:
+    transform 500ms var(--premium-ease),
+    background 500ms var(--premium-ease),
+    border-color 500ms var(--premium-ease);
+}
+
+.st .reel-play:hover,
+.st .reel-play:focus-visible {
+  transform: translate(-50%, -50%) scale(1.06);
+  background: rgba(91, 13, 32, 0.72);
+  border-color: var(--champagne);
+}
+
+.reel-play-icon {
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 13px solid var(--ivory);
+}
+
+.st .guest .media,
+.tier,
+.zone {
+  isolation: isolate;
+}
+
+.st .guest .media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(242, 238, 231, 0.08);
+}
+
+.st .guest figcaption b {
+  color: rgba(242, 238, 231, 0.74) !important;
+}
+
+.st .logo-slot,
+.st .logo-slot[data-placeholder="true"] {
+  color: rgba(242, 238, 231, 0.78) !important;
+  opacity: 0.72 !important;
+}
+
+.st .scale-list li {
+  min-width: 0;
+}
+
+.st .scale-l {
+  color: rgba(242, 238, 231, 0.68) !important;
+}
+
+/* The pulse chapter is the single signature moment: one full-bleed image,
+   one word, one quiet progress rail. */
+.tenets.is-pinned {
+  height: 100vh;
+  height: 100svh;
+  background: var(--ink-deep);
+}
+
+.tenets.is-pinned .tenet-shot::after {
+  background:
+    linear-gradient(0deg, rgba(9, 7, 6, 0.94) 0%, rgba(9, 7, 6, 0.42) 38%, transparent 72%),
+    linear-gradient(90deg, rgba(9, 7, 6, 0.3), transparent 48%);
+}
+
+.tenets.is-pinned .tenet-in {
+  text-shadow: 0 14px 44px rgba(0, 0, 0, 0.42);
+}
+
+.tenets.is-pinned .tenet-dot {
+  width: 18px;
+  height: 1px;
+  border-radius: 0;
+  transform-origin: right center;
+}
+
+/* EXPERIENCE — the paper scene stays quiet, but rows now answer the pointer. */
+.exp-row {
+  transition:
+    color 420ms var(--premium-ease),
+    background 420ms var(--premium-ease);
+}
+
+.exp-row:hover,
+.exp-row:focus-within {
+  background: rgba(198, 168, 124, 0.07);
+}
+
+.exp-line {
+  transition: transform 520ms var(--premium-ease);
+}
+
+.exp-row:hover .exp-line,
+.exp-row:focus-within .exp-line {
+  transform: translateX(clamp(4px, 0.7vw, 10px));
+}
+
+.exp-sub {
+  color: rgba(18, 17, 16, 0.76);
+  opacity: 1;
+}
+
+.nav-brand:focus-visible,
+.nav-links a:focus-visible,
+.nav-tickets:focus-visible,
+.hero-cta a:focus-visible,
+.reel-play:focus-visible,
+.exp-trigger:focus-visible {
+  outline: 2px solid var(--champagne) !important;
+  outline-offset: 4px !important;
+}
+
+a:focus,
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--champagne) !important;
+  outline-offset: 4px !important;
+}
+
+/* TICKETS — keep the same three tiers, give them depth and a more tactile
+   selection state without turning them into generic rounded cards. */
+.tier {
+  background: linear-gradient(145deg, rgba(242, 238, 231, 0.035), rgba(9, 7, 6, 0.12));
+  transition:
+    transform 560ms var(--premium-ease),
+    background 560ms var(--premium-ease),
+    border-color 560ms var(--premium-ease);
+}
+
+.tier:hover,
+.tier:focus-within {
+  transform: translateY(-6px);
+  background: linear-gradient(145deg, rgba(215, 183, 127, 0.09), rgba(9, 7, 6, 0.18));
+  border-color: rgba(215, 183, 127, 0.48);
+}
+
+/* JOIN + FAQ — one consistent premium disclosure gesture. */
+.zone-head,
+.faq-q {
+  min-width: 0;
+}
+
+.zone-title,
+.zone-sub,
+.faq-q span:first-child {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.zone-sign,
+.faq-sign {
+  transition: transform 520ms var(--premium-ease);
+}
+
+.zone:hover .zone-sign,
+.faq-row:hover .faq-sign {
+  transform: rotate(90deg);
+}
+
+.zone.is-open .zone-sign,
+.faq-row.is-open .faq-sign {
+  transform: rotate(45deg);
+}
+
+.field input,
+.field textarea,
+.field select {
+  font-size: max(16px, 1rem);
+}
+
+/* Mobile-first safeguards and art direction. */
+@media (max-width: 639px) {
+  :root {
+    --gutter: clamp(1.15rem, 5.1vw, 1.4rem);
+    --chapter-pad: clamp(3.25rem, 14vw, 4.5rem);
+    --chapter-pad-quiet: clamp(3.75rem, 16vw, 5.5rem);
+  }
+
+  .nav {
+    gap: 0.55rem;
+    padding-bottom: 0.65rem;
+  }
+
+  .nav-brand {
+    min-width: 0;
+    padding-block: 10px;
+  }
+
+  .nav-brand img {
+    height: 15px;
+  }
+
+  .nav-end {
+    gap: 0.35rem;
+  }
+
+  .nav-tickets {
+    min-height: 44px;
+    padding-inline: 0.85rem;
+    letter-spacing: 0.14em;
+  }
+
+  .nav-burger {
+    width: 44px;
+    height: 44px;
+  }
+
+  .hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-top: calc(5.5rem + env(safe-area-inset-top));
+    padding-bottom: max(2.5rem, env(safe-area-inset-bottom));
+  }
+
+  .hero-layer {
+    object-position: 50% 44%;
+  }
+
+  .hero-title {
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .hero-title .pulse-line {
+    font-size: clamp(2.05rem, 10.2vw, 2.65rem);
+    letter-spacing: calc(-0.012em + var(--pulse, 0) * 0.045em);
+  }
+
+  .hero-statement {
+    max-width: 25ch;
+    font-size: 1rem;
+    line-height: 1.42;
+  }
+
+  .hero-where {
+    gap: 1.1rem;
+    font-size: 0.68rem;
+  }
+
+  .hero-cta .btn {
+    min-width: 142px;
+    justify-content: center;
+  }
+
+  .st {
+    padding-top: clamp(2.25rem, 10vw, 3.25rem) !important;
+  }
+
+  .st .st-name {
+    margin-bottom: 0.8rem !important;
+    font-size: clamp(3.15rem, 15vw, 4.3rem) !important;
+    line-height: 0.88 !important;
+  }
+
+  .st-intro-copy {
+    margin-bottom: 0.85rem !important;
+    font-size: 1rem !important;
+    line-height: 1.38 !important;
+  }
+
+  .st .reel {
+    height: auto !important;
+    aspect-ratio: 16 / 10;
+  }
+
+  .st .beat-proof {
+    margin-top: 2.75rem;
+  }
+
+  .st .guests {
+    gap: 1.15rem 0.7rem;
+  }
+
+  .st .beat-proof .beat-h:not(:first-child) {
+    margin-top: 2rem;
+    padding-top: 1.35rem;
+  }
+
+  .st .beat-numbers {
+    margin-top: 2.4rem !important;
+  }
+
+  .st .scale-list li {
+    min-height: 132px;
+    padding: 1.35rem 0.45rem;
+  }
+
+  .st .scale-n {
+    font-size: clamp(3rem, 15vw, 4rem) !important;
+  }
+
+  .st .scale-l::before {
+    font-size: 0.56rem !important;
+  }
+
+  .pulse-scene {
+    padding-top: 3.4rem;
+  }
+
+  .pulse-title .pulse-line,
+  .tickets-title .pulse-line {
+    white-space: normal;
+    overflow-wrap: normal;
+  }
+
+  .tenets.is-pinned .tenet {
+    padding-bottom: max(3rem, calc(2rem + env(safe-area-inset-bottom)));
+  }
+
+  .tenets.is-pinned .tenet-in {
+    font-size: clamp(2.45rem, 13vw, 3.35rem);
+  }
+
+  .tenets.is-pinned .tenet-dots {
+    right: var(--gutter);
+    top: auto;
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    transform: none;
+    grid-auto-flow: column;
+    gap: 0.45rem;
+  }
+
+  .tenets.is-pinned .tenet-dot {
+    width: 14px;
+  }
+
+  .exp-h,
+  .faq-h {
+    text-wrap: balance;
+  }
+
+  .exp-title {
+    font-size: clamp(1.3rem, 6vw, 1.65rem);
+  }
+
+  .tickets {
+    min-height: auto;
+  }
+
+  .tickets-bar {
+    gap: 1.2rem 0.8rem;
+  }
+
+  .tier:hover,
+  .tier:focus-within {
+    transform: none;
+  }
+
+  .join-h,
+  .faq-h {
+    font-size: clamp(2.4rem, 11.5vw, 3.35rem);
+  }
+
+  .zone-head {
+    min-height: 92px;
+  }
+
+  .zone-title {
+    font-size: clamp(1.35rem, 6vw, 1.7rem);
+  }
+
+  .faq-q {
+    min-height: 58px;
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1199px) {
+  .st {
+    padding-top: clamp(2.75rem, 6vw, 4.5rem) !important;
+  }
+
+  .st .st-name {
+    margin-bottom: 1rem !important;
+    font-size: clamp(4.8rem, 11vw, 7rem) !important;
+  }
+
+  .st .reel {
+    aspect-ratio: 16 / 8.7;
+  }
+
+  .st .beat-proof {
+    margin-top: 3.75rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .hero-frame::after {
+    background: linear-gradient(
+      90deg,
+      rgba(9, 7, 6, 0.95) 0%,
+      rgba(9, 7, 6, 0.7) 25%,
+      rgba(9, 7, 6, 0.22) 47%,
+      transparent 70%
+    );
+  }
+}
+
+@media (min-width: 1200px) {
+  .st {
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    padding-top: clamp(2rem, 3.8vh, 2.75rem) !important;
+  }
+
+  .st .beat-who {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  .st .st-name {
+    margin-bottom: clamp(0.45rem, 0.9vh, 0.75rem) !important;
+    font-size: clamp(4.1rem, 4.7vw, 5.75rem) !important;
+  }
+
+  .st .beat-reel {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    align-self: stretch !important;
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .st .reel-zoom {
+    display: flex !important;
+    flex-direction: column;
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .st-intro-copy {
+    flex: 0 0 auto;
+    margin: 0 0 clamp(0.65rem, 1vh, 0.85rem) !important;
+  }
+
+  .st .reel {
+    flex: 1 1 auto;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .st .beat-proof {
+    top: clamp(3.3rem, 6.1vh, 4.2rem) !important;
+  }
+
+  .st .beat-numbers {
+    grid-row: 3 !important;
+    align-self: end !important;
+    margin-top: clamp(0.8rem, 1.5vh, 1.1rem) !important;
+  }
+
+  .st .beat-numbers .numbers {
+    height: clamp(104px, 11.8vh, 124px) !important;
+  }
+
+  .st .scale-n,
+  .st .scale-list li:nth-child(2) .scale-n,
+  .st .scale-list li:nth-child(3) .scale-n,
+  .st .scale-list li:nth-child(4) .scale-n {
+    font-size: clamp(3.25rem, 3.75vw, 4.5rem) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .exp-row:hover .exp-line,
+  .exp-row:focus-within .exp-line,
+  .zone:hover .zone-sign,
+  .faq-row:hover .faq-sign {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-tickets,
+  .btn,
+  .st .reel-play,
+  .exp-row,
+  .exp-line,
+  .tier,
+  .zone-sign,
+  .faq-sign {
+    transition-duration: 0.01ms !important;
+  }
+}

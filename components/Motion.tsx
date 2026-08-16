@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import { splitLines } from "@/lib/split-lines";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 /**
  * The page's motion pass.
@@ -19,11 +23,9 @@ import { splitLines } from "@/lib/split-lines";
  * no-JS page is a plain, readable stack.
  */
 export default function Motion() {
-  useEffect(() => {
+  useGSAP(() => {
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (calm.matches) return;
-
-    gsap.registerPlugin(ScrollTrigger);
 
     const root = document.documentElement;
     root.classList.add("js-motion");
@@ -156,6 +158,44 @@ export default function Motion() {
           scrub: true,
         },
       });
+
+      /* The second scene rises as a physical card. The hero recedes just
+         enough to establish depth; on a phone the transition stays native
+         and the type simply softens as it leaves. */
+      const heroMotion = gsap.matchMedia();
+      heroMotion.add(
+        {
+          desktop: "(min-width: 1200px)",
+          compact: "(max-width: 1199px)",
+        },
+        (media) => {
+          const { desktop } = media.conditions as { desktop: boolean };
+          gsap.to(".hero-frame", {
+            scale: desktop ? 0.965 : 1.02,
+            opacity: desktop ? 0.7 : 0.82,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero-stage",
+              start: "top top",
+              end: desktop ? "+=92%" : "bottom top",
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          });
+          gsap.to(".hero-inner", {
+            yPercent: desktop ? -10 : -5,
+            opacity: desktop ? 0.24 : 0.45,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero-stage",
+              start: "top top",
+              end: desktop ? "+=88%" : "bottom top",
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          });
+        },
+      );
 
       /* ============================================================
          SIGNATURE — the breathing lock-up (hero → pulse → tickets)
@@ -309,9 +349,11 @@ export default function Motion() {
                to cost four screens, and the three screens between them read as
                a hole in the page rather than a held moment. */
             end: () =>
-              `+=${Math.round(window.innerHeight * 0.7 * (beats.length - 1))}`,
+              `+=${Math.round(
+                window.innerHeight * (wide ? 0.64 : 0.48) * (beats.length - 1),
+              )}`,
             pin: true,
-            scrub: 0.7,
+            scrub: wide ? 0.75 : 0.45,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             /* Pins add several screens of spacer. Everything below them
@@ -342,28 +384,158 @@ export default function Motion() {
       }
 
       /* ============================================================
-         AFTERMOVIE — grows from a plate to the full width
+         AFTERMOVIE — a restrained settle, never a second pin
          ============================================================ */
 
       const zoom = document.querySelector<HTMLElement>("[data-reel-zoom]");
       if (zoom && wide) {
         gsap.fromTo(
           zoom.querySelector(".reel"),
-          { scale: 0.62 },
+          { scale: 0.965 },
           {
             scale: 1,
             ease: "none",
             scrollTrigger: {
               trigger: zoom,
-              start: "top top",
-              end: "+=70%",
-              pin: true,
-              scrub: 0.6,
-              anticipatePin: 1,
-              refreshPriority: 1,
+              start: "top 82%",
+              end: "top 34%",
+              scrub: 0.45,
+              invalidateOnRefresh: true,
             },
           },
         );
+      }
+
+      /* ============================================================
+         STATUS TEAM — three restrained editorial reveals
+         ============================================================ */
+
+      const statusScene = document.querySelector<HTMLElement>(".st-page-two");
+      if (statusScene) {
+        const impactMedia = statusScene.querySelector<HTMLElement>(
+          "[data-st2-impact-media]",
+        );
+        const impactCopy = statusScene.querySelector<HTMLElement>(
+          "[data-st2-impact-copy]",
+        );
+        const impactWatch = statusScene.querySelector<HTMLElement>(
+          "[data-st2-watch]",
+        );
+        const impactProof = statusScene.querySelector<HTMLElement>(
+          "[data-st2-proof]",
+        );
+
+        if (impactMedia && impactCopy) {
+          const impactVisual =
+            impactMedia.querySelector<HTMLElement>("video") ?? impactMedia;
+          const impactTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: statusScene.querySelector(".st2-impact"),
+              start: "top 76%",
+              once: true,
+            },
+          });
+
+          impactTimeline
+            .from(impactVisual, {
+              opacity: 0,
+              scale: 1.055,
+              duration: 1.15,
+              ease: EASE,
+            })
+            .from(
+              impactCopy.children,
+              {
+                opacity: 0,
+                y: 20,
+                duration: 0.78,
+                stagger: 0.08,
+                ease: EASE,
+              },
+              0.16,
+            );
+
+          if (impactWatch) {
+            impactTimeline.from(
+              impactWatch,
+              {
+                opacity: 0,
+                y: -12,
+                duration: 0.62,
+                ease: EASE,
+              },
+              0.32,
+            );
+          }
+
+          if (impactProof) {
+            impactTimeline.from(
+              impactProof,
+              {
+                opacity: 0,
+                y: 16,
+                duration: 0.74,
+                ease: EASE,
+              },
+              0.48,
+            );
+          }
+        }
+
+        const vanguardTitle = statusScene.querySelector<HTMLElement>(
+          "[data-st2-section-title]",
+        );
+        if (vanguardTitle) {
+          gsap.from(vanguardTitle, {
+            opacity: 0,
+            y: 26,
+            duration: 0.8,
+            ease: EASE,
+            scrollTrigger: {
+              trigger: vanguardTitle,
+              start: "top 84%",
+              once: true,
+            },
+          });
+        }
+
+        const guestCards = gsap.utils.toArray<HTMLElement>(
+          "[data-st2-guest]",
+          statusScene,
+        );
+        if (guestCards.length) {
+          ScrollTrigger.batch(guestCards, {
+            start: "top 86%",
+            once: true,
+            onEnter: (batch) =>
+              gsap.from(batch, {
+                opacity: 0,
+                y: 32,
+                duration: 0.78,
+                stagger: 0.06,
+                ease: EASE,
+              }),
+          });
+        }
+
+        const statCells = gsap.utils.toArray<HTMLElement>(
+          "[data-st2-stat]",
+          statusScene,
+        );
+        if (statCells.length) {
+          ScrollTrigger.batch(statCells, {
+            start: "top 88%",
+            once: true,
+            onEnter: (batch) =>
+              gsap.from(batch, {
+                opacity: 0,
+                y: 22,
+                duration: 0.7,
+                stagger: 0.06,
+                ease: EASE,
+              }),
+          });
+        }
       }
 
       /* ============================================================
