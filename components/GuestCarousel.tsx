@@ -38,14 +38,20 @@ const interpolateDepth = (distance: number) => {
   const z = abs <= 1 ? abs * -200 : -200 - (abs - 1) * 180;
   const scale = abs <= 1 ? 1.1 - abs * 0.2 : 0.9 - (abs - 1) * 0.15;
   const opacity = abs <= 1 ? 1 - abs * 0.55 : 0.45 - (abs - 1) * 0.25;
-  const grayscale = abs <= 1 ? abs * 40 : 40 + (abs - 1) * 40;
+  const grayscale = abs <= 1 ? abs * 30 : 30 + (abs - 1) * 40;
   const brightness = abs <= 1 ? 1 - abs * 0.2 : 0.8 - (abs - 1) * 0.12;
+  const zIndex =
+    abs <= 1
+      ? 40 - abs * 20
+      : abs <= 2
+        ? 20 - (abs - 1) * 10
+        : 10 - (abs - 2) * 9;
 
   return {
     transform: `translate3d(calc(-50% + ${x}%), 0, ${z}px) rotateY(${rotate}deg) scale(${Math.max(scale, 0.58)})`,
     opacity: Math.max(opacity, 0),
     filter: `grayscale(${Math.min(grayscale, 100)}%) brightness(${Math.max(brightness, 0.5)})`,
-    zIndex: Math.max(30 - Math.round(abs * 10), 1),
+    zIndex: Math.max(Math.round(zIndex), 1),
     pointerEvents: abs > 2.15 ? "none" : "auto",
     visibility: abs > 2.6 ? "hidden" : "visible",
   } satisfies CSSProperties;
@@ -118,7 +124,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     const timer = window.setInterval(() => {
       setActiveIndex((current) => wrapIndex(current + 1, guests.length));
       setDragX(0);
-    }, 3500);
+    }, 3200);
 
     return () => window.clearInterval(timer);
   }, [dragging, focusPaused, guests.length, hovered, inView, pageVisible, reducedMotion, touching]);
@@ -265,7 +271,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
                   type="button"
                   aria-label={`${guest.label}. Показать в центре`}
                   aria-current={isActive ? "true" : undefined}
-                  tabIndex={Math.abs(distance) <= 1.15 ? 0 : -1}
+                  tabIndex={hidden ? -1 : 0}
                   onClick={() => {
                     if (!didDragRef.current) goTo(index);
                   }}

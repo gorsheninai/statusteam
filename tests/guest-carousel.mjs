@@ -51,7 +51,9 @@ for (const [name, width, height] of viewports) {
 
   const geometry = await page.evaluate(() => {
     const active = document.querySelector(".st2-guest.is-active");
-    const side = [...document.querySelectorAll(".st2-guest")].find((card) => card !== active);
+    const cards = [...document.querySelectorAll(".st2-guest")];
+    const side = cards.find((card) => getComputedStyle(card).opacity === "0.45");
+    const outer = cards.find((card) => getComputedStyle(card).opacity === "0.2");
     const viewport = document.querySelector(".st2-guest-viewport");
     const stage = document.querySelector(".st2-guest-stage");
     const stats = document.querySelector(".st2-scale");
@@ -63,7 +65,22 @@ for (const [name, width, height] of viewports) {
     const viewportBox = viewport?.getBoundingClientRect();
     return {
       activeOpacity: active ? getComputedStyle(active).opacity : "0",
+      activeZ: active ? getComputedStyle(active).zIndex : "0",
+      activeTransform: active?.style.transform || "",
+      activeRim: active ? getComputedStyle(active.querySelector(".st2-guest-card"), "::after").borderColor : "",
+      transitionDuration: active ? getComputedStyle(active).transitionDuration : "",
       sideOpacity: side ? Number(getComputedStyle(side).opacity) : 1,
+      sideFilter: side ? getComputedStyle(side).filter : "none",
+      sideTransform: side?.style.transform || "",
+      outerOpacity: outer ? Number(getComputedStyle(outer).opacity) : 1,
+      outerFilter: outer ? getComputedStyle(outer).filter : "none",
+      outerTransform: outer?.style.transform || "",
+      allVisibleCardsClickable: cards
+        .filter((card) => getComputedStyle(card).visibility === "visible")
+        .every((card) => {
+          const button = card.querySelector("button");
+          return getComputedStyle(card).pointerEvents === "auto" && Boolean(button);
+        }),
       center: box ? box.left + box.width / 2 : 0,
       viewportCenter: window.innerWidth / 2,
       perspective: viewport ? getComputedStyle(viewport).perspective : "none",
@@ -73,7 +90,29 @@ for (const [name, width, height] of viewports) {
   });
 
   expect(geometry.activeOpacity === "1", `[${name}] active card is fully opaque`);
+  expect(geometry.activeZ === "40", `[${name}] active card owns the front plane`);
+  expect(
+    geometry.activeTransform.includes("0px) rotateY(0deg) scale(1.1)"),
+    `[${name}] active card uses the exact front transform`,
+    geometry.activeTransform,
+  );
+  expect(
+    geometry.activeRim === "rgba(212, 175, 55, 0.4)",
+    `[${name}] active card has the 40% gold rim`,
+    geometry.activeRim,
+  );
+  expect(
+    geometry.transitionDuration.split(",")[0].trim() === "0.75s",
+    `[${name}] 3D movement settles over 750ms`,
+    geometry.transitionDuration,
+  );
   expect(geometry.sideOpacity < 0.7, `[${name}] side cards are visually recessed`);
+  expect(geometry.sideFilter.includes("grayscale(0.3)"), `[${name}] side cards use 30% grayscale`, geometry.sideFilter);
+  expect(geometry.sideTransform.includes("-200px)"), `[${name}] side cards sit at -200px depth`, geometry.sideTransform);
+  expect(geometry.outerOpacity === 0.2, `[${name}] outer cards recede to 20% opacity`);
+  expect(geometry.outerFilter.includes("grayscale(0.7)"), `[${name}] outer cards use 70% grayscale`, geometry.outerFilter);
+  expect(geometry.outerTransform.includes("-380px)"), `[${name}] outer cards sit at -380px depth`, geometry.outerTransform);
+  expect(geometry.allVisibleCardsClickable, `[${name}] every visible card is interactive`);
   expect(Math.abs(geometry.center - geometry.viewportCenter) < 3, `[${name}] active card is centered`);
   expect(geometry.perspective !== "none", `[${name}] 3D perspective is active`);
   expect(
@@ -88,7 +127,7 @@ for (const [name, width, height] of viewports) {
   );
 
   const beforeAutoplay = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
-  await page.waitForTimeout(3750);
+  await page.waitForTimeout(3450);
   expect(
     (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== beforeAutoplay,
     `[${name}] autoplay advances carousel`,
@@ -97,10 +136,18 @@ for (const [name, width, height] of viewports) {
   await page.locator(".st2-guest-stage").hover();
   await page.waitForTimeout(750);
   const pausedIndex = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
-  await page.waitForTimeout(3750);
+  await page.waitForTimeout(3450);
   expect(
     (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === pausedIndex,
     `[${name}] autoplay pauses on hover`,
+  );
+
+  await page.locator(".st2-guest").nth(7).locator("button").dispatchEvent("click");
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(3450);
+  expect(
+    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "0",
+    `[${name}] infinite loop crosses Guest 08 → Guest 01 without resetting the track`,
   );
 
   await page.locator(".st2-guest-stage").focus();
@@ -108,7 +155,7 @@ for (const [name, width, height] of viewports) {
     await page.locator(".st2-guest-stage").getAttribute("data-active-index"),
   );
   await page.keyboard.press("ArrowRight");
-  await page.waitForTimeout(650);
+  await page.waitForTimeout(800);
   expect(
     Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) ===
       (beforeKeyboard + 1) % 8,
@@ -118,7 +165,7 @@ for (const [name, width, height] of viewports) {
   const beforeClick = Number(
     await page.locator(".st2-guest-stage").getAttribute("data-active-index"),
   );
-  const sideIndex = (beforeClick + 1) % 8;
+  const sideIndex = (beforeClick + 2) % 8;
   const sideCard = page.locator(".st2-guest").nth(sideIndex);
   const sideCardBehavior = await sideCard.evaluate((card) => ({
     pointerEvents: getComputedStyle(card).pointerEvents,
@@ -134,7 +181,7 @@ for (const [name, width, height] of viewports) {
     JSON.stringify(sideCardBehavior),
   );
   await sideCard.locator("button").dispatchEvent("click");
-  await page.waitForTimeout(750);
+  await page.waitForTimeout(800);
   expect(
     Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === sideIndex,
     `[${name}] clicking a visible side card centers it`,
@@ -148,7 +195,7 @@ for (const [name, width, height] of viewports) {
     await page.mouse.down();
     await page.mouse.move(startX - Math.min(280, viewportBox.width * 0.5), y, { steps: 12 });
     await page.mouse.up();
-    await page.waitForTimeout(750);
+    await page.waitForTimeout(800);
     expect(
       Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== sideIndex,
       `[${name}] drag gesture rotates carousel`,
