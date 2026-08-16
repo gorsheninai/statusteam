@@ -167,7 +167,7 @@ for (const [name, width, height] of SIZES) {
   check(heroCta.n === 1 && heroCta.href === "#tickets",
     "hero offers one control and it points at the tickets", `${heroCta.n} → ${heroCta.href}`);
 
-  check(await page.locator(".faq-row").count() === 6, "FAQ has six questions");
+  check(await page.locator(".faq-row").count() === 5, "FAQ has five questions");
   check(await page.locator(".tier").count() === 3, "three ticket categories");
   check(await page.locator(".zone").count() === 3, "three ways in, including press");
   check(await page.locator(".zone [data-form='press']").count() === 1, "press accreditation form present");

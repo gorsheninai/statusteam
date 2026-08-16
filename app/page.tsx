@@ -335,7 +335,7 @@ export default function Home() {
             ============================================================ */}
         <section className="faq-scene on-dark" id="faq" data-bg="ink">
           <div className="shell">
-            <h2 className="faq-h campaign" data-reveal="lines">
+            <h2 className="faq-h campaign" data-reveal="up">
               Что нужно знать
             </h2>
 

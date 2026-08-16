@@ -12,7 +12,7 @@
     "start": "npx serve out -l 4311",
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
-    "verify": "node tests/verify.mjs && node tests/guest-carousel.mjs && node tests/stats-podium.mjs && node tests/pulse-title.mjs",
+    "verify": "node tests/verify.mjs && node tests/guest-carousel.mjs && node tests/stats-podium.mjs && node tests/pulse-title.mjs && node tests/faq-editorial.mjs",
     "preview": "npx serve out -l 4311",
     "deploy": "npm run build && npx wrangler@4 deploy",
     "deploy:preview": "npm run build && npx wrangler@4 versions upload"

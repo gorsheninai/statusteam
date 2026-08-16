@@ -11,6 +11,7 @@ import "./status-team-final.css";
 import "./card-stack.css";
 import "./premium-polish.css";
 import "./status-team-page-two.css";
+import "./faq-editorial.css";
 
 /* Both faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences

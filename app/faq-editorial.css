@@ -1,0 +1,118 @@
+/* FAQ — compact editorial coda. Kept isolated so legacy chapter sizing
+   cannot turn this quiet section into another full-screen scene. */
+
+.faq-scene {
+  padding-block: 4rem;
+  color: #fff;
+  background: #0a0a0a;
+}
+
+.faq-scene > .shell {
+  max-inline-size: 80rem;
+  padding-inline: clamp(1rem, 2.2vw, 1.5rem);
+}
+
+.faq-scene .faq-h {
+  max-inline-size: 100%;
+  margin: 0 auto clamp(2rem, 2.55vw, 3rem);
+  padding: 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.45rem + 1.3vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.faq-scene .faq {
+  max-inline-size: 56rem;
+  margin-inline: auto;
+  border-block-start: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.faq-scene .faq-row {
+  border-block-end: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.faq-scene .faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 3vw, 2rem);
+  min-block-size: 4rem;
+  padding-block: 1.25rem;
+  color: #e5e5e5;
+  font-family: var(--font-ui);
+  font-size: clamp(1rem, 0.94rem + 0.28vw, 1.125rem);
+  font-weight: 300;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-scene .faq-q > span:first-child {
+  min-inline-size: 0;
+  overflow-wrap: break-word;
+}
+
+.faq-scene .faq-q:focus-visible {
+  color: #c5a880;
+  outline: 1px solid rgba(197, 168, 128, 0.72);
+  outline-offset: 0.35rem;
+}
+
+.faq-scene .faq-sign {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  color: currentColor;
+  transform: rotate(0deg);
+  transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-scene .faq-row:hover .faq-sign {
+  transform: rotate(0deg);
+}
+
+.faq-scene .faq-row.is-open .faq-sign,
+.faq-scene .faq-row.is-open:hover .faq-sign {
+  transform: rotate(45deg);
+}
+
+.faq-scene .faq .panel {
+  transition: grid-template-rows 460ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-scene .faq .panel-inner p {
+  max-inline-size: 62ch;
+  margin: 0;
+  padding: 0.5rem clamp(2.5rem, 7vw, 5rem) 1.5rem 0;
+  color: #a3a3a3;
+  font-family: var(--font-ui);
+  font-size: clamp(0.875rem, 0.82rem + 0.22vw, 1rem);
+  font-weight: 300;
+  line-height: 1.7;
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .faq-scene .faq-q:hover {
+    color: #c5a880;
+  }
+}
+
+@media (min-width: 768px) {
+  .faq-scene {
+    padding-block: 5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-scene .faq-q,
+  .faq-scene .faq-sign,
+  .faq-scene .faq .panel {
+    transition-duration: 0.01ms !important;
+  }
+}
