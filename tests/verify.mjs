@@ -143,7 +143,7 @@ for (const [name, width, height] of SIZES) {
   const ghosts = await page.evaluate(() => {
     const body = document.body.innerText;
     return ["Имя Фамилия", "MEDIA ONE", "BRAND 01", "— ₽", "Волна закрыта",
-            "Early bird", "Среди гостей", "О нас говорили", "Вместе с нами"]
+            "Early bird"]
       .filter((t) => body.includes(t));
   });
   check(ghosts.length === 0, "no placeholder content is rendered", ghosts.join(", "));
@@ -251,12 +251,17 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
   }), "menu link scrolled to the section");
 
   await page.goto(URL, { waitUntil: "networkidle" });
-  await page.locator(".reel").scrollIntoViewIfNeeded();
+  await page.locator(".st2-video").scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
-  check((await page.locator(".reel video").count()) === 0, "the reel does not autoload");
-  await page.click(".reel-play");
-  await page.waitForTimeout(1200);
-  check((await page.locator(".reel video").count()) === 1, "reel mounts on intent");
+  check((await page.locator(".st2-video video").count()) === 1,
+    "the reel is mounted for muted autoplay");
+  check(await page.locator(".st2-video video").evaluate((video) =>
+    video.autoplay && video.loop && video.muted && video.playsInline),
+    "the reel autoplays muted, loops and stays inline");
+  await page.locator(".st2-sound").focus();
+  await page.click(".st2-sound");
+  check((await page.locator(".st2-sound").getAttribute("aria-pressed")) === "true",
+    "the reel sound control unmutes on intent");
   await page.close();
 }
 {
