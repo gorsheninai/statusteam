@@ -85,7 +85,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     startX: 0,
     startY: 0,
     startPosition: 0,
-    startedOnCard: false,
+    cardIndex: null as number | null,
     axis: "" as "" | "x" | "y",
   });
   const didDragRef = useRef(false);
@@ -289,6 +289,12 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   }, [setRotating]);
 
   const beginDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const targetCard =
+      event.target instanceof Element
+        ? event.target.closest<HTMLElement>("[data-st2-guest-index]")
+        : null;
+    const targetIndex = targetCard?.dataset.st2GuestIndex;
+
     wasRotatingOnPointerDownRef.current = rotatingRef.current;
     stopFrame();
     focusTweenRef.current?.kill();
@@ -299,9 +305,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       startX: event.clientX,
       startY: event.clientY,
       startPosition: positionRef.current,
-      startedOnCard:
-        event.target instanceof Element &&
-        Boolean(event.target.closest(".st2-guest-card")),
+      cardIndex: targetIndex === undefined ? null : Number(targetIndex),
       axis: "",
     };
     didDragRef.current = false;
@@ -338,10 +342,17 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
 
     if (pointer.axis === "x" && didDragRef.current) {
       focusPosition(Math.round(positionRef.current));
-    } else if (
-      wasRotatingOnPointerDownRef.current &&
-      (pointer.axis === "y" || !pointer.startedOnCard)
-    ) {
+    } else if (pointer.axis !== "y" && pointer.cardIndex !== null) {
+      didDragRef.current = true;
+      if (
+        !wasRotatingOnPointerDownRef.current &&
+        pointer.cardIndex === activeIndexRef.current
+      ) {
+        resume();
+      } else {
+        focusIndex(pointer.cardIndex);
+      }
+    } else if (wasRotatingOnPointerDownRef.current) {
       resume();
     }
 
@@ -407,6 +418,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
                   cardRefs.current[index] = card;
                 }}
                 role="listitem"
+                data-st2-guest-index={index}
                 style={currentDepth}
                 aria-hidden={currentDepth.visibility === "hidden"}
                 data-st2-guest
