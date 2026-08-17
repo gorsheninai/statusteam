@@ -212,7 +212,7 @@
   inline-size: fit-content;
   max-inline-size: 100%;
   margin-block-start: -0.75rem;
-  color: #e11d48;
+  color: #d4143d;
   font-family: var(--ff-playfair-italic), Georgia, serif;
   font-size: 1.1em;
   font-weight: 400;
@@ -223,7 +223,7 @@
      layers the red glow the brief asks for on top of it. filter, not
      text-shadow, because the italic swashes overlap the white line above
      and a drop-shadow follows the glyph outline instead of the box. */
-  filter: drop-shadow(0 4px 20px rgba(225, 29, 72, 0.45));
+  filter: drop-shadow(0 2px 8px rgba(212, 20, 61, 0.25));
   transform: rotate(-3deg);
   transform-origin: 0 70%;
 }
@@ -234,13 +234,13 @@
   inset-block-end: max(0.6rem, env(safe-area-inset-bottom));
   z-index: 2;
   display: grid;
-  gap: 0.4rem;
+  gap: 0.5rem;
   padding-block-start: 1.35rem;
   background: linear-gradient(180deg, transparent, rgba(7, 6, 6, 0.52) 34%, rgba(7, 6, 6, 0.88));
 }
 
 .st-page-two .st2-proof-group h3 {
-  margin-block-end: 0.1rem;
+  margin-block-end: 0.4rem;
   padding-inline: max(var(--st2-gutter), env(safe-area-inset-left));
   color: rgba(255, 255, 255, 0.58);
 }
@@ -276,7 +276,7 @@
   min-inline-size: clamp(7.75rem, 27vw, 12rem);
   min-block-size: 1.75rem;
   padding-inline: clamp(0.8rem, 3vw, 1.5rem);
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.48);
   font-family: var(--font-ui);
   font-size: clamp(0.5625rem, 0.48rem + 0.25vw, 0.6875rem);
   font-weight: 500;
@@ -295,7 +295,7 @@
   margin-inline-start: clamp(1rem, 3vw, 1.75rem);
   border-radius: 50%;
   background: var(--st2-champagne);
-  opacity: 0.54;
+  opacity: 0.4;
 }
 
 @keyframes st2-marquee {
