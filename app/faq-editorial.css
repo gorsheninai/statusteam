@@ -1,46 +1,47 @@
-/* FAQ — an editorial split: a quiet, sticky introduction beside the details. */
+/* FAQ — a compact, centered editorial pause before the footer. */
 
 .faq-scene,
 .faq-scene[data-bg] {
-  padding-block: 5rem;
+  padding-block: 3rem;
   color: #fff;
   background: #0a0a0a;
 }
 
 .faq-scene > .faq-shell {
-  max-inline-size: 80rem;
+  max-inline-size: 48rem;
   padding-inline: 1.5rem;
 }
 
 .faq-scene .faq-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  inline-size: 100%;
 }
 
 .faq-scene .faq-intro {
   min-inline-size: 0;
+  text-align: center;
 }
 
 .faq-scene .faq-h {
-  max-inline-size: 12ch;
+  max-inline-size: none;
   margin: 0;
   padding: 0;
   color: #fff;
   font-family: var(--font-display);
-  font-size: clamp(1.875rem, 1.45rem + 1.8vw, 3rem);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 400;
   line-height: 1.08;
   letter-spacing: 0.08em;
-  text-align: start;
+  text-align: center;
   text-transform: uppercase;
-  text-wrap: balance;
+  white-space: nowrap;
 }
 
 .faq-scene .faq-copy {
-  max-inline-size: 31rem;
-  margin: 1rem 0 0;
+  max-inline-size: 36rem;
+  margin: 0.75rem auto 0;
   color: #a3a3a3;
   font-family: var(--font-ui);
   font-size: clamp(0.875rem, 0.82rem + 0.22vw, 1rem);
@@ -52,20 +53,20 @@
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
-  min-block-size: 2.75rem;
-  margin-block-start: 1.25rem;
+  min-block-size: 2.5rem;
+  margin-block-start: 0.75rem;
+  padding-inline: 0.9rem;
+  border: 1px solid rgba(197, 168, 128, 0.24);
+  border-radius: 999px;
   color: #c5a880;
   font-family: var(--font-ui);
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1;
-  text-decoration: underline;
-  text-decoration-color: rgba(197, 168, 128, 0.42);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.35rem;
+  text-decoration: none;
   transition:
     color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-    text-decoration-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .faq-scene .faq-contact-arrow {
@@ -90,8 +91,8 @@
   align-items: center;
   justify-content: space-between;
   gap: clamp(1rem, 3vw, 2rem);
-  min-block-size: 4.5rem;
-  padding-block: 1.5rem;
+  min-block-size: 4rem;
+  padding-block: 1.25rem;
   color: #e5e5e5;
   font-family: var(--font-ui);
   font-size: clamp(1rem, 0.94rem + 0.28vw, 1.125rem);
@@ -152,7 +153,7 @@
 .faq-scene .faq .panel-inner p {
   max-inline-size: 62ch;
   margin: 0;
-  padding: 0.5rem clamp(2.5rem, 7vw, 5rem) 1.5rem 0;
+  padding: 0.5rem clamp(2.5rem, 7vw, 5rem) 1.25rem 0;
   color: #a3a3a3;
   font-family: var(--font-ui);
   font-size: clamp(0.875rem, 0.82rem + 0.22vw, 1rem);
@@ -168,7 +169,7 @@
 
   .faq-scene .faq-contact:hover {
     color: #fff;
-    text-decoration-color: rgba(255, 255, 255, 0.72);
+    border-color: rgba(255, 255, 255, 0.42);
   }
 
   .faq-scene .faq-contact:hover .faq-contact-arrow {
@@ -179,24 +180,7 @@
 @media (min-width: 768px) {
   .faq-scene,
   .faq-scene[data-bg] {
-    padding-block: 7rem;
-  }
-
-  .faq-scene .faq-layout {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 3rem;
-  }
-
-  .faq-scene .faq-intro {
-    position: sticky;
-    inset-block-start: 7rem;
-    align-self: start;
-  }
-}
-
-@media (min-width: 1100px) {
-  .faq-scene .faq-layout {
-    gap: 5rem;
+    padding-block: 4rem;
   }
 }
 
