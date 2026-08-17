@@ -1469,16 +1469,28 @@ ol {
 .pulse-title {
   position: relative;
   z-index: 1;
+  display: flex;
+  justify-content: center;
   inline-size: 100%;
   max-inline-size: 100%;
+  /* Without this, the nowrap child's min-content width forces this flex
+     box (and its grid parent) wider than 100%, breaking centering and
+     silently pushing the title off-axis at exactly the widths where the
+     scaleX fallback below is supposed to be catching the overflow. */
+  min-inline-size: 0;
   margin: 0;
   color: #fff;
-  font-family: "Bodoni 72", "Bodoni MT", Didot, Georgia, serif;
-  font-size: clamp(2rem, 5.5vw, 5.2rem);
+  /* Was a system Bodoni/Didot stack — a serif nobody outside macOS even
+     has installed, and never the hero's face. This lock-up recurs on
+     screen with the hero's, so it uses the same self-hosted display
+     face rather than a second, uncontrolled one. */
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 4.5rem);
   font-weight: 400;
   line-height: 1.05;
-  letter-spacing: clamp(0.05em, 0.6vw, 0.1em);
+  letter-spacing: clamp(0.05em, 1vw, 0.18em);
   text-transform: uppercase;
+  text-align: center;
   white-space: nowrap;
   -webkit-mask-image: linear-gradient(
     105deg,
@@ -1506,7 +1518,7 @@ ol {
   display: block;
   inline-size: max-content;
   white-space: nowrap;
-  transform-origin: left center;
+  transform-origin: center center;
   will-change: filter;
 }
 
