@@ -712,10 +712,21 @@ ol {
   background-color: transparent;
 }
 
-/* Chapter divider — the preloader's line, left on the page. */
+/* Chapter divider — the preloader's line, left on the page. Transparent
+   by default, so it normally just shows the shared .bg-field ground
+   through it. .exp-scene is the one exception: it paints its own
+   hardcoded paper background instead of taking part in that shared
+   ground, so a transparent rule directly above it exposed whatever dark
+   colour the ground still was at that scroll position — a black bar
+   stranding the rule between two sections it didn't visually belong to
+   either. Paint it ink explicitly there so it reads as the dark
+   chapter's closing line instead. */
 .pulse-rule {
   position: relative;
   padding-block: clamp(0.9rem, 2.2vw, 1.5rem);
+}
+.pulse-scene + .pulse-rule {
+  background: var(--ink);
 }
 .pulse-rule svg {
   display: block;
@@ -1438,7 +1449,7 @@ ol {
   isolation: isolate;
   display: grid;
   align-items: center;
-  padding: 2.5rem 1rem;
+  padding: 4rem 1.5rem;
   overflow: hidden;
   background: #0a0a0a;
 }
@@ -1530,7 +1541,7 @@ ol {
 
 @media (min-width: 768px) {
   .pulse-intro {
-    padding: 4rem 1.5rem;
+    padding: 5rem 1.5rem;
   }
 }
 
