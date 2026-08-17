@@ -1443,6 +1443,22 @@ ol {
   color: var(--paper);
   padding-block: 0 var(--chapter-pad);
 }
+/* This section is data-bg="ink" and goes transparent under .js-motion
+   (via ".js-motion [data-bg]", specificity 0-2-0) so the shared ground
+   field can crossfade under it — but the field's boundary table is
+   keyed off measured section tops, and .tenets pins for several
+   viewport-heights of scroll. The paper (#experience) boundary was
+   measuring as "passed" while still visually inside this section's own
+   tail — tenets' last frame and this section's own bottom padding — so
+   the field's cream leaked through a good ~120px before the actual
+   light section began. Painting this section's own ink explicitly
+   (like .pulse-rule already does) closes that gap without touching the
+   field logic itself. Needs the [data-bg] in the selector to actually
+   win — a plain ".pulse-scene" rule loses the specificity tie against
+   the transparency rule above regardless of source order. */
+.js-motion .pulse-scene[data-bg] {
+  background-color: var(--ink);
+}
 .pulse-intro {
   --sand-mask: 100%;
   position: relative;
