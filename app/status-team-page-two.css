@@ -191,15 +191,14 @@
   /* Matches the hero/pulse lock-up face (Tenor Sans) instead of the
      serif — this instance is meant to read as the same brand mark. */
   font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(2.2rem, 1.5rem + 3.2vw, 4.2rem);
+  font-size: clamp(1rem, 4.3vw, 2rem);
   font-weight: 400;
   line-height: 1;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   text-shadow:
     0 0.08em 0.22em rgba(0, 0, 0, 0.84),
     0 0.28em 1.1em rgba(0, 0, 0, 0.7);
-  text-wrap: pretty;
 }
 
 .st-page-two .st2-impact-primary {
@@ -208,26 +207,31 @@
 
 .st-page-two .st2-impact-primary > span {
   display: block;
+  white-space: nowrap;
 }
 
 .st-page-two .st2-impact-accent {
   display: inline-block;
   inline-size: fit-content;
   max-inline-size: 100%;
-  margin-block-start: -0.75rem;
+  margin-block-start: 0.25rem;
   color: #d4143d;
   font-family: var(--ff-playfair-italic), Georgia, serif;
-  font-size: 1.1em;
+  font-size: 0.85em;
   font-weight: 400;
   font-style: italic;
   line-height: 0.88;
   letter-spacing: normal;
+  /* h2 sets uppercase for line 1; this line is meant to stay lowercase
+     and text-transform inherits, so it needs its own explicit reset. */
+  text-transform: none;
+  white-space: nowrap;
   /* The dark contact shadow is inherited from the h2 (see above) — this
      layers the red glow the brief asks for on top of it. filter, not
      text-shadow, because the italic swashes overlap the white line above
      and a drop-shadow follows the glyph outline instead of the box. */
   filter: drop-shadow(0 2px 8px rgba(212, 20, 61, 0.25));
-  transform: rotate(-2deg);
+  transform: rotate(-1deg);
   transform-origin: 0 70%;
 }
 
@@ -663,25 +667,19 @@
     max-inline-size: min(72vw, 58rem);
   }
 
-  /* Tenor Sans at 0.15em tracking is much wider than the serif this
-     replaced. The requested clamp(2.2rem,4.5vw,4.2rem) — sized for the
-     old face — overshoots this column badly at 1280px+ (measured via
-     Range against the accordion/container edge: up to ~420px of actual
-     overflow at 1920px that a plain scrollWidth check would miss, since
-     nowrap block overflow with overflow:visible doesn't grow
-     scrollWidth). This tracks the column's own growth so the line
-     always fits without wrapping. */
+  /* Both lines are nowrap at every width now. Tenor Sans at 0.12em
+     tracking is wide, so sizing here is calibrated against the
+     column's actual measured width (Range.getBoundingClientRect()
+     against the container edge, not scrollWidth — a nowrap block's
+     visible overflow under overflow:visible doesn't grow scrollWidth)
+     rather than the requested vw-only clamp, which overshoots this
+     column well before 1920px. */
   .st-page-two .st2-impact-copy h2 {
     font-size: clamp(2rem, 3.55vw, 2.8rem);
   }
 
-  .st-page-two .st2-impact-primary > span,
   .st-page-two .st2-impact-accent {
-    white-space: nowrap;
-  }
-
-  .st-page-two .st2-impact-accent {
-    margin-block-start: -1.5rem;
+    margin-block-start: 0.5rem;
   }
 
   .st-page-two .st2-watch {
