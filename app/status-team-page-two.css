@@ -509,17 +509,17 @@
 .st-page-two .st2-scale {
   position: relative;
   margin-block-start: 1rem;
-  padding-block: 0 3rem;
+  padding-block: 0 2rem;
   background: transparent;
 }
 
 .st-page-two .st2-scale-shell {
-  max-inline-size: 78rem;
+  max-inline-size: 64rem;
   /* Matches .st2-vanguard's 2rem bottom pad + this 1rem margin above, so
      the divider line sits centered between the carousel and the numbers
      rather than hugging one side. */
-  padding-block-start: 3rem;
-  border-block-start: 1px solid rgba(255, 255, 255, 0.1);
+  padding-block: 2rem;
+  border-block: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .st-page-two .st2-stats {
@@ -532,7 +532,7 @@
 .st-page-two .st2-stats li {
   position: relative;
   min-inline-size: 0;
-  padding: clamp(1rem, 2.4vw, 1.75rem) clamp(0.5rem, 2vw, 1.25rem);
+  padding: 0.75rem clamp(0.5rem, 2vw, 1.25rem);
   text-align: center;
 }
 
@@ -553,10 +553,13 @@
   display: block;
   color: var(--st2-champagne);
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 3.32rem + 0.82vw, 4rem);
+  /* Quiet-luxury pass: was clamp(3.5rem,...,4rem) — a SaaS-metric size.
+     Tenor Sans only ships weight 400 (font-synthesis: none blocks a
+     faked 300), so restraint here comes from size, not weight. */
+  font-size: clamp(1.5rem, 1.35rem + 0.6vw, 2.25rem);
   font-weight: 400;
   line-height: 0.92;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
   white-space: nowrap;
 }
 
@@ -587,13 +590,13 @@
 .st-page-two .st2-stat-label {
   display: block;
   max-inline-size: 11.25rem;
-  margin: 0.75rem auto 0;
-  color: rgba(255, 255, 255, 0.48);
+  margin: 0.25rem auto 0;
+  color: rgba(255, 255, 255, 0.45);
   font-family: var(--font-ui);
   font-size: clamp(0.625rem, 0.58rem + 0.12vw, 0.6875rem);
-  font-weight: 500;
-  line-height: 1.55;
-  letter-spacing: 0.2em;
+  font-weight: 300;
+  line-height: 1.45;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 

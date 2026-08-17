@@ -77,22 +77,22 @@ const STATS = [
   {
     value: 60,
     suffix: "K+",
-    label: "человек в сообществе STATUS TEAM",
+    label: "Комьюнити бренда",
   },
   {
     value: 10,
     suffix: "M+",
-    label: "просмотров контента каждый месяц",
+    label: "Ежемесячный охват",
   },
   {
     value: 2,
     suffix: "-й",
-    label: "fashion-показ STATUS TEAM — после «Славянского взгляда»",
+    label: "Масштабное шоу",
   },
   {
     value: 600,
     suffix: "+",
-    label: "гостей на прошлом показе",
+    label: "Избранных гостей",
   },
 ];
 
