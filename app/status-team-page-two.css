@@ -166,14 +166,15 @@
 
 .st-page-two .st2-impact-copy {
   position: absolute;
+  inset-block-start: 46%;
   inset-inline-start: max(var(--st2-gutter), env(safe-area-inset-left));
   inset-inline-end: var(--st2-gutter);
-  inset-block-end: clamp(10.75rem, 25svh, 14.5rem);
   z-index: 2;
-  max-inline-size: 64rem;
+  max-inline-size: min(58rem, calc(100% - var(--st2-gutter) * 2));
+  min-inline-size: 0;
+  transform: translateY(-50%);
 }
 
-.st-page-two .st2-kicker,
 .st-page-two .st2-proof-group h3 {
   color: var(--st2-muted);
   font-family: var(--font-ui);
@@ -184,30 +185,45 @@
   text-transform: uppercase;
 }
 
-.st-page-two .st2-kicker {
-  margin-block-end: clamp(0.85rem, 1.8vw, 1.35rem);
-  color: var(--st2-champagne);
-}
-
 .st-page-two .st2-impact-copy h2 {
-  max-inline-size: 16ch;
+  max-inline-size: 100%;
+  margin: 0;
   color: var(--st2-white);
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 7.9vw, 4rem);
+  font-family: var(--ff-playfair), Georgia, serif;
+  font-size: clamp(2.2rem, 1.52rem + 3.4vw, 4.2rem);
   font-weight: 400;
-  line-height: 1.01;
-  letter-spacing: -0.04em;
-  text-shadow: 0 0.12em 0.75em rgba(0, 0, 0, 0.38);
-  text-wrap: balance;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-shadow:
+    0 0.08em 0.22em rgba(0, 0, 0, 0.84),
+    0 0.28em 1.1em rgba(0, 0, 0, 0.7);
+  text-wrap: pretty;
 }
 
-.st-page-two .st2-lead {
-  max-inline-size: 37rem;
-  margin-block-start: clamp(1rem, 2vw, 1.5rem);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: clamp(0.875rem, 0.65rem + 0.42vw, 1.0625rem);
-  line-height: 1.52;
-  text-shadow: 0 0.1em 0.8em rgba(0, 0, 0, 0.48);
+.st-page-two .st2-impact-primary {
+  display: block;
+}
+
+.st-page-two .st2-impact-accent {
+  display: inline-block;
+  margin-block: 0.1em 0.02em;
+  color: #e50914;
+  font-family: var(--ff-caveat), "Segoe Print", cursive;
+  font-size: 1.15em;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 0.82;
+  letter-spacing: -0.025em;
+  text-shadow:
+    0 0.08em 0.16em rgba(0, 0, 0, 0.92),
+    0 0 0.55em rgba(229, 9, 20, 0.22);
+  transform: rotate(-4deg);
+  transform-origin: 50% 70%;
+}
+
+.st-page-two .st2-impact-trailing {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .st-page-two .st2-proof-groups {
@@ -659,18 +675,13 @@
   }
 
   .st-page-two .st2-impact-copy {
+    inset-block-start: 47%;
     inset-inline-end: auto;
-    inset-block-end: clamp(11.75rem, 23svh, 14.75rem);
-    max-inline-size: min(67vw, 66rem);
+    max-inline-size: min(72vw, 58rem);
   }
 
   .st-page-two .st2-impact-copy h2 {
-    max-inline-size: 14.5ch;
-    font-size: clamp(4rem, 5.5vw, 6rem);
-  }
-
-  .st-page-two .st2-lead {
-    max-inline-size: 42rem;
+    font-size: clamp(3.6rem, 4.5vw, 4.2rem);
   }
 
   .st-page-two .st2-watch {
@@ -692,7 +703,6 @@
 }
 
 @media (max-width: 479px) {
-  .st-page-two .st2-kicker,
   .st-page-two .st2-proof-group h3 {
     letter-spacing: 0.17em;
   }

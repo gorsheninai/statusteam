@@ -13,7 +13,7 @@ import "./premium-polish.css";
 import "./status-team-page-two.css";
 import "./faq-editorial.css";
 
-/* Both faces are self-hosted: the production site must not depend on a font
+/* All faces are self-hosted: the production site must not depend on a font
    CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
    alongside), subset to Latin + Cyrillic + the punctuation this page uses. */
 
@@ -39,6 +39,26 @@ const onest = localFont({
   display: "swap",
   adjustFontFallback: "Arial",
   fallback: ["system-ui", "sans-serif"],
+});
+
+/* EDITORIAL — reserved for the aftermovie statement. */
+const playfair = localFont({
+  src: "./fonts/PlayfairDisplay-Cyrillic-Variable.ttf",
+  variable: "--ff-playfair",
+  weight: "400 900",
+  style: "normal",
+  display: "swap",
+  fallback: ["Georgia", "serif"],
+});
+
+/* SIGNATURE — Cyrillic handwriting used only for the red interruption. */
+const caveat = localFont({
+  src: "./fonts/Caveat-Cyrillic-Variable.ttf",
+  variable: "--ff-caveat",
+  weight: "400 700",
+  style: "normal",
+  display: "swap",
+  fallback: ["Segoe Print", "cursive"],
 });
 
 export const metadata: Metadata = {
@@ -76,7 +96,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${tenor.variable} ${onest.variable}`}>
+    <html
+      lang="ru"
+      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${caveat.variable}`}
+    >
       <body>
         <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />
 

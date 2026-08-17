@@ -213,14 +213,13 @@ export default function StatusTeamScene() {
         <ImpactVideo />
 
         <div className="st2-impact-copy" data-st2-impact-copy>
-          <p className="st2-kicker">Status Team</p>
           <h2 id="st2-impact-title">
-            Создаём fashion-события, которые выходят за рамки обычного показа.
+            <span className="st2-impact-primary">
+              Создаём fashion-события, которые выходят
+            </span>{" "}
+            <span className="st2-impact-accent">за рамки обычного</span>{" "}
+            <span className="st2-impact-trailing">показа.</span>
           </h2>
-          <p className="st2-lead">
-            Объединяем дизайнеров, моделей, медиа и зрителей в одном пространстве,
-            где показ становится культурным событием.
-          </p>
         </div>
 
         <div className="st2-proof-groups" data-st2-proof>
