@@ -86,7 +86,7 @@ const STATS = [
   },
   {
     value: 2,
-    suffix: "",
+    suffix: "-й",
     label: "fashion-показ STATUS TEAM — после «Славянского взгляда»",
   },
   {
