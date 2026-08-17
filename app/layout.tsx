@@ -51,14 +51,17 @@ const playfair = localFont({
   fallback: ["Georgia", "serif"],
 });
 
-/* SIGNATURE — Cyrillic handwriting used only for the red interruption. */
-const caveat = localFont({
-  src: "./fonts/Caveat-Cyrillic-Variable.ttf",
-  variable: "--ff-caveat",
-  weight: "400 700",
-  style: "normal",
+/* EDITORIAL, italic — the accent line under the aftermovie statement.
+   A static 400 instance (Fontsource's variable italic, merged with the
+   Latin subset and pinned to one weight), not the full 400–900 range the
+   upright face carries — the accent only ever needs the one weight. */
+const playfairItalic = localFont({
+  src: "./fonts/PlayfairDisplay-Italic-Cyrillic.ttf",
+  variable: "--ff-playfair-italic",
+  weight: "400",
+  style: "italic",
   display: "swap",
-  fallback: ["Segoe Print", "cursive"],
+  fallback: ["Georgia", "serif"],
 });
 
 export const metadata: Metadata = {
@@ -98,7 +101,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${caveat.variable}`}
+      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable}`}
     >
       <body>
         <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />

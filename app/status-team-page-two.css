@@ -208,21 +208,23 @@
 }
 
 .st-page-two .st2-impact-accent {
-  display: block;
+  display: inline-block;
   inline-size: fit-content;
   max-inline-size: 100%;
-  margin-block-start: 0.5rem;
+  margin-block-start: -0.75rem;
   color: #e11d48;
-  font-family: var(--ff-caveat), "Segoe Print", cursive;
-  font-size: 1.15em;
-  font-weight: 700;
-  font-style: normal;
+  font-family: var(--ff-playfair-italic), Georgia, serif;
+  font-size: 1.1em;
+  font-weight: 400;
+  font-style: italic;
   line-height: 0.88;
-  letter-spacing: -0.025em;
-  text-shadow:
-    0 0.08em 0.16em rgba(0, 0, 0, 0.92),
-    0 0.14em 0.85em rgba(225, 29, 72, 0.4);
-  transform: rotate(-2deg);
+  letter-spacing: normal;
+  /* The dark contact shadow is inherited from the h2 (see above) — this
+     layers the red glow the brief asks for on top of it. filter, not
+     text-shadow, because the italic swashes overlap the white line above
+     and a drop-shadow follows the glyph outline instead of the box. */
+  filter: drop-shadow(0 4px 20px rgba(225, 29, 72, 0.45));
+  transform: rotate(-3deg);
   transform-origin: 0 70%;
 }
 
@@ -681,6 +683,10 @@
 
   .st-page-two .st2-impact-copy h2 {
     font-size: clamp(3.6rem, 4.5vw, 4.5rem);
+  }
+
+  .st-page-two .st2-impact-accent {
+    margin-block-start: -2rem;
   }
 
   .st-page-two .st2-impact-primary > span,
