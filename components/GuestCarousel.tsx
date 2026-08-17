@@ -404,7 +404,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
         <div className="st2-guest-track" role="list">
           {guests.map((guest, index) => {
             const isActive = index === activeIndex;
-            const guestNumber = String(index + 1).padStart(2, "0");
             const currentDepth = interpolateDepth(
               shortestOffset(index, positionRef.current, guests.length),
             );
@@ -458,10 +457,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
                       loading="lazy"
                       draggable={false}
                     />
-                  </span>
-
-                  <span className="st2-guest-badge" aria-hidden="true">
-                    Guest {guestNumber}
                   </span>
 
                   <span className="st2-guest-shade" aria-hidden="true" />

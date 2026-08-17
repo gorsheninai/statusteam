@@ -230,7 +230,7 @@ export default function Home() {
         <section className="exp-scene" id="experience" data-bg="paper">
           <div className="shell">
             <h2 className="exp-h campaign" data-reveal="lines">
-              Что вас ждёт
+              В программе
             </h2>
           </div>
 
