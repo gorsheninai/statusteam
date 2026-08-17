@@ -1,16 +1,22 @@
-/* FAQ — a compact, centered editorial pause before the footer, at every
-   width. One column, mx-auto, equal margins either side — deliberately
-   not a two-column split; that was tried and reverted twice already. */
+/* FAQ — centered editorial pause before the footer. Stacked and centered
+   on phones/tablets; from 768px a two-column split (serif intro left,
+   accordion right), the whole grid centered as one block via mx-auto so
+   the left/right margins outside it stay equal at any width — that's
+   the part that was actually broken (see .faq-shell below), not a taste
+   call: the shell had a max-width but no auto margins, so on anything
+   wider than the max-width it sat flush left with the difference dumped
+   entirely on the right. */
 
 .faq-scene,
 .faq-scene[data-bg] {
-  padding-block: 4rem;
+  padding-block: 5rem;
   color: #fff;
   background: #0a0a0a;
 }
 
 .faq-scene > .faq-shell {
   max-inline-size: 48rem;
+  margin-inline: auto;
   padding-inline: 1.5rem;
 }
 
@@ -31,24 +37,20 @@
   margin: 0;
   padding: 0;
   color: #fff;
-  font-family: var(--font-display);
-  /* The 1.75rem floor plus 0.08em tracking clipped "ЧТО НУЖНО ЗНАТЬ"
-     against its own nowrap at 360px (pre-existing, found while touching
-     this rule) — 1.5rem is the largest floor that still fits at 360px. */
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  /* Serif, per this instance's brief — the self-hosted Playfair Display
+     already used for the aftermovie accent, not a new font. */
+  font-family: var(--ff-playfair), Georgia, serif;
+  font-size: clamp(1.75rem, 4vw, 3rem);
   font-weight: 400;
-  line-height: 1.08;
-  /* 0.15em (the requested tracking) also clips at 360-390px — it only
-     fits once the 768px breakpoint below widens the shell. */
-  letter-spacing: 0.08em;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
   text-align: center;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .faq-scene .faq-copy {
   max-inline-size: 36rem;
-  margin: 0.75rem auto 0;
+  margin: 1.25rem auto 0;
   color: #a3a3a3;
   font-family: var(--font-ui);
   font-size: clamp(0.875rem, 0.82rem + 0.22vw, 1rem);
@@ -61,16 +63,19 @@
   align-items: center;
   gap: 0.65rem;
   min-block-size: 2.5rem;
-  margin-block-start: 0.75rem;
-  padding-inline: 0.9rem;
-  border: 1px solid rgba(197, 168, 128, 0.24);
+  margin-block-start: 1.5rem;
+  padding-inline: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 999px;
   color: #c5a880;
   font-family: var(--font-ui);
-  font-size: 0.875rem;
-  font-weight: 400;
+  font-size: 0.75rem;
+  font-weight: 500;
   line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   text-decoration: none;
+  background: rgba(255, 255, 255, 0.03);
   transition:
     color 200ms cubic-bezier(0.4, 0, 0.2, 1),
     border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -187,15 +192,41 @@
 @media (min-width: 768px) {
   .faq-scene,
   .faq-scene[data-bg] {
-    padding-block: 6rem;
+    padding-block: 7rem;
+  }
+
+  .faq-scene > .faq-shell {
+    max-inline-size: 72rem;
+    padding-inline: 3rem;
+  }
+
+  .faq-scene .faq-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+    gap: 2.5rem;
+  }
+
+  .faq-scene .faq-intro {
+    text-align: start;
+  }
+
+  .faq-scene .faq-h {
+    text-align: start;
+  }
+
+  .faq-scene .faq-copy {
+    margin-inline: 0;
   }
 
   .faq-scene .faq-q {
     padding-block: 1.5rem;
   }
+}
 
-  .faq-scene .faq-h {
-    letter-spacing: 0.15em;
+@media (min-width: 1024px) {
+  .faq-scene .faq-layout {
+    gap: 4rem;
   }
 }
 

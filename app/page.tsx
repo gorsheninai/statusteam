@@ -337,7 +337,13 @@ export default function Home() {
           <div className="shell faq-shell">
             <div className="faq-layout">
               <div className="faq-intro" data-reveal="up">
-                <h2 className="faq-h campaign">Что нужно знать</h2>
+                <h2 className="faq-h">
+                  Что
+                  <br />
+                  нужно
+                  <br />
+                  знать
+                </h2>
                 <p className="faq-copy">
                   Ответы на главные вопросы о шоу, дресс-коде и билетах.
                   Остались вопросы?
