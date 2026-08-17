@@ -215,10 +215,10 @@ export default function StatusTeamScene() {
         <div className="st2-impact-copy" data-st2-impact-copy>
           <h2 id="st2-impact-title">
             <span className="st2-impact-primary">
-              Создаём fashion-события, которые выходят
-            </span>{" "}
-            <span className="st2-impact-accent">за рамки обычного</span>{" "}
-            <span className="st2-impact-trailing">показа.</span>
+              <span>Создаём fashion-события,</span>
+              <span>которые выходят</span>
+            </span>
+            <span className="st2-impact-accent">за рамки обычного показа</span>
           </h2>
         </div>
 
