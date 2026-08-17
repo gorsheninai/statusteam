@@ -1,10 +1,11 @@
 "use client";
 
+import gsap from "gsap";
 import {
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
+  useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -20,15 +21,27 @@ type GuestCarouselProps = {
   guests: GuestCarouselItem[];
 };
 
+const FULL_CYCLE_SECONDS = 21;
+const FOCUS_DURATION_SECONDS = 0.7;
+
 const wrapIndex = (index: number, length: number) =>
   ((index % length) + length) % length;
 
-const shortestOffset = (index: number, activeIndex: number, length: number) => {
-  let offset = index - activeIndex;
+const wrapPosition = (position: number, length: number) =>
+  ((position % length) + length) % length;
+
+const shortestOffset = (index: number, position: number, length: number) => {
+  let offset = index - wrapPosition(position, length);
   while (offset > length / 2) offset -= length;
   while (offset < -length / 2) offset += length;
   return offset;
 };
+
+const closestPositionForIndex = (
+  index: number,
+  position: number,
+  length: number,
+) => position + shortestOffset(index, position, length);
 
 const interpolateDepth = (distance: number) => {
   const abs = Math.min(Math.abs(distance), 3);
@@ -60,22 +73,80 @@ const interpolateDepth = (distance: number) => {
 export default function GuestCarousel({ guests }: GuestCarouselProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const frameRef = useRef<number | null>(null);
+  const focusTweenRef = useRef<gsap.core.Tween | null>(null);
+  const positionRef = useRef(0);
+  const activeIndexRef = useRef(0);
+  const rotatingRef = useRef(true);
+  const wasRotatingOnPointerDownRef = useRef(false);
   const pointerRef = useRef({
     id: -1,
     startX: 0,
     startY: 0,
-    lastX: 0,
-    lastTime: 0,
-    velocity: 0,
+    startPosition: 0,
+    startedOnCard: false,
     axis: "" as "" | "x" | "y",
   });
   const didDragRef = useRef(false);
+
   const [activeIndex, setActiveIndex] = useState(0);
-  const [dragX, setDragX] = useState(0);
+  const [isRotating, setIsRotating] = useState(true);
+  const [isFocusing, setIsFocusing] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [inView, setInView] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
+
+  const renderPosition = useCallback(
+    (position: number) => {
+      if (!guests.length) return;
+
+      const normalized = wrapPosition(position, guests.length);
+      const nextActive = wrapIndex(Math.round(normalized), guests.length);
+
+      cardRefs.current.forEach((card, index) => {
+        if (!card) return;
+        const depth = interpolateDepth(
+          shortestOffset(index, normalized, guests.length),
+        );
+        Object.assign(card.style, depth);
+        card.setAttribute(
+          "aria-hidden",
+          depth.visibility === "hidden" ? "true" : "false",
+        );
+        const button = card.querySelector<HTMLButtonElement>("button");
+        if (button) {
+          button.tabIndex = depth.visibility === "hidden" ? -1 : 0;
+        }
+      });
+
+      const stage = stageRef.current;
+      if (stage) {
+        stage.dataset.rotationAngle = String(
+          (normalized / guests.length) * 360,
+        );
+      }
+
+      if (nextActive !== activeIndexRef.current) {
+        activeIndexRef.current = nextActive;
+        setActiveIndex(nextActive);
+      }
+    },
+    [guests.length],
+  );
+
+  const stopFrame = useCallback(() => {
+    if (frameRef.current !== null) {
+      window.cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+  }, []);
+
+  const setRotating = useCallback((next: boolean) => {
+    rotatingRef.current = next;
+    setIsRotating(next);
+  }, []);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -98,14 +169,22 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   }, []);
 
   useEffect(() => {
-    const updateVisibility = () => setPageVisible(document.visibilityState === "visible");
+    const updateVisibility = () =>
+      setPageVisible(document.visibilityState === "visible");
     updateVisibility();
     document.addEventListener("visibilitychange", updateVisibility);
-    return () => document.removeEventListener("visibilitychange", updateVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", updateVisibility);
   }, []);
 
   useEffect(() => {
+    renderPosition(positionRef.current);
+  }, [renderPosition]);
+
+  useEffect(() => {
+    stopFrame();
     if (
+      !isRotating ||
       reducedMotion ||
       !inView ||
       !pageVisible ||
@@ -114,34 +193,115 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       return;
     }
 
-    const timer = window.setTimeout(() => {
-      setActiveIndex((current) => wrapIndex(current + 1, guests.length));
-      setDragX(0);
-    }, 3000);
+    let previousTime = performance.now();
+    const cardsPerMillisecond =
+      guests.length / (FULL_CYCLE_SECONDS * 1000);
 
-    return () => window.clearTimeout(timer);
-  }, [activeIndex, guests.length, inView, pageVisible, reducedMotion]);
+    const tick = (time: number) => {
+      const elapsed = Math.min(time - previousTime, 64);
+      previousTime = time;
+      positionRef.current += elapsed * cardsPerMillisecond;
+
+      if (Math.abs(positionRef.current) > guests.length * 100) {
+        positionRef.current = wrapPosition(positionRef.current, guests.length);
+      }
+
+      renderPosition(positionRef.current);
+      frameRef.current = window.requestAnimationFrame(tick);
+    };
+
+    frameRef.current = window.requestAnimationFrame(tick);
+    return stopFrame;
+  }, [
+    guests.length,
+    inView,
+    isRotating,
+    pageVisible,
+    reducedMotion,
+    renderPosition,
+    stopFrame,
+  ]);
+
+  useEffect(
+    () => () => {
+      stopFrame();
+      focusTweenRef.current?.kill();
+    },
+    [stopFrame],
+  );
 
   const cardStep = () => {
     const viewportWidth = viewportRef.current?.clientWidth ?? 390;
-    return Math.max(210, Math.min(380, viewportWidth * (viewportWidth < 700 ? 0.72 : 0.28)));
+    return Math.max(
+      210,
+      Math.min(380, viewportWidth * (viewportWidth < 700 ? 0.72 : 0.28)),
+    );
   };
 
-  const goTo = (index: number) => {
-    setActiveIndex(wrapIndex(index, guests.length));
-    setDragX(0);
-  };
+  const focusPosition = useCallback(
+    (targetPosition: number) => {
+      stopFrame();
+      focusTweenRef.current?.kill();
+      setRotating(false);
 
-  const move = (direction: -1 | 1) => goTo(activeIndex + direction);
+      if (reducedMotion) {
+        positionRef.current = targetPosition;
+        renderPosition(targetPosition);
+        setIsFocusing(false);
+        return;
+      }
+
+      setIsFocusing(true);
+      const proxy = { value: positionRef.current };
+      focusTweenRef.current = gsap.to(proxy, {
+        value: targetPosition,
+        duration: FOCUS_DURATION_SECONDS,
+        ease: "power3.out",
+        overwrite: true,
+        onUpdate: () => {
+          positionRef.current = proxy.value;
+          renderPosition(proxy.value);
+        },
+        onComplete: () => {
+          positionRef.current = targetPosition;
+          renderPosition(targetPosition);
+          setIsFocusing(false);
+          focusTweenRef.current = null;
+        },
+      });
+    },
+    [reducedMotion, renderPosition, setRotating, stopFrame],
+  );
+
+  const focusIndex = useCallback(
+    (index: number) => {
+      focusPosition(
+        closestPositionForIndex(index, positionRef.current, guests.length),
+      );
+    },
+    [focusPosition, guests.length],
+  );
+
+  const resume = useCallback(() => {
+    focusTweenRef.current?.kill();
+    setIsFocusing(false);
+    setRotating(true);
+  }, [setRotating]);
 
   const beginDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    wasRotatingOnPointerDownRef.current = rotatingRef.current;
+    stopFrame();
+    focusTweenRef.current?.kill();
+    setIsFocusing(false);
+    setRotating(false);
     pointerRef.current = {
       id: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
-      lastX: event.clientX,
-      lastTime: event.timeStamp,
-      velocity: 0,
+      startPosition: positionRef.current,
+      startedOnCard:
+        event.target instanceof Element &&
+        Boolean(event.target.closest(".st2-guest-card")),
       axis: "",
     };
     didDragRef.current = false;
@@ -158,67 +318,70 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     if (!pointer.axis && Math.max(Math.abs(dx), Math.abs(dy)) > 7) {
       pointer.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
     }
+    if (pointer.axis === "y") {
+      didDragRef.current = true;
+      return;
+    }
     if (pointer.axis !== "x") return;
 
-    const elapsed = Math.max(event.timeStamp - pointer.lastTime, 1);
-    pointer.velocity = (event.clientX - pointer.lastX) / elapsed;
-    pointer.lastX = event.clientX;
-    pointer.lastTime = event.timeStamp;
     didDragRef.current = Math.abs(dx) > 8;
-    setDragX(dx);
+    positionRef.current = pointer.startPosition - dx / cardStep();
+    renderPosition(positionRef.current);
   };
 
   const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
     const pointer = pointerRef.current;
     if (pointer.id !== event.pointerId) return;
 
-    const step = cardStep();
-    const projected = dragX + pointer.velocity * 190;
-    const slideCount = Math.max(-2, Math.min(2, Math.round(-projected / step)));
-
-    if (pointer.axis === "x" && (Math.abs(projected) > step * 0.18 || slideCount !== 0)) {
-      goTo(activeIndex + (slideCount || (projected < 0 ? 1 : -1)));
-    } else {
-      setDragX(0);
-    }
-
     setDragging(false);
     pointerRef.current.id = -1;
+
+    if (pointer.axis === "x" && didDragRef.current) {
+      focusPosition(Math.round(positionRef.current));
+    } else if (
+      wasRotatingOnPointerDownRef.current &&
+      (pointer.axis === "y" || !pointer.startedOnCard)
+    ) {
+      resume();
+    }
+
     window.setTimeout(() => {
       didDragRef.current = false;
     }, 0);
   };
 
-  const dragProgress = reducedMotion ? 0 : dragX / cardStep();
-  const positions = useMemo(
-    () =>
-      guests.map((_, index) =>
-        shortestOffset(index, activeIndex, guests.length) + dragProgress,
-      ),
-    [activeIndex, dragProgress, guests],
-  );
+  const autoRunning =
+    isRotating && !reducedMotion && inView && pageVisible && guests.length > 1;
 
   return (
     <div
-      className={`st2-guest-stage${dragging ? " is-dragging" : ""}`}
+      className={`st2-guest-stage${dragging ? " is-dragging" : ""}${autoRunning ? " is-rotating" : ""}${isFocusing ? " is-focusing" : ""}`}
       ref={stageRef}
       data-st2-guest-stage
       data-active-index={activeIndex}
+      data-rotating={autoRunning ? "true" : "false"}
+      data-cycle-seconds={FULL_CYCLE_SECONDS}
       role="region"
       aria-roledescription="carousel"
       aria-label="Гости STATUS TEAM"
+      aria-describedby="st2-guest-instructions"
       tabIndex={0}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") {
           event.preventDefault();
-          move(-1);
+          focusIndex(activeIndex - 1);
         }
         if (event.key === "ArrowRight") {
           event.preventDefault();
-          move(1);
+          focusIndex(activeIndex + 1);
         }
       }}
     >
+      <p className="sr-only" id="st2-guest-instructions">
+        Карусель вращается автоматически. Выберите гостя, чтобы остановить его в центре.
+        Повторное нажатие на центральную карточку возобновит вращение.
+      </p>
+
       <div
         className="st2-guest-viewport"
         ref={viewportRef}
@@ -229,28 +392,47 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       >
         <div className="st2-guest-track" role="list">
           {guests.map((guest, index) => {
-            const distance = positions[index];
-            const isActive = index === activeIndex && Math.abs(dragProgress) < 0.12;
-            const hidden = Math.abs(distance) > 2.6;
+            const isActive = index === activeIndex;
             const guestNumber = String(index + 1).padStart(2, "0");
+            const currentDepth = interpolateDepth(
+              shortestOffset(index, positionRef.current, guests.length),
+            );
+            const isFrozenActive = !isRotating && !isFocusing && isActive;
 
             return (
               <div
                 className={`st2-guest${isActive ? " is-active" : ""}`}
                 key={guest.label}
+                ref={(card) => {
+                  cardRefs.current[index] = card;
+                }}
                 role="listitem"
-                style={interpolateDepth(distance)}
-                aria-hidden={hidden}
+                style={currentDepth}
+                aria-hidden={currentDepth.visibility === "hidden"}
                 data-st2-guest
               >
                 <button
                   className="st2-guest-card"
                   type="button"
-                  aria-label={`${guest.label}. Показать в центре`}
+                  aria-label={
+                    isFrozenActive
+                      ? `${guest.label}. Возобновить вращение`
+                      : `${guest.label}. Показать в центре и остановить`
+                  }
                   aria-current={isActive ? "true" : undefined}
-                  tabIndex={hidden ? -1 : 0}
+                  tabIndex={currentDepth.visibility === "hidden" ? -1 : 0}
                   onClick={() => {
-                    if (!didDragRef.current) goTo(index);
+                    if (didDragRef.current) return;
+
+                    if (
+                      isFrozenActive &&
+                      !wasRotatingOnPointerDownRef.current
+                    ) {
+                      resume();
+                    } else {
+                      focusIndex(index);
+                    }
+                    wasRotatingOnPointerDownRef.current = false;
                   }}
                 >
                   <span className="st2-guest-media">
@@ -279,7 +461,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
             );
           })}
         </div>
-
       </div>
     </div>
   );

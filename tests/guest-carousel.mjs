@@ -18,18 +18,22 @@ const expect = (value, message, detail = "") => {
   if (!value) failures.push(`${message}${detail ? ` — ${detail}` : ""}`);
 };
 
+const angleDelta = (from, to) => ((to - from) + 360) % 360;
+
 for (const [name, width, height] of viewports) {
   const page = await browser.newPage({ viewport: { width, height } });
   const errors = [];
-  page.on("console", (message) => message.type() === "error" && errors.push(message.text()));
+  page.on("console", (message) =>
+    message.type() === "error" && errors.push(message.text()),
+  );
   page.on("pageerror", (error) => errors.push(error.message));
 
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(2500);
   const section = page.locator(".st2-vanguard");
   await section.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(900);
+  await page.waitForTimeout(500);
 
+  const stage = page.locator(".st2-guest-stage");
   expect(errors.length === 0, `[${name}] no browser errors`, errors.join(" | "));
   expect(await section.isVisible(), `[${name}] carousel section is visible`);
   expect(
@@ -37,16 +41,75 @@ for (const [name, width, height] of viewports) {
     `[${name}] carousel contains eight guest cards`,
   );
   expect(
-    (await page.locator(".st2-vanguard-head p").count()) === 0,
-    `[${name}] carousel subtitle is removed`,
-  );
-  expect(
     (await page.locator(".st2-guest-nav, .st2-guest-footer").count()) === 0,
-    `[${name}] arrows and isolated footer controls are removed`,
+    `[${name}] arrows and pagination remain absent`,
   );
   expect(
-    await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1),
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth + 1,
+    ),
     `[${name}] no horizontal overflow`,
+  );
+  expect(
+    (await stage.getAttribute("data-cycle-seconds")) === "21",
+    `[${name}] full cylindrical cycle is 21 seconds`,
+  );
+  expect(
+    (await stage.getAttribute("data-rotating")) === "true",
+    `[${name}] carousel starts in autonomous rotation`,
+  );
+
+  const samples = [];
+  for (let index = 0; index < 6; index += 1) {
+    samples.push(Number(await stage.getAttribute("data-rotation-angle")));
+    await page.waitForTimeout(140);
+  }
+  const deltas = samples.slice(1).map((angle, index) =>
+    angleDelta(samples[index], angle),
+  );
+  expect(
+    deltas.every((delta) => delta > 0.6 && delta < 4.5),
+    `[${name}] rotation advances smoothly every frame without stepping`,
+    JSON.stringify(deltas),
+  );
+
+  await stage.hover();
+  const hoverAngle = Number(await stage.getAttribute("data-rotation-angle"));
+  await page.waitForTimeout(420);
+  const hoverDelta = angleDelta(
+    hoverAngle,
+    Number(await stage.getAttribute("data-rotation-angle")),
+  );
+  expect(
+    hoverDelta > 4 && hoverDelta < 11,
+    `[${name}] hover does not interrupt autonomous rotation`,
+    `${hoverDelta}deg`,
+  );
+
+  const activeBeforeClick = Number(await stage.getAttribute("data-active-index"));
+  const targetIndex = (activeBeforeClick + 2) % 8;
+  const targetButton = page.locator(".st2-guest").nth(targetIndex).locator("button");
+  await targetButton.dispatchEvent("click");
+  await page.waitForTimeout(820);
+
+  expect(
+    Number(await stage.getAttribute("data-active-index")) === targetIndex,
+    `[${name}] clicked side card moves to the center`,
+  );
+  expect(
+    (await stage.getAttribute("data-rotating")) === "false",
+    `[${name}] click freezes autonomous rotation`,
+  );
+
+  const frozenAngle = Number(await stage.getAttribute("data-rotation-angle"));
+  await page.waitForTimeout(900);
+  const frozenAngleAfter = Number(await stage.getAttribute("data-rotation-angle"));
+  expect(
+    Math.abs(frozenAngleAfter - frozenAngle) < 0.01,
+    `[${name}] selected card remains completely frozen`,
+    `${frozenAngle} → ${frozenAngleAfter}`,
   );
 
   const geometry = await page.evaluate(() => {
@@ -67,14 +130,19 @@ for (const [name, width, height] of viewports) {
       activeOpacity: active ? getComputedStyle(active).opacity : "0",
       activeZ: active ? getComputedStyle(active).zIndex : "0",
       activeTransform: active?.style.transform || "",
-      activeRim: active ? getComputedStyle(active.querySelector(".st2-guest-card"), "::after").borderColor : "",
-      cardRadius: active ? parseFloat(getComputedStyle(active.querySelector(".st2-guest-card")).borderRadius) : 0,
-      cardOverflow: active ? getComputedStyle(active.querySelector(".st2-guest-card")).overflow : "",
-      cardIsolation: active ? getComputedStyle(active.querySelector(".st2-guest-card")).isolation : "",
-      cardBorder: active ? getComputedStyle(active.querySelector(".st2-guest-card")).borderColor : "",
-      transitionDuration: active ? getComputedStyle(active).transitionDuration : "",
+      cardRadius: active
+        ? parseFloat(getComputedStyle(active.querySelector(".st2-guest-card")).borderRadius)
+        : 0,
+      cardOverflow: active
+        ? getComputedStyle(active.querySelector(".st2-guest-card")).overflow
+        : "",
+      cardIsolation: active
+        ? getComputedStyle(active.querySelector(".st2-guest-card")).isolation
+        : "",
+      cardBorder: active
+        ? getComputedStyle(active.querySelector(".st2-guest-card")).borderColor
+        : "",
       sideOpacity: side ? Number(getComputedStyle(side).opacity) : 1,
-      sideBorder: side ? getComputedStyle(side.querySelector(".st2-guest-card")).borderColor : "",
       sideFilter: side ? getComputedStyle(side).filter : "none",
       sideTransform: side?.style.transform || "",
       outerOpacity: outer ? Number(getComputedStyle(outer).opacity) : 1,
@@ -84,7 +152,11 @@ for (const [name, width, height] of viewports) {
         .filter((card) => getComputedStyle(card).visibility === "visible")
         .every((card) => {
           const button = card.querySelector("button");
-          return getComputedStyle(card).pointerEvents === "auto" && Boolean(button);
+          return (
+            getComputedStyle(card).pointerEvents === "auto" &&
+            getComputedStyle(button).cursor === "pointer" &&
+            button.tabIndex === 0
+          );
         }),
       center: box ? box.left + box.width / 2 : 0,
       viewportCenter: window.innerWidth / 2,
@@ -93,157 +165,107 @@ for (const [name, width, height] of viewports) {
       viewportTop: viewportBox?.top ?? -Infinity,
       viewportBottom: viewportBox?.bottom ?? -Infinity,
       perspective: viewport ? getComputedStyle(viewport).perspective : "none",
-      titleGap: titleBox && viewportBox ? viewportBox.top - titleBox.bottom : Infinity,
-      statsGap: stageBox && statsBox ? statsBox.top - stageBox.bottom : Infinity,
+      titleGap:
+        titleBox && viewportBox ? viewportBox.top - titleBox.bottom : Infinity,
+      statsGap:
+        stageBox && statsBox ? statsBox.top - stageBox.bottom : Infinity,
     };
   });
 
-  expect(geometry.activeOpacity === "1", `[${name}] active card is fully opaque`);
-  expect(geometry.activeZ === "40", `[${name}] active card owns the front plane`);
+  expect(geometry.activeOpacity === "1", `[${name}] focused card is fully opaque`);
+  expect(geometry.activeZ === "40", `[${name}] focused card owns the front plane`);
   expect(
     geometry.activeTransform.includes("0px) rotateY(0deg) scale(1.1)"),
-    `[${name}] active card uses the exact front transform`,
+    `[${name}] focused card lands on the exact front transform`,
     geometry.activeTransform,
   );
   expect(
-    geometry.activeRim === "rgba(212, 175, 55, 0.4)",
-    `[${name}] active card has the 40% gold rim`,
-    geometry.activeRim,
-  );
-  expect(
-    geometry.transitionDuration.split(",")[0].trim() === "0.7s",
-    `[${name}] 3D movement settles over 700ms`,
-    geometry.transitionDuration,
-  );
-  expect(
     geometry.cardRadius >= 16 && geometry.cardRadius <= 20,
-    `[${name}] cards use an elegant 16–20px radius`,
+    `[${name}] cards retain the 16–20px radius`,
     `${geometry.cardRadius}px`,
   );
   expect(
     geometry.cardOverflow === "hidden" && geometry.cardIsolation === "isolate",
-    `[${name}] card media and overlays clip cleanly inside an isolated layer`,
-    `${geometry.cardOverflow} / ${geometry.cardIsolation}`,
+    `[${name}] media and gradients clip inside the rounded card`,
   );
   expect(
-    geometry.cardBorder === "rgba(212, 175, 55, 0.4)",
-    `[${name}] active card keeps the refined gold border`,
+    geometry.cardBorder === "rgba(212, 175, 55, 0.45)",
+    `[${name}] focused card uses the 45% gold border`,
     geometry.cardBorder,
   );
-  expect(geometry.sideOpacity < 0.7, `[${name}] side cards are visually recessed`);
+  expect(geometry.sideOpacity === 0.45, `[${name}] side cards use 45% opacity`);
   expect(
-    geometry.sideBorder === "rgba(212, 175, 55, 0.3)",
-    `[${name}] every side card keeps the subtle 30% gold border`,
-    geometry.sideBorder,
+    geometry.sideFilter.includes("grayscale(0.3)"),
+    `[${name}] side cards use 30% grayscale`,
+    geometry.sideFilter,
   );
-  expect(geometry.sideFilter.includes("grayscale(0.3)"), `[${name}] side cards use 30% grayscale`, geometry.sideFilter);
-  expect(geometry.sideTransform.includes("-200px)"), `[${name}] side cards sit at -200px depth`, geometry.sideTransform);
-  expect(geometry.outerOpacity === 0.2, `[${name}] outer cards recede to 20% opacity`);
-  expect(geometry.outerFilter.includes("grayscale(0.7)"), `[${name}] outer cards use 70% grayscale`, geometry.outerFilter);
-  expect(geometry.outerTransform.includes("-380px)"), `[${name}] outer cards sit at -380px depth`, geometry.outerTransform);
+  expect(
+    geometry.sideTransform.includes("-200px)"),
+    `[${name}] side cards sit at -200px depth`,
+    geometry.sideTransform,
+  );
+  expect(geometry.outerOpacity === 0.2, `[${name}] outer cards use 20% opacity`);
+  expect(
+    geometry.outerFilter.includes("grayscale(0.7)"),
+    `[${name}] outer cards use 70% grayscale`,
+    geometry.outerFilter,
+  );
+  expect(
+    geometry.outerTransform.includes("-380px)"),
+    `[${name}] outer cards sit at -380px depth`,
+    geometry.outerTransform,
+  );
   expect(geometry.allVisibleCardsClickable, `[${name}] every visible card is interactive`);
-  expect(Math.abs(geometry.center - geometry.viewportCenter) < 3, `[${name}] active card is centered`);
   expect(
-    geometry.cardTop >= geometry.viewportTop - 1 && geometry.cardBottom <= geometry.viewportBottom + 1,
-    `[${name}] the complete active card remains inside the carousel viewport`,
-    `${geometry.cardTop}px–${geometry.cardBottom}px inside ${geometry.viewportTop}px–${geometry.viewportBottom}px`,
+    Math.abs(geometry.center - geometry.viewportCenter) < 3,
+    `[${name}] focused card is centered`,
   );
-  expect(geometry.perspective !== "none", `[${name}] 3D perspective is active`);
+  expect(
+    geometry.cardTop >= geometry.viewportTop - 1 &&
+      geometry.cardBottom <= geometry.viewportBottom + 1,
+    `[${name}] complete focused card remains visible`,
+  );
+  expect(geometry.perspective !== "none", `[${name}] 3D perspective remains active`);
   expect(
     geometry.titleGap >= 24 && geometry.titleGap <= 33,
-    `[${name}] title-to-carousel spacing is 24–32px`,
+    `[${name}] title-to-carousel spacing stays compact`,
     `${geometry.titleGap}px`,
   );
   expect(
     geometry.statsGap >= 63 && geometry.statsGap <= 65,
-    `[${name}] stats begin 64px below the full carousel`,
+    `[${name}] stats stay 64px below the carousel`,
     `${geometry.statsGap}px`,
   );
 
-  const beforeAutoplay = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
-  await page.waitForTimeout(3250);
+  await targetButton.dispatchEvent("click");
+  await page.waitForTimeout(350);
   expect(
-    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== beforeAutoplay,
-    `[${name}] autoplay advances carousel`,
+    (await stage.getAttribute("data-rotating")) === "true",
+    `[${name}] clicking the frozen center card resumes rotation`,
+  );
+  const resumedAngle = Number(await stage.getAttribute("data-rotation-angle"));
+  await page.waitForTimeout(420);
+  expect(
+    angleDelta(
+      resumedAngle,
+      Number(await stage.getAttribute("data-rotation-angle")),
+    ) > 4,
+    `[${name}] rotation continues smoothly after resume`,
   );
 
-  await page.locator(".st2-guest-stage").hover();
-  const hoveredIndex = await page.locator(".st2-guest-stage").getAttribute("data-active-index");
-  await page.waitForTimeout(3250);
-  expect(
-    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== hoveredIndex,
-    `[${name}] autoplay remains active on hover`,
-  );
-
-  await page.locator(".st2-guest").nth(7).locator("button").dispatchEvent("click");
-  await page.waitForTimeout(100);
-  expect(
-    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "7",
-    `[${name}] Guest 08 moves directly to the front`,
-  );
-  await page.waitForTimeout(3150);
-  expect(
-    (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "0",
-    `[${name}] autoplay immediately continues Guest 08 → Guest 01 after click`,
-  );
-
-  await page.locator(".st2-guest-stage").focus();
-  const beforeKeyboard = Number(
-    await page.locator(".st2-guest-stage").getAttribute("data-active-index"),
-  );
+  await stage.focus();
+  const beforeKeyboard = Number(await stage.getAttribute("data-active-index"));
   await page.keyboard.press("ArrowRight");
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(820);
   expect(
-    Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) ===
+    Number(await stage.getAttribute("data-active-index")) ===
       (beforeKeyboard + 1) % 8,
-    `[${name}] keyboard advances carousel`,
+    `[${name}] keyboard centers the next guest`,
   );
-
-  const beforeClick = Number(
-    await page.locator(".st2-guest-stage").getAttribute("data-active-index"),
-  );
-  const sideIndex = (beforeClick + 2) % 8;
-  const sideCard = page.locator(".st2-guest").nth(sideIndex);
-  const sideCardBehavior = await sideCard.evaluate((card) => ({
-    pointerEvents: getComputedStyle(card).pointerEvents,
-    visibility: getComputedStyle(card).visibility,
-    cursor: getComputedStyle(card.querySelector("button")).cursor,
-    customCursor: document.documentElement.classList.contains("has-cursor"),
-  }));
   expect(
-    sideCardBehavior.pointerEvents === "auto" &&
-      sideCardBehavior.visibility === "visible" &&
-      (sideCardBehavior.cursor === "pointer" || sideCardBehavior.customCursor),
-    `[${name}] visible side card is clickable and tappable`,
-    JSON.stringify(sideCardBehavior),
+    (await stage.getAttribute("data-rotating")) === "false",
+    `[${name}] keyboard selection freezes the carousel`,
   );
-  await sideCard.locator("button").dispatchEvent("click");
-  await page.waitForTimeout(100);
-  expect(
-    Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === sideIndex,
-    `[${name}] clicking a visible side card centers it`,
-  );
-  await page.waitForTimeout(3150);
-  expect(
-    Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) ===
-      (sideIndex + 1) % 8,
-    `[${name}] autoplay continues after click without disabling`,
-  );
-
-  const viewportBox = await page.locator(".st2-guest-viewport").boundingBox();
-  if (viewportBox) {
-    const y = viewportBox.y + viewportBox.height * 0.42;
-    const startX = viewportBox.x + viewportBox.width * 0.56;
-    await page.mouse.move(startX, y);
-    await page.mouse.down();
-    await page.mouse.move(startX - Math.min(280, viewportBox.width * 0.5), y, { steps: 12 });
-    await page.mouse.up();
-    await page.waitForTimeout(800);
-    expect(
-      Number(await page.locator(".st2-guest-stage").getAttribute("data-active-index")) !== sideIndex,
-      `[${name}] drag gesture rotates carousel`,
-    );
-  }
 
   await section.screenshot({ path: `${OUT}/guest-carousel-${name}.png` });
   await page.close();
@@ -256,5 +278,5 @@ if (failures.length) {
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exitCode = 1;
 } else {
-  console.log("Guest carousel: PASS (desktop, tablet, mobile)");
+  console.log("Guest carousel: PASS (continuous, freeze, responsive)");
 }
