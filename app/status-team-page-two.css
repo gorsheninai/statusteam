@@ -188,11 +188,14 @@
   max-inline-size: 100%;
   margin: 0;
   color: var(--st2-white);
-  font-family: var(--ff-playfair), Georgia, serif;
-  font-size: clamp(2.5rem, 1.9rem + 3vw, 4.5rem);
+  /* Matches the hero/pulse lock-up face (Tenor Sans) instead of the
+     serif — this instance is meant to read as the same brand mark. */
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.2rem, 1.5rem + 3.2vw, 4.2rem);
   font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: -0.035em;
+  line-height: 1;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
   text-shadow:
     0 0.08em 0.22em rgba(0, 0, 0, 0.84),
     0 0.28em 1.1em rgba(0, 0, 0, 0.7);
@@ -224,7 +227,7 @@
      text-shadow, because the italic swashes overlap the white line above
      and a drop-shadow follows the glyph outline instead of the box. */
   filter: drop-shadow(0 2px 8px rgba(212, 20, 61, 0.25));
-  transform: rotate(-3deg);
+  transform: rotate(-2deg);
   transform-origin: 0 70%;
 }
 
@@ -660,17 +663,25 @@
     max-inline-size: min(72vw, 58rem);
   }
 
+  /* Tenor Sans at 0.15em tracking is much wider than the serif this
+     replaced. The requested clamp(2.2rem,4.5vw,4.2rem) — sized for the
+     old face — overshoots this column badly at 1280px+ (measured via
+     Range against the accordion/container edge: up to ~420px of actual
+     overflow at 1920px that a plain scrollWidth check would miss, since
+     nowrap block overflow with overflow:visible doesn't grow
+     scrollWidth). This tracks the column's own growth so the line
+     always fits without wrapping. */
   .st-page-two .st2-impact-copy h2 {
-    font-size: clamp(3.6rem, 4.5vw, 4.5rem);
-  }
-
-  .st-page-two .st2-impact-accent {
-    margin-block-start: -2rem;
+    font-size: clamp(2rem, 3.55vw, 2.8rem);
   }
 
   .st-page-two .st2-impact-primary > span,
   .st-page-two .st2-impact-accent {
     white-space: nowrap;
+  }
+
+  .st-page-two .st2-impact-accent {
+    margin-block-start: -1.5rem;
   }
 
   .st-page-two .st2-watch {
