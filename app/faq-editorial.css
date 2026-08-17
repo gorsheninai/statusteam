@@ -1,4 +1,7 @@
-/* FAQ — a compact, centered editorial pause before the footer. */
+/* FAQ — a compact, centered editorial pause before the footer on phones
+   and tablets; from 1024px the intro splits into a sticky left column
+   beside the accordion, so a five-row-deep open panel doesn't leave the
+   heading and Telegram link scrolled out of view. */
 
 .faq-scene,
 .faq-scene[data-bg] {
@@ -10,6 +13,12 @@
 .faq-scene > .faq-shell {
   max-inline-size: 48rem;
   padding-inline: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .faq-scene > .faq-shell {
+    max-inline-size: 80rem;
+  }
 }
 
 .faq-scene .faq-layout {
@@ -181,6 +190,36 @@
   .faq-scene,
   .faq-scene[data-bg] {
     padding-block: 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .faq-scene,
+  .faq-scene[data-bg] {
+    padding-block: 6rem;
+  }
+
+  .faq-scene .faq-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    align-items: start;
+    gap: 4rem;
+  }
+
+  .faq-scene .faq-intro {
+    position: sticky;
+    inset-block-start: 6rem;
+    align-self: start;
+    text-align: start;
+  }
+
+  .faq-scene .faq-h {
+    text-align: start;
+    white-space: normal;
+  }
+
+  .faq-scene .faq-copy {
+    margin-inline: 0;
   }
 }
 

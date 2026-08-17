@@ -189,7 +189,7 @@
   margin: 0;
   color: var(--st2-white);
   font-family: var(--ff-playfair), Georgia, serif;
-  font-size: clamp(2.2rem, 1.58rem + 3.1vw, 4rem);
+  font-size: clamp(2.5rem, 1.9rem + 3vw, 4.5rem);
   font-weight: 400;
   line-height: 1.15;
   letter-spacing: -0.035em;
@@ -208,20 +208,22 @@
 }
 
 .st-page-two .st2-impact-accent {
-  display: block;
+  display: inline-block;
   inline-size: fit-content;
   max-inline-size: 100%;
-  margin-block-start: 0.08em;
-  color: #e11d48;
-  font-family: var(--ff-caveat), "Segoe Print", cursive;
-  font-size: 1.15em;
-  font-weight: 700;
-  font-style: normal;
+  margin-block-start: -0.75rem;
+  color: #d4143d;
+  font-family: var(--ff-playfair-italic), Georgia, serif;
+  font-size: 1.1em;
+  font-weight: 400;
+  font-style: italic;
   line-height: 0.88;
-  letter-spacing: -0.025em;
-  text-shadow:
-    0 0.08em 0.16em rgba(0, 0, 0, 0.92),
-    0 0 0.55em rgba(225, 29, 72, 0.24);
+  letter-spacing: normal;
+  /* The dark contact shadow is inherited from the h2 (see above) — this
+     layers the red glow the brief asks for on top of it. filter, not
+     text-shadow, because the italic swashes overlap the white line above
+     and a drop-shadow follows the glyph outline instead of the box. */
+  filter: drop-shadow(0 2px 8px rgba(212, 20, 61, 0.25));
   transform: rotate(-3deg);
   transform-origin: 0 70%;
 }
@@ -232,13 +234,13 @@
   inset-block-end: max(0.6rem, env(safe-area-inset-bottom));
   z-index: 2;
   display: grid;
-  gap: 0.4rem;
+  gap: 0.5rem;
   padding-block-start: 1.35rem;
   background: linear-gradient(180deg, transparent, rgba(7, 6, 6, 0.52) 34%, rgba(7, 6, 6, 0.88));
 }
 
 .st-page-two .st2-proof-group h3 {
-  margin-block-end: 0.1rem;
+  margin-block-end: 0.4rem;
   padding-inline: max(var(--st2-gutter), env(safe-area-inset-left));
   color: rgba(255, 255, 255, 0.58);
 }
@@ -274,7 +276,7 @@
   min-inline-size: clamp(7.75rem, 27vw, 12rem);
   min-block-size: 1.75rem;
   padding-inline: clamp(0.8rem, 3vw, 1.5rem);
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.48);
   font-family: var(--font-ui);
   font-size: clamp(0.5625rem, 0.48rem + 0.25vw, 0.6875rem);
   font-weight: 500;
@@ -293,7 +295,7 @@
   margin-inline-start: clamp(1rem, 3vw, 1.75rem);
   border-radius: 50%;
   background: var(--st2-champagne);
-  opacity: 0.54;
+  opacity: 0.4;
 }
 
 @keyframes st2-marquee {
@@ -680,7 +682,11 @@
   }
 
   .st-page-two .st2-impact-copy h2 {
-    font-size: clamp(3.6rem, 4.5vw, 4rem);
+    font-size: clamp(3.6rem, 4.5vw, 4.5rem);
+  }
+
+  .st-page-two .st2-impact-accent {
+    margin-block-start: -2rem;
   }
 
   .st-page-two .st2-impact-primary > span,

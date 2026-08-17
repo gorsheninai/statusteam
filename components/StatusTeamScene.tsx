@@ -86,7 +86,7 @@ const STATS = [
   },
   {
     value: 2,
-    suffix: "",
+    suffix: "-й",
     label: "fashion-показ STATUS TEAM — после «Славянского взгляда»",
   },
   {
@@ -215,10 +215,9 @@ export default function StatusTeamScene() {
         <div className="st2-impact-copy" data-st2-impact-copy>
           <h2 id="st2-impact-title">
             <span className="st2-impact-primary">
-              <span>Создаём fashion-события,</span>
-              <span>которые выходят</span>
+              <span>Создаём fashion-события</span>
             </span>
-            <span className="st2-impact-accent">за рамки обычного показа</span>
+            <span className="st2-impact-accent">за рамками обычного показа</span>
           </h2>
         </div>
 
