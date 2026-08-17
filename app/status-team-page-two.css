@@ -358,6 +358,7 @@
   inline-size: 100%;
   block-size: 100%;
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 
 .st-page-two .st2-guest {
