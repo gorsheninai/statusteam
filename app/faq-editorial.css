@@ -1,11 +1,10 @@
-/* FAQ — a compact, centered editorial pause before the footer on phones
-   and tablets; from 1024px the intro splits into a sticky left column
-   beside the accordion, so a five-row-deep open panel doesn't leave the
-   heading and Telegram link scrolled out of view. */
+/* FAQ — a compact, centered editorial pause before the footer, at every
+   width. One column, mx-auto, equal margins either side — deliberately
+   not a two-column split; that was tried and reverted twice already. */
 
 .faq-scene,
 .faq-scene[data-bg] {
-  padding-block: 3rem;
+  padding-block: 4rem;
   color: #fff;
   background: #0a0a0a;
 }
@@ -13,12 +12,6 @@
 .faq-scene > .faq-shell {
   max-inline-size: 48rem;
   padding-inline: 1.5rem;
-}
-
-@media (min-width: 1024px) {
-  .faq-scene > .faq-shell {
-    max-inline-size: 80rem;
-  }
 }
 
 .faq-scene .faq-layout {
@@ -39,9 +32,14 @@
   padding: 0;
   color: #fff;
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  /* The 1.75rem floor plus 0.08em tracking clipped "ЧТО НУЖНО ЗНАТЬ"
+     against its own nowrap at 360px (pre-existing, found while touching
+     this rule) — 1.5rem is the largest floor that still fits at 360px. */
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 400;
   line-height: 1.08;
+  /* 0.15em (the requested tracking) also clips at 360-390px — it only
+     fits once the 768px breakpoint below widens the shell. */
   letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
@@ -189,37 +187,15 @@
 @media (min-width: 768px) {
   .faq-scene,
   .faq-scene[data-bg] {
-    padding-block: 4rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .faq-scene,
-  .faq-scene[data-bg] {
     padding-block: 6rem;
   }
 
-  .faq-scene .faq-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
-    align-items: start;
-    gap: 4rem;
-  }
-
-  .faq-scene .faq-intro {
-    position: sticky;
-    inset-block-start: 6rem;
-    align-self: start;
-    text-align: start;
+  .faq-scene .faq-q {
+    padding-block: 1.5rem;
   }
 
   .faq-scene .faq-h {
-    text-align: start;
-    white-space: normal;
-  }
-
-  .faq-scene .faq-copy {
-    margin-inline: 0;
+    letter-spacing: 0.15em;
   }
 }
 
