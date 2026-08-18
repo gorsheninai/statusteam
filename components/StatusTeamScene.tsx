@@ -217,7 +217,9 @@ export default function StatusTeamScene() {
             <span className="st2-impact-primary">
               <span>Создаём fashion-события</span>
             </span>
-            <span className="st2-impact-accent">за рамками обычного показа</span>
+            <span className="st2-impact-accent">
+              за <span className="st2-impact-accent-word">рамками</span> обычного показа
+            </span>
           </h2>
         </div>
 
