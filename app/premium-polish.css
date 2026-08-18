@@ -79,8 +79,7 @@ html {
 }
 
 .hero-statement {
-  max-width: 27ch;
-  color: rgba(242, 238, 231, 0.88);
+  max-width: none;
 }
 
 .hero-where {
@@ -375,9 +374,7 @@ select:focus {
   }
 
   .hero-statement {
-    max-width: 25ch;
-    font-size: 1rem;
-    line-height: 1.42;
+    max-width: none;
   }
 
   .hero-where {
