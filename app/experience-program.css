@@ -25,6 +25,11 @@
   letter-spacing: -0.045em;
   text-transform: uppercase;
   white-space: nowrap;
+  /* `white-space: nowrap` and `text-wrap` both set the wrap-mode
+     component, so a later `text-wrap: balance` rule (premium-polish.css
+     briefly had one, at 639px) silently re-enables wrapping and undoes
+     this — pin it explicitly too so that class of bug can't recur. */
+  text-wrap: nowrap;
 }
 
 .exp-accordion {
@@ -166,10 +171,14 @@
   .exp-h {
     /* Recalibrated against the sticky column's real width (~27.5% of the
        viewport at this breakpoint, not the full viewport) rather than a
-       vw coefficient sized for the old two-line layout — the previous
-       4.3vw was still ~15% too wide for the one-line "В программе",
-       confirmed with a scrollWidth-vs-clientWidth measurement. */
-    font-size: clamp(2.2rem, 3.65vw, 4.35rem) !important;
+       vw coefficient sized for the old two-line layout. Measured with an
+       isolated off-DOM span at a fixed size (immune to the clamp's own
+       !important) to get the real width-per-font-size ratio, then given
+       a ~6% margin instead of sizing to the exact edge — the previous
+       pass left near-zero slack and a later, unrelated CSS change (a
+       stray `text-wrap: balance` elsewhere) was enough to tip it back
+       into wrapping/clipping. */
+    font-size: clamp(2.15rem, 3.4vw, 4.3rem) !important;
   }
 }
 
@@ -208,10 +217,14 @@
   }
 
   .exp-h {
-    /* 14vw overshot the shell at every phone width from 320-430 —
-       confirmed with a reduced-motion scrollWidth-vs-clientWidth
-       measurement (up to 4% over at 320, worse at 430). */
-    font-size: clamp(2.6rem, 13.4vw, 4.3rem) !important;
+    /* Measured with an isolated off-DOM span at a fixed font-size to get
+       the real width-per-font-size ratio (a clamp with !important can't
+       be probed by setting el.style.fontSize directly — the !important
+       wins), then given a ~6% margin rather than sizing to the exact
+       edge. The previous pass left near-zero slack at every phone width
+       and a later, unrelated CSS change was enough to tip it back into
+       wrapping/clipping. */
+    font-size: clamp(2.15rem, 11.1vw, 4.3rem) !important;
     margin-bottom: 30px !important;
   }
 
