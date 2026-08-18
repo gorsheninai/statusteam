@@ -110,6 +110,12 @@
 
 .st-page-two .st2-watch {
   position: absolute;
+  /* Below 900px the headline column runs edge to edge, so anchoring the
+     control to the bottom corner would sit it under the last line of
+     text — kept at the top corner here, clear of the header (measured:
+     the header is ~73px tall, this sits at 84px+). It only moves to the
+     bottom-right, clear of both the headline and the ticker, once the
+     column narrows below 900px */
   inset-block-start: calc(env(safe-area-inset-top) + 5.25rem);
   inset-inline-end: max(var(--st2-gutter), env(safe-area-inset-right));
   z-index: 2;
@@ -686,7 +692,8 @@
   }
 
   .st-page-two .st2-watch {
-    inset-block-start: calc(env(safe-area-inset-top) + 6rem);
+    inset-block-start: auto;
+    inset-block-end: 8.5rem;
     min-block-size: 3.25rem;
     padding-inline: 0.75rem 1.15rem;
   }
