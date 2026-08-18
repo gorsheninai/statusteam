@@ -145,10 +145,6 @@ export default function Home() {
             </div>
 
             <div className="hero-inner shell">
-              <p className="eyebrow-badge" data-hero="eyebrow" aria-hidden="true">
-                — Новый показ —
-              </p>
-
               <h1 className="hero-title" data-pulse-title>
                 <span className="pulse-mask" data-hero="t1">
                   <span className="pulse-line">Пульс</span>
