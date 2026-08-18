@@ -78,10 +78,6 @@ html {
   text-wrap: balance;
 }
 
-.hero-statement {
-  max-width: none;
-}
-
 .hero-where {
   color: rgba(215, 183, 127, 0.94);
 }
@@ -371,10 +367,6 @@ select:focus {
   .hero-title .pulse-line {
     font-size: clamp(2.05rem, 10.2vw, 2.65rem);
     letter-spacing: calc(-0.012em + var(--pulse, 0) * 0.045em);
-  }
-
-  .hero-statement {
-    max-width: none;
   }
 
   .hero-where {

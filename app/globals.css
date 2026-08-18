@@ -1155,50 +1155,40 @@ ol {
 }
 
 .hero-statement {
-  display: inline-block;
-  max-width: none;
-  margin: -0.1em 0 clamp(1.3rem, 3vw, 2rem);
+  display: block;
+  max-width: min(90vw, 36rem);
+  margin: clamp(2.75rem, 6vw, 3.5rem) 0 clamp(1.3rem, 3vw, 2rem);
+  padding-inline-start: clamp(2rem, 8vw, 3.25rem);
+}
+.hero-statement-tier1 {
+  display: block;
+  margin-inline-start: clamp(1.5rem, 6vw, 3rem);
+  margin-block-end: -0.3rem;
   font-family: var(--ff-playfair-italic);
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(0.82rem, 3.6vw, 1.3rem);
-  line-height: 1.25;
-  letter-spacing: 0.01em;
-  background: linear-gradient(
-    90deg,
-    var(--red-bright) 0%,
-    var(--red) 55%,
-    var(--sand) 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  font-size: clamp(1.5rem, 6vw, 2.375rem);
+  line-height: 1;
+  color: var(--sand);
+}
+.hero-statement-tier2 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--ff-playfair-italic);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(0.72rem, 3.4vw, 1.1rem);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--paper);
   white-space: nowrap;
-  transform: rotate(-1.5deg);
-  transform-origin: left center;
-  filter: drop-shadow(0 2px 16px rgba(216, 57, 74, 0.4));
-  opacity: 1;
 }
-.hero-statement-mark {
-  margin-inline-end: 0.35em;
-  color: var(--red-bright);
-  -webkit-text-fill-color: var(--red-bright);
-  animation: hero-mark-pulse 2.4s ease-in-out infinite;
-}
-@keyframes hero-mark-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.45;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-statement-mark {
-    animation: none;
-  }
+.hero-statement-rule {
+  flex-shrink: 0;
+  inline-size: clamp(1.5rem, 4.6vw, 2.5rem);
+  block-size: 1px;
+  background: var(--burgundy);
 }
 
 /* City and period, set into the composition rather than into a bar. */
@@ -2662,9 +2652,15 @@ ol {
     font-size: clamp(2.8rem, 6.2vw, 6.6rem);
   }
   .hero-statement {
-    font-size: clamp(0.88rem, 2.15vw, 1.95rem);
-    margin-top: -0.12em;
-    transform: rotate(-1.5deg);
+    max-width: 42rem;
+    padding-inline-start: clamp(3.25rem, 5vw, 5rem);
+  }
+  .hero-statement-tier1 {
+    margin-inline-start: clamp(3rem, 5vw, 5rem);
+    font-size: clamp(2rem, 2.6vw, 2.375rem);
+  }
+  .hero-statement-tier2 {
+    font-size: clamp(1.1rem, 1.5vw, 1.4375rem);
   }
   .pulse-title .pulse-line {
     --pulse-spread: 0.1em;
@@ -2857,8 +2853,8 @@ ol {
   .hero-layer {
     object-position: center 50%;
   }
-  .hero-statement {
-    font-size: clamp(1.1rem, 1.6vw, 1.95rem);
+  .hero-statement-tier2 {
+    font-size: 1.4375rem;
   }
 }
 
