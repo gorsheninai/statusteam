@@ -72,7 +72,7 @@ export default function Nav() {
         <div className="nav-end">
           {/* Never inside the burger: the ticket button is the one control
               that has to be reachable from every pixel of the page. */}
-          <a className="nav-tickets" href="#tickets" data-magnetic>
+          <a className="nav-tickets" href="#tickets">
             Билеты
           </a>
           <button
