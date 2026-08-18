@@ -90,7 +90,6 @@ export default function Home() {
           once GSAP is driving and this field interpolates between their
           colours; with no JS every section keeps its own. */}
       <div className="bg-field" data-bg-field aria-hidden="true" />
-      <div className="blackout" data-blackout aria-hidden="true" />
 
       <main id="top">
         {/* ============================================================

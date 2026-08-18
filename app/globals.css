@@ -137,7 +137,6 @@ video {
   color: var(--paper);
 }
 .bg-field,
-.blackout,
 .hero-frame,
 .tickets-bg,
 .zone-media,
@@ -683,15 +682,6 @@ ol {
   z-index: -2;
   background-color: var(--ink);
 }
-.blackout {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  background: var(--ink);
-  opacity: 0;
-}
-
 [data-bg="ink"] {
   background-color: var(--ink);
 }

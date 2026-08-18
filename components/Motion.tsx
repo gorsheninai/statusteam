@@ -231,8 +231,9 @@ export default function Motion() {
       });
 
       /* The second scene rises as a physical card. The hero recedes just
-         enough to establish depth; on a phone the transition stays native
-         and the type simply softens as it leaves. */
+         enough to establish depth via scale and position only — no opacity
+         change, so the lock-up and its type stay fully legible right up to
+         the moment the STATUS card physically covers them. */
       const heroMotion = gsap.matchMedia();
       heroMotion.add(
         {
@@ -243,7 +244,6 @@ export default function Motion() {
           const { desktop } = media.conditions as { desktop: boolean };
           gsap.to(".hero-frame", {
             scale: desktop ? 0.965 : 1.02,
-            opacity: desktop ? 0.7 : 0.82,
             ease: "none",
             scrollTrigger: {
               trigger: ".hero-stage",
@@ -255,7 +255,6 @@ export default function Motion() {
           });
           gsap.to(".hero-inner", {
             yPercent: desktop ? -10 : -5,
-            opacity: desktop ? 0.24 : 0.45,
             ease: "none",
             scrollTrigger: {
               trigger: ".hero-stage",
@@ -362,26 +361,6 @@ export default function Motion() {
           measure();
           apply(true);
         });
-      }
-
-      /* ============================================================
-         2 → 3 — the page goes dark before the next chapter is named
-         ============================================================ */
-
-      const blackout = document.querySelector<HTMLElement>("[data-blackout]");
-      const pulseScene = document.querySelector<HTMLElement>("#pulse");
-      if (blackout && pulseScene) {
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: pulseScene,
-              start: "top bottom",
-              end: "top 12%",
-              scrub: true,
-            },
-          })
-          .to(blackout, { opacity: 1, ease: "power2.in" })
-          .to(blackout, { opacity: 0, ease: "power2.out" });
       }
 
       /* ============================================================
