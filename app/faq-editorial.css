@@ -1,3 +1,5 @@
+@import "./editorial-typography.css";
+
 /* FAQ — centered editorial pause before the footer. Stacked and centered
    on phones/tablets; from 768px a two-column split (serif intro left,
    accordion right), the whole grid centered as one block via mx-auto so
