@@ -164,7 +164,12 @@
      in scrollWidth the way a shrink-to-fit element's does. This scales
      with the column instead. */
   .exp-h {
-    font-size: clamp(2.6rem, 4.3vw, 5.1rem) !important;
+    /* Recalibrated against the sticky column's real width (~27.5% of the
+       viewport at this breakpoint, not the full viewport) rather than a
+       vw coefficient sized for the old two-line layout — the previous
+       4.3vw was still ~15% too wide for the one-line "В программе",
+       confirmed with a scrollWidth-vs-clientWidth measurement. */
+    font-size: clamp(2.2rem, 3.65vw, 4.35rem) !important;
   }
 }
 
@@ -203,7 +208,10 @@
   }
 
   .exp-h {
-    font-size: clamp(2.8rem, 14vw, 4.4rem) !important;
+    /* 14vw overshot the shell at every phone width from 320-430 —
+       confirmed with a reduced-motion scrollWidth-vs-clientWidth
+       measurement (up to 4% over at 320, worse at 430). */
+    font-size: clamp(2.6rem, 13.4vw, 4.3rem) !important;
     margin-bottom: 30px !important;
   }
 

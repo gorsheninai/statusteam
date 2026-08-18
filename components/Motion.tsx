@@ -63,10 +63,15 @@ export default function Motion() {
         tl.to(curtain, { scale: 1, duration: 2.2, ease: "power2.out" }, 0);
 
         tl.from(
-          ".hero .pulse-mask .pulse-line",
-          { yPercent: 108, duration: 1.05, stagger: 0.15 },
-          0.42,
+          '[data-hero="eyebrow"]',
+          { opacity: 0, y: 10, duration: 0.6 },
+          0.28,
         )
+          .from(
+            ".hero .pulse-mask .pulse-line",
+            { yPercent: 108, duration: 1.05, stagger: 0.15 },
+            0.42,
+          )
           .from(
             '[data-hero="statement"]',
             { opacity: 0, y: 18, duration: 0.7 },

@@ -246,6 +246,9 @@ export default function StatusTeamScene() {
         <section className="st2-vanguard st2-shell" aria-labelledby="st2-vanguard-title">
           <header className="st2-vanguard-head" data-st2-section-title>
             <h2 id="st2-vanguard-title">Среди гостей</h2>
+            <span className="st2-vanguard-tag">
+              [ архив предыдущего показа · «славянский взгляд» ]
+            </span>
           </header>
 
           <GuestCarousel guests={GUESTS} />

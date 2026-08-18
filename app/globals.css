@@ -415,6 +415,8 @@ ol {
    arriving — it is reverted to plain text once the reveal has played. */
 .ln {
   display: block;
+  width: fit-content;
+  max-width: 100%;
   overflow: hidden;
 }
 .ln-in {
@@ -1129,6 +1131,17 @@ ol {
   z-index: 5;
   width: 100%;
   margin-block: auto 0;
+}
+
+.hero-eyebrow {
+  margin: 0 0 clamp(0.6rem, 1.6vw, 1rem);
+  font-family: var(--ff-playfair-italic);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(0.75rem, 1.6vw, 0.95rem);
+  letter-spacing: 0.14em;
+  color: var(--sand);
+  opacity: 0.85;
 }
 
 .hero-title {

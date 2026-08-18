@@ -355,6 +355,23 @@
   text-wrap: balance;
 }
 
+.st-page-two .st2-vanguard-tag {
+  display: block;
+  margin-block-start: 0.6rem;
+  color: var(--st2-champagne);
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .st-page-two .st2-vanguard-tag {
+    font-size: 0.8125rem;
+  }
+}
+
 .st-page-two .st2-guest-stage {
   position: relative;
   min-inline-size: 0;
