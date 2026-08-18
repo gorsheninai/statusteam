@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Bona+Nova:ital,wght@1,400;1,700&display=swap");
+
 /* STATUS TEAM — editorial typography pass.
    Two accent phrases share one editorial voice (Bona Nova Italic), while
    keeping different treatments so the system feels authored, not repeated. */
@@ -12,7 +14,7 @@
   margin: -0.08em 0 clamp(1.3rem, 3vw, 2rem);
   color: #fffefa;
   -webkit-text-fill-color: #fffefa;
-  font-family: var(--ff-bona-nova), Georgia, serif;
+  font-family: "Bona Nova", Georgia, serif;
   font-size: clamp(1.18rem, 1.65vw, 2rem);
   font-weight: 700;
   font-style: italic;
@@ -73,7 +75,7 @@
   margin-block-start: -0.03em;
   margin-inline-start: clamp(5.5rem, 17.5vw, 18rem);
   color: #d4143d;
-  font-family: var(--ff-bona-nova), Georgia, serif;
+  font-family: "Bona Nova", Georgia, serif;
   font-size: clamp(2.05rem, 3vw, 3.65rem);
   font-weight: 700;
   font-style: italic;
