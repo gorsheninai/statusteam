@@ -1,0 +1,160 @@
+/* STATUS TEAM — editorial typography pass.
+   Two accent phrases share one editorial voice (Bona Nova Italic), while
+   keeping different treatments so the system feels authored, not repeated. */
+
+/* HERO — white italic over a deliberately imperfect wine highlight. */
+.hero .hero-statement {
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  inline-size: fit-content;
+  max-inline-size: min(48rem, calc(100vw - var(--gutter) * 2));
+  margin: -0.08em 0 clamp(1.3rem, 3vw, 2rem);
+  color: #fffefa;
+  -webkit-text-fill-color: #fffefa;
+  font-family: var(--ff-bona-nova), Georgia, serif;
+  font-size: clamp(1.18rem, 1.65vw, 2rem);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-shadow: none;
+  filter: none;
+  transform: rotate(-0.35deg);
+  transform-origin: left center;
+}
+
+.hero .hero-statement::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-inline-start: 1.22em;
+  inset-inline-end: -0.72em;
+  inset-block-end: -0.03em;
+  block-size: 0.58em;
+  background: #8d1233;
+  clip-path: polygon(0.4% 8%, 99.1% 0, 100% 88%, 0 100%);
+  transform: rotate(-0.45deg);
+  transform-origin: left center;
+  opacity: 0.94;
+}
+
+.hero .hero-statement-mark {
+  display: inline-block;
+  inline-size: 0.92em;
+  margin-inline-end: 0.28em;
+  color: #d8394a;
+  -webkit-text-fill-color: #d8394a;
+  font-size: 0;
+  font-style: normal;
+  line-height: 1;
+  vertical-align: 0.07em;
+  animation: none !important;
+}
+
+.hero .hero-statement-mark::before {
+  content: "✦";
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 0.46rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+/* STATUS TEAM / impact — same face, but now the accent behaves like an
+   art-director's note laid over the strict uppercase line instead of a
+   repeated highlight bar. */
+.st-page-two .st2-impact-accent {
+  position: relative;
+  display: inline-block;
+  inline-size: fit-content;
+  max-inline-size: calc(100vw - var(--st2-gutter) * 2);
+  margin-block-start: -0.03em;
+  margin-inline-start: clamp(5.5rem, 17.5vw, 18rem);
+  color: #d4143d;
+  font-family: var(--ff-bona-nova), Georgia, serif;
+  font-size: clamp(2.05rem, 3vw, 3.65rem);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  text-shadow: none;
+  white-space: nowrap;
+  filter: drop-shadow(0 2px 10px rgba(212, 20, 61, 0.22));
+  transform: translateY(-0.06em) rotate(-1.05deg);
+  transform-origin: 0 70%;
+}
+
+.st-page-two .st2-impact-accent::after {
+  content: "//";
+  display: inline-block;
+  margin-inline-start: 0.3em;
+  color: currentColor;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.42em;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  vertical-align: 0.2em;
+  opacity: 0.78;
+}
+
+@media (max-width: 899px) {
+  .hero .hero-statement {
+    max-inline-size: min(88vw, 29rem);
+    font-size: clamp(1rem, 4.8vw, 1.42rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    transform: rotate(-0.25deg);
+  }
+
+  .hero .hero-statement::before {
+    inset-inline-start: 1.05em;
+    inset-inline-end: -0.3em;
+    block-size: 0.62em;
+  }
+
+  .hero .hero-statement-mark {
+    inline-size: 0.8em;
+    margin-inline-end: 0.24em;
+  }
+
+  .hero .hero-statement-mark::before {
+    font-size: 0.4rem;
+  }
+
+  .st-page-two .st2-impact-accent {
+    max-inline-size: 100%;
+    margin-inline-start: clamp(1.4rem, 8vw, 4.25rem);
+    margin-block-start: 0.12em;
+    font-size: clamp(1.7rem, 7vw, 2.6rem);
+    letter-spacing: -0.035em;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero .hero-statement {
+    max-inline-size: 87vw;
+    font-size: clamp(0.98rem, 4.55vw, 1.18rem);
+  }
+
+  .hero .hero-statement::before {
+    block-size: 0.55em;
+    inset-block-end: 0.02em;
+  }
+
+  .st-page-two .st2-impact-accent {
+    margin-inline-start: 0.65rem;
+    font-size: clamp(1.55rem, 7.25vw, 2.1rem);
+    line-height: 0.94;
+  }
+
+  .st-page-two .st2-impact-accent::after {
+    font-size: 0.38em;
+    margin-inline-start: 0.22em;
+  }
+}
