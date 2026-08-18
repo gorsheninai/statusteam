@@ -156,6 +156,7 @@ export default function Home() {
 
               {/* TODO: replace-content */}
               <p className="hero-statement" data-hero="statement">
+                <span className="hero-statement-mark" aria-hidden="true">*</span>
                 Крупнейший показ нижнего белья в России
               </p>
 
