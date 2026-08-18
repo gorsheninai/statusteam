@@ -247,7 +247,7 @@ export default function StatusTeamScene() {
           <header className="st2-vanguard-head" data-st2-section-title>
             <h2 id="st2-vanguard-title">Среди гостей</h2>
             <span className="st2-vanguard-tag">
-              [ архив предыдущего показа · «славянский взгляд» ]
+              [ предыдущий показ · «славянский взгляд» ]
             </span>
           </header>
 

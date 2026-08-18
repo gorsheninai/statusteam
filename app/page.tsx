@@ -145,8 +145,8 @@ export default function Home() {
             </div>
 
             <div className="hero-inner shell">
-              <p className="hero-eyebrow" data-hero="eyebrow" aria-hidden="true">
-                — STATUS TEAM · 2026 —
+              <p className="eyebrow-badge" data-hero="eyebrow" aria-hidden="true">
+                — Новый показ —
               </p>
 
               <h1 className="hero-title" data-pulse-title>
@@ -190,6 +190,9 @@ export default function Home() {
             ============================================================ */}
         <section className="pulse-scene on-dark" id="pulse" data-bg="ink">
           <div className="pulse-intro" data-sand-reveal>
+            <p className="eyebrow-badge pulse-eyebrow" aria-hidden="true">
+              — Новый показ —
+            </p>
             <h2 className="pulse-title" data-sand-title>
               <span className="pulse-title-fit">ПУЛЬС КОНТИНЕНТА</span>
             </h2>

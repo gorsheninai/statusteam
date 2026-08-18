@@ -1133,7 +1133,7 @@ ol {
   margin-block: auto 0;
 }
 
-.hero-eyebrow {
+.eyebrow-badge {
   margin: 0 0 clamp(0.6rem, 1.6vw, 1rem);
   font-family: var(--ff-playfair-italic);
   font-style: italic;
@@ -1142,6 +1142,11 @@ ol {
   letter-spacing: 0.14em;
   color: var(--sand);
   opacity: 0.85;
+}
+.pulse-eyebrow {
+  position: relative;
+  z-index: 1;
+  text-align: center;
 }
 
 .hero-title {
