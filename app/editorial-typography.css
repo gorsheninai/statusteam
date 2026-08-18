@@ -14,7 +14,7 @@
   margin: -0.08em 0 clamp(1.3rem, 3vw, 2rem);
   color: #fffefa;
   -webkit-text-fill-color: #fffefa;
-  font-family: "Bona Nova", Georgia, serif;
+  font-family: "Bona Nova", var(--ff-playfair-italic), Georgia, serif;
   font-size: clamp(1.18rem, 1.65vw, 2rem);
   font-weight: 700;
   font-style: italic;
@@ -43,14 +43,14 @@
 
 .hero .hero-statement-mark {
   display: inline-block;
-  inline-size: 0.92em;
+  inline-size: 0.7rem;
   margin-inline-end: 0.28em;
   color: #d8394a;
   -webkit-text-fill-color: #d8394a;
   font-size: 0;
   font-style: normal;
   line-height: 1;
-  vertical-align: 0.07em;
+  vertical-align: 0.12rem;
   animation: none !important;
 }
 
@@ -75,7 +75,7 @@
   margin-block-start: -0.03em;
   margin-inline-start: clamp(5.5rem, 17.5vw, 18rem);
   color: #d4143d;
-  font-family: "Bona Nova", Georgia, serif;
+  font-family: "Bona Nova", var(--ff-playfair-italic), Georgia, serif;
   font-size: clamp(2.05rem, 3vw, 3.65rem);
   font-weight: 700;
   font-style: italic;
@@ -120,8 +120,9 @@
   }
 
   .hero .hero-statement-mark {
-    inline-size: 0.8em;
+    inline-size: 0.58rem;
     margin-inline-end: 0.24em;
+    vertical-align: 0.1rem;
   }
 
   .hero .hero-statement-mark::before {
