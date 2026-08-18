@@ -1,75 +1,8 @@
 /* STATUS TEAM — couture editorial typography pass.
-   Free/self-hosted only: Playfair Display Italic already ships with the site.
-   The accent text is a quiet editorial voice, not a second headline. */
-
-/* ============================================================
-   STATUS TEAM / IMPACT — editorial subline
-   ============================================================ */
-
-.st-page-two .st2-impact-copy {
-  max-inline-size: min(68rem, calc(100% - var(--st2-gutter) * 2));
-}
-
-.st-page-two .st2-impact-accent {
-  position: relative;
-  display: block;
-  inline-size: fit-content;
-  max-inline-size: calc(100vw - var(--st2-gutter) * 2);
-  margin-block-start: clamp(0.7rem, 1vw, 1rem);
-  margin-inline-start: clamp(5.5rem, 17vw, 18rem);
-  color: rgba(244, 240, 234, 0.96);
-  font-family: var(--ff-playfair-italic), Georgia, serif;
-  font-size: clamp(2rem, 2.55vw, 3rem);
-  font-weight: 400;
-  font-style: italic;
-  line-height: 0.96;
-  letter-spacing: -0.022em;
-  text-transform: none;
-  text-shadow: none;
-  white-space: nowrap;
-  filter: none;
-  transform: none;
-  transform-origin: initial;
-}
-
-/* Only the concept word carries the wine accent. */
-.st-page-two .st2-impact-accent-word {
-  color: #a61f3d;
-  -webkit-text-fill-color: #a61f3d;
-}
-
-/* Remove the old // flourish. */
-.st-page-two .st2-impact-accent::after {
-  content: none !important;
-}
-
-/* ============================================================
-   TABLET
-   ============================================================ */
-
-@media (max-width: 899px) {
-  .st-page-two .st2-impact-accent {
-    max-inline-size: min(24ch, 88vw);
-    margin-inline-start: clamp(1.5rem, 7vw, 4.25rem);
-    margin-block-start: 0.7rem;
-    font-size: clamp(1.7rem, 5vw, 2.35rem);
-    line-height: 0.98;
-    letter-spacing: -0.018em;
-    white-space: normal;
-  }
-}
-
-/* ============================================================
-   MOBILE
-   ============================================================ */
-
-@media (max-width: 520px) {
-  .st-page-two .st2-impact-accent {
-    max-inline-size: 15ch;
-    margin-inline-start: 0;
-    margin-block-start: 0.65rem;
-    font-size: clamp(1.45rem, 7vw, 1.95rem);
-    line-height: 1;
-    white-space: normal;
-  }
-}
+   The .st2-impact-accent / .st2-impact-accent-word rules that used to live
+   here were superseded by the tier2a/tier2b subgroup restructure in
+   status-team-page-two.css — that markup no longer exists, so the rules
+   targeting it were dead weight (and were silently overriding
+   .st2-impact-copy's own max-inline-size via load order, since this file
+   is pulled in last through faq-editorial.css's @import). Kept as an empty
+   file rather than removing the @import, since nothing else references it. */

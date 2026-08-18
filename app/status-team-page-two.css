@@ -193,15 +193,6 @@
 .st-page-two .st2-impact-copy h2 {
   max-inline-size: 100%;
   margin: 0;
-  color: var(--st2-white);
-  /* Matches the hero/pulse lock-up face (Tenor Sans) instead of the
-     serif — this instance is meant to read as the same brand mark. */
-  font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(1rem, 4.3vw, 2rem);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   text-shadow:
     0 0.08em 0.22em rgba(0, 0, 0, 0.84),
     0 0.28em 1.1em rgba(0, 0, 0, 0.7);
@@ -209,6 +200,20 @@
 
 .st-page-two .st2-impact-primary {
   display: grid;
+  color: var(--st2-white);
+  /* Matches the hero/pulse lock-up face (Tenor Sans) instead of a
+     grotesque sans — this instance is meant to read as the same brand
+     mark, not a different typeface bolted on. */
+  font-family: var(--font-display), Georgia, serif;
+  /* The min bound has to stay under the 4.3vw curve at 320-360px, or it
+     forces the line wider than the shrink-wrapped column can hold —
+     confirmed by measuring the actual glyph run against the column
+     edge (a nowrap block's overflow doesn't grow scrollWidth). */
+  font-size: clamp(0.85rem, 4.3vw, 2rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 .st-page-two .st2-impact-primary > span {
@@ -216,29 +221,55 @@
   white-space: nowrap;
 }
 
-.st-page-two .st2-impact-accent {
-  display: inline-block;
+/* The "break the grid" gesture: the accent staggers down and right of
+   the architectural line above it instead of sitting flush under it. */
+.st-page-two .st2-impact-subgroup {
+  display: block;
   inline-size: fit-content;
   max-inline-size: 100%;
-  margin-block-start: 0.25rem;
-  color: #d4143d;
+  margin-block-start: 0.5rem;
+  margin-inline-start: clamp(1.25rem, 11vw, 3.5rem);
+}
+
+.st-page-two .st2-impact-tier2a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  color: var(--burgundy);
   font-family: var(--ff-playfair-italic), Georgia, serif;
-  font-size: 0.85em;
-  font-weight: 400;
+  font-size: clamp(1.15rem, 7.5vw, 2.15rem);
+  font-weight: 500;
   font-style: italic;
-  line-height: 0.88;
-  letter-spacing: normal;
-  /* h2 sets uppercase for line 1; this line is meant to stay lowercase
-     and text-transform inherits, so it needs its own explicit reset. */
+  line-height: 1;
   text-transform: none;
   white-space: nowrap;
-  /* The dark contact shadow is inherited from the h2 (see above) — this
-     layers the red glow the brief asks for on top of it. filter, not
-     text-shadow, because the italic swashes overlap the white line above
-     and a drop-shadow follows the glyph outline instead of the box. */
-  filter: drop-shadow(0 2px 8px rgba(212, 20, 61, 0.25));
-  transform: rotate(-1deg);
+  filter: drop-shadow(0 2px 12px rgba(118, 16, 40, 0.3));
+  transform: rotate(-2deg);
   transform-origin: 0 70%;
+}
+
+.st-page-two .st2-impact-hairline {
+  flex-shrink: 0;
+  inline-size: clamp(1.75rem, 6vw, 3.5rem);
+  block-size: 1px;
+  background: rgba(118, 16, 40, 0.4);
+}
+
+.st-page-two .st2-impact-tier2b {
+  display: block;
+  max-inline-size: 100%;
+  margin-block-start: -0.2rem;
+  padding-inline-start: clamp(0.6rem, 3vw, 1.75rem);
+  color: var(--paper);
+  font-family: var(--ff-playfair-italic), Georgia, serif;
+  font-size: clamp(0.95rem, 5.6vw, 1.6rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
 }
 
 .st-page-two .st2-proof-groups {
@@ -693,19 +724,34 @@
     max-inline-size: min(72vw, 58rem);
   }
 
-  /* Both lines are nowrap at every width now. Tenor Sans at 0.12em
-     tracking is wide, so sizing here is calibrated against the
-     column's actual measured width (Range.getBoundingClientRect()
-     against the container edge, not scrollWidth — a nowrap block's
-     visible overflow under overflow:visible doesn't grow scrollWidth)
-     rather than the requested vw-only clamp, which overshoots this
-     column well before 1920px. */
-  .st-page-two .st2-impact-copy h2 {
+  /* All three lines are nowrap at this width. Sizing here is calibrated
+     against the column's actual measured width
+     (Range.getBoundingClientRect() against the container edge, not
+     scrollWidth — a nowrap block's visible overflow under
+     overflow:visible doesn't grow scrollWidth) rather than the
+     requested vw-only clamps, which overshoot this column. */
+  .st-page-two .st2-impact-primary {
     font-size: clamp(2rem, 3.55vw, 2.8rem);
   }
 
-  .st-page-two .st2-impact-accent {
-    margin-block-start: 0.5rem;
+  .st-page-two .st2-impact-subgroup {
+    margin-block-start: 0.65rem;
+    margin-inline-start: clamp(3.5rem, 22vw, 21.25rem);
+  }
+
+  .st-page-two .st2-impact-tier2a {
+    gap: 1.1rem;
+    font-size: clamp(1.6rem, 3.35vw, 3.375rem);
+  }
+
+  .st-page-two .st2-impact-hairline {
+    inline-size: clamp(2.5rem, 4.5vw, 4.5rem);
+  }
+
+  .st-page-two .st2-impact-tier2b {
+    margin-block-start: -0.3rem;
+    padding-inline-start: clamp(1rem, 2.2vw, 2rem);
+    font-size: clamp(1.35rem, 2.55vw, 2.5rem);
   }
 
   .st-page-two .st2-watch {
