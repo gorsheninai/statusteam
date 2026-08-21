@@ -101,7 +101,6 @@
 }
 
 @media (min-width: 900px) {
-  /* Desktop: event meta above the CTA as one compact action module. */
   .hero-inner {
     display: block !important;
     transform: translateY(-6.75rem) !important;
@@ -139,13 +138,14 @@
     letter-spacing: .11em !important;
     line-height: 1 !important;
     text-align: left !important;
+    transform: translateY(-.38rem) !important;
   }
 
   .hero-cta {
     width: auto !important;
     margin-inline-start: .82rem !important;
     margin-inline-end: auto !important;
-    margin-top: 0 !important;
+    margin-top: .38rem !important;
   }
 
   .hero-cta .btn {
