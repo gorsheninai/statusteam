@@ -18,9 +18,14 @@
   text-transform: uppercase !important;
 }
 
+/* Tenor Sans has no true italic cut, so keep the exact same face and give it
+   a restrained optical oblique. This preserves the thin fashion geometry
+   while differentiating the line without introducing a third typeface. */
 .st-page-two .st2-impact-primary > span {
-  display: block !important;
+  display: inline-block !important;
   white-space: nowrap !important;
+  transform: skewX(-6deg) !important;
+  transform-origin: left center !important;
 }
 
 /* One couture italic line: right-shifted and lightly overlapping the headline. */
