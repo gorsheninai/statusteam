@@ -19,21 +19,24 @@
   margin-bottom: clamp(2.7rem, 3.8vw, 3.8rem) !important;
 }
 
-/* Same visual language as the page-three archive tag. */
+/* Same family as the main PULSE CONTINENT lock-up: one display voice across
+   the hero. The line stays secondary through scale, champagne color and
+   restrained tracking rather than switching to a separate UI sans. */
 .hero-statement-anchor {
   display: block !important;
   color: #c6a87c !important;
-  font-family: var(--font-ui), var(--ff-onest), Arial, sans-serif !important;
-  font-size: clamp(.86rem, 3.7vw, 1.08rem) !important;
-  font-weight: 500 !important;
+  font-family: var(--font-display), var(--ff-tenor), Georgia, serif !important;
+  font-size: clamp(.9rem, 3.8vw, 1.12rem) !important;
+  font-weight: 400 !important;
   font-style: normal !important;
-  line-height: 1.15 !important;
-  letter-spacing: .22em !important;
+  line-height: 1.08 !important;
+  letter-spacing: .11em !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
 }
 
-/* Cormorant Garamond Medium Italic 500 — couture/editorial accent. */
+/* Cormorant Garamond Medium Italic 500 — the only contrasting editorial
+   accent beneath the shared display family. */
 .hero-statement-script {
   display: block !important;
   width: max-content !important;
@@ -71,8 +74,8 @@
   }
 
   .hero-statement-anchor {
-    font-size: clamp(1.15rem, 1.18vw, 1.45rem) !important;
-    letter-spacing: .22em !important;
+    font-size: clamp(1.2rem, 1.24vw, 1.5rem) !important;
+    letter-spacing: .11em !important;
   }
 
   .hero-statement-script {
@@ -92,8 +95,8 @@
   }
 
   .hero-statement-anchor {
-    font-size: clamp(.78rem, 3.7vw, .95rem) !important;
-    letter-spacing: .16em !important;
+    font-size: clamp(.8rem, 3.8vw, .98rem) !important;
+    letter-spacing: .09em !important;
   }
 
   .hero-statement-script {
