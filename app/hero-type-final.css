@@ -105,15 +105,16 @@
 }
 
 @media (min-width: 900px) {
-  /* Desktop composition: title, statement, then one horizontal event/action row. */
+  /* Match the supplied desktop reference: wide meta column, then a wider CTA. */
   .hero-inner {
+    --hero-cta-width: 20.35rem;
     display: grid !important;
-    grid-template-columns: max-content var(--hero-cta-width) !important;
+    grid-template-columns: 29.5rem var(--hero-cta-width) !important;
     grid-template-areas:
       "title title"
       "statement statement"
       "meta cta" !important;
-    column-gap: clamp(2.6rem, 3.2vw, 3.6rem) !important;
+    column-gap: 1.85rem !important;
     row-gap: 0 !important;
     align-items: center !important;
     justify-content: start !important;
@@ -128,7 +129,7 @@
   .hero-statement {
     grid-area: statement !important;
     margin-inline-start: .82rem !important;
-    margin-bottom: clamp(2.15rem, 2.35vw, 2.55rem) !important;
+    margin-bottom: 2.85rem !important;
   }
 
   .hero-statement-anchor,
@@ -147,13 +148,15 @@
     margin-inline-start: .82rem !important;
     margin-inline-end: 0 !important;
     align-self: center !important;
-    font-size: clamp(1.08rem, 1.22vw, 1.42rem) !important;
-    letter-spacing: .13em !important;
+    font-size: clamp(1.32rem, 1.42vw, 1.62rem) !important;
+    font-weight: 500 !important;
+    letter-spacing: .12em !important;
     line-height: 1 !important;
   }
 
   .hero-cta {
     grid-area: cta !important;
+    width: var(--hero-cta-width) !important;
     margin-inline-start: 0 !important;
     margin-inline-end: 0 !important;
     align-self: center !important;
