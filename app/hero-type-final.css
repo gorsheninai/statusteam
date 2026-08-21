@@ -21,12 +21,12 @@
   justify-self: start !important;
 }
 
-/* Raise the complete text stack instead of moving individual pieces. */
+/* Raise the complete hero copy stack as one unit. */
 .hero-inner {
-  transform: translateY(-1.25rem) !important;
+  --hero-cta-width: 18.25rem;
+  transform: translateY(-2rem) !important;
 }
 
-/* Pull the supporting statement 15–20px closer to CONTINENT. */
 .hero-title {
   margin-bottom: clamp(2.1rem, 2.7vw, 2.95rem) !important;
 }
@@ -68,11 +68,13 @@
   margin-inline-start: .36em !important;
 }
 
-/* Event meta now behaves as a caption for the CTA rather than a separate
-   information block: compact, quiet, and visually attached to the button. */
+/* Event meta is the caption for the CTA. Give it the exact same width as the
+   button and center its contents so the label sits on the button's axis. */
 .hero-where {
   display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
+  width: var(--hero-cta-width) !important;
   gap: 0 !important;
   margin-top: 0 !important;
   margin-bottom: .72rem !important;
@@ -83,7 +85,7 @@
   line-height: 1 !important;
   letter-spacing: .17em !important;
   text-transform: uppercase !important;
-  text-align: left !important;
+  text-align: center !important;
   white-space: nowrap !important;
 }
 
@@ -94,13 +96,19 @@
 }
 
 .hero-cta {
+  width: var(--hero-cta-width) !important;
   margin-top: 0 !important;
   text-align: left !important;
 }
 
+.hero-cta .btn {
+  width: 100% !important;
+  justify-content: center !important;
+}
+
 @media (min-width: 900px) {
   .hero-inner {
-    transform: translateY(-1.75rem) !important;
+    transform: translateY(-3rem) !important;
   }
 
   .hero-statement,
@@ -137,7 +145,8 @@
 
 @media (max-width: 899px) {
   .hero-inner {
-    transform: translateY(-.75rem) !important;
+    --hero-cta-width: min(18.25rem, calc(100vw - 3rem));
+    transform: translateY(-1.25rem) !important;
   }
 
   .hero-statement,
