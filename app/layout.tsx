@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Comforter } from "next/font/google";
 import { PULSE_PATH } from "@/lib/pulse-path";
 import "./globals.css";
 import "./hero-placement.css";
@@ -15,9 +16,9 @@ import "./faq-editorial.css";
 import "./hero-type-final.css";
 import "./page-two-type-final.css";
 
-/* All faces are self-hosted: the production site must not depend on a font
-   CDN. Each file is the upstream Google Fonts release (SIL OFL, licences
-   alongside), subset to Latin + Cyrillic + the punctuation this page uses. */
+/* Core project faces are self-hosted. Comforter is loaded through next/font,
+   which downloads the Google Fonts source at build time and self-hosts it in
+   the production bundle; the browser does not depend on a font CDN. */
 
 /* DISPLAY — Tenor Sans. One weight only, by design; `font-synthesis: none`
    in globals.css stops the browser faking the bold this face does not have. */
@@ -66,7 +67,8 @@ const playfairItalic = localFont({
   fallback: ["Georgia", "serif"],
 });
 
-/* HERO FASHION — Droid 1997 Regular (CC0). */
+/* HERO FASHION — Droid 1997 Regular (CC0). Retained as an available project
+   face even though the current hero lock-up no longer uses it. */
 const droid1997 = localFont({
   src: "./fonts/Droid-1997-Regular.woff2",
   variable: "--ff-droid-1997",
@@ -76,10 +78,10 @@ const droid1997 = localFont({
   fallback: ["Arial Narrow", "Arial", "sans-serif"],
 });
 
-/* HERO SCRIPT — Marck Script Regular (SIL OFL). */
-const marckScript = localFont({
-  src: "./fonts/MarckScript-Regular.woff2",
-  variable: "--ff-marck-script",
+/* SCRIPT ACCENT — Comforter Regular, OFL, with Cyrillic coverage. */
+const comforter = Comforter({
+  subsets: ["cyrillic", "latin"],
+  variable: "--ff-comforter",
   weight: "400",
   style: "normal",
   display: "swap",
@@ -123,7 +125,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable} ${droid1997.variable} ${marckScript.variable}`}
+      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable} ${droid1997.variable} ${comforter.variable}`}
     >
       <body>
         <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />
