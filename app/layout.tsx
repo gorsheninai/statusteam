@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Comforter } from "next/font/google";
 import { PULSE_PATH } from "@/lib/pulse-path";
 import "./globals.css";
 import "./hero-placement.css";
@@ -16,9 +15,7 @@ import "./faq-editorial.css";
 import "./hero-type-final.css";
 import "./page-two-type-final.css";
 
-/* Core project faces are self-hosted. Comforter is loaded through next/font,
-   which downloads the Google Fonts source at build time and self-hosts it in
-   the production bundle; the browser does not depend on a font CDN. */
+/* All active typefaces are self-hosted local files. */
 
 /* DISPLAY — Tenor Sans. One weight only, by design; `font-synthesis: none`
    in globals.css stops the browser faking the bold this face does not have. */
@@ -28,7 +25,6 @@ const tenor = localFont({
   weight: "400",
   style: "normal",
   display: "swap",
-  /* Fallback metrics matched to Tenor Sans, so the swap does not reflow. */
   adjustFontFallback: "Times New Roman",
   fallback: ["Georgia", "serif"],
 });
@@ -44,7 +40,7 @@ const onest = localFont({
   fallback: ["system-ui", "sans-serif"],
 });
 
-/* EDITORIAL — reserved for the aftermovie statement. */
+/* EDITORIAL — upright Playfair Display. */
 const playfair = localFont({
   src: "./fonts/PlayfairDisplay-Cyrillic-Variable.ttf",
   variable: "--ff-playfair",
@@ -54,10 +50,7 @@ const playfair = localFont({
   fallback: ["Georgia", "serif"],
 });
 
-/* EDITORIAL, italic — the accent line under the aftermovie statement.
-   A static 400 instance (Fontsource's variable italic, merged with the
-   Latin subset and pinned to one weight), not the full 400–900 range the
-   upright face carries — the accent only ever needs the one weight. */
+/* EDITORIAL ITALIC — Playfair Display Italic 400 with Cyrillic coverage. */
 const playfairItalic = localFont({
   src: "./fonts/PlayfairDisplay-Italic-Cyrillic.ttf",
   variable: "--ff-playfair-italic",
@@ -76,16 +69,6 @@ const droid1997 = localFont({
   style: "normal",
   display: "swap",
   fallback: ["Arial Narrow", "Arial", "sans-serif"],
-});
-
-/* SCRIPT ACCENT — Comforter Regular, OFL, with Cyrillic coverage. */
-const comforter = Comforter({
-  subsets: ["cyrillic", "latin"],
-  variable: "--ff-comforter",
-  weight: "400",
-  style: "normal",
-  display: "swap",
-  fallback: ["cursive"],
 });
 
 export const metadata: Metadata = {
@@ -109,12 +92,6 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-/**
- * Runs before the preloader element is parsed, so a repeat visit inside the
- * same tab never sees the curtain a second time — and never flashes it
- * either. Wrapped in try/catch because Safari's private mode throws on
- * sessionStorage access.
- */
 const PRELOAD_ONCE = `try{if(sessionStorage.getItem('st-seen')){document.documentElement.classList.add('no-preload')}else{sessionStorage.setItem('st-seen','1')}}catch(e){}`;
 
 export default function RootLayout({
@@ -125,15 +102,11 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable} ${droid1997.variable} ${comforter.variable}`}
+      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable} ${droid1997.variable}`}
     >
       <body>
         <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />
 
-        {/* The stage curtain. Pure CSS on purpose: it covers the whole page,
-            so it has to open even if the JavaScript bundle never arrives —
-            otherwise it is a closed curtain with the site behind it. The
-            pulse writes itself across the seam, then the wings part. */}
         <div className="preloader" aria-hidden="true">
           <span className="curtain curtain-l" />
           <span className="curtain curtain-r" />
@@ -153,8 +126,6 @@ export default function RootLayout({
 
         {children}
 
-        {/* Film grain over everything. Fixed, inert, and cheap: one tiling
-            turbulence sprite moved by transform. */}
         <div className="grain" aria-hidden="true" />
       </body>
     </html>
