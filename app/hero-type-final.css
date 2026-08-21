@@ -35,21 +35,21 @@
   white-space: nowrap !important;
 }
 
-/* Marck Script remains the only emotional accent. It sits slightly into the
-   label line and shifts right so the two styles feel intentionally composed. */
+/* Comforter is the emotional accent. Its taller brush forms need a little
+   more breathing room than Marck while still lightly overlapping the label. */
 .hero-statement-script {
   display: block !important;
   width: max-content !important;
   max-width: 100% !important;
-  margin-block-start: -.18em !important;
+  margin-block-start: -.24em !important;
   margin-inline-start: clamp(3.5rem, 8vw, 6.5rem) !important;
   color: var(--red-bright) !important;
-  font-family: var(--ff-marck-script), cursive !important;
+  font-family: var(--ff-comforter), cursive !important;
   font-weight: 400 !important;
   font-style: normal !important;
   text-align: left !important;
-  font-size: clamp(1.45rem, 5.6vw, 2.1rem) !important;
-  line-height: .95 !important;
+  font-size: clamp(1.65rem, 6vw, 2.35rem) !important;
+  line-height: .88 !important;
   letter-spacing: 0 !important;
   white-space: nowrap !important;
   transform: none !important;
@@ -79,9 +79,9 @@
   }
 
   .hero-statement-script {
-    margin-block-start: -.22em !important;
+    margin-block-start: -.28em !important;
     margin-inline-start: clamp(5.5rem, 9vw, 8rem) !important;
-    font-size: clamp(2.25rem, 2.5vw, 2.8rem) !important;
+    font-size: clamp(2.65rem, 2.9vw, 3.2rem) !important;
   }
 }
 
@@ -100,9 +100,9 @@
   }
 
   .hero-statement-script {
-    margin-block-start: -.12em !important;
+    margin-block-start: -.16em !important;
     margin-inline-start: clamp(2rem, 8vw, 3.5rem) !important;
-    font-size: clamp(1.3rem, 6vw, 1.85rem) !important;
+    font-size: clamp(1.5rem, 6.6vw, 2.05rem) !important;
   }
 
   .hero-where {
