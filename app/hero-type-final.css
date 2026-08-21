@@ -1,0 +1,36 @@
+/* Final hero typography lock-up: Droid anchor + centered Marck Script accent. */
+.hero-statement {
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  margin-top: clamp(1.8rem, 4.4vw, 2.7rem) !important;
+  margin-bottom: clamp(2.25rem, 5vw, 3.15rem) !important;
+}
+
+.hero-statement-anchor {
+  font-size: clamp(1.15rem, 5.8vw, 3.15rem) !important;
+  line-height: .88 !important;
+  letter-spacing: .006em !important;
+}
+
+.hero-statement-script {
+  width: 100% !important;
+  margin-block-start: -.12em !important;
+  margin-inline-start: 0 !important;
+  text-align: center !important;
+  font-size: clamp(1.05rem, 5.1vw, 1.8rem) !important;
+  line-height: .98 !important;
+  transform: none !important;
+}
+
+@media (min-width: 900px) {
+  .hero-statement-anchor {
+    font-size: clamp(3rem, 4.05vw, 4.9rem) !important;
+    letter-spacing: .003em !important;
+  }
+
+  .hero-statement-script {
+    margin-block-start: -.08em !important;
+    font-size: clamp(2rem, 2.45vw, 2.9rem) !important;
+  }
+}
