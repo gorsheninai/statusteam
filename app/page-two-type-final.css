@@ -1,4 +1,4 @@
-/* Final page-two impact typography: one-line Comforter accent, lightly overlapping the primary line. */
+/* Final page-two impact typography: one-line Playfair Italic accent. */
 
 .st-page-two .st2-impact-copy h2 {
   display: inline-flex !important;
@@ -23,16 +23,16 @@
   white-space: nowrap !important;
 }
 
-/* One handwritten Comforter line: pushed to the far-right edge and lifted into the headline. */
+/* One editorial italic line: right-shifted and lightly overlapping the headline. */
 .st-page-two .st2-impact-subgroup {
   display: flex !important;
   align-items: baseline !important;
   justify-content: flex-end !important;
   align-self: flex-end !important;
-  gap: .22em !important;
+  gap: .2em !important;
   width: max-content !important;
   max-width: 100% !important;
-  margin-block-start: -.27em !important;
+  margin-block-start: -.16em !important;
   margin-inline-start: 0 !important;
   white-space: nowrap !important;
   transform: translateX(clamp(2rem, 5vw, 4.75rem)) !important;
@@ -44,12 +44,12 @@
   margin: 0 !important;
   padding: 0 !important;
   color: var(--red-bright) !important;
-  font-family: var(--ff-comforter), cursive !important;
-  font-style: normal !important;
+  font-family: var(--ff-playfair-italic), Georgia, serif !important;
+  font-style: italic !important;
   font-weight: 400 !important;
-  font-size: clamp(1.55rem, 6.2vw, 2.4rem) !important;
-  line-height: .86 !important;
-  letter-spacing: 0 !important;
+  font-size: clamp(1.35rem, 5.2vw, 2rem) !important;
+  line-height: .92 !important;
+  letter-spacing: -.015em !important;
   text-transform: none !important;
   white-space: nowrap !important;
   transform: none !important;
@@ -71,14 +71,14 @@
 
   .st-page-two .st2-impact-subgroup {
     align-self: flex-end !important;
-    margin-block-start: -.34em !important;
-    gap: .26em !important;
+    margin-block-start: -.20em !important;
+    gap: .24em !important;
     transform: translateX(clamp(3.5rem, 7vw, 7rem)) !important;
   }
 
   .st-page-two .st2-impact-tier2a,
   .st-page-two .st2-impact-tier2b {
-    font-size: clamp(2.8rem, 3.55vw, 3.9rem) !important;
+    font-size: clamp(2.25rem, 2.95vw, 3.25rem) !important;
   }
 }
 
@@ -89,8 +89,8 @@
 
   .st-page-two .st2-impact-subgroup {
     align-self: center !important;
-    margin-block-start: -.14em !important;
-    gap: .16em !important;
+    margin-block-start: -.08em !important;
+    gap: .14em !important;
     transform: none !important;
   }
 }
