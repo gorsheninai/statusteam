@@ -23,7 +23,7 @@
   white-space: nowrap !important;
 }
 
-/* One handwritten line. Its right edge aligns with the final "Я" in "СОБЫТИЯ". */
+/* One handwritten line: pushed to the far-right edge and lifted into the headline. */
 .st-page-two .st2-impact-subgroup {
   display: flex !important;
   align-items: baseline !important;
@@ -32,10 +32,10 @@
   gap: .28em !important;
   width: max-content !important;
   max-width: 100% !important;
-  margin-block-start: -.16em !important;
+  margin-block-start: -.22em !important;
   margin-inline-start: 0 !important;
   white-space: nowrap !important;
-  transform: none !important;
+  transform: translateX(clamp(2rem, 5vw, 4.75rem)) !important;
 }
 
 .st-page-two .st2-impact-tier2a,
@@ -71,8 +71,9 @@
 
   .st-page-two .st2-impact-subgroup {
     align-self: flex-end !important;
-    margin-block-start: -.18em !important;
+    margin-block-start: -.28em !important;
     gap: .32em !important;
+    transform: translateX(clamp(3.5rem, 7vw, 7rem)) !important;
   }
 
   .st-page-two .st2-impact-tier2a,
@@ -90,5 +91,6 @@
     align-self: center !important;
     margin-block-start: -.10em !important;
     gap: .2em !important;
+    transform: none !important;
   }
 }
