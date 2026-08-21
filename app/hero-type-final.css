@@ -7,9 +7,9 @@
   margin-inline-start: 0 !important;
 }
 
-/* Main lock-up leads; the offer sits 55–65px below it on desktop. */
+/* Main lock-up leads; supporting offer stays clearly secondary. */
 .hero-title {
-  margin-bottom: clamp(2.4rem, 3.4vw, 3.8rem) !important;
+  margin-bottom: clamp(2.7rem, 3.5vw, 4rem) !important;
 }
 
 .hero-statement {
@@ -17,27 +17,36 @@
   width: max-content !important;
   max-width: 100% !important;
   margin-top: 0 !important;
-  margin-bottom: clamp(2.4rem, 4vw, 3.5rem) !important;
+  margin-bottom: clamp(2.55rem, 3.7vw, 3.6rem) !important;
 }
 
-/* Droid 1997 — stronger second-level headline, but still below PULSE. */
+/* Tenor Sans — same brand voice as the main identity, quieter and more spaced. */
 .hero-statement-anchor {
   display: block !important;
-  font-size: clamp(1.55rem, 7.2vw, 3rem) !important;
-  line-height: .86 !important;
-  letter-spacing: .004em !important;
+  font-family: var(--font-display), var(--ff-tenor), Georgia, serif !important;
+  font-size: clamp(1.45rem, 6.2vw, 2.35rem) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  line-height: .94 !important;
+  letter-spacing: .10em !important;
+  text-transform: uppercase !important;
   white-space: nowrap !important;
 }
 
-/* Marck Script — centered, horizontal, only lightly touching the Droid line. */
+/* Marck Script — the single emotional accent, lightly overlapping below. */
 .hero-statement-script {
   display: block !important;
   width: 100% !important;
-  margin-block-start: -.10em !important;
+  margin-block-start: -.13em !important;
   margin-inline-start: 0 !important;
+  color: var(--red-bright) !important;
+  font-family: var(--ff-marck-script), cursive !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
   text-align: center !important;
-  font-size: clamp(1.2rem, 5.4vw, 2rem) !important;
-  line-height: .98 !important;
+  font-size: clamp(1.25rem, 5.2vw, 1.95rem) !important;
+  line-height: .96 !important;
+  letter-spacing: 0 !important;
   white-space: nowrap !important;
   transform: none !important;
 }
@@ -57,17 +66,17 @@
   }
 
   .hero-statement {
-    margin-bottom: clamp(3rem, 3.6vw, 3.75rem) !important;
+    margin-bottom: clamp(3rem, 3.5vw, 3.7rem) !important;
   }
 
   .hero-statement-anchor {
-    font-size: clamp(3.9rem, 4.15vw, 4.55rem) !important;
-    letter-spacing: .002em !important;
+    font-size: clamp(2.25rem, 2.35vw, 2.75rem) !important;
+    letter-spacing: .10em !important;
   }
 
   .hero-statement-script {
-    margin-block-start: -.08em !important;
-    font-size: clamp(2.35rem, 2.45vw, 2.7rem) !important;
+    margin-block-start: -.11em !important;
+    font-size: clamp(2rem, 2.25vw, 2.55rem) !important;
   }
 }
 
