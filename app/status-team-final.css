@@ -229,3 +229,40 @@
 .join + .faq-scene {
   margin-top: 0 !important;
 }
+
+/* ============================================================
+   HERO — reference-led Droid + Marck composition
+   The condensed anchor becomes the dominant graphic mass. The script is
+   deliberately pulled up through its lower third instead of sitting below it.
+   ============================================================ */
+.hero-statement {
+  margin-top: clamp(1.85rem, 4.5vw, 2.8rem) !important;
+  margin-bottom: clamp(2.15rem, 4.8vw, 3rem) !important;
+}
+
+.hero-statement-anchor {
+  font-size: clamp(1.2rem, 6vw, 3.35rem) !important;
+  line-height: .86 !important;
+  letter-spacing: .008em !important;
+}
+
+.hero-statement-script {
+  margin-block-start: -.68em !important;
+  margin-inline-start: clamp(3.5rem, 18vw, 8.5rem) !important;
+  font-size: clamp(1.35rem, 7vw, 2.65rem) !important;
+  line-height: .92 !important;
+  transform: rotate(-3deg) !important;
+}
+
+@media (min-width: 900px) {
+  .hero-statement-anchor {
+    font-size: clamp(3.15rem, 4.35vw, 5.3rem) !important;
+    letter-spacing: .004em !important;
+  }
+
+  .hero-statement-script {
+    margin-block-start: -.72em !important;
+    margin-inline-start: clamp(10rem, 14vw, 16rem) !important;
+    font-size: clamp(2.75rem, 3.65vw, 4.15rem) !important;
+  }
+}
