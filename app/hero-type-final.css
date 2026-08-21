@@ -102,6 +102,7 @@
 
 @media (min-width: 900px) {
   .hero-inner {
+    --hero-action-width: 25.5rem;
     display: block !important;
     transform: translateY(-6.75rem) !important;
   }
@@ -128,7 +129,7 @@
 
   .hero-where {
     display: flex !important;
-    width: max-content !important;
+    width: var(--hero-action-width) !important;
     margin-inline-start: .82rem !important;
     margin-inline-end: auto !important;
     margin-top: 0 !important;
@@ -142,14 +143,14 @@
   }
 
   .hero-cta {
-    width: auto !important;
+    width: var(--hero-action-width) !important;
     margin-inline-start: .82rem !important;
     margin-inline-end: auto !important;
-    margin-top: .38rem !important;
+    margin-top: 1rem !important;
   }
 
   .hero-cta .btn {
-    width: max-content !important;
+    width: 100% !important;
     min-width: 0 !important;
     justify-content: center !important;
     font-size: 1rem !important;
