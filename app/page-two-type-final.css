@@ -3,7 +3,7 @@
 .st-page-two .st2-impact-copy h2 {
   display: inline-flex !important;
   flex-direction: column !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   max-inline-size: 100% !important;
 }
 
@@ -23,11 +23,12 @@
   white-space: nowrap !important;
 }
 
-/* Both phrases become one centered handwritten line. */
+/* One handwritten line. Its right edge aligns with the final "Я" in "СОБЫТИЯ". */
 .st-page-two .st2-impact-subgroup {
   display: flex !important;
   align-items: baseline !important;
-  justify-content: center !important;
+  justify-content: flex-end !important;
+  align-self: flex-end !important;
   gap: .28em !important;
   width: max-content !important;
   max-width: 100% !important;
@@ -42,6 +43,7 @@
   display: inline-block !important;
   margin: 0 !important;
   padding: 0 !important;
+  color: var(--red-bright) !important;
   font-family: var(--ff-marck-script), cursive !important;
   font-style: normal !important;
   font-weight: 400 !important;
@@ -54,21 +56,13 @@
   filter: none !important;
 }
 
-.st-page-two .st2-impact-tier2a {
-  color: var(--red-bright) !important;
-}
-
-.st-page-two .st2-impact-tier2b {
-  color: var(--paper) !important;
-}
-
 .st-page-two .st2-impact-hairline {
   display: none !important;
 }
 
 @media (min-width: 900px) {
   .st-page-two .st2-impact-copy h2 {
-    align-items: center !important;
+    align-items: flex-start !important;
   }
 
   .st-page-two .st2-impact-primary {
@@ -76,6 +70,7 @@
   }
 
   .st-page-two .st2-impact-subgroup {
+    align-self: flex-end !important;
     margin-block-start: -.18em !important;
     gap: .32em !important;
   }
