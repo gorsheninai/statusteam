@@ -1,0 +1,9 @@
+Droid 1997 Regular
+Designer: Ray Larabie / Typodermic Fonts
+Cyrillic: Sergiy S. Tkachenko
+License: Creative Commons Zero v1.0 Universal (CC0 1.0), no rights reserved.
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
+Upstream listing: https://www.dafont.com/droid.font
+
+The upstream author states that the fonts in the Droid archive are released
+under CC0 and may be used without requesting permission.

@@ -43,6 +43,8 @@
   --font-body: var(--ff-onest), system-ui, sans-serif;
   --font-ui: var(--ff-onest), system-ui, sans-serif;
   --font-display: var(--ff-tenor), Georgia, serif;
+  --font-hero-anchor: var(--ff-droid-1997), "Arial Narrow", Arial, sans-serif;
+  --font-hero-script: var(--ff-marck-script), cursive;
 
   /* Fluid scale */
   --fs-mega: clamp(4.2rem, 15vw, 15rem);
@@ -1159,37 +1161,32 @@ ol {
   max-width: none;
   margin: clamp(1.6rem, 4.5vw, 2.6rem) 0 clamp(1.8rem, 4.5vw, 2.75rem);
 }
-/* The bold anchor line — Tenor Sans in place of Droid 1997 Regular
-   (not self-hosted here, and this project only ships two subset
-   faces; see design-tokens skill). */
+/* Fashion anchor: exact Droid 1997 Regular. */
 .hero-statement-anchor {
   display: block;
-  font-family: var(--font-display);
+  font-family: var(--font-hero-anchor);
   font-weight: 400;
-  font-size: clamp(0.85rem, 4.7vw, 2.7rem);
-  line-height: 0.94;
-  letter-spacing: 0.02em;
+  font-size: clamp(1rem, 5.4vw, 3rem);
+  line-height: 0.92;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
   color: var(--paper);
   white-space: nowrap;
 }
-/* The script line — Playfair Display Italic in place of Pushkin/
-   PushkinC (same substitution already used for every other
-   handwritten accent on this page). It rides up and left to cross
-   the anchor line's baseline, the way "пара" crosses the word above
-   it in the reference. */
+/* Handwritten accent: exact Marck Script Regular.
+   It overlaps the anchor lightly, but stays readable as a separate line. */
 .hero-statement-script {
   display: block;
-  margin-block-start: -0.62em;
-  margin-inline-start: clamp(1.75rem, 9vw, 3.5rem);
-  font-family: var(--ff-playfair-italic);
-  font-style: italic;
+  margin-block-start: -0.48em;
+  margin-inline-start: clamp(2.25rem, 12vw, 4.25rem);
+  font-family: var(--font-hero-script);
+  font-style: normal;
   font-weight: 400;
-  font-size: clamp(0.78rem, 4.6vw, 1.55rem);
-  line-height: 1;
+  font-size: clamp(1.1rem, 6.3vw, 2.2rem);
+  line-height: 0.95;
   color: var(--red-bright);
   white-space: nowrap;
-  transform: rotate(-3deg);
+  transform: rotate(-2deg);
   transform-origin: 0 100%;
 }
 
@@ -2657,11 +2654,11 @@ ol {
     /* Sized against .hero-inner's real 68%-of-viewport box, not the
        full viewport — confirmed with the same off-DOM ratio measurement
        used for the mask-clipping-prone hero/pulse lock-up. */
-    font-size: clamp(1.8rem, 3.15vw, 3.1rem);
+    font-size: clamp(2.3rem, 3.6vw, 3.9rem);
   }
   .hero-statement-script {
-    margin-inline-start: clamp(4rem, 10vw, 8rem);
-    font-size: clamp(1.6rem, 3vw, 3rem);
+    margin-inline-start: clamp(5.5rem, 12vw, 10rem);
+    font-size: clamp(2.2rem, 3.35vw, 3.5rem);
   }
   .pulse-title .pulse-line {
     --pulse-spread: 0.1em;
@@ -2855,7 +2852,7 @@ ol {
     object-position: center 50%;
   }
   .hero-statement-script {
-    font-size: 3rem;
+    font-size: 3.5rem;
   }
 }
 

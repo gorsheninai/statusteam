@@ -64,6 +64,26 @@ const playfairItalic = localFont({
   fallback: ["Georgia", "serif"],
 });
 
+/* HERO FASHION — Droid 1997 Regular (CC0). */
+const droid1997 = localFont({
+  src: "./fonts/Droid-1997-Regular.woff2",
+  variable: "--ff-droid-1997",
+  weight: "400",
+  style: "normal",
+  display: "swap",
+  fallback: ["Arial Narrow", "Arial", "sans-serif"],
+});
+
+/* HERO SCRIPT — Marck Script Regular (SIL OFL). */
+const marckScript = localFont({
+  src: "./fonts/MarckScript-Regular.woff2",
+  variable: "--ff-marck-script",
+  weight: "400",
+  style: "normal",
+  display: "swap",
+  fallback: ["cursive"],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://statusteam.show"),
   title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
@@ -101,7 +121,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable}`}
+      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable} ${droid1997.variable} ${marckScript.variable}`}
     >
       <body>
         <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />
