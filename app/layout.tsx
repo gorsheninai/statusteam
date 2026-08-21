@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Cormorant_Garamond } from "next/font/google";
 import { PULSE_PATH } from "@/lib/pulse-path";
 import "./globals.css";
 import "./hero-placement.css";
@@ -15,7 +16,8 @@ import "./faq-editorial.css";
 import "./hero-type-final.css";
 import "./page-two-type-final.css";
 
-/* All active typefaces are self-hosted local files. */
+/* Core project faces are self-hosted. Cormorant Garamond is loaded through
+   next/font, downloaded at build time and self-hosted in the production bundle. */
 
 /* DISPLAY — Tenor Sans. One weight only, by design; `font-synthesis: none`
    in globals.css stops the browser faking the bold this face does not have. */
@@ -50,11 +52,21 @@ const playfair = localFont({
   fallback: ["Georgia", "serif"],
 });
 
-/* EDITORIAL ITALIC — Playfair Display Italic 400 with Cyrillic coverage. */
+/* EDITORIAL ITALIC — Playfair Display Italic 400 retained for other editorial uses. */
 const playfairItalic = localFont({
   src: "./fonts/PlayfairDisplay-Italic-Cyrillic.ttf",
   variable: "--ff-playfair-italic",
   weight: "400",
+  style: "italic",
+  display: "swap",
+  fallback: ["Georgia", "serif"],
+});
+
+/* COUTURE ACCENT — Cormorant Garamond Medium Italic 500, OFL, Cyrillic. */
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["cyrillic", "latin"],
+  variable: "--ff-cormorant-garamond",
+  weight: "500",
   style: "italic",
   display: "swap",
   fallback: ["Georgia", "serif"],
@@ -102,7 +114,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable} ${droid1997.variable}`}
+      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable} ${cormorantGaramond.variable} ${droid1997.variable}`}
     >
       <body>
         <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />
