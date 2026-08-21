@@ -104,6 +104,8 @@
   .hero-inner {
     /* Visually matches the rendered width of “МОСКВА · НОЯБРЬ 2026”. */
     --hero-action-width: 22.625rem;
+    /* Drop only the event/CTA module toward the foot of the first screen. */
+    --hero-action-drop: 7rem;
     display: block !important;
     transform: translateY(-6.75rem) !important;
   }
@@ -140,15 +142,16 @@
     letter-spacing: .11em !important;
     line-height: 1 !important;
     text-align: left !important;
-    transform: translateY(-.38rem) !important;
+    transform: translateY(calc(var(--hero-action-drop) - .38rem)) !important;
   }
 
   .hero-cta {
     width: var(--hero-action-width) !important;
     margin-inline-start: .82rem !important;
     margin-inline-end: auto !important;
-    /* 10 px lower than the previous 1rem position. */
+    /* Keep the tuned date-to-button spacing while moving the pair together. */
     margin-top: 1.625rem !important;
+    transform: translateY(var(--hero-action-drop)) !important;
   }
 
   .hero-cta .btn {
