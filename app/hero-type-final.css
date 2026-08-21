@@ -1,11 +1,20 @@
 /* Hero offer — stronger one-line red all-caps statement under the main lock-up. */
 
-/* One hard editorial axis for every piece of hero copy. */
-.hero-title,
+/* The H1 defines the master axis. Tenor Sans leaves visible side-bearing on
+   the huge Cyrillic П, so supporting copy needs a small optical inset to line
+   up with the actual ink edge rather than the element box edge. */
+.hero-title {
+  margin-inline-start: 0 !important;
+  margin-inline-end: auto !important;
+  padding-inline-start: 0 !important;
+  align-self: flex-start !important;
+  justify-self: start !important;
+}
+
 .hero-statement,
 .hero-where,
 .hero-cta {
-  margin-inline-start: 0 !important;
+  margin-inline-start: .78rem !important;
   margin-inline-end: auto !important;
   padding-inline-start: 0 !important;
   align-self: flex-start !important;
@@ -75,6 +84,12 @@
     transform: translateY(-1.75rem) !important;
   }
 
+  .hero-statement,
+  .hero-where,
+  .hero-cta {
+    margin-inline-start: .82rem !important;
+  }
+
   .hero-title {
     margin-bottom: clamp(2.15rem, 2.55vw, 2.9rem) !important;
   }
@@ -102,6 +117,12 @@
 @media (max-width: 899px) {
   .hero-inner {
     transform: translateY(-.75rem) !important;
+  }
+
+  .hero-statement,
+  .hero-where,
+  .hero-cta {
+    margin-inline-start: .35rem !important;
   }
 
   .hero-title {
