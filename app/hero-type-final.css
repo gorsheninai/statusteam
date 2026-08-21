@@ -36,7 +36,7 @@
   width: max-content !important;
   max-width: 100% !important;
   margin-top: 0 !important;
-  margin-bottom: clamp(2.55rem, 3.15vw, 3.1rem) !important;
+  margin-bottom: clamp(2.25rem, 2.65vw, 2.8rem) !important;
   text-align: left !important;
   white-space: nowrap !important;
 }
@@ -68,10 +68,29 @@
   margin-inline-start: .36em !important;
 }
 
+/* Event meta now behaves as a caption for the CTA rather than a separate
+   information block: compact, quiet, and visually attached to the button. */
 .hero-where {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
   margin-top: 0 !important;
-  margin-bottom: clamp(2.25rem, 3.2vw, 2.9rem) !important;
+  margin-bottom: .72rem !important;
+  color: #c6a87c !important;
+  font-family: var(--font-ui), var(--ff-onest), system-ui, sans-serif !important;
+  font-size: clamp(.68rem, 2.7vw, .78rem) !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: .17em !important;
+  text-transform: uppercase !important;
   text-align: left !important;
+  white-space: nowrap !important;
+}
+
+.hero-city::after {
+  content: "·" !important;
+  margin-inline: .72em !important;
+  color: #c6a87c !important;
 }
 
 .hero-cta {
@@ -95,7 +114,7 @@
   }
 
   .hero-statement {
-    margin-bottom: clamp(2.6rem, 2.85vw, 3.15rem) !important;
+    margin-bottom: clamp(2.35rem, 2.55vw, 2.75rem) !important;
   }
 
   .hero-statement-anchor,
@@ -110,7 +129,9 @@
   }
 
   .hero-where {
-    margin-bottom: clamp(2.45rem, 3vw, 3rem) !important;
+    margin-bottom: .78rem !important;
+    font-size: clamp(.72rem, .72vw, .82rem) !important;
+    letter-spacing: .18em !important;
   }
 }
 
@@ -132,7 +153,7 @@
   .hero-statement {
     width: auto !important;
     max-width: min(92vw, 36rem) !important;
-    margin-bottom: 1.9rem !important;
+    margin-bottom: 1.8rem !important;
     white-space: normal !important;
   }
 
@@ -148,6 +169,8 @@
   }
 
   .hero-where {
-    margin-bottom: 1.7rem !important;
+    margin-bottom: .68rem !important;
+    font-size: clamp(.65rem, 2.8vw, .74rem) !important;
+    letter-spacing: .14em !important;
   }
 }
