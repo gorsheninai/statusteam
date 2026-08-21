@@ -167,7 +167,7 @@ export default function Home() {
               {/* One control. The exact date lives in the ticket scene. */}
               <div className="hero-cta" data-hero="cta">
                 <a className="btn btn-solid" href="#tickets">
-                  Билеты <Arrow />
+                  Забронировать место <Arrow />
                 </a>
               </div>
             </div>
@@ -177,7 +177,6 @@ export default function Home() {
         <PulseRule />
 
         <StatusTeamScene />
-
         {/* ============================================================
             02 — ПУЛЬС КОНТИНЕНТА. The page goes black, the chapter is
             named, then four words hold the screen one at a time.
@@ -357,7 +356,6 @@ export default function Home() {
                   </span>
                 </a>
               </div>
-
               <Faq />
             </div>
           </div>
