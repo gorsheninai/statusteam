@@ -7,7 +7,6 @@
   margin-inline-start: 0 !important;
 }
 
-/* Main lock-up leads; the supporting offer stays secondary and editorial. */
 .hero-title {
   margin-bottom: clamp(2.8rem, 3.6vw, 4.1rem) !important;
 }
@@ -20,8 +19,7 @@
   margin-bottom: clamp(2.7rem, 3.8vw, 3.8rem) !important;
 }
 
-/* Same visual language as the page-three archive tag:
-   Onest/UI, champagne, uppercase, generous tracking. */
+/* Same visual language as the page-three archive tag. */
 .hero-statement-anchor {
   display: block !important;
   color: #c6a87c !important;
@@ -35,22 +33,21 @@
   white-space: nowrap !important;
 }
 
-/* Comforter is the emotional accent. Its taller brush forms need a little
-   more breathing room than Marck while still lightly overlapping the label. */
+/* Playfair Display Italic 400 — couture/editorial accent instead of handwriting. */
 .hero-statement-script {
   display: block !important;
   width: max-content !important;
   max-width: 100% !important;
-  margin-block-start: -.24em !important;
+  margin-block-start: -.12em !important;
   margin-inline-start: clamp(3.5rem, 8vw, 6.5rem) !important;
   color: var(--red-bright) !important;
-  font-family: var(--ff-comforter), cursive !important;
+  font-family: var(--ff-playfair-italic), Georgia, serif !important;
   font-weight: 400 !important;
-  font-style: normal !important;
+  font-style: italic !important;
   text-align: left !important;
-  font-size: clamp(1.65rem, 6vw, 2.35rem) !important;
-  line-height: .88 !important;
-  letter-spacing: 0 !important;
+  font-size: clamp(1.35rem, 5vw, 1.95rem) !important;
+  line-height: .92 !important;
+  letter-spacing: -.015em !important;
   white-space: nowrap !important;
   transform: none !important;
 }
@@ -79,9 +76,9 @@
   }
 
   .hero-statement-script {
-    margin-block-start: -.28em !important;
-    margin-inline-start: clamp(5.5rem, 9vw, 8rem) !important;
-    font-size: clamp(2.65rem, 2.9vw, 3.2rem) !important;
+    margin-block-start: -.16em !important;
+    margin-inline-start: clamp(5.25rem, 8.5vw, 7.75rem) !important;
+    font-size: clamp(2.1rem, 2.35vw, 2.65rem) !important;
   }
 }
 
@@ -100,9 +97,9 @@
   }
 
   .hero-statement-script {
-    margin-block-start: -.16em !important;
+    margin-block-start: -.08em !important;
     margin-inline-start: clamp(2rem, 8vw, 3.5rem) !important;
-    font-size: clamp(1.5rem, 6.6vw, 2.05rem) !important;
+    font-size: clamp(1.25rem, 5.6vw, 1.75rem) !important;
   }
 
   .hero-where {
