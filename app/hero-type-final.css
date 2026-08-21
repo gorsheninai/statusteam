@@ -102,7 +102,8 @@
 
 @media (min-width: 900px) {
   .hero-inner {
-    --hero-action-width: 25.5rem;
+    /* Visually matches the rendered width of “МОСКВА · НОЯБРЬ 2026”. */
+    --hero-action-width: 22.625rem;
     display: block !important;
     transform: translateY(-6.75rem) !important;
   }
@@ -129,7 +130,7 @@
 
   .hero-where {
     display: flex !important;
-    width: var(--hero-action-width) !important;
+    width: max-content !important;
     margin-inline-start: .82rem !important;
     margin-inline-end: auto !important;
     margin-top: 0 !important;
@@ -146,18 +147,20 @@
     width: var(--hero-action-width) !important;
     margin-inline-start: .82rem !important;
     margin-inline-end: auto !important;
-    margin-top: 1rem !important;
+    /* 10 px lower than the previous 1rem position. */
+    margin-top: 1.625rem !important;
   }
 
   .hero-cta .btn {
     width: 100% !important;
     min-width: 0 !important;
     justify-content: center !important;
-    font-size: 1rem !important;
+    font-size: 1.08rem !important;
     font-weight: 600 !important;
-    letter-spacing: .06em !important;
-    padding: 1rem 1.75rem !important;
-    gap: .55rem !important;
+    letter-spacing: .045em !important;
+    padding-block: 1rem !important;
+    padding-inline: 1rem !important;
+    gap: .45rem !important;
   }
 
   .hero-cta .btn .arrow {
