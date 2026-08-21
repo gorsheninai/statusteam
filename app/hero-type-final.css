@@ -108,7 +108,7 @@
 
 @media (min-width: 900px) {
   .hero-inner {
-    transform: translateY(-3rem) !important;
+    transform: translateY(-4.25rem) !important;
   }
 
   .hero-statement,
