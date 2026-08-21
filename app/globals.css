@@ -1156,39 +1156,41 @@ ol {
 
 .hero-statement {
   display: block;
-  max-width: min(90vw, 36rem);
-  margin: clamp(2.75rem, 6vw, 3.5rem) 0 clamp(1.3rem, 3vw, 2rem);
-  padding-inline-start: clamp(2rem, 8vw, 3.25rem);
+  max-width: none;
+  margin: clamp(1.6rem, 4.5vw, 2.6rem) 0 clamp(1.8rem, 4.5vw, 2.75rem);
 }
-.hero-statement-tier1 {
+/* The bold anchor line — Tenor Sans in place of Droid 1997 Regular
+   (not self-hosted here, and this project only ships two subset
+   faces; see design-tokens skill). */
+.hero-statement-anchor {
   display: block;
-  margin-inline-start: clamp(1.5rem, 6vw, 3rem);
-  margin-block-end: -0.3rem;
-  font-family: var(--ff-playfair-italic);
-  font-style: italic;
+  font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.5rem, 6vw, 2.375rem);
-  line-height: 1;
-  color: var(--sand);
-}
-.hero-statement-tier2 {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  font-family: var(--ff-playfair-italic);
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(0.72rem, 3.4vw, 1.1rem);
-  line-height: 1.2;
+  font-size: clamp(0.85rem, 4.7vw, 2.7rem);
+  line-height: 0.94;
   letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: var(--paper);
   white-space: nowrap;
 }
-.hero-statement-rule {
-  flex-shrink: 0;
-  inline-size: clamp(1.5rem, 4.6vw, 2.5rem);
-  block-size: 1px;
-  background: var(--burgundy);
+/* The script line — Playfair Display Italic in place of Pushkin/
+   PushkinC (same substitution already used for every other
+   handwritten accent on this page). It rides up and left to cross
+   the anchor line's baseline, the way "пара" crosses the word above
+   it in the reference. */
+.hero-statement-script {
+  display: block;
+  margin-block-start: -0.62em;
+  margin-inline-start: clamp(1.75rem, 9vw, 3.5rem);
+  font-family: var(--ff-playfair-italic);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(0.78rem, 4.6vw, 1.55rem);
+  line-height: 1;
+  color: var(--red-bright);
+  white-space: nowrap;
+  transform: rotate(-3deg);
+  transform-origin: 0 100%;
 }
 
 /* City and period, set into the composition rather than into a bar. */
@@ -2651,16 +2653,15 @@ ol {
     /* Sized so "КОНТИНЕНТА" at full tracking still clears the mask. */
     font-size: clamp(2.8rem, 6.2vw, 6.6rem);
   }
-  .hero-statement {
-    max-width: 42rem;
-    padding-inline-start: clamp(3.25rem, 5vw, 5rem);
+  .hero-statement-anchor {
+    /* Sized against .hero-inner's real 68%-of-viewport box, not the
+       full viewport — confirmed with the same off-DOM ratio measurement
+       used for the mask-clipping-prone hero/pulse lock-up. */
+    font-size: clamp(1.8rem, 3.15vw, 3.1rem);
   }
-  .hero-statement-tier1 {
-    margin-inline-start: clamp(3rem, 5vw, 5rem);
-    font-size: clamp(2rem, 2.6vw, 2.375rem);
-  }
-  .hero-statement-tier2 {
-    font-size: clamp(1.1rem, 1.5vw, 1.4375rem);
+  .hero-statement-script {
+    margin-inline-start: clamp(4rem, 10vw, 8rem);
+    font-size: clamp(1.6rem, 3vw, 3rem);
   }
   .pulse-title .pulse-line {
     --pulse-spread: 0.1em;
@@ -2853,8 +2854,8 @@ ol {
   .hero-layer {
     object-position: center 50%;
   }
-  .hero-statement-tier2 {
-    font-size: 1.4375rem;
+  .hero-statement-script {
+    font-size: 3rem;
   }
 }
 
