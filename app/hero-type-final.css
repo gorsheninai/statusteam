@@ -33,21 +33,21 @@
   white-space: nowrap !important;
 }
 
-/* Playfair Display Italic 400 — couture/editorial accent instead of handwriting. */
+/* Cormorant Garamond Medium Italic 500 — couture/editorial accent. */
 .hero-statement-script {
   display: block !important;
   width: max-content !important;
   max-width: 100% !important;
-  margin-block-start: -.12em !important;
-  margin-inline-start: clamp(3.5rem, 8vw, 6.5rem) !important;
+  margin-block-start: -.10em !important;
+  margin-inline-start: clamp(3.75rem, 8vw, 6.75rem) !important;
   color: var(--red-bright) !important;
-  font-family: var(--ff-playfair-italic), Georgia, serif !important;
-  font-weight: 400 !important;
+  font-family: var(--ff-cormorant-garamond), Georgia, serif !important;
+  font-weight: 500 !important;
   font-style: italic !important;
   text-align: left !important;
-  font-size: clamp(1.35rem, 5vw, 1.95rem) !important;
-  line-height: .92 !important;
-  letter-spacing: -.015em !important;
+  font-size: clamp(1.5rem, 5.3vw, 2.15rem) !important;
+  line-height: .9 !important;
+  letter-spacing: -.02em !important;
   white-space: nowrap !important;
   transform: none !important;
 }
@@ -76,9 +76,9 @@
   }
 
   .hero-statement-script {
-    margin-block-start: -.16em !important;
-    margin-inline-start: clamp(5.25rem, 8.5vw, 7.75rem) !important;
-    font-size: clamp(2.1rem, 2.35vw, 2.65rem) !important;
+    margin-block-start: -.13em !important;
+    margin-inline-start: clamp(5.4rem, 8.6vw, 7.9rem) !important;
+    font-size: clamp(2.35rem, 2.55vw, 2.9rem) !important;
   }
 }
 
@@ -97,9 +97,9 @@
   }
 
   .hero-statement-script {
-    margin-block-start: -.08em !important;
+    margin-block-start: -.06em !important;
     margin-inline-start: clamp(2rem, 8vw, 3.5rem) !important;
-    font-size: clamp(1.25rem, 5.6vw, 1.75rem) !important;
+    font-size: clamp(1.35rem, 5.9vw, 1.9rem) !important;
   }
 
   .hero-where {
