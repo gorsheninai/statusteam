@@ -1,4 +1,4 @@
-/* Hero offer — restrained luxury show-info block. */
+/* Hero offer — single-line luxury show info under the main lock-up. */
 
 .hero-title,
 .hero-statement,
@@ -7,57 +7,52 @@
   margin-inline-start: 0 !important;
 }
 
-/* The main lock-up remains the single dominant element. */
 .hero-title {
-  margin-bottom: clamp(3rem, 3.8vw, 4.2rem) !important;
+  margin-bottom: clamp(3.05rem, 3.7vw, 4.05rem) !important;
 }
 
-/* Supporting information: two calm lines on one left edge, no overlap. */
+/* One compact line. The markup stays split in two spans, but visually they
+   read as one sentence in the same Tenor Sans voice. */
 .hero-statement {
   display: block !important;
   width: max-content !important;
   max-width: 100% !important;
   margin-top: 0 !important;
-  margin-bottom: clamp(3rem, 3.8vw, 3.8rem) !important;
+  margin-bottom: clamp(2.7rem, 3.35vw, 3.35rem) !important;
   text-align: left !important;
-}
-
-/* Line 1 — quiet, milky, same display family as the H1. */
-.hero-statement-anchor {
-  display: block !important;
-  color: rgba(241, 238, 232, .92) !important;
-  font-family: var(--font-display), var(--ff-tenor), Georgia, serif !important;
-  font-weight: 400 !important;
-  font-style: normal !important;
-  font-size: clamp(.92rem, 3.7vw, 1.08rem) !important;
-  line-height: 1.12 !important;
-  letter-spacing: .12em !important;
-  text-transform: uppercase !important;
   white-space: nowrap !important;
 }
 
-/* Line 2 — the only expressive accent. No overlap, no horizontal offset. */
+.hero-statement-anchor,
 .hero-statement-script {
-  display: block !important;
-  width: max-content !important;
-  max-width: 100% !important;
-  margin-block-start: .22rem !important;
-  margin-inline-start: 0 !important;
-  color: var(--red-bright) !important;
-  font-family: var(--ff-cormorant-garamond), Georgia, serif !important;
-  font-weight: 500 !important;
-  font-style: italic !important;
-  text-align: left !important;
-  font-size: clamp(1.55rem, 5.4vw, 2rem) !important;
-  line-height: 1 !important;
-  letter-spacing: -.015em !important;
+  display: inline !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  color: #c6a87c !important;
+  font-family: var(--font-display), var(--ff-tenor), Georgia, serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: clamp(.9rem, 3.55vw, 1.08rem) !important;
+  line-height: 1.12 !important;
+  letter-spacing: .105em !important;
   white-space: nowrap !important;
   transform: none !important;
 }
 
+.hero-statement-anchor {
+  text-transform: uppercase !important;
+}
+
+.hero-statement-script {
+  margin-inline-start: .5em !important;
+  text-transform: none !important;
+  letter-spacing: .055em !important;
+}
+
 .hero-where {
   margin-top: 0 !important;
-  margin-bottom: clamp(2.2rem, 3.4vw, 3rem) !important;
+  margin-bottom: clamp(2.25rem, 3.2vw, 2.9rem) !important;
 }
 
 .hero-cta {
@@ -66,48 +61,59 @@
 
 @media (min-width: 900px) {
   .hero-title {
-    margin-bottom: clamp(3.4rem, 3.8vw, 4.15rem) !important;
+    margin-bottom: clamp(3.25rem, 3.45vw, 3.85rem) !important;
   }
 
   .hero-statement {
-    margin-bottom: clamp(3.2rem, 3.8vw, 3.9rem) !important;
+    margin-bottom: clamp(2.8rem, 3vw, 3.3rem) !important;
+  }
+
+  .hero-statement-anchor,
+  .hero-statement-script {
+    font-size: clamp(1.02rem, 1.02vw, 1.2rem) !important;
   }
 
   .hero-statement-anchor {
-    font-size: clamp(1.05rem, 1.08vw, 1.25rem) !important;
-    letter-spacing: .12em !important;
+    letter-spacing: .115em !important;
   }
 
   .hero-statement-script {
-    margin-block-start: .28rem !important;
-    font-size: clamp(1.75rem, 1.75vw, 2rem) !important;
+    margin-inline-start: .52em !important;
+    letter-spacing: .055em !important;
   }
 
   .hero-where {
-    margin-bottom: clamp(2.6rem, 3.3vw, 3.2rem) !important;
+    margin-bottom: clamp(2.45rem, 3vw, 3rem) !important;
   }
 }
 
 @media (max-width: 899px) {
   .hero-title {
-    margin-bottom: 2.2rem !important;
+    margin-bottom: 2.15rem !important;
   }
 
   .hero-statement {
-    margin-bottom: 2.35rem !important;
+    width: auto !important;
+    max-width: min(92vw, 36rem) !important;
+    margin-bottom: 2rem !important;
+    white-space: normal !important;
+  }
+
+  .hero-statement-anchor,
+  .hero-statement-script {
+    font-size: clamp(.76rem, 3.35vw, .92rem) !important;
   }
 
   .hero-statement-anchor {
-    font-size: clamp(.8rem, 3.6vw, .95rem) !important;
-    letter-spacing: .09em !important;
+    letter-spacing: .08em !important;
   }
 
   .hero-statement-script {
-    margin-block-start: .18rem !important;
-    font-size: clamp(1.35rem, 5.8vw, 1.72rem) !important;
+    margin-inline-start: .3em !important;
+    letter-spacing: .025em !important;
   }
 
   .hero-where {
-    margin-bottom: 1.75rem !important;
+    margin-bottom: 1.7rem !important;
   }
 }
