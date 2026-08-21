@@ -68,16 +68,14 @@
   margin-inline-start: .36em !important;
 }
 
-/* Event meta is the caption for the CTA. Give it the exact same width as the
-   button and center its contents so the label sits on the button's axis. */
 .hero-where {
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  width: var(--hero-cta-width) !important;
+  justify-content: flex-start !important;
+  width: auto !important;
   gap: 0 !important;
   margin-top: 0 !important;
-  margin-bottom: .72rem !important;
+  margin-bottom: 0 !important;
   color: #c6a87c !important;
   font-family: var(--font-ui), var(--ff-onest), system-ui, sans-serif !important;
   font-size: clamp(.68rem, 2.7vw, .78rem) !important;
@@ -85,7 +83,7 @@
   line-height: 1 !important;
   letter-spacing: .17em !important;
   text-transform: uppercase !important;
-  text-align: center !important;
+  text-align: left !important;
   white-space: nowrap !important;
 }
 
@@ -107,22 +105,30 @@
 }
 
 @media (min-width: 900px) {
+  /* Desktop composition: title, statement, then one horizontal event/action row. */
   .hero-inner {
+    display: grid !important;
+    grid-template-columns: max-content var(--hero-cta-width) !important;
+    grid-template-areas:
+      "title title"
+      "statement statement"
+      "meta cta" !important;
+    column-gap: clamp(2.6rem, 3.2vw, 3.6rem) !important;
+    row-gap: 0 !important;
+    align-items: center !important;
+    justify-content: start !important;
     transform: translateY(-4.25rem) !important;
   }
 
-  .hero-statement,
-  .hero-where,
-  .hero-cta {
-    margin-inline-start: .82rem !important;
-  }
-
   .hero-title {
+    grid-area: title !important;
     margin-bottom: clamp(2.15rem, 2.55vw, 2.9rem) !important;
   }
 
   .hero-statement {
-    margin-bottom: clamp(2.35rem, 2.55vw, 2.75rem) !important;
+    grid-area: statement !important;
+    margin-inline-start: .82rem !important;
+    margin-bottom: clamp(2.15rem, 2.35vw, 2.55rem) !important;
   }
 
   .hero-statement-anchor,
@@ -137,18 +143,32 @@
   }
 
   .hero-where {
-    margin-bottom: .78rem !important;
-    font-size: clamp(.72rem, .72vw, .82rem) !important;
-    letter-spacing: .18em !important;
+    grid-area: meta !important;
+    margin-inline-start: .82rem !important;
+    margin-inline-end: 0 !important;
+    align-self: center !important;
+    font-size: clamp(1.08rem, 1.22vw, 1.42rem) !important;
+    letter-spacing: .13em !important;
+    line-height: 1 !important;
+  }
+
+  .hero-cta {
+    grid-area: cta !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+    align-self: center !important;
   }
 }
 
 @media (max-width: 899px) {
+  /* Mobile keeps the compact stacked CTA treatment. */
   .hero-inner {
     --hero-cta-width: min(18.25rem, calc(100vw - 3rem));
+    display: block !important;
     transform: translateY(-1.25rem) !important;
   }
 
+  .hero-title,
   .hero-statement,
   .hero-where,
   .hero-cta {
@@ -178,8 +198,15 @@
   }
 
   .hero-where {
+    justify-content: center !important;
+    width: var(--hero-cta-width) !important;
     margin-bottom: .68rem !important;
     font-size: clamp(.65rem, 2.8vw, .74rem) !important;
     letter-spacing: .14em !important;
+    text-align: center !important;
+  }
+
+  .hero-cta {
+    width: var(--hero-cta-width) !important;
   }
 }
