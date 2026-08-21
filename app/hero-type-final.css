@@ -23,7 +23,7 @@
 
 /* Raise the complete hero copy stack as one unit. */
 .hero-inner {
-  --hero-cta-width: 14.25rem;
+  --hero-cta-width: 18.25rem;
   transform: translateY(-2rem) !important;
 }
 
@@ -101,17 +101,9 @@
   text-align: left !important;
 }
 
-/* Compact CTA: keep the vertical rhythm from the shared button style, but
-   remove excess horizontal air and pull the arrow closer to the label. */
 .hero-cta .btn {
   width: 100% !important;
   justify-content: center !important;
-  padding-inline: 1rem !important;
-  gap: .42rem !important;
-}
-
-.hero-cta .btn .arrow {
-  margin-inline-start: 0 !important;
 }
 
 @media (min-width: 900px) {
@@ -153,7 +145,7 @@
 
 @media (max-width: 899px) {
   .hero-inner {
-    --hero-cta-width: min(14.25rem, calc(100vw - 3rem));
+    --hero-cta-width: min(18.25rem, calc(100vw - 3rem));
     transform: translateY(-1.25rem) !important;
   }
 
@@ -189,10 +181,5 @@
     margin-bottom: .68rem !important;
     font-size: clamp(.65rem, 2.8vw, .74rem) !important;
     letter-spacing: .14em !important;
-  }
-
-  .hero-cta .btn {
-    padding-inline: .9rem !important;
-    gap: .38rem !important;
   }
 }
