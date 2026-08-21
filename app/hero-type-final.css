@@ -1,4 +1,4 @@
-/* Hero offer — one-line red all-caps statement under the main lock-up. */
+/* Hero offer — stronger one-line red all-caps statement under the main lock-up. */
 
 .hero-title,
 .hero-statement,
@@ -7,42 +7,46 @@
   margin-inline-start: 0 !important;
 }
 
+/* Pull the supporting statement 15–20px closer to CONTINENT. */
 .hero-title {
-  margin-bottom: clamp(3.05rem, 3.7vw, 4.05rem) !important;
+  margin-bottom: clamp(2.1rem, 2.7vw, 2.95rem) !important;
 }
 
-/* One compact line. The markup stays split in two spans, but visually it is
-   one statement: same Tenor Sans, same red, same caps, same tracking. */
 .hero-statement {
   display: block !important;
   width: max-content !important;
   max-width: 100% !important;
   margin-top: 0 !important;
-  margin-bottom: clamp(2.7rem, 3.35vw, 3.35rem) !important;
+  margin-bottom: clamp(2.55rem, 3.15vw, 3.1rem) !important;
   text-align: left !important;
   white-space: nowrap !important;
 }
 
+/* Tenor Sans has no real bold cut in the project, so the line is enlarged and
+   optically strengthened with a very light stroke while preserving the same
+   display-family character. */
 .hero-statement-anchor,
 .hero-statement-script {
   display: inline !important;
   width: auto !important;
   max-width: none !important;
   margin: 0 !important;
-  color: #b51f3d !important;
+  color: #d8394a !important;
   font-family: var(--font-display), var(--ff-tenor), Georgia, serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
-  font-size: clamp(.9rem, 3.55vw, 1.08rem) !important;
-  line-height: 1.12 !important;
-  letter-spacing: .105em !important;
+  font-size: clamp(1.18rem, 4.25vw, 1.52rem) !important;
+  line-height: 1.05 !important;
+  letter-spacing: .065em !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
   transform: none !important;
+  -webkit-text-stroke: .28px #d8394a !important;
+  text-shadow: 0 0 .01px #d8394a !important;
 }
 
 .hero-statement-script {
-  margin-inline-start: .42em !important;
+  margin-inline-start: .36em !important;
 }
 
 .hero-where {
@@ -56,21 +60,22 @@
 
 @media (min-width: 900px) {
   .hero-title {
-    margin-bottom: clamp(3.25rem, 3.45vw, 3.85rem) !important;
+    margin-bottom: clamp(2.15rem, 2.55vw, 2.9rem) !important;
   }
 
   .hero-statement {
-    margin-bottom: clamp(2.8rem, 3vw, 3.3rem) !important;
+    margin-bottom: clamp(2.6rem, 2.85vw, 3.15rem) !important;
   }
 
   .hero-statement-anchor,
   .hero-statement-script {
-    font-size: clamp(1.02rem, 1.02vw, 1.2rem) !important;
-    letter-spacing: .115em !important;
+    font-size: clamp(1.28rem, 1.45vw, 1.72rem) !important;
+    letter-spacing: .065em !important;
+    -webkit-text-stroke: .32px #d8394a !important;
   }
 
   .hero-statement-script {
-    margin-inline-start: .46em !important;
+    margin-inline-start: .38em !important;
   }
 
   .hero-where {
@@ -80,24 +85,25 @@
 
 @media (max-width: 899px) {
   .hero-title {
-    margin-bottom: 2.15rem !important;
+    margin-bottom: 1.75rem !important;
   }
 
   .hero-statement {
     width: auto !important;
     max-width: min(92vw, 36rem) !important;
-    margin-bottom: 2rem !important;
+    margin-bottom: 1.9rem !important;
     white-space: normal !important;
   }
 
   .hero-statement-anchor,
   .hero-statement-script {
-    font-size: clamp(.76rem, 3.35vw, .92rem) !important;
-    letter-spacing: .08em !important;
+    font-size: clamp(.88rem, 3.9vw, 1.05rem) !important;
+    letter-spacing: .055em !important;
+    -webkit-text-stroke: .2px #d8394a !important;
   }
 
   .hero-statement-script {
-    margin-inline-start: .3em !important;
+    margin-inline-start: .25em !important;
   }
 
   .hero-where {
