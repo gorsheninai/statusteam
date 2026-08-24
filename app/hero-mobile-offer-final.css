@@ -3,11 +3,16 @@
    roughly 830 px on line one and 844 px on line two. That is only ~1.7%, so
    the correction belongs on the first line alone: increase its optical size
    by the same ratio rather than disturbing the already-correct second line.
-   The result keeps both lines visually equal in width under “КОНТИНЕНТА”. */
+   The result keeps both lines visually equal in width under “КОНТИНЕНТА”.
+
+   Mobile hierarchy is intentionally reduced to three levels:
+   show title → offer → CTA. City/date remain elsewhere on the site, so the
+   first phone screen reads like a campaign cover instead of a dense poster. */
 
 @media (max-width: 899px) {
   .hero-statement {
     gap: 5px !important;
+    margin-bottom: 18px !important;
   }
 
   .hero-statement-anchor,
@@ -25,6 +30,16 @@
   .hero-statement-script {
     font-size: clamp(.86rem, 4.35vw, 1.18rem) !important;
     letter-spacing: .055em !important;
+  }
+
+  /* Remove the secondary city/date line from the mobile hero only. */
+  .hero-where {
+    display: none !important;
+  }
+
+  /* Pull the CTA into the offer block so the eye lands on one clear action. */
+  .hero-cta {
+    margin-top: 0 !important;
   }
 }
 
