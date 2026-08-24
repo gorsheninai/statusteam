@@ -22,7 +22,7 @@ const ITEMS = [
 ];
 
 export default function Experience() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
 
   return (
     <div className="exp-accordion">
