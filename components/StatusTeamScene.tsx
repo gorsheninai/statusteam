@@ -165,44 +165,67 @@ function ImpactVideo() {
   };
 
   return (
-    <div className="st2-video" ref={wrapRef} data-st2-impact-media>
-      <video
-        ref={videoRef}
-        poster="/media/show-reel-poster.webp"
-        autoPlay
-        muted={muted}
-        loop
-        playsInline
-        preload="metadata"
-        aria-label="Афтермуви показа «Славянский взгляд»"
-      >
-        <source src="/media/show-reel.webm" type="video/webm" />
-        <source src="/media/show-reel.mp4" type="video/mp4" />
-      </video>
-      <button
-        className={`st2-watch${muted ? "" : " is-active"}`}
-        type="button"
-        onClick={watchVideo}
-        aria-label={muted ? "Включить звук афтермуви" : "Выключить звук афтермуви"}
-        aria-pressed={!muted}
-        data-st2-watch
-      >
-        <span className="st2-watch-icon" aria-hidden="true">
-          {muted ? (
-            <svg viewBox="0 0 20 20">
-              <path d="m7.25 5.3 6.2 4.7-6.2 4.7V5.3Z" />
-            </svg>
-          ) : (
+    <>
+      <div className="st2-video" ref={wrapRef} data-st2-impact-media>
+        <video
+          ref={videoRef}
+          poster="/media/show-reel-poster.webp"
+          autoPlay
+          muted={muted}
+          loop
+          playsInline
+          preload="metadata"
+          aria-label="Афтермуви показа «Славянский взгляд»"
+        >
+          <source src="/media/show-reel.webm" type="video/webm" />
+          <source src="/media/show-reel.mp4" type="video/mp4" />
+        </video>
+        <button
+          className={`st2-watch${muted ? "" : " is-active"}`}
+          type="button"
+          onClick={watchVideo}
+          aria-label={muted ? "Включить звук афтермуви" : "Выключить звук афтермуви"}
+          aria-pressed={!muted}
+          data-st2-watch
+        >
+          <span className="st2-watch-icon" aria-hidden="true">
             <svg viewBox="0 0 20 20">
               <path d="M3.5 8.3v3.4h3l3.7 3V5.3l-3.7 3h-3Z" />
-              <path d="M13 7.4c1.3 1.45 1.3 3.75 0 5.2" />
+              {muted ? (
+                <path d="m12.8 7.5 3.7 5m0-5-3.7 5" />
+              ) : (
+                <path d="M13 7.4c1.3 1.45 1.3 3.75 0 5.2" />
+              )}
             </svg>
-          )}
-        </span>
-        <span>Смотреть видео</span>
-        <span className="sr-only">{muted ? "Звук выключен" : "Звук включён"}</span>
-      </button>
-    </div>
+          </span>
+          <span>{muted ? "Включить звук" : "Выключить звук"}</span>
+          <span className="sr-only">{muted ? "Звук выключен" : "Звук включён"}</span>
+        </button>
+      </div>
+
+      <style>{`
+        @media (max-width: 899px) {
+          .st-page-two .st2-watch {
+            inset-block-start: calc(env(safe-area-inset-top) + 3.25rem);
+            gap: 0.5rem;
+            min-block-size: 2.5rem;
+            padding: 0.42rem 0.75rem 0.42rem 0.5rem;
+            font-size: 0.625rem;
+            letter-spacing: 0.08em;
+          }
+
+          .st-page-two .st2-watch-icon {
+            inline-size: 1.65rem;
+            block-size: 1.65rem;
+          }
+
+          .st-page-two .st2-watch svg {
+            inline-size: 0.82rem;
+            block-size: 0.82rem;
+          }
+        }
+      `}</style>
+    </>
   );
 }
 
