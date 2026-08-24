@@ -30,16 +30,16 @@
 
   /* Keep the ORIGINAL two-mask title structure so Motion.tsx can animate the
      words exactly as before. On phones the two masks sit on one row, with an
-     explicit optical gap between them, and the type is reduced enough to fit
-     comfortably inside the shell instead of touching/crossing the right edge. */
+     explicit optical gap between them. The title is now ~11% larger and its
+     left edge is locked to the same .35rem axis as the gold offer and CTA. */
   .hero-title {
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: baseline !important;
     gap: .28em !important;
     width: max-content !important;
-    max-width: calc(100vw - (var(--gutter) * 2)) !important;
-    margin-inline-start: 0 !important;
+    max-width: calc(100vw - (var(--gutter) * 2) - .35rem) !important;
+    margin-inline-start: .35rem !important;
     margin-inline-end: auto !important;
     margin-bottom: 12px !important;
     padding: 0 !important;
@@ -72,7 +72,7 @@
     max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-size: clamp(1.55rem, 6.8vw, 1.95rem) !important;
+    font-size: clamp(1.72rem, 7.55vw, 2.16rem) !important;
     line-height: .94 !important;
     letter-spacing: -.012em !important;
     white-space: nowrap !important;
@@ -123,7 +123,7 @@
 
   .hero-title .pulse-line,
   .hero-title .pulse-line + .pulse-line {
-    font-size: 1.42rem !important;
+    font-size: 1.58rem !important;
     letter-spacing: -.016em !important;
   }
 
