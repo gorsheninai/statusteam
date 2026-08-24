@@ -137,9 +137,6 @@ function ImpactVideo() {
 
     const section = wrap.closest<HTMLElement>(".st2-impact") ?? wrap;
 
-    /* Safari/iOS only grants hands-free playback when the element is already
-       muted + inline at the instant play() is requested. Keep both the DOM
-       attributes and JS properties in sync before any scroll-triggered call. */
     video.defaultMuted = true;
     video.muted = true;
     video.autoplay = true;
@@ -160,22 +157,13 @@ function ImpactVideo() {
 
       const attempt = video.play();
       if (attempt) {
-        void attempt.catch(() => {
-          /* iOS can reject an early request while the file is still moving
-             from HAVE_NOTHING/HAVE_METADATA to HAVE_FUTURE_DATA. Scroll and
-             readiness listeners below retry automatically. */
-        });
+        void attempt.catch(() => undefined);
       }
     };
 
     const syncPlayback = () => {
       const rect = section.getBoundingClientRect();
       const viewport = window.innerHeight || document.documentElement.clientHeight;
-
-      /* Start slightly BEFORE page two reaches the viewport, so when the user
-         scrolls the hero away the first visible frame is already moving rather
-         than the poster sitting there for a beat. Keep it alive until page two
-         has actually left the viewport. */
       const shouldRun = rect.top <= viewport * 1.15 && rect.bottom >= -viewport * 0.12;
       active = shouldRun;
 
@@ -216,7 +204,6 @@ function ImpactVideo() {
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("pageshow", onPageShow);
 
-    /* Resolve the initial state immediately as well as after layout settles. */
     syncPlayback();
     raf = window.requestAnimationFrame(() => {
       raf = 0;
@@ -245,9 +232,6 @@ function ImpactVideo() {
     video.muted = nextMuted;
     setMuted(nextMuted);
 
-    /* This click is a real user gesture, so also resume the film here if iOS
-       happened to suspend it while the page was settling. The button remains
-       sound-only from the user's point of view: it never pauses the video. */
     if (video.paused) void video.play().catch(() => undefined);
   };
 
@@ -268,7 +252,7 @@ function ImpactVideo() {
           <source src="/media/show-reel.webm" type="video/webm" />
         </video>
         <button
-          className={`st2-watch${muted ? "" : " is-active"}`}
+          className={`st2-watch st2-watch-icon-only${muted ? "" : " is-active"}`}
           type="button"
           onClick={watchVideo}
           aria-label={muted ? "Включить звук афтермуви" : "Выключить звук афтермуви"}
@@ -276,39 +260,64 @@ function ImpactVideo() {
           data-st2-watch
         >
           <span className="st2-watch-icon" aria-hidden="true">
-            <svg viewBox="0 0 20 20">
-              <path d="M3.5 8.3v3.4h3l3.7 3V5.3l-3.7 3h-3Z" />
+            <svg viewBox="0 0 24 24">
+              <path d="M4.5 9.3v5.4h4.2l4.6 3.6V5.7L8.7 9.3H4.5Z" />
               {muted ? (
-                <path d="m12.8 7.5 3.7 5m0-5-3.7 5" />
+                <path d="m16.6 9 4.1 6m0-6-4.1 6" />
               ) : (
-                <path d="M13 7.4c1.3 1.45 1.3 3.75 0 5.2" />
+                <>
+                  <path d="M16.4 9.1c1.35 1.6 1.35 4.2 0 5.8" />
+                  <path d="M19.1 6.9c2.5 2.8 2.5 7.4 0 10.2" />
+                </>
               )}
             </svg>
           </span>
-          <span>{muted ? "Включить звук" : "Выключить звук"}</span>
           <span className="sr-only">{muted ? "Звук выключен" : "Звук включён"}</span>
         </button>
       </div>
 
       <style>{`
+        .st-page-two .st2-watch.st2-watch-icon-only {
+          inline-size: 3rem !important;
+          block-size: 3rem !important;
+          min-inline-size: 3rem !important;
+          min-block-size: 3rem !important;
+          padding: 0 !important;
+          gap: 0 !important;
+          border-radius: 999px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        .st-page-two .st2-watch.st2-watch-icon-only .st2-watch-icon {
+          inline-size: 100% !important;
+          block-size: 100% !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+        }
+
+        .st-page-two .st2-watch.st2-watch-icon-only svg {
+          inline-size: 1.15rem !important;
+          block-size: 1.15rem !important;
+        }
+
         @media (max-width: 899px) {
-          .st-page-two .st2-watch {
+          .st-page-two .st2-watch.st2-watch-icon-only {
             inset-block-start: calc(env(safe-area-inset-top) + 3.25rem);
-            gap: 0.5rem;
-            min-block-size: 2.5rem;
-            padding: 0.42rem 0.75rem 0.42rem 0.5rem;
-            font-size: 0.625rem;
-            letter-spacing: 0.08em;
+            inline-size: 2.75rem !important;
+            block-size: 2.75rem !important;
+            min-inline-size: 2.75rem !important;
+            min-block-size: 2.75rem !important;
           }
 
-          .st-page-two .st2-watch-icon {
-            inline-size: 1.65rem;
-            block-size: 1.65rem;
-          }
-
-          .st-page-two .st2-watch svg {
-            inline-size: 0.82rem;
-            block-size: 0.82rem;
+          .st-page-two .st2-watch.st2-watch-icon-only svg {
+            inline-size: 1rem !important;
+            block-size: 1rem !important;
           }
         }
       `}</style>
