@@ -1,8 +1,9 @@
 /* Mobile hero offer — make both red lines read as one balanced block.
-   The second line is shorter in Tenor Sans, so it gets a larger optical size
-   until its rendered width visually matches “КРУПНЕЙШИЙ FASHION-ПОКАЗ”.
-   This keeps the two-line offer reading as one deliberate editorial unit under
-   “КОНТИНЕНТА” instead of a large first line with a weak second line. */
+   Measured from the latest mobile screenshot, the rendered red text spans
+   roughly 830 px on line one and 844 px on line two. That is only ~1.7%, so
+   the correction belongs on the first line alone: increase its optical size
+   by the same ratio rather than disturbing the already-correct second line.
+   The result keeps both lines visually equal in width under “КОНТИНЕНТА”. */
 
 @media (max-width: 899px) {
   .hero-statement {
@@ -17,7 +18,7 @@
   }
 
   .hero-statement-anchor {
-    font-size: clamp(.78rem, 3.85vw, 1.04rem) !important;
+    font-size: clamp(.79rem, 3.915vw, 1.06rem) !important;
     letter-spacing: .05em !important;
   }
 
