@@ -361,6 +361,27 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
         }
 
         @media (max-width: 899px) {
+          /* The mobile heading must remain one deliberate editorial line. */
+          .st-page-two .st2-vanguard-head h2 {
+            font-size: clamp(2.05rem, 9vw, 2.35rem) !important;
+            line-height: 1 !important;
+            letter-spacing: -0.055em !important;
+            white-space: nowrap !important;
+            text-wrap: nowrap !important;
+          }
+
+          /* The active card is scaled to 1.1. The old ~1rem top inset was
+             smaller than that scale bleed, so iOS clipped the upper rounded
+             border while the lower border remained visible. Give the card a
+             real top safe zone and enlarge the viewport by the same amount. */
+          .st-page-two .st2-guest-viewport {
+            block-size: min(32rem, calc(106vw + 3.25rem)) !important;
+          }
+
+          .st-page-two .st2-guest {
+            inset-block-start: 2rem !important;
+          }
+
           .st-page-two .st2-guest-nav-button {
             inline-size: 2.875rem;
             block-size: 2.875rem;
