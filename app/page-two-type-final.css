@@ -107,6 +107,8 @@
     text-align: center !important;
   }
 
+  /* Deliberately smaller so the long eyebrow visually matches the width of
+     the first red line: “ЗА РАМКАМИ”. */
   .st-page-two .st2-impact-primary {
     width: max-content !important;
     max-width: 100% !important;
@@ -115,9 +117,9 @@
     font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
     font-weight: 400 !important;
-    font-size: clamp(.72rem, 3.65vw, .92rem) !important;
+    font-size: clamp(.61rem, 3.05vw, .78rem) !important;
     line-height: 1 !important;
-    letter-spacing: .13em !important;
+    letter-spacing: .11em !important;
     text-align: center !important;
     text-transform: uppercase !important;
   }
