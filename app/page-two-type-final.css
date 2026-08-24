@@ -1,4 +1,4 @@
-/* Final page-two impact typography: upright wine-red accent with a subtle light edge. */
+/* Final page-two impact typography: Tenor Sans hierarchy with a restrained wine-red accent. */
 
 .st-page-two .st2-impact-copy h2 {
   display: inline-flex !important;
@@ -11,15 +11,14 @@
   display: block !important;
   width: max-content !important;
   max-inline-size: 100% !important;
-  font-family: var(--font-display), Georgia, serif !important;
+  font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
   font-style: normal !important;
   font-weight: 400 !important;
   letter-spacing: .09em !important;
   text-transform: uppercase !important;
 }
 
-/* Tenor Sans has no true italic cut, so keep the restrained optical oblique
-   on the primary line only. The accent below is now fully upright. */
+/* Keep the slight fashion oblique on the primary line only. */
 .st-page-two .st2-impact-primary > span {
   display: inline-block !important;
   white-space: nowrap !important;
@@ -27,20 +26,20 @@
   transform-origin: left center !important;
 }
 
-/* The supporting phrase stays one composed line, but now reads as a real
-   second hierarchy level instead of a decorative caption. */
+/* The wine-red phrase is now a clean Tenor Sans second line: lighter,
+   left-aligned with the headline and separated by a real word space. */
 .st-page-two .st2-impact-subgroup {
   display: flex !important;
   align-items: baseline !important;
-  justify-content: flex-end !important;
-  align-self: flex-end !important;
-  gap: .18em !important;
+  justify-content: flex-start !important;
+  align-self: flex-start !important;
+  gap: .28em !important;
   width: max-content !important;
   max-width: 100% !important;
-  margin-block-start: -.06em !important;
+  margin-block-start: .34rem !important;
   margin-inline-start: 0 !important;
   white-space: nowrap !important;
-  transform: translateX(clamp(2rem, 5vw, 4.75rem)) !important;
+  transform: none !important;
 }
 
 .st-page-two .st2-impact-tier2a,
@@ -49,20 +48,18 @@
   margin: 0 !important;
   padding: 0 !important;
   color: #C9344A !important;
-  font-family: var(--ff-playfair), Georgia, serif !important;
+  font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
   font-style: normal !important;
-  font-weight: 500 !important;
-  font-size: clamp(1.72rem, 6.1vw, 2.5rem) !important;
-  line-height: .94 !important;
-  letter-spacing: -.018em !important;
+  font-weight: 400 !important;
+  font-size: clamp(1.65rem, 5.7vw, 2.35rem) !important;
+  line-height: 1 !important;
+  letter-spacing: .01em !important;
   text-transform: none !important;
   white-space: nowrap !important;
   transform: none !important;
   filter: none !important;
-  -webkit-text-stroke: .28px rgba(242, 238, 231, .3) !important;
-  text-shadow:
-    0 0 .65px rgba(242, 238, 231, .24),
-    0 2px 14px rgba(0, 0, 0, .42) !important;
+  -webkit-text-stroke: .14px rgba(242, 238, 231, .18) !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .28) !important;
 }
 
 .st-page-two .st2-impact-hairline {
@@ -79,33 +76,41 @@
   }
 
   .st-page-two .st2-impact-subgroup {
-    align-self: flex-end !important;
-    margin-block-start: -.08em !important;
-    gap: .22em !important;
-    transform: translateX(clamp(3.5rem, 7vw, 7rem)) !important;
-  }
-
-  .st-page-two .st2-impact-tier2a,
-  .st-page-two .st2-impact-tier2b {
-    font-size: clamp(2.75rem, 3.35vw, 3.7rem) !important;
-  }
-}
-
-@media (max-width: 899px) {
-  .st-page-two .st2-impact-copy h2 {
-    align-items: flex-start !important;
-  }
-
-  .st-page-two .st2-impact-subgroup {
-    align-self: center !important;
-    margin-block-start: .08em !important;
-    gap: .12em !important;
+    align-self: flex-start !important;
+    margin-block-start: .6rem !important;
+    gap: .3em !important;
     transform: none !important;
   }
 
   .st-page-two .st2-impact-tier2a,
   .st-page-two .st2-impact-tier2b {
-    font-size: clamp(1.55rem, 6.25vw, 2.15rem) !important;
-    -webkit-text-stroke-width: .22px !important;
+    font-size: clamp(2.55rem, 3.05vw, 3.4rem) !important;
+  }
+}
+
+@media (max-width: 899px) {
+  .st-page-two .st2-impact-copy {
+    inset-block-end: clamp(10.5rem, 21svh, 13rem) !important;
+  }
+
+  .st-page-two .st2-impact-copy h2 {
+    align-items: flex-start !important;
+  }
+
+  .st-page-two .st2-impact-primary {
+    font-size: clamp(.82rem, 4.08vw, 1.9rem) !important;
+  }
+
+  .st-page-two .st2-impact-subgroup {
+    align-self: flex-start !important;
+    margin-block-start: .48rem !important;
+    gap: .32em !important;
+    transform: none !important;
+  }
+
+  .st-page-two .st2-impact-tier2a,
+  .st-page-two .st2-impact-tier2b {
+    font-size: clamp(1.48rem, 6.7vw, 2.05rem) !important;
+    -webkit-text-stroke-width: .14px !important;
   }
 }
