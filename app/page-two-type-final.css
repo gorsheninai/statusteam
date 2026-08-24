@@ -99,13 +99,9 @@
     text-align: center !important;
   }
 
-  /* Shrink-wrap the lock-up to the white headline. The red line then stretches
-     to that exact same used width, so their left and right edges always match. */
   .st-page-two .st2-impact-copy h2 {
-    align-items: stretch !important;
-    inline-size: max-content !important;
-    max-inline-size: 100% !important;
-    margin-inline: auto !important;
+    align-items: center !important;
+    inline-size: 100% !important;
     text-align: center !important;
   }
 
@@ -124,16 +120,15 @@
     transform-origin: center center !important;
   }
 
-  /* The phrase is intentionally a touch smaller than the target width in its
-     natural layout, then space-between locks its outer edges exactly to the
-     headline above instead of relying on another guessed font size. */
+  /* Keep a normal word gap. Match the headline width by scaling the actual
+     red text itself, never by stretching empty space between its two spans. */
   .st-page-two .st2-impact-subgroup {
-    align-self: stretch !important;
-    justify-content: space-between !important;
-    inline-size: 100% !important;
-    max-inline-size: none !important;
-    margin: .1rem 0 0 !important;
-    gap: 0 !important;
+    align-self: center !important;
+    justify-content: center !important;
+    inline-size: max-content !important;
+    max-inline-size: 100% !important;
+    margin: .1rem auto 0 !important;
+    gap: .18em !important;
     text-align: center !important;
     white-space: nowrap !important;
     transform: none !important;
@@ -144,7 +139,7 @@
     font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
     font-weight: 400 !important;
-    font-size: clamp(1.04rem, 5.25vw, 2.08rem) !important;
+    font-size: clamp(1.12rem, 5.65vw, 2.2rem) !important;
     line-height: 1 !important;
     letter-spacing: 0 !important;
     text-align: center !important;
