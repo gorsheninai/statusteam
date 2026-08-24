@@ -26,8 +26,7 @@
   transform-origin: left center !important;
 }
 
-/* The wine-red phrase is now a clean Tenor Sans second line: lighter,
-   left-aligned with the headline and separated by a real word space. */
+/* The wine-red phrase uses the same clean Tenor Sans face. */
 .st-page-two .st2-impact-subgroup {
   display: flex !important;
   align-items: baseline !important;
@@ -58,8 +57,8 @@
   white-space: nowrap !important;
   transform: none !important;
   filter: none !important;
-  -webkit-text-stroke: .14px rgba(242, 238, 231, .18) !important;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, .28) !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: 0 1px 7px rgba(0, 0, 0, .24) !important;
 }
 
 .st-page-two .st2-impact-hairline {
@@ -101,16 +100,23 @@
     font-size: clamp(.82rem, 4.08vw, 1.9rem) !important;
   }
 
+  /* Keep the second line very close to the first and center it optically
+     under the headline. The text itself stays completely upright/straight. */
   .st-page-two .st2-impact-subgroup {
-    align-self: flex-start !important;
-    margin-block-start: .48rem !important;
-    gap: .32em !important;
+    align-self: stretch !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin-block-start: .12rem !important;
+    gap: .28em !important;
     transform: none !important;
   }
 
   .st-page-two .st2-impact-tier2a,
   .st-page-two .st2-impact-tier2b {
-    font-size: clamp(1.48rem, 6.7vw, 2.05rem) !important;
-    -webkit-text-stroke-width: .14px !important;
+    font-size: clamp(.86rem, 4.28vw, 1.95rem) !important;
+    letter-spacing: .005em !important;
+    transform: none !important;
+    -webkit-text-stroke: 0 !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, .22) !important;
   }
 }
