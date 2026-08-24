@@ -313,7 +313,7 @@
   .hero-statement {
     display: grid !important;
     gap: 6px !important;
-    width: min(100%, calc(100vw - var(--gutter) * 2)) !important;
+    width: min(100%, calc(100vw - var(--gutter) - var(--gutter))) !important;
     max-width: none !important;
     min-width: 0 !important;
     margin-top: 0 !important;
