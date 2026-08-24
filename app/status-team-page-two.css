@@ -397,6 +397,15 @@
   text-transform: uppercase;
 }
 
+@media (max-width: 639px) {
+  .st-page-two .st2-vanguard-tag {
+    /* Keep the show title as one editorial caption on narrow phones. */
+    font-size: clamp(0.5rem, 2.35vw, 0.625rem);
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+  }
+}
+
 @media (min-width: 640px) {
   .st-page-two .st2-vanguard-tag {
     font-size: 0.8125rem;

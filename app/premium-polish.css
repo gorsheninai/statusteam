@@ -356,7 +356,10 @@ select:focus {
   }
 
   .hero-layer {
-    object-position: 50% 44%;
+    /* The portrait crop has more visual weight on the right. A small shift
+       of the source image left keeps both models centred in the phone frame
+       without changing the desktop art direction. */
+    object-position: 53% 44%;
   }
 
   .hero-title {
