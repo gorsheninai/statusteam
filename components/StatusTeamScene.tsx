@@ -135,27 +135,51 @@ function ImpactVideo() {
     const video = videoRef.current;
     if (!wrap || !video) return;
 
-    /* Keep the film parked while page one is visible. On phones, `autoPlay`
-       can begin loading/playing the off-screen second page immediately, so
-       the actual viewport intersection is the single source of truth. */
+    /* iOS Safari is strict about muted autoplay. Set both flags imperatively
+       in addition to the JSX attributes, then let viewport visibility decide
+       only whether the already-autoplay-capable film is running or paused. */
+    video.defaultMuted = true;
     video.muted = true;
-    video.pause();
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let visible = false;
+
+    const playVisible = () => {
+      if (!visible || document.visibilityState === "hidden") return;
+      void video.play().catch(() => {
+        /* A play request can arrive before iOS has enough media buffered.
+           `canplay` / `loadeddata` below retry without requiring a tap. */
+      });
+    };
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.08) {
-          void video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
+        visible = entry.isIntersecting && entry.intersectionRatio > 0;
+        if (visible) playVisible();
+        else video.pause();
       },
-      { threshold: [0, 0.08, 0.18] },
+      { threshold: [0, 0.01, 0.08] },
     );
 
+    const onReady = () => playVisible();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") playVisible();
+      else video.pause();
+    };
+    const onPageShow = () => playVisible();
+
     observer.observe(wrap);
-    return () => observer.disconnect();
+    video.addEventListener("loadeddata", onReady);
+    video.addEventListener("canplay", onReady);
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pageshow", onPageShow);
+
+    return () => {
+      observer.disconnect();
+      video.removeEventListener("loadeddata", onReady);
+      video.removeEventListener("canplay", onReady);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pageshow", onPageShow);
+    };
   }, []);
 
   const watchVideo = () => {
@@ -165,7 +189,6 @@ function ImpactVideo() {
     const nextMuted = !muted;
     video.muted = nextMuted;
     setMuted(nextMuted);
-    if (!nextMuted) void video.play().catch(() => {});
   };
 
   return (
@@ -174,6 +197,7 @@ function ImpactVideo() {
         <video
           ref={videoRef}
           poster="/media/show-reel-poster.webp"
+          autoPlay
           muted={muted}
           loop
           playsInline
