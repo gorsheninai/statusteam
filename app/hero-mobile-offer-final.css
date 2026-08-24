@@ -28,37 +28,53 @@
     height: 118% !important;
   }
 
-  /* Final mobile hierarchy: keep the offer optically attached to the show
-     name. This file loads after hero-type-final.css, so the 12px value here
-     intentionally wins over the older 20px corrective rule. */
+  /* Mobile lock-up: put ПУЛЬС КОНТИНЕНТА on one editorial line. The fixed
+     tracking here deliberately disables the animated two-line pulse spacing
+     on phones, otherwise the title width changes while scrolling and can clip.
+     Supporting copy and CTA stay on the established left axis. */
   .hero-title {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: baseline !important;
+    gap: .18em !important;
+    width: max-content !important;
+    max-width: calc(100vw - (var(--gutter) * 2)) !important;
     margin-inline-start: 0 !important;
     margin-inline-end: auto !important;
-    padding-inline-start: 0 !important;
     margin-bottom: 12px !important;
+    padding-inline-start: 0 !important;
     text-align: left !important;
     align-self: flex-start !important;
     justify-self: start !important;
   }
 
-  /* Tenor Sans carries visible left side-bearing on the large Cyrillic
-     letters. Keep the title box itself on the true shell edge, while the
-     smaller supporting copy keeps its optical inset. This makes the visible
-     ink of ПУЛЬС / КОНТИНЕНТА line up with the offer instead of sitting right. */
-  .hero-title .pulse-mask,
-  .hero-title .pulse-line {
-    margin-inline-start: 0 !important;
-    padding-inline-start: 0 !important;
+  .hero-title .pulse-mask {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
   }
 
-  .hero-title .pulse-line {
+  .hero-title .pulse-line,
+  .hero-title .pulse-line + .pulse-line {
     display: block !important;
-    width: max-content !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: clamp(2.35rem, 10.2vw, 3.1rem) !important;
+    line-height: .92 !important;
+    letter-spacing: -.015em !important;
+    white-space: nowrap !important;
   }
 
   .hero-statement {
     gap: 5px !important;
     margin-bottom: 20px !important;
+    text-align: left !important;
   }
 
   .hero-statement-anchor,
@@ -86,13 +102,24 @@
     display: none !important;
   }
 
-  /* Pull the CTA into the offer block so the eye lands on one clear action. */
+  /* Keep the CTA as a separate action level below the explanatory line. */
   .hero-cta {
     margin-top: 0 !important;
+    text-align: left !important;
   }
 }
 
 @media (max-width: 340px) {
+  .hero-title {
+    gap: .14em !important;
+  }
+
+  .hero-title .pulse-line,
+  .hero-title .pulse-line + .pulse-line {
+    font-size: 2.12rem !important;
+    letter-spacing: -.02em !important;
+  }
+
   .hero-statement-anchor {
     font-size: .78rem !important;
     letter-spacing: .04em !important;
