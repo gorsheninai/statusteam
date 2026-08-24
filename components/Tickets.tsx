@@ -14,14 +14,15 @@ export default function Tickets() {
 
   return (
     <div className={`preorder-card ${askOpen ? "is-open" : ""}`}>
-      <div className="preorder-status label">
-        <span className="preorder-status-mark" aria-hidden="true" />
-        Предзаказ билетов
-      </div>
-
-      <div className="preorder-place">
-        <span className="label">Место проведения</span>
-        <p className="preorder-city struct">{SHOW.city}</p>
+      <div className="preorder-summary">
+        <p className="preorder-status label">
+          <span className="preorder-status-mark" aria-hidden="true" />
+          Билеты · {SHOW.city}
+        </p>
+        <h2 className="preorder-heading struct">
+          <span>Предзаказ</span>
+          <span>открыт</span>
+        </h2>
         <p className="preorder-pending">
           Дата и площадка будут объявлены позже.
         </p>
@@ -29,7 +30,8 @@ export default function Tickets() {
 
       <div className="preorder-action">
         <p className="preorder-copy">
-          Оставьте контакт, чтобы первыми получить доступ к билетам.
+          Оставьте контакт — пришлём ссылку на билеты до общего старта
+          продаж.
         </p>
 
         {SALES_OPEN && TICKETS_URL ? (
@@ -61,9 +63,7 @@ export default function Tickets() {
         )}
 
         {!SALES_OPEN && (
-          <p className="preorder-micro">
-            Без оплаты. Сообщим о старте продаж раньше общего анонса.
-          </p>
+          <p className="preorder-micro">Без оплаты</p>
         )}
       </div>
 
@@ -76,8 +76,8 @@ export default function Tickets() {
           <div className="panel-inner">
             <div className="preorder-form">
               <p className="tickets-note">
-                Оставьте контакт — мы пришлём дату, площадку и ссылку на
-                билеты до начала открытых продаж.
+                Имя и один удобный контакт. Мы сообщим дату, площадку и откроем
+                доступ к билетам до начала общих продаж.
               </p>
               <ApplyForm kind="access" consent submitLabel="Оставить предзаказ" />
             </div>

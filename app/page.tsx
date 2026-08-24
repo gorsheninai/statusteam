@@ -253,37 +253,13 @@ export default function Home() {
         </section>
 
         {/* ============================================================
-            04 — БИЛЕТЫ. The payoff, and the only place on the page that
-            asks for money. Third and last recurrence of the lock-up.
+            04 — БИЛЕТЫ. One compact preorder invitation: no repeated
+            campaign title, placeholder inventory or decorative photograph.
             ============================================================ */}
-        <section className="tickets on-dark" id="tickets" data-bg="ink">
-          <div className="tickets-bg" aria-hidden="true">
-            {/* The hero frame returns as a ground — the page closes where it
-                opened. Never a poster-*: those already carry their own
-                printed lock-up and the title would double. */}
-            <img
-              src="/media/campaign-silhouette-sun-1600.webp"
-              srcSet="/media/campaign-silhouette-sun-1000.webp 1000w, /media/campaign-silhouette-sun-1600.webp 1600w"
-              sizes="100vw"
-              alt=""
-              loading="lazy"
-            />
-          </div>
-
+        <section className="tickets on-dark" id="tickets" data-bg="wine">
           <div className="shell tickets-inner">
-
-            <h2 className="tickets-title" data-pulse-title data-pulse-final>
-              <span className="pulse-mask">
-                <span className="pulse-line">Пульс</span>
-              </span>
-              <span className="pulse-mask">
-                <span className="pulse-line">Континента</span>
-              </span>
-            </h2>
-
             <Tickets />
           </div>
-
         </section>
 
         {/* ============================================================
