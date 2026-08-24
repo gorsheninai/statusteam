@@ -32,7 +32,28 @@
      name. This file loads after hero-type-final.css, so the 12px value here
      intentionally wins over the older 20px corrective rule. */
   .hero-title {
+    margin-inline-start: 0 !important;
+    margin-inline-end: auto !important;
+    padding-inline-start: 0 !important;
     margin-bottom: 12px !important;
+    text-align: left !important;
+    align-self: flex-start !important;
+    justify-self: start !important;
+  }
+
+  /* Tenor Sans carries visible left side-bearing on the large Cyrillic
+     letters. Keep the title box itself on the true shell edge, while the
+     smaller supporting copy keeps its optical inset. This makes the visible
+     ink of ПУЛЬС / КОНТИНЕНТА line up with the offer instead of sitting right. */
+  .hero-title .pulse-mask,
+  .hero-title .pulse-line {
+    margin-inline-start: 0 !important;
+    padding-inline-start: 0 !important;
+  }
+
+  .hero-title .pulse-line {
+    display: block !important;
+    width: max-content !important;
   }
 
   .hero-statement {
