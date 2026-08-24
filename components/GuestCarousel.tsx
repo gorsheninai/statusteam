@@ -287,9 +287,8 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       </div>
 
       <style>{`
-        /* Treat the previous-show carousel as its own archive chapter. The
-           burgundy is the same visual family as the hero CTA, but kept dark
-           enough that the photography and champagne borders stay dominant. */
+        /* One continuous archive chapter: previous-show imagery first, then
+           the scale metrics, with no hard colour seam between the two. */
         .st-page-two .st2-vanguard::after {
           content: "";
           position: absolute;
@@ -300,8 +299,20 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
           transform: translateX(-50%);
           pointer-events: none;
           background:
-            radial-gradient(ellipse at 50% 46%, rgba(94, 10, 34, 0.58) 0%, rgba(58, 8, 24, 0.44) 28%, rgba(31, 7, 16, 0.28) 52%, transparent 73%),
-            linear-gradient(180deg, #090707 0%, #14080c 16%, #280912 40%, #1b080f 68%, #0a0909 88%, #090909 100%);
+            radial-gradient(ellipse at 50% 44%, rgba(104, 11, 38, 0.62) 0%, rgba(65, 8, 26, 0.48) 30%, rgba(38, 7, 18, 0.32) 56%, transparent 78%),
+            linear-gradient(180deg, #090707 0%, #16080d 16%, #2c0914 43%, #220910 68%, #19080d 86%, #16080d 100%);
+        }
+
+        .st-page-two .st2-scale {
+          margin-block-start: 0 !important;
+          padding-block: 0 !important;
+          background:
+            linear-gradient(180deg, #16080d 0%, #13090c 36%, #0f090a 66%, #090909 100%) !important;
+        }
+
+        .st-page-two .st2-scale-shell {
+          border: 0 !important;
+          background: transparent !important;
         }
 
         .st-page-two .st2-guest-stage {
@@ -378,7 +389,11 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
         }
 
         @media (max-width: 899px) {
-          /* The mobile heading must remain one deliberate editorial line. */
+          .st-page-two .st2-vanguard {
+            padding-block-end: 0 !important;
+          }
+
+          /* The mobile heading remains one deliberate editorial line. */
           .st-page-two .st2-vanguard-head h2 {
             font-size: clamp(2.05rem, 9vw, 2.35rem) !important;
             line-height: 1 !important;
@@ -387,24 +402,15 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
             text-wrap: nowrap !important;
           }
 
-          /* Keep the archive colour strongest around the card, but let the
-             chapter dissolve fully back to black before the stats arrive. */
-          .st-page-two .st2-vanguard::after {
-            background:
-              radial-gradient(ellipse at 50% 47%, rgba(104, 11, 38, 0.62) 0%, rgba(61, 8, 25, 0.48) 29%, rgba(31, 7, 16, 0.26) 55%, transparent 75%),
-              linear-gradient(180deg, #090707 0%, #16080d 17%, #2d0914 43%, #1a080f 70%, #0b090a 88%, #090909 100%);
-          }
-
-          /* The active card is scaled to 1.1. The old ~1rem top inset was
-             smaller than that scale bleed, so iOS clipped the upper rounded
-             border while the lower border remained visible. Give the card a
-             real top safe zone and enlarge the viewport by the same amount. */
+          /* Compact the technical viewport without reintroducing the clipped
+             top-border bug: 1.6rem remains larger than the active card's
+             scale bleed on current mobile widths. */
           .st-page-two .st2-guest-viewport {
-            block-size: min(32rem, calc(106vw + 3.25rem)) !important;
+            block-size: min(30.4rem, calc(106vw + 1.8rem)) !important;
           }
 
           .st-page-two .st2-guest {
-            inset-block-start: 2rem !important;
+            inset-block-start: 1.6rem !important;
           }
 
           .st-page-two .st2-guest-nav-button {
@@ -420,10 +426,20 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
             inset-inline-end: 0.2rem;
           }
 
-          /* The old top border of the stats block climbed into the carousel
-             viewport while scrolling on iOS. Keep the lower divider only. */
+          /* Pull the metrics directly into the archive chapter instead of
+             leaving a large empty technical tail under the carousel. */
           .st-page-two .st2-scale-shell {
-            border-block-start: 0 !important;
+            padding-block-start: 1.6rem !important;
+            padding-block-end: 3rem !important;
+            border: 0 !important;
+          }
+
+          .st-page-two .st2-stats {
+            row-gap: 0.75rem !important;
+          }
+
+          .st-page-two .st2-stats li {
+            padding-block: 0.5rem !important;
           }
         }
       `}</style>
