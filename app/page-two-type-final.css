@@ -99,9 +99,13 @@
     text-align: center !important;
   }
 
+  /* Shrink-wrap the lock-up to the white headline. The red line then stretches
+     to that exact same used width, so their left and right edges always match. */
   .st-page-two .st2-impact-copy h2 {
-    align-items: center !important;
-    inline-size: 100% !important;
+    align-items: stretch !important;
+    inline-size: max-content !important;
+    max-inline-size: 100% !important;
+    margin-inline: auto !important;
     text-align: center !important;
   }
 
@@ -120,14 +124,16 @@
     transform-origin: center center !important;
   }
 
-  /* Tune the red line so its optical width matches the white line on phone widths. */
+  /* The phrase is intentionally a touch smaller than the target width in its
+     natural layout, then space-between locks its outer edges exactly to the
+     headline above instead of relying on another guessed font size. */
   .st-page-two .st2-impact-subgroup {
-    align-self: center !important;
-    justify-content: center !important;
-    width: max-content !important;
-    max-width: 100% !important;
-    margin: .1rem auto 0 !important;
-    gap: .16em !important;
+    align-self: stretch !important;
+    justify-content: space-between !important;
+    inline-size: 100% !important;
+    max-inline-size: none !important;
+    margin: .1rem 0 0 !important;
+    gap: 0 !important;
     text-align: center !important;
     white-space: nowrap !important;
     transform: none !important;
@@ -138,13 +144,13 @@
     font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
     font-weight: 400 !important;
-    font-size: clamp(.96rem, 4.28vw, 1.98rem) !important;
+    font-size: clamp(1.04rem, 5.25vw, 2.08rem) !important;
     line-height: 1 !important;
-    letter-spacing: .001em !important;
+    letter-spacing: 0 !important;
     text-align: center !important;
     white-space: nowrap !important;
     transform: none !important;
     -webkit-text-stroke: 0 !important;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, .22) !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, .18) !important;
   }
 }
