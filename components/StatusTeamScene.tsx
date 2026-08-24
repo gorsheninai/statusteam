@@ -135,19 +135,23 @@ function ImpactVideo() {
     const video = videoRef.current;
     if (!wrap || !video) return;
 
+    /* Keep the film parked while page one is visible. On phones, `autoPlay`
+       can begin loading/playing the off-screen second page immediately, so
+       the actual viewport intersection is the single source of truth. */
     video.muted = true;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      video.pause();
-      return;
-    }
-    void video.play().catch(() => {});
+    video.pause();
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) void video.play().catch(() => {});
-        else video.pause();
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.08) {
+          void video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
       },
-      { threshold: 0.18 },
+      { threshold: [0, 0.08, 0.18] },
     );
 
     observer.observe(wrap);
@@ -170,11 +174,10 @@ function ImpactVideo() {
         <video
           ref={videoRef}
           poster="/media/show-reel-poster.webp"
-          autoPlay
           muted={muted}
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           aria-label="Афтермуви показа «Славянский взгляд»"
         >
           <source src="/media/show-reel.webm" type="video/webm" />
