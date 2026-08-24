@@ -145,6 +145,16 @@ export default function Nav() {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 639px) {
+          .nav-tickets {
+            min-height: 32px;
+            padding: 0.3rem 0.9rem;
+            line-height: 1;
+          }
+        }
+      `}</style>
     </>
   );
 }
