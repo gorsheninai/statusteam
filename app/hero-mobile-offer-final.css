@@ -161,3 +161,36 @@
     letter-spacing: .045em !important;
   }
 }
+
+/* New-show chapter intro: this is a title transition, not a second hero.
+   Keep the typography untouched and remove the oversized vertical container
+   that left large black fields above and below the lock-up. */
+.pulse-scene .pulse-intro {
+  min-height: 0 !important;
+  min-block-size: 0 !important;
+  height: auto !important;
+  block-size: auto !important;
+  align-content: center !important;
+  padding-block-start: clamp(3.25rem, 4.6vw, 4.25rem) !important;
+  padding-block-end: clamp(3.4rem, 4.9vw, 4.5rem) !important;
+}
+
+.pulse-scene .pulse-eyebrow,
+.pulse-scene .pulse-title {
+  margin-block: 0 !important;
+}
+
+.pulse-scene .pulse-title {
+  margin-block-start: clamp(1.55rem, 2.2vw, 2rem) !important;
+}
+
+@media (max-width: 899px) {
+  .pulse-scene .pulse-intro {
+    padding-block-start: clamp(2.55rem, 10vw, 3.15rem) !important;
+    padding-block-end: clamp(2.4rem, 9vw, 3rem) !important;
+  }
+
+  .pulse-scene .pulse-title {
+    margin-block-start: clamp(1rem, 4.5vw, 1.35rem) !important;
+  }
+}
