@@ -17,13 +17,17 @@
   position: relative;
   display: grid;
   min-width: 0;
-  padding-block: clamp(2.5rem, 9vw, 3.75rem);
+  padding-block: clamp(2rem, 7vw, 2.75rem) clamp(1.25rem, 5vw, 1.5rem);
   isolation: isolate;
 }
 
 .preorder-summary,
 .preorder-action {
   min-width: 0;
+}
+
+.preorder-summary {
+  text-align: center;
 }
 
 .preorder-heading {
@@ -35,8 +39,8 @@
 
 .preorder-action {
   display: grid;
-  gap: 1rem;
-  margin-top: clamp(1.5rem, 6vw, 2.25rem);
+  gap: 1.125rem;
+  margin-top: clamp(1.375rem, 5.5vw, 1.5rem);
 }
 
 .preorder-copy {
@@ -49,23 +53,35 @@
   width: 100%;
   min-width: 0;
   min-height: 3.75rem;
-  justify-content: space-between;
-  padding: 1rem 1.15rem;
+  justify-content: center;
+  padding: 1rem 3.5rem;
   color: var(--paper);
   background: var(--ink);
   border-color: var(--ink);
+  border-radius: 999px;
   box-shadow: none;
   white-space: normal;
-  text-align: left;
+  text-align: center;
+}
+
+.preorder-action .btn-buy .arrow {
+  position: absolute;
+  inset-inline-end: 1.25rem;
 }
 
 .preorder-panel {
   width: 100%;
   min-width: 0;
-  margin-top: clamp(1.75rem, 6vw, 2.5rem);
+  margin-top: 0;
   background: transparent;
   border: 0;
-  transition-duration: var(--t-base);
+  transition:
+    grid-template-rows var(--t-base) var(--ease-out),
+    margin-top var(--t-base) var(--ease-out);
+}
+
+.preorder-panel.is-open {
+  margin-top: clamp(1.5rem, 5vw, 2rem);
 }
 
 .preorder-panel > .panel-inner {
@@ -94,18 +110,37 @@
 .preorder-form .form-foot .btn {
   width: 100%;
   min-width: 0;
-  justify-content: space-between;
+  justify-content: center;
+  padding-inline: 3.5rem;
   color: var(--paper);
   background: var(--ink);
   border-color: var(--ink);
-  text-align: left;
+  border-radius: 999px;
+  text-align: center;
   white-space: normal;
+}
+
+.preorder-form .form-foot .btn .arrow {
+  position: absolute;
+  inset-inline-end: 1.25rem;
+}
+
+/* The ticket scene and participation scene share one wine ground. Their
+   combined breathing room should read as a transition, not an empty panel. */
+.tickets + .join {
+  padding-block-start: clamp(1.75rem, 7vw, 2rem);
 }
 
 @media (min-width: 640px) {
   .preorder-action .btn-buy {
     width: fit-content;
     min-width: 20rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .tickets + .join {
+    padding-block-start: 4rem;
   }
 }
 
