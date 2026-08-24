@@ -88,7 +88,7 @@
 }
 
 @media (max-width: 899px) {
-  /* Center the complete lock-up and use more of the available phone width. */
+  /* Center the complete lock-up against the phone viewport. */
   .st-page-two .st2-impact-copy {
     inset-block-end: clamp(10.3rem, 20.6svh, 12.2rem) !important;
     inset-inline-start: 50% !important;
@@ -120,14 +120,14 @@
     transform-origin: center center !important;
   }
 
-  /* Increase the red line until its optical width matches the white line. */
+  /* Red line is deliberately scaled back to match the white line's optical width. */
   .st-page-two .st2-impact-subgroup {
     align-self: center !important;
     justify-content: center !important;
     width: max-content !important;
     max-width: 100% !important;
     margin: .1rem auto 0 !important;
-    gap: .16em !important;
+    gap: .18em !important;
     text-align: center !important;
     white-space: nowrap !important;
     transform: none !important;
@@ -138,9 +138,9 @@
     font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
     font-weight: 400 !important;
-    font-size: clamp(1.88rem, 8.1vw, 2.34rem) !important;
+    font-size: clamp(.94rem, 4.5vw, 1.12rem) !important;
     line-height: 1 !important;
-    letter-spacing: .002em !important;
+    letter-spacing: .001em !important;
     text-align: center !important;
     white-space: nowrap !important;
     transform: none !important;
