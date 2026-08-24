@@ -88,7 +88,7 @@
 }
 
 @media (max-width: 899px) {
-  /* Center the complete lock-up against the phone viewport. */
+  /* Center the complete lock-up and use more of the available phone width. */
   .st-page-two .st2-impact-copy {
     inset-block-end: clamp(10.3rem, 20.6svh, 12.2rem) !important;
     inset-inline-start: 50% !important;
@@ -120,14 +120,14 @@
     transform-origin: center center !important;
   }
 
-  /* Red line is deliberately scaled back to match the white line's optical width. */
+  /* Tune the red line so its optical width matches the white line on phone widths. */
   .st-page-two .st2-impact-subgroup {
     align-self: center !important;
     justify-content: center !important;
     width: max-content !important;
     max-width: 100% !important;
     margin: .1rem auto 0 !important;
-    gap: .18em !important;
+    gap: .16em !important;
     text-align: center !important;
     white-space: nowrap !important;
     transform: none !important;
@@ -138,13 +138,13 @@
     font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
     font-weight: 400 !important;
-    font-size: clamp(.94rem, 4.5vw, 1.12rem) !important;
+    font-size: clamp(.96rem, 4.28vw, 1.98rem) !important;
     line-height: 1 !important;
     letter-spacing: .001em !important;
     text-align: center !important;
     white-space: nowrap !important;
     transform: none !important;
     -webkit-text-stroke: 0 !important;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, .18) !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, .22) !important;
   }
 }
