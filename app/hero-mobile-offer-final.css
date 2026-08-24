@@ -1,5 +1,5 @@
-/* Mobile hero offer — make both red lines read as one balanced block.
-   Measured from the latest mobile screenshot, the rendered red text spans
+/* Mobile hero offer — make both lines read as one balanced block.
+   Measured from the latest mobile screenshot, the rendered offer text spans
    roughly 830 px on line one and 844 px on line two. That is only ~1.7%, so
    the correction belongs on the first line alone: increase its optical size
    by the same ratio rather than disturbing the already-correct second line.
@@ -7,7 +7,11 @@
 
    Mobile hierarchy is intentionally reduced to three levels:
    show title → offer → CTA. City/date remain elsewhere on the site, so the
-   first phone screen reads like a campaign cover instead of a dense poster. */
+   first phone screen reads like a campaign cover instead of a dense poster.
+
+   The offer uses the exact same champagne tone that was used for
+   “МОСКВА · НОЯБРЬ 2026” so the hero palette stays coherent with the logo,
+   jewellery and ticket border. */
 
 @media (max-width: 899px) {
   .hero-statement {
@@ -17,9 +21,12 @@
 
   .hero-statement-anchor,
   .hero-statement-script {
+    color: #c6a87c !important;
     line-height: 1.06 !important;
     transform: none !important;
     transform-origin: left center !important;
+    -webkit-text-stroke-color: #c6a87c !important;
+    text-shadow: 0 0 .01px #c6a87c !important;
   }
 
   .hero-statement-anchor {
