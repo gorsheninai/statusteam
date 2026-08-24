@@ -17,15 +17,15 @@ export default function Nav() {
   const [showTickets, setShowTickets] = useState(false);
   const [open, setOpen] = useState(false);
 
-  /* `.hero-stage` is deliberately taller than one viewport because it owns
-     the pinned hero transition. It must not be used as the reveal threshold:
-     on mobile that delayed the real header until well into later sections.
-     Reveal it as soon as the first visible screen has passed instead. */
+  /* `.hero-stage` is deliberately taller than the visible hero because it
+     owns the pinned transition. Conversely, `visualViewport.height` changes
+     whenever Safari collapses its browser chrome, which made the threshold
+     depend on scroll direction. The hero element itself is 100svh and gives
+     us the stable boundary between page one and every following section. */
   useEffect(() => {
     const onScroll = () => {
-      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-      const navHeight = document.querySelector<HTMLElement>(".nav")?.offsetHeight ?? 72;
-      const firstScreenEnd = Math.max(0, viewportHeight - navHeight);
+      const hero = document.querySelector<HTMLElement>(".hero");
+      const firstScreenEnd = hero?.offsetHeight ?? window.innerHeight;
       const isPastFirstScreen = window.scrollY >= firstScreenEnd;
 
       setSolid(isPastFirstScreen);
@@ -34,11 +34,9 @@ export default function Nav() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
-    window.visualViewport?.addEventListener("resize", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
-      window.visualViewport?.removeEventListener("resize", onScroll);
     };
   }, []);
 

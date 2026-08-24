@@ -322,6 +322,17 @@ select:focus {
   .nav {
     gap: 0.55rem;
     padding-bottom: 0.65rem;
+    /* iOS Safari can drop a fixed element from the compositor while a
+       backdrop-filter is repainting during downward momentum scroll. */
+    isolation: isolate;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .nav.is-solid {
+    background: rgba(9, 7, 6, 0.97);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .nav-brand {
