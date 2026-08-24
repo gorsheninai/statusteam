@@ -611,3 +611,27 @@ select:focus {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* The hero already owns the primary ticket action. Reveal the compact header
+   ticket only after the first screen, without reflowing the nav controls. */
+.nav-tickets {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition:
+    opacity 320ms var(--premium-ease),
+    transform 320ms var(--premium-ease),
+    color 420ms var(--premium-ease),
+    background 420ms var(--premium-ease),
+    visibility 0s linear 320ms;
+}
+
+.nav-tickets.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
