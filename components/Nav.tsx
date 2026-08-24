@@ -17,23 +17,28 @@ export default function Nav() {
   const [showTickets, setShowTickets] = useState(false);
   const [open, setOpen] = useState(false);
 
-  /* The bar is transparent over the hero and becomes a real header once the
-     first screen is behind you — keyed to the hero's height, not to a magic
-     pixel count, so it survives a change of hero. */
+  /* `.hero-stage` is deliberately taller than one viewport because it owns
+     the pinned hero transition. It must not be used as the reveal threshold:
+     on mobile that delayed the real header until well into later sections.
+     Reveal it as soon as the first visible screen has passed instead. */
   useEffect(() => {
     const onScroll = () => {
-      const hero = document.querySelector<HTMLElement>(".hero-stage");
-      const heroHeight = hero?.offsetHeight ?? window.innerHeight;
-      const edge = heroHeight * 0.72;
-      setSolid(window.scrollY > edge);
-      setShowTickets(window.scrollY >= Math.max(0, heroHeight - 96));
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      const navHeight = document.querySelector<HTMLElement>(".nav")?.offsetHeight ?? 72;
+      const firstScreenEnd = Math.max(0, viewportHeight - navHeight);
+      const isPastFirstScreen = window.scrollY >= firstScreenEnd;
+
+      setSolid(isPastFirstScreen);
+      setShowTickets(isPastFirstScreen);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
+    window.visualViewport?.addEventListener("resize", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      window.visualViewport?.removeEventListener("resize", onScroll);
     };
   }, []);
 
