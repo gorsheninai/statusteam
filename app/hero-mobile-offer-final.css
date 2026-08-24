@@ -1,0 +1,39 @@
+/* Mobile hero offer — make both red lines read as one balanced block.
+   The first line is naturally narrower in Tenor Sans, so it gets a slightly
+   larger optical size. The second line stays a touch smaller. On the target
+   phone width their rendered ink widths land essentially equal and align with
+   the visual width of “КОНТИНЕНТА” above. */
+
+@media (max-width: 899px) {
+  .hero-statement {
+    gap: 5px !important;
+  }
+
+  .hero-statement-anchor,
+  .hero-statement-script {
+    line-height: 1.06 !important;
+    letter-spacing: .05em !important;
+    transform: none !important;
+    transform-origin: left center !important;
+  }
+
+  .hero-statement-anchor {
+    font-size: clamp(.78rem, 3.85vw, 1.04rem) !important;
+  }
+
+  .hero-statement-script {
+    font-size: clamp(.72rem, 3.5vw, .96rem) !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .hero-statement-anchor {
+    font-size: .78rem !important;
+    letter-spacing: .04em !important;
+  }
+
+  .hero-statement-script {
+    font-size: .72rem !important;
+    letter-spacing: .04em !important;
+  }
+}
