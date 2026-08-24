@@ -33,6 +33,26 @@
   pointer-events: none;
 }
 
+/* Hero CTA is one editorial unit: the date captions the action instead of
+   floating as a separate block. Keep the spacing compact and deliberate. */
+.hero-v4 .hero-where {
+  margin-top: clamp(.95rem, 1.35vw, 1.3rem);
+  margin-bottom: 0;
+  color: var(--v4-gold-bright);
+}
+
+.hero-v4 .hero-ticket-cta {
+  margin-top: clamp(.55rem, .8vw, .75rem);
+}
+
 @media (max-width: 899px) {
   .form-consent { font-size: .64rem; }
+
+  .hero-v4 .hero-where {
+    margin-top: .85rem;
+  }
+
+  .hero-v4 .hero-ticket-cta {
+    margin-top: .65rem;
+  }
 }
