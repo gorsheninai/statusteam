@@ -88,12 +88,12 @@
 }
 
 @media (max-width: 899px) {
-  /* Center the whole lock-up against the viewport, not against the left gutter. */
+  /* Center the complete lock-up and use more of the available phone width. */
   .st-page-two .st2-impact-copy {
-    inset-block-end: clamp(10.5rem, 21svh, 13rem) !important;
+    inset-block-end: clamp(10.3rem, 20.6svh, 12.2rem) !important;
     inset-inline-start: 50% !important;
     inset-inline-end: auto !important;
-    inline-size: calc(100% - 2.5rem) !important;
+    inline-size: calc(100% - 2rem) !important;
     max-inline-size: none !important;
     transform: translateX(-50%) !important;
     text-align: center !important;
@@ -106,33 +106,45 @@
   }
 
   .st-page-two .st2-impact-primary {
-    width: 100% !important;
-    font-size: clamp(.82rem, 4.08vw, 1.9rem) !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
+    font-size: clamp(.9rem, 4.35vw, 1.08rem) !important;
+    line-height: 1.02 !important;
+    letter-spacing: .085em !important;
     text-align: center !important;
   }
 
   .st-page-two .st2-impact-primary > span {
+    white-space: nowrap !important;
     transform-origin: center center !important;
   }
 
-  /* Keep the accent close to the headline and make its optical width match it. */
+  /* Increase the red line until its optical width matches the white line. */
   .st-page-two .st2-impact-subgroup {
-    align-self: stretch !important;
+    align-self: center !important;
     justify-content: center !important;
-    width: 100% !important;
-    margin-block-start: .10rem !important;
-    gap: .26em !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin: .1rem auto 0 !important;
+    gap: .16em !important;
     text-align: center !important;
+    white-space: nowrap !important;
     transform: none !important;
   }
 
   .st-page-two .st2-impact-tier2a,
   .st-page-two .st2-impact-tier2b {
-    font-size: clamp(1rem, 5.05vw, 2.16rem) !important;
-    letter-spacing: .003em !important;
+    font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: clamp(1.88rem, 8.1vw, 2.34rem) !important;
+    line-height: 1 !important;
+    letter-spacing: .002em !important;
     text-align: center !important;
+    white-space: nowrap !important;
     transform: none !important;
     -webkit-text-stroke: 0 !important;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, .22) !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, .18) !important;
   }
 }
