@@ -28,15 +28,15 @@
     height: 118% !important;
   }
 
-  /* Mobile lock-up: put ПУЛЬС КОНТИНЕНТА on one editorial line. The fixed
-     tracking here deliberately disables the animated two-line pulse spacing
-     on phones, otherwise the title width changes while scrolling and can clip.
-     Supporting copy and CTA stay on the established left axis. */
+  /* Mobile lock-up: keep ПУЛЬС КОНТИНЕНТА on one line, but size it for the
+     actual phone content width rather than the full viewport. A deliberate
+     inter-word gap keeps the two words readable as separate words instead of
+     visually welding them together. */
   .hero-title {
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: baseline !important;
-    gap: .18em !important;
+    gap: .34em !important;
     width: max-content !important;
     max-width: calc(100vw - (var(--gutter) * 2)) !important;
     margin-inline-start: 0 !important;
@@ -65,9 +65,9 @@
     max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-size: clamp(2.35rem, 10.2vw, 3.1rem) !important;
+    font-size: clamp(1.95rem, 8.6vw, 2.65rem) !important;
     line-height: .92 !important;
-    letter-spacing: -.015em !important;
+    letter-spacing: -.018em !important;
     white-space: nowrap !important;
   }
 
@@ -111,12 +111,12 @@
 
 @media (max-width: 340px) {
   .hero-title {
-    gap: .14em !important;
+    gap: .3em !important;
   }
 
   .hero-title .pulse-line,
   .hero-title .pulse-line + .pulse-line {
-    font-size: 2.12rem !important;
+    font-size: 1.78rem !important;
     letter-spacing: -.02em !important;
   }
 
