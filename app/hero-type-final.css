@@ -265,16 +265,25 @@
   margin-inline-start: auto !important;
   border-left: 1px solid rgba(198, 168, 124, .42);
   color: inherit;
+  font-size: 0;
+  transition: border-color 420ms cubic-bezier(.22, .8, .28, 1);
+}
+
+.hero-cta .btn.btn-solid .arrow::before {
+  content: "↗";
   font-size: 18px;
-  transition:
-    transform 420ms cubic-bezier(.22, .8, .28, 1),
-    border-color 420ms cubic-bezier(.22, .8, .28, 1);
+  line-height: 1;
+  transition: transform 420ms cubic-bezier(.22, .8, .28, 1);
 }
 
 .hero-cta .btn.btn-solid:hover .arrow,
 .hero-cta .btn.btn-solid:focus-visible .arrow {
-  transform: translate(3px, -3px);
   border-left-color: rgba(16, 13, 12, .28);
+}
+
+.hero-cta .btn.btn-solid:hover .arrow::before,
+.hero-cta .btn.btn-solid:focus-visible .arrow::before {
+  transform: translate(3px, -3px);
 }
 
 @media (max-width: 899px) {
