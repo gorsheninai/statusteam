@@ -11,15 +11,21 @@
 
    The offer uses the exact same champagne tone that was used for
    “МОСКВА · НОЯБРЬ 2026” so the hero palette stays coherent with the logo,
-   jewellery and ticket border.
-
-   Final mobile spacing pass: the title and offer are treated as one semantic
-   group, while the CTA remains a separate action. The title-to-offer gap is
-   tightened to 12px and the offer-to-CTA gap is held at 20px. */
+   jewellery and ticket border. */
 
 @media (max-width: 899px) {
-  .hero-title {
-    margin-bottom: 12px !important;
+  /* Rebalance the portrait crop without touching the type layer. The tall
+     campaign frame had too much visual weight in the lower-right quadrant:
+     move the artwork ~3.5svh upward and ~2vw left. Horizontal bleed is widened
+     first so the shift can never reveal an edge on narrow phones. */
+  .hero-media .hero-layer:not(.hero-layer-model):not(.hero-layer-fg) {
+    --bleed-x: 3.5%;
+    left: -5.5% !important;
+    right: auto !important;
+    top: calc(-9% - 3.5svh) !important;
+    bottom: auto !important;
+    width: 107% !important;
+    height: 118% !important;
   }
 
   .hero-statement {
