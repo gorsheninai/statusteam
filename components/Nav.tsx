@@ -14,6 +14,7 @@ const LINKS = [
 
 export default function Nav() {
   const [solid, setSolid] = useState(false);
+  const [showTickets, setShowTickets] = useState(false);
   const [open, setOpen] = useState(false);
 
   /* The bar is transparent over the hero and becomes a real header once the
@@ -22,8 +23,10 @@ export default function Nav() {
   useEffect(() => {
     const onScroll = () => {
       const hero = document.querySelector<HTMLElement>(".hero-stage");
-      const edge = (hero?.offsetHeight ?? window.innerHeight) * 0.72;
+      const heroHeight = hero?.offsetHeight ?? window.innerHeight;
+      const edge = heroHeight * 0.72;
       setSolid(window.scrollY > edge);
+      setShowTickets(window.scrollY >= Math.max(0, heroHeight - 96));
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -72,7 +75,12 @@ export default function Nav() {
         <div className="nav-end">
           {/* Never inside the burger: the ticket button is the one control
               that has to be reachable from every pixel of the page. */}
-          <a className="nav-tickets" href="#tickets">
+          <a
+            className={`nav-tickets ${showTickets ? "is-visible" : ""}`}
+            href="#tickets"
+            aria-hidden={!showTickets}
+            tabIndex={showTickets ? undefined : -1}
+          >
             Билеты
           </a>
           <button
