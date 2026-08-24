@@ -28,6 +28,13 @@
     height: 118% !important;
   }
 
+  /* Final mobile hierarchy: keep the offer optically attached to the show
+     name. This file loads after hero-type-final.css, so the 12px value here
+     intentionally wins over the older 20px corrective rule. */
+  .hero-title {
+    margin-bottom: 12px !important;
+  }
+
   .hero-statement {
     gap: 5px !important;
     margin-bottom: 20px !important;
