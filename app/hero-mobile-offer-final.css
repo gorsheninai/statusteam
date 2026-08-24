@@ -125,6 +125,19 @@
   .hero-cta {
     margin-top: 0 !important;
   }
+
+  /* Softer phone CTA: rounded like premium mobile UI, but intentionally not
+     a full pill so the fashion-editorial structure and split arrow cell stay
+     visible. Keep the existing dimensions; only soften the geometry and the
+     champagne rules. */
+  .hero-cta .btn.btn-solid {
+    border-radius: 18px !important;
+    border-color: rgba(198, 168, 124, .46) !important;
+  }
+
+  .hero-cta .btn.btn-solid .arrow {
+    border-left-color: rgba(198, 168, 124, .34) !important;
+  }
 }
 
 @media (max-width: 340px) {
