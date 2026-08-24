@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Cormorant_Garamond } from "next/font/google";
 import { PULSE_PATH } from "@/lib/pulse-path";
+import TenetStepLock from "@/components/TenetStepLock";
 import "./globals.css";
 import "./hero-placement.css";
 import "./status-team.css";
@@ -138,6 +139,7 @@ export default function RootLayout({
         </a>
 
         {children}
+        <TenetStepLock />
 
         <div className="grain" aria-hidden="true" />
       </body>
