@@ -3,7 +3,6 @@
 import gsap from "gsap";
 import {
   type CSSProperties,
-  type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
   useRef,
@@ -21,8 +20,7 @@ type GuestCarouselProps = {
   guests: GuestCarouselItem[];
 };
 
-const FULL_CYCLE_SECONDS = 21;
-const FOCUS_DURATION_SECONDS = 0.7;
+const FOCUS_DURATION_SECONDS = 0.52;
 
 const wrapIndex = (index: number, length: number) =>
   ((index % length) + length) % length;
@@ -72,31 +70,14 @@ const interpolateDepth = (distance: number) => {
 
 export default function GuestCarousel({ guests }: GuestCarouselProps) {
   const stageRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const frameRef = useRef<number | null>(null);
   const focusTweenRef = useRef<gsap.core.Tween | null>(null);
   const positionRef = useRef(0);
   const activeIndexRef = useRef(0);
-  const rotatingRef = useRef(true);
-  const wasRotatingOnPointerDownRef = useRef(false);
-  const pointerRef = useRef({
-    id: -1,
-    startX: 0,
-    startY: 0,
-    startPosition: 0,
-    cardIndex: null as number | null,
-    axis: "" as "" | "x" | "y",
-  });
-  const didDragRef = useRef(false);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isRotating, setIsRotating] = useState(true);
   const [isFocusing, setIsFocusing] = useState(false);
-  const [dragging, setDragging] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [inView, setInView] = useState(false);
-  const [pageVisible, setPageVisible] = useState(true);
 
   const renderPosition = useCallback(
     (position: number) => {
@@ -116,17 +97,8 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
           depth.visibility === "hidden" ? "true" : "false",
         );
         const button = card.querySelector<HTMLButtonElement>("button");
-        if (button) {
-          button.tabIndex = depth.visibility === "hidden" ? -1 : 0;
-        }
+        if (button) button.tabIndex = depth.visibility === "hidden" ? -1 : 0;
       });
-
-      const stage = stageRef.current;
-      if (stage) {
-        stage.dataset.rotationAngle = String(
-          (normalized / guests.length) * 360,
-        );
-      }
 
       if (nextActive !== activeIndexRef.current) {
         activeIndexRef.current = nextActive;
@@ -135,18 +107,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     },
     [guests.length],
   );
-
-  const stopFrame = useCallback(() => {
-    if (frameRef.current !== null) {
-      window.cancelAnimationFrame(frameRef.current);
-      frameRef.current = null;
-    }
-  }, []);
-
-  const setRotating = useCallback((next: boolean) => {
-    rotatingRef.current = next;
-    setIsRotating(next);
-  }, []);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -157,92 +117,19 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   }, []);
 
   useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.2 },
-    );
-    observer.observe(stage);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const updateVisibility = () =>
-      setPageVisible(document.visibilityState === "visible");
-    updateVisibility();
-    document.addEventListener("visibilitychange", updateVisibility);
-    return () =>
-      document.removeEventListener("visibilitychange", updateVisibility);
-  }, []);
-
-  useEffect(() => {
     renderPosition(positionRef.current);
   }, [renderPosition]);
 
-  useEffect(() => {
-    stopFrame();
-    if (
-      !isRotating ||
-      reducedMotion ||
-      !inView ||
-      !pageVisible ||
-      guests.length < 2
-    ) {
-      return;
-    }
-
-    let previousTime = performance.now();
-    const cardsPerMillisecond =
-      guests.length / (FULL_CYCLE_SECONDS * 1000);
-
-    const tick = (time: number) => {
-      const elapsed = Math.min(time - previousTime, 64);
-      previousTime = time;
-      positionRef.current += elapsed * cardsPerMillisecond;
-
-      if (Math.abs(positionRef.current) > guests.length * 100) {
-        positionRef.current = wrapPosition(positionRef.current, guests.length);
-      }
-
-      renderPosition(positionRef.current);
-      frameRef.current = window.requestAnimationFrame(tick);
-    };
-
-    frameRef.current = window.requestAnimationFrame(tick);
-    return stopFrame;
-  }, [
-    guests.length,
-    inView,
-    isRotating,
-    pageVisible,
-    reducedMotion,
-    renderPosition,
-    stopFrame,
-  ]);
-
   useEffect(
     () => () => {
-      stopFrame();
       focusTweenRef.current?.kill();
     },
-    [stopFrame],
+    [],
   );
-
-  const cardStep = () => {
-    const viewportWidth = viewportRef.current?.clientWidth ?? 390;
-    return Math.max(
-      210,
-      Math.min(380, viewportWidth * (viewportWidth < 700 ? 0.72 : 0.28)),
-    );
-  };
 
   const focusPosition = useCallback(
     (targetPosition: number) => {
-      stopFrame();
       focusTweenRef.current?.kill();
-      setRotating(false);
 
       if (reducedMotion) {
         positionRef.current = targetPosition;
@@ -270,11 +157,12 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
         },
       });
     },
-    [reducedMotion, renderPosition, setRotating, stopFrame],
+    [reducedMotion, renderPosition],
   );
 
   const focusIndex = useCallback(
     (index: number) => {
+      if (!guests.length) return;
       focusPosition(
         closestPositionForIndex(index, positionRef.current, guests.length),
       );
@@ -282,193 +170,217 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     [focusPosition, guests.length],
   );
 
-  const resume = useCallback(() => {
-    focusTweenRef.current?.kill();
-    setIsFocusing(false);
-    setRotating(true);
-  }, [setRotating]);
-
-  const beginDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const targetCard =
-      event.target instanceof Element
-        ? event.target.closest<HTMLElement>("[data-st2-guest-index]")
-        : null;
-    const targetIndex = targetCard?.dataset.st2GuestIndex;
-
-    wasRotatingOnPointerDownRef.current = rotatingRef.current;
-    stopFrame();
-    focusTweenRef.current?.kill();
-    setIsFocusing(false);
-    setRotating(false);
-    pointerRef.current = {
-      id: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      startPosition: positionRef.current,
-      cardIndex: targetIndex === undefined ? null : Number(targetIndex),
-      axis: "",
-    };
-    didDragRef.current = false;
-    setDragging(true);
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
-  const continueDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const pointer = pointerRef.current;
-    if (!dragging || pointer.id !== event.pointerId) return;
-
-    const dx = event.clientX - pointer.startX;
-    const dy = event.clientY - pointer.startY;
-    if (!pointer.axis && Math.max(Math.abs(dx), Math.abs(dy)) > 7) {
-      pointer.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-    }
-    if (pointer.axis === "y") {
-      didDragRef.current = true;
-      return;
-    }
-    if (pointer.axis !== "x") return;
-
-    didDragRef.current = Math.abs(dx) > 8;
-    positionRef.current = pointer.startPosition - dx / cardStep();
-    renderPosition(positionRef.current);
-  };
-
-  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const pointer = pointerRef.current;
-    if (pointer.id !== event.pointerId) return;
-
-    setDragging(false);
-    pointerRef.current.id = -1;
-
-    if (pointer.axis === "x" && didDragRef.current) {
-      focusPosition(Math.round(positionRef.current));
-    } else if (pointer.axis !== "y" && pointer.cardIndex !== null) {
-      didDragRef.current = true;
-      if (
-        !wasRotatingOnPointerDownRef.current &&
-        pointer.cardIndex === activeIndexRef.current
-      ) {
-        resume();
-      } else {
-        focusIndex(pointer.cardIndex);
-      }
-    } else if (wasRotatingOnPointerDownRef.current) {
-      resume();
-    }
-
-    window.setTimeout(() => {
-      didDragRef.current = false;
-    }, 0);
-  };
-
-  const autoRunning =
-    isRotating && !reducedMotion && inView && pageVisible && guests.length > 1;
+  const step = useCallback(
+    (direction: -1 | 1) => {
+      if (isFocusing || guests.length < 2) return;
+      focusIndex(activeIndexRef.current + direction);
+    },
+    [focusIndex, guests.length, isFocusing],
+  );
 
   return (
-    <div
-      className={`st2-guest-stage${dragging ? " is-dragging" : ""}${autoRunning ? " is-rotating" : ""}${isFocusing ? " is-focusing" : ""}`}
-      ref={stageRef}
-      data-st2-guest-stage
-      data-active-index={activeIndex}
-      data-rotating={autoRunning ? "true" : "false"}
-      data-cycle-seconds={FULL_CYCLE_SECONDS}
-      role="region"
-      aria-roledescription="carousel"
-      aria-label="Гости STATUS TEAM"
-      aria-describedby="st2-guest-instructions"
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === "ArrowLeft") {
-          event.preventDefault();
-          focusIndex(activeIndex - 1);
-        }
-        if (event.key === "ArrowRight") {
-          event.preventDefault();
-          focusIndex(activeIndex + 1);
-        }
-      }}
-    >
-      <p className="sr-only" id="st2-guest-instructions">
-        Карусель вращается автоматически. Выберите гостя, чтобы остановить его в центре.
-        Повторное нажатие на центральную карточку возобновит вращение.
-      </p>
-
+    <>
       <div
-        className="st2-guest-viewport"
-        ref={viewportRef}
-        onPointerDown={beginDrag}
-        onPointerMove={continueDrag}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
+        className={`st2-guest-stage${isFocusing ? " is-focusing" : ""}`}
+        ref={stageRef}
+        data-st2-guest-stage
+        data-active-index={activeIndex}
+        data-rotating="false"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Кадры предыдущего показа «Славянский взгляд»"
+        aria-describedby="st2-guest-instructions"
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            step(-1);
+          }
+          if (event.key === "ArrowRight") {
+            event.preventDefault();
+            step(1);
+          }
+        }}
       >
-        <div className="st2-guest-track" role="list">
-          {guests.map((guest, index) => {
-            const isActive = index === activeIndex;
-            const currentDepth = interpolateDepth(
-              shortestOffset(index, positionRef.current, guests.length),
-            );
-            const isFrozenActive = !isRotating && !isFocusing && isActive;
+        <p className="sr-only" id="st2-guest-instructions">
+          Карусель не вращается автоматически. Используйте стрелки слева и справа,
+          чтобы посмотреть следующий или предыдущий кадр.
+        </p>
 
-            return (
-              <div
-                className={`st2-guest${isActive ? " is-active" : ""}`}
-                key={guest.label}
-                ref={(card) => {
-                  cardRefs.current[index] = card;
-                }}
-                role="listitem"
-                data-st2-guest-index={index}
-                style={currentDepth}
-                aria-hidden={currentDepth.visibility === "hidden"}
-                data-st2-guest
-              >
-                <button
-                  className="st2-guest-card"
-                  type="button"
-                  aria-label={
-                    isFrozenActive
-                      ? `${guest.label}. Возобновить вращение`
-                      : `${guest.label}. Показать в центре и остановить`
-                  }
-                  aria-current={isActive ? "true" : undefined}
-                  tabIndex={currentDepth.visibility === "hidden" ? -1 : 0}
-                  onClick={() => {
-                    if (didDragRef.current) return;
+        <div className="st2-guest-viewport">
+          <div className="st2-guest-track" role="list">
+            {guests.map((guest, index) => {
+              const isActive = index === activeIndex;
+              const currentDepth = interpolateDepth(
+                shortestOffset(index, positionRef.current, guests.length),
+              );
 
-                    if (
-                      isFrozenActive &&
-                      !wasRotatingOnPointerDownRef.current
-                    ) {
-                      resume();
-                    } else {
-                      focusIndex(index);
-                    }
-                    wasRotatingOnPointerDownRef.current = false;
+              return (
+                <div
+                  className={`st2-guest${isActive ? " is-active" : ""}`}
+                  key={guest.label}
+                  ref={(card) => {
+                    cardRefs.current[index] = card;
                   }}
+                  role="listitem"
+                  data-st2-guest-index={index}
+                  style={currentDepth}
+                  aria-hidden={currentDepth.visibility === "hidden"}
+                  data-st2-guest
                 >
-                  <span className="st2-guest-media">
-                    <img
-                      src={`/media/${guest.img}-${guest.widths[1]}.webp`}
-                      srcSet={`/media/${guest.img}-${guest.widths[0]}.webp ${guest.widths[0]}w, /media/${guest.img}-${guest.widths[1]}.webp ${guest.widths[1]}w`}
-                      sizes="(min-width: 900px) 24vw, 74vw"
-                      width={guest.widths[1]}
-                      height={Math.round((guest.widths[1] * 4) / 3)}
-                      alt={guest.alt}
-                      loading="lazy"
-                      draggable={false}
-                    />
-                  </span>
+                  <button
+                    className="st2-guest-card"
+                    type="button"
+                    aria-label={`${guest.label}. Показать в центре`}
+                    aria-current={isActive ? "true" : undefined}
+                    tabIndex={currentDepth.visibility === "hidden" ? -1 : 0}
+                    onClick={() => focusIndex(index)}
+                  >
+                    <span className="st2-guest-media">
+                      <img
+                        src={`/media/${guest.img}-${guest.widths[1]}.webp`}
+                        srcSet={`/media/${guest.img}-${guest.widths[0]}.webp ${guest.widths[0]}w, /media/${guest.img}-${guest.widths[1]}.webp ${guest.widths[1]}w`}
+                        sizes="(min-width: 900px) 24vw, 74vw"
+                        width={guest.widths[1]}
+                        height={Math.round((guest.widths[1] * 4) / 3)}
+                        alt={guest.alt}
+                        loading="lazy"
+                        draggable={false}
+                      />
+                    </span>
 
-                  <span className="st2-guest-shade" aria-hidden="true" />
-                  <span className="st2-guest-copy">
-                    <strong>{guest.label}</strong>
-                  </span>
-                </button>
-              </div>
-            );
-          })}
+                    <span className="st2-guest-shade" aria-hidden="true" />
+                    <span className="st2-guest-copy">
+                      <strong>{guest.label}</strong>
+                    </span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="st2-guest-nav" aria-label="Навигация по кадрам">
+          <button
+            className="st2-guest-nav-button is-prev"
+            type="button"
+            onClick={() => step(-1)}
+            disabled={isFocusing}
+            aria-label="Предыдущий кадр"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 5 8 12l7 7" />
+            </svg>
+          </button>
+          <button
+            className="st2-guest-nav-button is-next"
+            type="button"
+            onClick={() => step(1)}
+            disabled={isFocusing}
+            aria-label="Следующий кадр"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 5 7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
+
+      <style>{`
+        .st-page-two .st2-guest-stage {
+          isolation: isolate;
+        }
+
+        .st-page-two .st2-guest-viewport {
+          cursor: default !important;
+          touch-action: pan-y !important;
+        }
+
+        .st-page-two .st2-guest-nav {
+          position: absolute;
+          inset: 0;
+          z-index: 90;
+          pointer-events: none;
+        }
+
+        .st-page-two .st2-guest-nav-button {
+          position: absolute;
+          inset-block-start: 50%;
+          display: grid;
+          place-items: center;
+          inline-size: 3rem;
+          block-size: 3rem;
+          padding: 0;
+          border: 1px solid rgba(198, 168, 124, 0.68);
+          border-radius: 2px;
+          color: rgba(255, 255, 255, 0.94);
+          background: rgba(10, 10, 10, 0.58);
+          -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+          transform: translateY(-50%);
+          pointer-events: auto;
+          cursor: pointer;
+          transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease, opacity 220ms ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .st-page-two .st2-guest-nav-button.is-prev {
+          inset-inline-start: max(0.35rem, env(safe-area-inset-left));
+        }
+
+        .st-page-two .st2-guest-nav-button.is-next {
+          inset-inline-end: max(0.35rem, env(safe-area-inset-right));
+        }
+
+        .st-page-two .st2-guest-nav-button svg {
+          inline-size: 1.25rem;
+          block-size: 1.25rem;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 1.35;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        .st-page-two .st2-guest-nav-button:disabled {
+          opacity: 0.45;
+          cursor: default;
+        }
+
+        .st-page-two .st2-guest-nav-button:focus-visible {
+          outline: 1px solid var(--st2-champagne);
+          outline-offset: 3px;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+          .st-page-two .st2-guest-nav-button:not(:disabled):hover {
+            color: var(--st2-ink);
+            border-color: var(--st2-champagne);
+            background: var(--st2-champagne);
+          }
+        }
+
+        @media (max-width: 899px) {
+          .st-page-two .st2-guest-nav-button {
+            inline-size: 2.875rem;
+            block-size: 2.875rem;
+          }
+
+          .st-page-two .st2-guest-nav-button.is-prev {
+            inset-inline-start: 0.2rem;
+          }
+
+          .st-page-two .st2-guest-nav-button.is-next {
+            inset-inline-end: 0.2rem;
+          }
+
+          /* The old top border of the stats block climbed into the carousel
+             viewport while scrolling on iOS. Keep the lower divider only. */
+          .st-page-two .st2-scale-shell {
+            border-block-start: 0 !important;
+          }
+        }
+      `}</style>
+    </>
   );
 }
