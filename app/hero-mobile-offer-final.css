@@ -14,6 +14,13 @@
    jewellery and ticket border. */
 
 @media (max-width: 899px) {
+  /* One optical axis for the complete mobile hero stack. Keeping the value in
+     one custom property prevents the title, offer and CTA drifting apart when
+     older hero rules are changed elsewhere. */
+  .hero-inner {
+    --hero-mobile-axis: .35rem;
+  }
+
   /* Rebalance the portrait crop without touching the type layer. The tall
      campaign frame had too much visual weight in the lower-right quadrant:
      move the artwork ~3.5svh upward and ~2vw left. Horizontal bleed is widened
@@ -28,24 +35,30 @@
     height: 118% !important;
   }
 
+  /* Lock all visible hero content to exactly the same left edge. */
+  .hero-title,
+  .hero-statement,
+  .hero-cta {
+    margin-inline-start: var(--hero-mobile-axis) !important;
+    margin-inline-end: auto !important;
+    padding-inline-start: 0 !important;
+    text-align: left !important;
+    align-self: flex-start !important;
+    justify-self: start !important;
+  }
+
   /* Keep the ORIGINAL two-mask title structure so Motion.tsx can animate the
      words exactly as before. On phones the two masks sit on one row, with an
-     explicit optical gap between them. The title is now ~11% larger and its
-     left edge is locked to the same .35rem axis as the gold offer and CTA. */
+     explicit optical gap between them. */
   .hero-title {
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: baseline !important;
     gap: .28em !important;
     width: max-content !important;
-    max-width: calc(100vw - (var(--gutter) * 2) - .35rem) !important;
-    margin-inline-start: .35rem !important;
-    margin-inline-end: auto !important;
+    max-width: calc(100vw - (var(--gutter) * 2) - var(--hero-mobile-axis)) !important;
     margin-bottom: 12px !important;
-    padding: 0 !important;
-    text-align: left !important;
-    align-self: flex-start !important;
-    justify-self: start !important;
+    padding-block: 0 !important;
     transform-origin: left center !important;
   }
 
@@ -81,7 +94,6 @@
   .hero-statement {
     gap: 5px !important;
     margin-bottom: 20px !important;
-    text-align: left !important;
   }
 
   .hero-statement-anchor,
@@ -109,10 +121,9 @@
     display: none !important;
   }
 
-  /* Keep the CTA as a separate action level below the explanatory line. */
+  /* CTA box starts on exactly the same axis as both text levels. */
   .hero-cta {
     margin-top: 0 !important;
-    text-align: left !important;
   }
 }
 
