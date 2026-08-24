@@ -88,15 +88,18 @@
 }
 
 @media (max-width: 899px) {
-  /* Center the complete lock-up and use more of the available phone width. */
+  /* The statement now opens page two: centered directly over the film instead
+     of sitting near the proof rows at the bottom. */
   .st-page-two .st2-impact-copy {
-    inset-block-end: clamp(10.3rem, 20.6svh, 12.2rem) !important;
+    inset-block-start: clamp(1.35rem, 2.8svh, 1.9rem) !important;
+    inset-block-end: auto !important;
     inset-inline-start: 50% !important;
     inset-inline-end: auto !important;
     inline-size: calc(100% - 2rem) !important;
     max-inline-size: none !important;
     transform: translateX(-50%) !important;
     text-align: center !important;
+    z-index: 5 !important;
   }
 
   .st-page-two .st2-impact-copy h2 {
@@ -147,5 +150,17 @@
     transform: none !important;
     -webkit-text-stroke: 0 !important;
     text-shadow: 0 1px 6px rgba(0, 0, 0, .18) !important;
+  }
+
+  /* The icon-only sound control takes over the old statement position at the
+     lower-right of the film. Its inline mobile top rule is intentionally
+     overridden here. */
+  .st-page-two .st2-watch {
+    inset-block-start: auto !important;
+    inset-block-end: clamp(10.3rem, 20.6svh, 12.2rem) !important;
+    inset-inline-start: auto !important;
+    inset-inline-end: 1.25rem !important;
+    transform: none !important;
+    z-index: 6 !important;
   }
 }
