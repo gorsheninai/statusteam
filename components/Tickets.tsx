@@ -36,7 +36,7 @@ export default function Tickets() {
               ↗
             </span>
           </a>
-        ) : (
+        ) : !askOpen ? (
           <button
             className="btn btn-solid btn-buy"
             type="button"
@@ -50,7 +50,7 @@ export default function Tickets() {
               ↗
             </span>
           </button>
-        )}
+        ) : null}
 
       </div>
 
@@ -62,11 +62,7 @@ export default function Tickets() {
         >
           <div className="panel-inner">
             <div className="preorder-form">
-              <p className="tickets-note">
-                Оставьте имя и удобный контакт. Мы пришлём ссылку до начала
-                общих продаж.
-              </p>
-              <ApplyForm kind="access" consent submitLabel="Оставить предзаказ" />
+              <ApplyForm kind="access" consent submitLabel="Отправить" />
             </div>
           </div>
         </div>
