@@ -105,18 +105,18 @@
     /* Visually matches the rendered width of “МОСКВА · НОЯБРЬ 2026”. */
     --hero-action-width: 22.625rem;
     /* Drop only the event/CTA module toward the foot of the first screen. */
-    --hero-action-drop: 3.25rem;
+    --hero-action-drop: 0rem;
     display: block !important;
     transform: translateY(-6.75rem) !important;
   }
 
   .hero-title {
-    margin-bottom: clamp(2.15rem, 2.55vw, 2.9rem) !important;
+    margin-bottom: 44px !important;
   }
 
   .hero-statement {
     margin-inline-start: .82rem !important;
-    margin-bottom: 1.9rem !important;
+    margin-bottom: 48px !important;
   }
 
   .hero-statement-anchor,
@@ -136,13 +136,13 @@
     margin-inline-start: .82rem !important;
     margin-inline-end: auto !important;
     margin-top: 0 !important;
-    margin-bottom: .82rem !important;
+    margin-bottom: 16px !important;
     font-size: 1.55rem !important;
     font-weight: 500 !important;
     letter-spacing: .11em !important;
     line-height: 1 !important;
     text-align: left !important;
-    transform: translateY(calc(var(--hero-action-drop) - .38rem)) !important;
+    transform: none !important;
   }
 
   .hero-cta {
@@ -150,8 +150,8 @@
     margin-inline-start: .82rem !important;
     margin-inline-end: auto !important;
     /* Keep the tuned date-to-button spacing while moving the pair together. */
-    margin-top: .75rem !important;
-    transform: translateY(var(--hero-action-drop)) !important;
+    margin-top: 0 !important;
+    transform: none !important;
   }
 
   .hero-cta .btn {
@@ -186,13 +186,13 @@
   }
 
   .hero-title {
-    margin-bottom: 1.75rem !important;
+    margin-bottom: 30px !important;
   }
 
   .hero-statement {
     width: auto !important;
     max-width: min(92vw, 36rem) !important;
-    margin-bottom: 1.8rem !important;
+    margin-bottom: 30px !important;
     white-space: normal !important;
   }
 
@@ -210,7 +210,7 @@
   .hero-where {
     justify-content: flex-start !important;
     width: auto !important;
-    margin-bottom: .7rem !important;
+    margin-bottom: 12px !important;
     font-size: clamp(.72rem, 3vw, .84rem) !important;
     letter-spacing: .13em !important;
     text-align: left !important;
