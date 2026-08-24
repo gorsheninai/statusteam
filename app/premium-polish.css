@@ -194,7 +194,11 @@ html {
    one word, one quiet progress rail. */
 .tenets.is-pinned {
   height: 100vh;
-  height: 100svh;
+  /* This is an active pinned viewport, not a document hero. On iOS the
+     visible area grows and shrinks with Safari's chrome; svh kept the
+     smallest height and exposed the section underneath. */
+  height: 100dvh;
+  min-height: 100dvh;
   background: var(--ink-deep);
 }
 
