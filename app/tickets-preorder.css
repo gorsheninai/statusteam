@@ -1,0 +1,192 @@
+/* Compact preorder scene. The photograph remains untinted; the wine field is
+   a flat surface that hands the page naturally into the participation scene. */
+
+.tickets {
+  padding-block: clamp(3rem, 6vw, 5.5rem) clamp(2.5rem, 5vw, 4.5rem);
+  overflow: clip;
+}
+
+.tickets-bg img {
+  object-position: 64% 34%;
+}
+
+.tickets-bg::after {
+  background: linear-gradient(
+    90deg,
+    rgba(16, 13, 12, 0.98) 0%,
+    rgba(16, 13, 12, 0.92) 54%,
+    rgba(16, 13, 12, 0.7) 100%
+  );
+}
+
+.tickets-title {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.tickets-title .pulse-line {
+  font-size: clamp(2rem, 10.2vw, 4rem);
+}
+
+.preorder-card {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  color: var(--paper);
+  background: var(--wine);
+  border-block: 1px solid var(--hairline-light);
+  isolation: isolate;
+}
+
+.preorder-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px auto auto 0;
+  width: clamp(4.5rem, 18vw, 10rem);
+  height: 1px;
+  background: var(--sand);
+}
+
+.preorder-status,
+.preorder-place,
+.preorder-action {
+  min-width: 0;
+  padding-inline: clamp(1.25rem, 5vw, 2rem);
+}
+
+.preorder-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-block: 1.15rem;
+  border-bottom: 1px solid var(--hairline-light);
+  opacity: 0.82;
+}
+
+.preorder-status-mark {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--sand);
+  box-shadow: 0 0 0 5px rgba(198, 168, 124, 0.1);
+}
+
+.preorder-place {
+  display: grid;
+  align-content: center;
+  gap: 0.8rem;
+  padding-block: clamp(1.75rem, 6vw, 2.5rem);
+}
+
+.preorder-city {
+  font-size: clamp(2.5rem, 13vw, 4.75rem);
+  overflow-wrap: break-word;
+}
+
+.preorder-pending {
+  max-width: 32ch;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  opacity: 0.72;
+}
+
+.preorder-action {
+  display: grid;
+  align-content: center;
+  gap: 1.15rem;
+  padding-block: clamp(1.5rem, 5vw, 2.25rem);
+  border-top: 1px solid var(--hairline-light);
+  background: var(--burgundy);
+}
+
+.preorder-copy {
+  max-width: 37ch;
+  font-size: clamp(1rem, 3.9vw, 1.2rem);
+  line-height: 1.45;
+}
+
+.preorder-action .btn-buy {
+  width: 100%;
+  min-width: 0;
+  justify-content: space-between;
+  padding: 1rem 1.15rem;
+  background: var(--ink);
+  border-color: var(--ink);
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.preorder-micro {
+  max-width: 48ch;
+  font-family: var(--font-ui);
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+  opacity: 0.68;
+}
+
+.preorder-panel {
+  min-width: 0;
+  background: var(--ink);
+  border-top: 1px solid var(--hairline-light);
+}
+
+.preorder-form {
+  display: grid;
+  gap: 1.5rem;
+  padding: clamp(1.5rem, 5vw, 2.25rem);
+}
+
+.preorder-form .tickets-note {
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .preorder-action .btn-buy {
+    width: fit-content;
+    min-width: 20rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .tickets-title .pulse-line {
+    --pulse-spread: 0.11em;
+    font-size: clamp(3.8rem, 6.5vw, 6.75rem);
+  }
+
+  .preorder-card {
+    grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.92fr);
+  }
+
+  .preorder-status,
+  .preorder-panel {
+    grid-column: 1 / -1;
+  }
+
+  .preorder-place,
+  .preorder-action {
+    min-height: clamp(15.5rem, 24vw, 20rem);
+    padding-inline: clamp(2rem, 4vw, 4rem);
+  }
+
+  .preorder-action {
+    border-top: 0;
+    border-left: 1px solid var(--hairline-light);
+  }
+
+  .preorder-city {
+    font-size: clamp(4rem, 6.4vw, 6.75rem);
+  }
+
+  .preorder-form {
+    grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+    align-items: start;
+    gap: clamp(2rem, 5vw, 5rem);
+    padding-inline: clamp(2rem, 4vw, 4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preorder-status-mark {
+    box-shadow: none;
+  }
+}

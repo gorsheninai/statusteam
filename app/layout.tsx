@@ -17,6 +17,7 @@ import "./faq-editorial.css";
 import "./hero-type-final.css";
 import "./page-two-type-final.css";
 import "./hero-mobile-offer-final.css";
+import "./tickets-preorder.css";
 
 /* Core project faces are self-hosted. Cormorant Garamond is loaded through
    next/font, downloaded at build time and self-hosted in the production bundle. */
@@ -89,11 +90,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://statusteam.show"),
   title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
   description:
-    "Крупнейший показ нижнего белья в России. ПУЛЬС КОНТИНЕНТА — новое fashion-шоу STATUS TEAM: 07 ноября 2026, Kinema, Москва. Билеты, кастинг моделей, партнёрство и аккредитация СМИ.",
+    "Крупнейший показ нижнего белья в России. ПУЛЬС КОНТИНЕНТА — новое fashion-шоу STATUS TEAM в Москве. Предзаказ билетов, кастинг моделей, партнёрство и аккредитация СМИ.",
   openGraph: {
     title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
     description:
-      "Крупнейший показ нижнего белья в России. 07 ноября 2026, Kinema, Москва.",
+      "Крупнейший показ нижнего белья в России. Москва. Предзаказ билетов уже открыт.",
     locale: "ru_RU",
     type: "website",
     images: ["/media/campaign-silhouette-sun-1600.webp"],

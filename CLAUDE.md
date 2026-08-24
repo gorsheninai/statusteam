@@ -111,11 +111,6 @@ photography.**
 No gold gradients, no black-and-gold clichés, no accent colours beyond this set. The
 photography supplies the secondary colour.
 
-**One sanctioned exception**, and it is deliberately narrow: the ticket cards carry a
-sand highlight that follows the pointer along their 1px border (`.tier::after`, masked
-to the border box). That is a rule lighting up, not a fill, which is the only reason it
-is allowed. Do not generalise it into card backgrounds, buttons or type.
-
 ### Typography — two faces, three roles
 
 - **`--font-display`** (Tenor Sans) — **large only.** The lock-up, chapter titles,
@@ -196,7 +191,7 @@ is the show's order and is a client requirement, not a preference:
 | 01 | `#statusteam` | STATUS TEAM — who / aftermovie / proof / numbers | burgundy |
 | 02 | `#pulse` | Следующая глава → the four tenets | ink |
 | 03 | `#experience` | Что вас ждёт + venue | paper |
-| 04 | `#tickets` | Билеты | ink |
+| 04 | `#tickets` | Предзаказ билетов | ink |
 | 05 | `#join` | Стать частью пульса — model / brand / press | wine |
 | 06 | `#faq` | Вопросы, then the footer | ink |
 
@@ -215,16 +210,16 @@ visible at every scroll position and every width (outside the burger on phones),
 an acceptance criterion. `npm run verify` checks both.
 
 Scene 1's four beats run in a fixed order — phrase → aftermovie → guests → press →
-brands → numbers. Scene 4 must not send a buyer to the casting or partner forms; that
-redirect was the old site's mistake and the verify suite fails if the words come back.
+brands → numbers. Scene 4 is one preorder path until the date, venue and ticket
+inventory are confirmed. It must not invent categories or send a buyer to the casting
+or partner forms; the verify suite fails if those mistakes come back.
 
 ### Config, not code
 
 `lib/config.ts` holds everything the client changes without touching a component:
-`SALES_OPEN`, `TICKETS_URL`, the price `WAVES` (the active one and its countdown are
-derived from the clock), and the ticket `TIERS`. Flipping `SALES_OPEN` swaps the CTA
-from "получить доступ первым" + intent form to a real purchase link. Nothing in the
-ticket scene fakes a state it is not in — prices stay `— ₽` until they are real.
+the confirmed city, `SALES_OPEN` and `TICKETS_URL`. Flipping `SALES_OPEN` swaps the
+preorder form for a real purchase link. Categories, prices, date and venue do not
+exist in production content until they are confirmed.
 
 Placeholder copy and imagery are marked `TODO: replace-content`; unconfirmed facts are
 marked `TODO: confirm-number` / `TODO: set-deadline` / `TODO: set-ticket-url`. Keep
@@ -332,11 +327,10 @@ here blocks first paint: every script is deferred and LCP is the hero image.
 ## Not yet wired
 
 - **Ticket sales** — `SALES_OPEN` is false and `TICKETS_URL` is empty by design. The
-  CTA collects intent instead, and says so.
+  CTA collects a no-payment preorder instead, and says so.
 - **Form delivery** — set `NEXT_PUBLIC_FORM_ENDPOINT` and all five forms (casting,
   partner, press, ticket access, newsletter) POST JSON to it, tagged by `form`.
   Without it they say so plainly. Never fake a successful submission.
-- **Price-wave deadlines** — placeholder dates in `lib/config.ts`.
 - **Guest names, press and brand logos** — grey placeholders; the marquee items are
   `<span>`s waiting to become `<img>`s.
 - **Social / contact links** — omitted rather than invented.

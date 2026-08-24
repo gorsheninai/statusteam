@@ -168,7 +168,8 @@ for (const [name, width, height] of SIZES) {
     "hero offers one control and it points at the tickets", `${heroCta.n} → ${heroCta.href}`);
 
   check(await page.locator(".faq-row").count() === 5, "FAQ has five questions");
-  check(await page.locator(".tier").count() === 3, "three ticket categories");
+  check(await page.locator(".tier").count() === 0, "unconfirmed ticket categories stay hidden");
+  check(await page.locator(".preorder-card").count() === 1, "the ticket scene has one preorder path");
   check(await page.locator(".zone").count() === 3, "three ways in, including press");
   check(await page.locator(".zone [data-form='press']").count() === 1, "press accreditation form present");
   check(await page.locator("#tickets form").count() === 1,
@@ -177,6 +178,10 @@ for (const [name, width, height] of SIZES) {
   check(await page.locator(".tenet").count() === 4, "four tenets in the pinned chapter");
   check((await page.locator("#tickets").innerText()).match(/кастинг|партнёрств/i) === null,
     "the ticket scene does not redirect a buyer to casting");
+  check((await page.locator("#tickets").innerText()).match(/Москва/i) !== null,
+    "the ticket scene publishes the confirmed city");
+  check((await page.locator("#tickets").innerText()).match(/07 ноября|Kinema|19:00/i) === null,
+    "the ticket scene does not publish unconfirmed event details");
 
   /* A block is either carrying real content or it does not exist. */
   const ghosts = await page.evaluate(() => {

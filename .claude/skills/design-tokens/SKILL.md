@@ -24,11 +24,6 @@ palette is this short.
 No gold gradients, no black-and-gold clichés, no accent colours beyond this set.
 When a brief asks for "gold", it means `--sand`, used as a rule or as small caps.
 
-**One sanctioned exception**, deliberately narrow: the ticket cards carry a sand
-highlight that follows the pointer along their 1px border (`.tier::after`, masked to
-the border box). That is a rule lighting up, not a fill. Do not generalise it into
-card backgrounds, buttons or type.
-
 Sand is a hairline colour, so it fails AA as body text on ink at small sizes. On a
 dark ground, dim paper rather than reaching for sand: `opacity: 0.58` is the floor
 for small text on ink, below which the contrast check fails.

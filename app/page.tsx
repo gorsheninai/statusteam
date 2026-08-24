@@ -240,15 +240,14 @@ export default function Home() {
             <Experience />
           </div>
 
-          {/* The Kinema photograph does not exist yet, and a stand-in frame
-              here would be a second use of a campaign shot. Type carries it
-              instead — which is also the louder move. */}
+          {/* Only the city is confirmed. Type carries the announcement until
+              the date and venue are ready to be published. */}
           <div className="venue">
-            <p className="venue-label label">Площадка</p>
+            <p className="venue-label label">Место проведения</p>
             <p className="venue-name struct" data-reveal="lines">
-              Kinema
+              Москва
             </p>
-            <p className="venue-where">Москва · 07 ноября 2026</p>
+            <p className="venue-where">Дата и площадка будут объявлены позже</p>
           </div>
 
         </section>
@@ -285,38 +284,6 @@ export default function Home() {
             <Tickets />
           </div>
 
-          <div className="posters shell" aria-label="Афиши показа">
-            {[
-              {
-                img: "poster-key-art",
-                alt: "Афиша показа «Пульс континента»: модель у акации, дата 7 ноября, площадка kinema",
-              },
-              {
-                img: "poster-train",
-                alt: "Афиша показа «Пульс континента»: модель в леопардовом комплекте с длинным шлейфом",
-              },
-              {
-                img: "poster-duo-dusk",
-                alt: "Афиша показа «Пульс континента»: две модели на фоне сумеречного неба",
-              },
-            ].map((p) => (
-              <figure key={p.img} data-poster>
-                {/* The only images on the page not inside an aspect-ratio
-                    frame, so they carry their own intrinsic box: without it
-                    they reserve nothing until they load and every anchor
-                    below them lands short. */}
-                <img
-                  src={`/media/${p.img}-1000.webp`}
-                  srcSet={`/media/${p.img}-600.webp 600w, /media/${p.img}-1000.webp 1000w`}
-                  sizes="(max-width: 760px) 74vw, 30vw"
-                  width={1000}
-                  height={1750}
-                  alt={p.alt}
-                  loading="lazy"
-                />
-              </figure>
-            ))}
-          </div>
         </section>
 
         {/* ============================================================
