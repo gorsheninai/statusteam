@@ -287,6 +287,23 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       </div>
 
       <style>{`
+        /* Treat the previous-show carousel as its own archive chapter. The
+           burgundy is the same visual family as the hero CTA, but kept dark
+           enough that the photography and champagne borders stay dominant. */
+        .st-page-two .st2-vanguard::after {
+          content: "";
+          position: absolute;
+          inset-block: 0;
+          inset-inline-start: 50%;
+          z-index: -2;
+          inline-size: 100vw;
+          transform: translateX(-50%);
+          pointer-events: none;
+          background:
+            radial-gradient(ellipse at 50% 46%, rgba(94, 10, 34, 0.58) 0%, rgba(58, 8, 24, 0.44) 28%, rgba(31, 7, 16, 0.28) 52%, transparent 73%),
+            linear-gradient(180deg, #090707 0%, #14080c 16%, #280912 40%, #1b080f 68%, #0a0909 88%, #090909 100%);
+        }
+
         .st-page-two .st2-guest-stage {
           isolation: isolate;
         }
@@ -311,10 +328,10 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
           inline-size: 3rem;
           block-size: 3rem;
           padding: 0;
-          border: 1px solid rgba(198, 168, 124, 0.68);
+          border: 1px solid rgba(198, 168, 124, 0.72);
           border-radius: 2px;
           color: rgba(255, 255, 255, 0.94);
-          background: rgba(10, 10, 10, 0.58);
+          background: rgba(45, 8, 19, 0.72);
           -webkit-backdrop-filter: blur(10px);
           backdrop-filter: blur(10px);
           transform: translateY(-50%);
@@ -368,6 +385,14 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
             letter-spacing: -0.055em !important;
             white-space: nowrap !important;
             text-wrap: nowrap !important;
+          }
+
+          /* Keep the archive colour strongest around the card, but let the
+             chapter dissolve fully back to black before the stats arrive. */
+          .st-page-two .st2-vanguard::after {
+            background:
+              radial-gradient(ellipse at 50% 47%, rgba(104, 11, 38, 0.62) 0%, rgba(61, 8, 25, 0.48) 29%, rgba(31, 7, 16, 0.26) 55%, transparent 75%),
+              linear-gradient(180deg, #090707 0%, #16080d 17%, #2d0914 43%, #1a080f 70%, #0b090a 88%, #090909 100%);
           }
 
           /* The active card is scaled to 1.1. The old ~1rem top inset was
