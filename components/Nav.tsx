@@ -17,16 +17,17 @@ export default function Nav() {
   const [showTickets, setShowTickets] = useState(false);
   const [open, setOpen] = useState(false);
 
-  /* `.hero-stage` is deliberately taller than the visible hero because it
-     owns the pinned transition. Conversely, `visualViewport.height` changes
-     whenever Safari collapses its browser chrome, which made the threshold
-     depend on scroll direction. The hero element itself is 100svh and gives
-     us the stable boundary between page one and every following section. */
+  /* The CTA belongs to every section after the hero. Measure the actual
+     beginning of page two instead of inferring it from any viewport or hero
+     height: both can diverge from the visual transition on mobile Safari. */
   useEffect(() => {
     const onScroll = () => {
-      const hero = document.querySelector<HTMLElement>(".hero");
-      const firstScreenEnd = hero?.offsetHeight ?? window.innerHeight;
-      const isPastFirstScreen = window.scrollY >= firstScreenEnd;
+      const pageTwo = document.querySelector<HTMLElement>("#statusteam");
+      const navHeight =
+        document.querySelector<HTMLElement>(".nav")?.offsetHeight ?? 72;
+      const isPastFirstScreen = pageTwo
+        ? pageTwo.getBoundingClientRect().top <= navHeight
+        : window.scrollY >= window.innerHeight;
 
       setSolid(isPastFirstScreen);
       setShowTickets(isPastFirstScreen);
