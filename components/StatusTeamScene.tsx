@@ -135,48 +135,103 @@ function ImpactVideo() {
     const video = videoRef.current;
     if (!wrap || !video) return;
 
-    /* iOS Safari is strict about muted autoplay. Set both flags imperatively
-       in addition to the JSX attributes, then let viewport visibility decide
-       only whether the already-autoplay-capable film is running or paused. */
+    const section = wrap.closest<HTMLElement>(".st2-impact") ?? wrap;
+
+    /* Safari/iOS only grants hands-free playback when the element is already
+       muted + inline at the instant play() is requested. Keep both the DOM
+       attributes and JS properties in sync before any scroll-triggered call. */
     video.defaultMuted = true;
     video.muted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
 
-    let visible = false;
+    if (video.readyState === 0) video.load();
 
-    const playVisible = () => {
-      if (!visible || document.visibilityState === "hidden") return;
-      void video.play().catch(() => {
-        /* A play request can arrive before iOS has enough media buffered.
-           `canplay` / `loadeddata` below retry without requiring a tap. */
+    let active = false;
+    let raf = 0;
+
+    const requestPlay = () => {
+      if (!active || document.visibilityState === "hidden") return;
+      if (!video.paused && !video.ended) return;
+
+      const attempt = video.play();
+      if (attempt) {
+        void attempt.catch(() => {
+          /* iOS can reject an early request while the file is still moving
+             from HAVE_NOTHING/HAVE_METADATA to HAVE_FUTURE_DATA. Scroll and
+             readiness listeners below retry automatically. */
+        });
+      }
+    };
+
+    const syncPlayback = () => {
+      const rect = section.getBoundingClientRect();
+      const viewport = window.innerHeight || document.documentElement.clientHeight;
+
+      /* Start slightly BEFORE page two reaches the viewport, so when the user
+         scrolls the hero away the first visible frame is already moving rather
+         than the poster sitting there for a beat. Keep it alive until page two
+         has actually left the viewport. */
+      const shouldRun = rect.top <= viewport * 1.15 && rect.bottom >= -viewport * 0.12;
+      active = shouldRun;
+
+      if (active) requestPlay();
+      else video.pause();
+    };
+
+    const scheduleSync = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        syncPlayback();
       });
     };
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visible = entry.isIntersecting && entry.intersectionRatio > 0;
-        if (visible) playVisible();
-        else video.pause();
-      },
-      { threshold: [0, 0.01, 0.08] },
-    );
+    const observer = new IntersectionObserver(scheduleSync, {
+      threshold: [0, 0.01, 0.08],
+      rootMargin: "18% 0px 18% 0px",
+    });
 
-    const onReady = () => playVisible();
+    const onReady = () => {
+      syncPlayback();
+      requestPlay();
+    };
     const onVisibility = () => {
-      if (document.visibilityState === "visible") playVisible();
+      if (document.visibilityState === "visible") syncPlayback();
       else video.pause();
     };
-    const onPageShow = () => playVisible();
+    const onPageShow = () => syncPlayback();
 
-    observer.observe(wrap);
+    observer.observe(section);
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("resize", scheduleSync, { passive: true });
+    video.addEventListener("loadedmetadata", onReady);
     video.addEventListener("loadeddata", onReady);
     video.addEventListener("canplay", onReady);
+    video.addEventListener("canplaythrough", onReady);
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("pageshow", onPageShow);
 
+    /* Resolve the initial state immediately as well as after layout settles. */
+    syncPlayback();
+    raf = window.requestAnimationFrame(() => {
+      raf = 0;
+      syncPlayback();
+    });
+
     return () => {
+      if (raf) window.cancelAnimationFrame(raf);
       observer.disconnect();
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("resize", scheduleSync);
+      video.removeEventListener("loadedmetadata", onReady);
       video.removeEventListener("loadeddata", onReady);
       video.removeEventListener("canplay", onReady);
+      video.removeEventListener("canplaythrough", onReady);
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pageshow", onPageShow);
     };
@@ -189,6 +244,11 @@ function ImpactVideo() {
     const nextMuted = !muted;
     video.muted = nextMuted;
     setMuted(nextMuted);
+
+    /* This click is a real user gesture, so also resume the film here if iOS
+       happened to suspend it while the page was settling. The button remains
+       sound-only from the user's point of view: it never pauses the video. */
+    if (video.paused) void video.play().catch(() => undefined);
   };
 
   return (
@@ -204,8 +264,8 @@ function ImpactVideo() {
           preload="auto"
           aria-label="Афтермуви показа «Славянский взгляд»"
         >
-          <source src="/media/show-reel.webm" type="video/webm" />
           <source src="/media/show-reel.mp4" type="video/mp4" />
+          <source src="/media/show-reel.webm" type="video/webm" />
         </video>
         <button
           className={`st2-watch${muted ? "" : " is-active"}`}
