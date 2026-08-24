@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ApplyForm from "./ApplyForm";
-import { SALES_OPEN, SHOW, TICKETS_URL } from "@/lib/config";
+import { SALES_OPEN, TICKETS_URL } from "@/lib/config";
 
 /**
  * Until the date, venue and ticket inventory are confirmed this scene has one
@@ -15,17 +15,7 @@ export default function Tickets() {
   return (
     <div className={`preorder-card ${askOpen ? "is-open" : ""}`}>
       <div className="preorder-summary">
-        <p className="preorder-status label">
-          <span className="preorder-status-mark" aria-hidden="true" />
-          Билеты · {SHOW.city}
-        </p>
-        <h2 className="preorder-heading struct">
-          <span>Предзаказ</span>
-          <span>открыт</span>
-        </h2>
-        <p className="preorder-pending">
-          Дата и площадка будут объявлены позже.
-        </p>
+        <h2 className="preorder-heading struct">Предзаказ открыт</h2>
       </div>
 
       <div className="preorder-action">
@@ -62,9 +52,6 @@ export default function Tickets() {
           </button>
         )}
 
-        {!SALES_OPEN && (
-          <p className="preorder-micro">Без оплаты</p>
-        )}
       </div>
 
       {!SALES_OPEN && (
@@ -76,8 +63,8 @@ export default function Tickets() {
           <div className="panel-inner">
             <div className="preorder-form">
               <p className="tickets-note">
-                Имя и один удобный контакт. Мы сообщим дату, площадку и откроем
-                доступ к билетам до начала общих продаж.
+                Оставьте имя и удобный контакт. Мы пришлём ссылку до начала
+                общих продаж.
               </p>
               <ApplyForm kind="access" consent submitLabel="Оставить предзаказ" />
             </div>
