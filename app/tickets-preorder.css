@@ -9,6 +9,16 @@
   overflow: clip;
 }
 
+/* Tickets and participation are one continuous wine chapter. Keep their
+   final colour on the sections themselves instead of waiting for the shared
+   scroll-driven background field to switch after the boundary reaches the
+   viewport midpoint. This prevents ticket copy and the CTA from briefly
+   appearing over the preceding paper chapter during a downward scroll. */
+.js-motion .tickets[data-bg="wine"],
+.js-motion .join[data-bg="wine"] {
+  background-color: var(--wine);
+}
+
 .tickets-inner {
   position: relative;
 }
