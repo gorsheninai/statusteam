@@ -2427,17 +2427,14 @@ ol {
   text-transform: uppercase;
 }
 .foot-brand {
-  display: flex;
-  flex-direction: column;
-  line-height: 0.86;
-  font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  display: block;
+  width: clamp(10rem, 26vw, 15rem);
 }
-.foot-brand span:last-child {
-  color: var(--sand);
+.foot-brand picture,
+.foot-brand img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 /* Plain text, not links — the two pages don't exist yet, and this site
    does not ship a link to nowhere. Wrap in <a> once they're real. */
