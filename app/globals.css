@@ -1144,6 +1144,14 @@ ol {
 .pulse-eyebrow {
   position: relative;
   z-index: 1;
+  margin-block-end: 0.8rem;
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: clamp(0.64rem, 2.8vw, 0.78rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   text-align: center;
 }
 
@@ -1514,7 +1522,7 @@ ol {
   isolation: isolate;
   display: grid;
   align-items: center;
-  padding: 4rem 1.5rem;
+  padding: 2.25rem 1.5rem 2.5rem;
   overflow: hidden;
   background: #0a0a0a;
 }
@@ -1606,7 +1614,7 @@ ol {
 
 @media (min-width: 768px) {
   .pulse-intro {
-    padding: 5rem 1.5rem;
+    padding: 3.5rem 1.5rem 3.75rem;
   }
 }
 

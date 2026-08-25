@@ -185,7 +185,7 @@ export default function Home() {
         <section className="pulse-scene on-dark" id="pulse" data-bg="ink">
           <div className="pulse-intro" data-sand-reveal>
             <p className="eyebrow-badge pulse-eyebrow" aria-hidden="true">
-              — Новый показ —
+              НОВОЕ ШОУ STATUS TEAM
             </p>
             <h2 className="pulse-title" data-sand-title>
               <span className="pulse-title-fit">ПУЛЬС КОНТИНЕНТА</span>
