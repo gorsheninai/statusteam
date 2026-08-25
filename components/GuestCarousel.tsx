@@ -395,7 +395,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
 
           /* The mobile heading remains one deliberate editorial line. */
           .st-page-two .st2-vanguard-head h2 {
-            font-size: clamp(1.55rem, 8vw, 2.1rem) !important;
+            font-size: clamp(1.58rem, 7.6vw, 2.32rem) !important;
             line-height: 1 !important;
             letter-spacing: -0.055em !important;
             white-space: nowrap !important;
