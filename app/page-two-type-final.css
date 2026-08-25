@@ -156,7 +156,6 @@
     font-family: var(--font-display), var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
     font-weight: 400 !important;
-    font-size: clamp(1.48rem, 7.35vw, 2.15rem) !important;
     line-height: .96 !important;
     letter-spacing: .025em !important;
     text-align: center !important;
@@ -166,6 +165,17 @@
     filter: none !important;
     -webkit-text-stroke: 0 !important;
     text-shadow: 0 1px 8px rgba(0, 0, 0, .24) !important;
+  }
+
+  /* On phones the two red lines form a semantic hierarchy, not two equal
+     labels: the promise leads, while the qualifier completes it. */
+  .st-page-two .st2-impact-tier2a {
+    font-size: clamp(1.54rem, 7.65vw, 2.25rem) !important;
+  }
+
+  .st-page-two .st2-impact-tier2b {
+    max-inline-size: 88vw !important;
+    font-size: clamp(1.35rem, 6.75vw, 1.98rem) !important;
   }
 
   /* Keep the icon-only sound control in the lower-right film position. */
