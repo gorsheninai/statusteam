@@ -1144,13 +1144,13 @@ ol {
 .pulse-eyebrow {
   position: relative;
   z-index: 1;
-  margin-block-end: 0.8rem;
+  margin-block-end: 0.35rem;
   font-family: var(--font-ui);
   font-style: normal;
-  font-size: clamp(0.64rem, 2.8vw, 0.78rem);
+  font-size: clamp(0.78rem, 4vw, 1rem);
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   text-align: center;
 }
