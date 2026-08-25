@@ -317,9 +317,19 @@ export default function Home() {
       <footer className="foot on-dark">
         <div className="shell foot-inner">
           <div className="foot-col foot-col-brand">
-            <a className="foot-brand" href="#top">
-              <span>STATUS</span>
-              <span>TEAM</span>
+            <a className="foot-brand" href="#top" aria-label="STATUS TEAM — наверх">
+              <picture>
+                <source
+                  srcSet="/media/brand-status-team-640.webp 2x"
+                  type="image/webp"
+                />
+                <img
+                  src="/media/brand-status-team-320.webp"
+                  alt="STATUS TEAM"
+                  width="320"
+                  height="50"
+                />
+              </picture>
             </a>
 
             {/* Политика конфиденциальности и пользовательское соглашение
@@ -377,7 +387,6 @@ export default function Home() {
         </div>
 
         <div className="shell foot-end">
-          <p className="credit">Фото и видео — Паша Доренский</p>
           <p className="credit">© 2026 STATUS TEAM. Все права защищены.</p>
         </div>
       </footer>
