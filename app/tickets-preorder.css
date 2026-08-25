@@ -54,9 +54,11 @@
 }
 
 .preorder-copy {
-  max-width: 35ch;
+  max-width: 30ch;
+  margin-inline: auto;
   font-size: clamp(1rem, 0.94rem + 0.35vw, 1.2rem);
-  line-height: 1.5;
+  line-height: 1.4;
+  text-align: center;
 }
 
 .preorder-action .btn-buy {
