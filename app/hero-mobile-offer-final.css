@@ -181,7 +181,7 @@
 }
 
 .pulse-scene .pulse-title {
-  margin-block-start: clamp(1.55rem, 2.2vw, 2rem) !important;
+  margin-block-start: 0.45rem !important;
 }
 
 @media (max-width: 899px) {
@@ -191,6 +191,6 @@
   }
 
   .pulse-scene .pulse-title {
-    margin-block-start: clamp(1rem, 4.5vw, 1.35rem) !important;
+    margin-block-start: 0.25rem !important;
   }
 }
