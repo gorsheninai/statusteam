@@ -126,7 +126,9 @@
 
   .st-page-two .st2-impact-primary > span {
     white-space: nowrap !important;
-    transform: none !important;
+    /* Match the visible width of “ЗА РАМКАМИ” without promoting the
+       editorial eyebrow to the same font size. */
+    transform: scaleX(0.97) !important;
     transform-origin: center center !important;
   }
 
