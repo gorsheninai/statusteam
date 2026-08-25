@@ -28,6 +28,11 @@ export default function TenetStepLock() {
     const beats = Array.from(tenets.querySelectorAll<HTMLElement>(".tenet"));
     if (beats.length < 2) return;
 
+    /* ScrollTrigger may restore the document's previous scroll behavior as an
+       inline style after refresh. This class deliberately wins that cascade
+       while the mobile step controller is mounted. */
+    document.documentElement.classList.add("tenet-step-mode");
+
     /* These stops match the stable moments in Motion.tsx's current timeline:
        transition 2 finishes at ~39%, transition 3 at ~63%, transition 4 at
        ~86%, with the remaining tail intentionally holding the last image. */
@@ -114,15 +119,14 @@ export default function TenetStepLock() {
       locked = true;
       scrollTween = gsap.to(state, {
         y: targetY,
-        duration: 0.52,
+        duration: 0.42,
         ease: "power2.out",
         overwrite: true,
         onUpdate: () => {
-          window.scrollTo(0, state.y);
-          ScrollTrigger.update();
+          window.scrollTo({ top: state.y, behavior: "auto" });
         },
         onComplete: () => {
-          window.scrollTo(0, targetY);
+          window.scrollTo({ top: targetY, behavior: "auto" });
           ScrollTrigger.update();
           locked = false;
           onComplete?.();
@@ -229,6 +233,7 @@ export default function TenetStepLock() {
 
     return () => {
       scrollTween?.kill();
+      document.documentElement.classList.remove("tenet-step-mode");
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);

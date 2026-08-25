@@ -82,7 +82,10 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Programmatic travel is owned by Lenis/GSAP. Native smooth scrolling
+     makes every per-frame scrollTo() start a second browser animation and
+     produces a long pause followed by a catch-up on iOS. */
+  scroll-behavior: auto;
   background: var(--ink);
   /* clip (not hidden) keeps position:sticky working */
   overflow-x: clip;
@@ -90,7 +93,10 @@ html {
 /* Lenis owns the scroll when it is running; two smoothing engines on one
    document fight and stall mid-travel. */
 html.lenis-on {
-  scroll-behavior: auto;
+  scroll-behavior: auto !important;
+}
+html.tenet-step-mode {
+  scroll-behavior: auto !important;
 }
 html.is-locked,
 html.is-locked body {
@@ -1621,6 +1627,16 @@ ol {
 }
 .tenet-shot .media {
   aspect-ratio: 4 / 5;
+}
+.tenet-shot picture,
+.tenet-shot picture > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.tenet-shot picture > img {
+  object-fit: cover;
 }
 .tenets:not(.is-pinned) .tenet-shot .media {
   aspect-ratio: 3 / 4;

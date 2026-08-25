@@ -197,13 +197,22 @@ export default function Home() {
               <div className="tenet" key={t.word}>
                 <figure className="tenet-shot">
                   <div className="media">
-                    <img
-                      src={`/media/${t.img}-1400.webp`}
-                      srcSet={`/media/${t.img}-800.webp 800w, /media/${t.img}-1400.webp 1400w`}
-                      sizes="100vw"
-                      alt={t.alt}
-                      loading={i === 0 ? undefined : "lazy"}
-                    />
+                    <picture>
+                      {/* An 800px source is still above 2x at common iPhone
+                          widths while cutting the four decoded textures by
+                          roughly two thirds. Wider screens keep 1400px. */}
+                      <source
+                        media="(max-width: 599px)"
+                        srcSet={`/media/${t.img}-800.webp`}
+                      />
+                      <img
+                        src={`/media/${t.img}-1400.webp`}
+                        srcSet={`/media/${t.img}-800.webp 800w, /media/${t.img}-1400.webp 1400w`}
+                        sizes="100vw"
+                        alt={t.alt}
+                        loading={i === 0 ? undefined : "lazy"}
+                      />
+                    </picture>
                   </div>
                 </figure>
 

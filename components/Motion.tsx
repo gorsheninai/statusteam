@@ -403,7 +403,10 @@ export default function Motion() {
                 window.innerHeight * (wide ? 0.64 : 0.48) * (beats.length - 1),
               )}`,
             pin: true,
-            scrub: wide ? 0.75 : 0.45,
+            /* The mobile step controller already eases the scroll position.
+               A numeric scrub here adds a second 450ms catch-up after the
+               finger gesture has finished. Desktop keeps its softer tail. */
+            scrub: wide ? 0.75 : true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             /* Pins add several screens of spacer. Everything below them

@@ -25,6 +25,10 @@ import { registerLenis, scrollToAnchor } from "@/lib/scroll";
 export default function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    /* iOS/Android already provide high-quality inertial touch scrolling.
+       Keeping Lenis' ticker and ScrollTrigger bridge alive there adds work to
+       every frame even though syncTouch is disabled. */
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
