@@ -2099,6 +2099,13 @@ ol {
   white-space: nowrap;
 }
 
+/* The line-reveal splitter temporarily replaces the centered heading with a
+   fit-content mask. Keep that transient mask centered too, so reverting the
+   split after the animation cannot produce a horizontal jump. */
+.join-h .ln {
+  margin-inline: auto;
+}
+
 @media (min-width: 480px) {
   .join-h {
     font-size: clamp(1.75rem, 3.2vw, 3rem);
