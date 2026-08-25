@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import ApplyForm from "./ApplyForm";
 import { SALES_OPEN, TICKETS_URL } from "@/lib/config";
 
@@ -10,7 +9,7 @@ import { SALES_OPEN, TICKETS_URL } from "@/lib/config";
  * not as a ticket shop with placeholder categories.
  */
 export default function Tickets() {
-  const [askOpen, setAskOpen] = useState(false);
+  const askOpen = !SALES_OPEN;
 
   return (
     <div className={`preorder-card ${askOpen ? "is-open" : ""}`}>
@@ -37,20 +36,6 @@ export default function Tickets() {
               ↗
             </span>
           </a>
-        ) : !askOpen ? (
-          <button
-            className="btn btn-solid btn-buy"
-            type="button"
-            data-magnetic
-            aria-expanded={askOpen}
-            aria-controls="ticket-access"
-            onClick={() => setAskOpen((value) => !value)}
-          >
-            Оставить предзаказ
-            <span className="arrow" aria-hidden="true">
-              ↗
-            </span>
-          </button>
         ) : null}
 
       </div>
