@@ -587,30 +587,16 @@
   margin-block-end: clamp(1.75rem, 7vw, 2.75rem);
 }
 
-.st-page-two .st2-scale-kicker {
-  margin: 0 0 0.65rem;
-  color: rgba(255, 255, 255, 0.48);
-  font-family: var(--font-ui);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.22em;
-}
-
 .st-page-two .st2-scale-title {
-  display: grid;
   margin: 0;
   color: var(--st2-white);
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 10.5vw, 4rem);
+  font-size: clamp(1.8rem, 7.7vw, 2.35rem);
   font-weight: 400;
-  line-height: 0.92;
-  letter-spacing: -0.035em;
+  line-height: 1;
+  letter-spacing: -0.025em;
   text-transform: uppercase;
-}
-
-.st-page-two .st2-scale-title span:last-child {
-  color: var(--st2-champagne);
+  white-space: nowrap;
 }
 
 .st-page-two .st2-stats {
@@ -633,7 +619,10 @@
 }
 
 .st-page-two .st2-stat-number {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  min-inline-size: 0;
   color: var(--st2-champagne);
   font-family: var(--font-display);
   font-size: clamp(2.75rem, 10vw, 4.25rem);
@@ -641,6 +630,17 @@
   line-height: 0.9;
   letter-spacing: -0.035em;
   white-space: nowrap;
+}
+
+.st-page-two .st2-stat-prefix,
+.st-page-two .st2-stat-inline-label {
+  color: rgba(255, 255, 255, 0.56);
+  font-family: var(--font-ui);
+  font-size: clamp(0.6875rem, 0.64rem + 0.18vw, 0.8125rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .st-page-two .st2-stat-figure {
@@ -720,12 +720,12 @@
 
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1000px) {
   .st-page-two .st2-scale-shell {
     display: grid;
-    grid-template-columns: minmax(13rem, 0.72fr) minmax(0, 1.28fr);
+    grid-template-columns: minmax(22rem, 0.8fr) minmax(0, 1.2fr);
     align-items: start;
-    gap: clamp(3rem, 8vw, 7rem);
+    gap: clamp(3rem, 6vw, 6rem);
   }
 
   .st-page-two .st2-scale-head {
@@ -733,13 +733,21 @@
   }
 
   .st-page-two .st2-scale-title {
-    font-size: clamp(3rem, 5vw, 5rem);
+    font-size: clamp(2.15rem, 3vw, 2.75rem);
   }
 
   .st-page-two .st2-stats li {
-    grid-template-columns: minmax(8.5rem, 0.7fr) minmax(0, 1fr);
+    grid-template-columns: minmax(13rem, 0.95fr) minmax(0, 1fr);
     align-items: baseline;
     column-gap: clamp(1.5rem, 4vw, 3.5rem);
+  }
+
+  .st-page-two .st2-stat-number {
+    font-size: clamp(2.75rem, 4vw, 3.6rem);
+  }
+
+  .st-page-two .st2-stats li.is-sentence .st2-stat-number {
+    grid-column: 1 / -1;
   }
 
   .st-page-two .st2-stat-label {

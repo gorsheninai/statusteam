@@ -76,28 +76,28 @@ const GUESTS: GuestCarouselItem[] = [
 const STATS: Array<{
   value: number;
   suffix?: string;
+  prefix?: string;
   label: string;
   pad?: number;
+  inlineLabel?: boolean;
 }> = [
   {
-    value: 60,
-    suffix: "K+",
+    value: 60000,
     label: "Сообщество STATUS TEAM",
   },
   {
-    value: 10,
-    suffix: "M+",
+    value: 10000000,
     label: "Ежемесячный охват",
   },
   {
     value: 600,
-    suffix: "+",
-    label: "Избранных гостей",
+    prefix: "Около",
+    label: "Гостей на предыдущем шоу",
   },
   {
     value: 2,
-    label: "Масштабное шоу",
-    pad: 2,
+    label: "Масштабных шоу",
+    inlineLabel: true,
   },
 ];
 
@@ -386,22 +386,27 @@ export default function StatusTeamScene() {
       <section className="st2-scale" aria-label="Масштаб STATUS TEAM в цифрах">
         <div className="st2-shell st2-scale-shell" data-st2-stats-band>
           <header className="st2-scale-head">
-            <p className="st2-scale-kicker">STATUS TEAM</p>
             <h2 className="st2-scale-title">
-              <span>Масштаб</span>
-              <span>в цифрах</span>
+              Масштаб в цифрах
             </h2>
           </header>
 
           <ul className="st2-stats">
             {STATS.map((stat) => (
-              <li key={stat.label} data-st2-stat>
+              <li
+                className={stat.inlineLabel ? "is-sentence" : undefined}
+                key={stat.label}
+                data-st2-stat
+              >
                 <span className="st2-stat-number">
+                  {stat.prefix && (
+                    <span className="st2-stat-prefix">{stat.prefix}</span>
+                  )}
                   <span className="st2-stat-figure">
                     <span data-count={stat.value} data-pad={stat.pad} data-st2-count>
                       {stat.pad
                         ? String(stat.value).padStart(stat.pad, "0")
-                        : stat.value}
+                        : stat.value.toLocaleString("ru-RU")}
                     </span>
                     {stat.suffix && (
                       <span className="st2-stat-suffix" data-st2-stat-suffix>
@@ -414,8 +419,13 @@ export default function StatusTeamScene() {
                       aria-hidden="true"
                     />
                   </span>
+                  {stat.inlineLabel && (
+                    <span className="st2-stat-inline-label">{stat.label}</span>
+                  )}
                 </span>
-                <span className="st2-stat-label">{stat.label}</span>
+                {!stat.inlineLabel && (
+                  <span className="st2-stat-label">{stat.label}</span>
+                )}
               </li>
             ))}
           </ul>

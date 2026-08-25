@@ -629,7 +629,9 @@ export default function Motion() {
             const target = Number(counter.dataset.count ?? 0);
             const pad = Number(counter.dataset.pad ?? 0);
             const format = (value: number) =>
-              pad ? String(value).padStart(pad, "0") : String(value);
+              pad
+                ? String(value).padStart(pad, "0")
+                : value.toLocaleString("ru-RU");
             const count = { value: 0 };
             statsTimeline.to(
               count,
