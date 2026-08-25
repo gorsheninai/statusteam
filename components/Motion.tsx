@@ -591,7 +591,8 @@ export default function Motion() {
           );
 
           statCounters.forEach((counter) => {
-            counter.textContent = "0";
+            const pad = Number(counter.dataset.pad ?? 0);
+            counter.textContent = pad ? "0".padStart(pad, "0") : "0";
           });
           gsap.set(statSuffixes, { autoAlpha: 0, y: "0.22em" });
           gsap.set(statSheens, { autoAlpha: 0, xPercent: -240, skewX: -18 });
@@ -626,6 +627,9 @@ export default function Motion() {
 
           statCounters.forEach((counter, index) => {
             const target = Number(counter.dataset.count ?? 0);
+            const pad = Number(counter.dataset.pad ?? 0);
+            const format = (value: number) =>
+              pad ? String(value).padStart(pad, "0") : String(value);
             const count = { value: 0 };
             statsTimeline.to(
               count,
@@ -634,10 +638,10 @@ export default function Motion() {
                 duration: 1.8,
                 ease: "power2.out",
                 onUpdate: () => {
-                  counter.textContent = String(Math.round(count.value));
+                  counter.textContent = format(Math.round(count.value));
                 },
                 onComplete: () => {
-                  counter.textContent = String(target);
+                  counter.textContent = format(target);
                 },
               },
               0.18 + index * 0.04,

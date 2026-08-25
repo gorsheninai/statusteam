@@ -73,11 +73,16 @@ const GUESTS: GuestCarouselItem[] = [
   },
 ];
 
-const STATS = [
+const STATS: Array<{
+  value: number;
+  suffix?: string;
+  label: string;
+  pad?: number;
+}> = [
   {
     value: 60,
     suffix: "K+",
-    label: "Комьюнити бренда",
+    label: "Сообщество STATUS TEAM",
   },
   {
     value: 10,
@@ -85,14 +90,14 @@ const STATS = [
     label: "Ежемесячный охват",
   },
   {
-    value: 2,
-    suffix: "-й",
-    label: "Масштабное шоу",
-  },
-  {
     value: 600,
     suffix: "+",
     label: "Избранных гостей",
+  },
+  {
+    value: 2,
+    label: "Масштабное шоу",
+    pad: 2,
   },
 ];
 
@@ -380,13 +385,23 @@ export default function StatusTeamScene() {
 
       <section className="st2-scale" aria-label="Масштаб STATUS TEAM в цифрах">
         <div className="st2-shell st2-scale-shell" data-st2-stats-band>
+          <header className="st2-scale-head">
+            <p className="st2-scale-kicker">STATUS TEAM</p>
+            <h2 className="st2-scale-title">
+              <span>Масштаб</span>
+              <span>в цифрах</span>
+            </h2>
+          </header>
+
           <ul className="st2-stats">
             {STATS.map((stat) => (
               <li key={stat.label} data-st2-stat>
                 <span className="st2-stat-number">
                   <span className="st2-stat-figure">
-                    <span data-count={stat.value} data-st2-count>
-                      {stat.value}
+                    <span data-count={stat.value} data-pad={stat.pad} data-st2-count>
+                      {stat.pad
+                        ? String(stat.value).padStart(stat.pad, "0")
+                        : stat.value}
                     </span>
                     {stat.suffix && (
                       <span className="st2-stat-suffix" data-st2-stat-suffix>
