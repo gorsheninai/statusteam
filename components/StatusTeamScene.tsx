@@ -91,7 +91,6 @@ const STATS: Array<{
   },
   {
     value: 600,
-    prefix: "Около",
     label: "Гостей на предыдущем шоу",
   },
   {
