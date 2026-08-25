@@ -171,8 +171,8 @@
   height: auto !important;
   block-size: auto !important;
   align-content: center !important;
-  padding-block-start: clamp(3.25rem, 4.6vw, 4.25rem) !important;
-  padding-block-end: clamp(3.4rem, 4.9vw, 4.5rem) !important;
+  padding-block-start: clamp(2.1rem, 3.2vw, 2.75rem) !important;
+  padding-block-end: clamp(2.25rem, 3.5vw, 3rem) !important;
 }
 
 .pulse-scene .pulse-eyebrow,
@@ -186,8 +186,8 @@
 
 @media (max-width: 899px) {
   .pulse-scene .pulse-intro {
-    padding-block-start: clamp(2.55rem, 10vw, 3.15rem) !important;
-    padding-block-end: clamp(2.4rem, 9vw, 3rem) !important;
+    padding-block-start: clamp(1.35rem, 5.5vw, 1.65rem) !important;
+    padding-block-end: clamp(1.5rem, 6vw, 1.85rem) !important;
   }
 
   .pulse-scene .pulse-title {
