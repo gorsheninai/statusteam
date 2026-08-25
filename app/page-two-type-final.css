@@ -169,7 +169,9 @@
   /* Keep the icon-only sound control in the lower-right film position. */
   .st-page-two .st2-watch {
     inset-block-start: auto !important;
-    inset-block-end: clamp(10.3rem, 20.6svh, 12.2rem) !important;
+    /* About 32–36px lower on current iPhones: visually joins the proof copy
+       without touching either its first line or the browser safe area. */
+    inset-block-end: clamp(8.25rem, 16.5svh, 9.75rem) !important;
     inset-inline-start: auto !important;
     inset-inline-end: 1.25rem !important;
     transform: none !important;
