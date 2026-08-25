@@ -42,6 +42,9 @@ export default function TenetStepLock() {
     let lastX = 0;
     let lastY = 0;
     let captured = false;
+    let captureMode: "inside" | "enter-forward" | "enter-backward" | null =
+      null;
+    let gestureStartScrollY = 0;
     let locked = false;
     let scrollTween: gsap.core.Tween | null = null;
 
@@ -55,6 +58,41 @@ export default function TenetStepLock() {
       if (!trigger) return false;
       const y = window.scrollY;
       return y >= trigger.start - 2 && y <= trigger.end + 2;
+    };
+
+    const captureForDirection = (direction: 1 | -1) => {
+      const trigger = chapterTrigger();
+      if (!trigger) return null;
+
+      if (
+        gestureStartScrollY >= trigger.start - 2 &&
+        gestureStartScrollY <= trigger.end + 2
+      ) {
+        return "inside" as const;
+      }
+
+      /* A fast iOS swipe can begin while the first/last frame is already on
+         screen but before ScrollTrigger reports the pin as active. Native
+         momentum would then carry the same gesture through several beats.
+         Claim the gesture one viewport before either edge and land on the
+         boundary frame first. */
+      const approach = window.innerHeight * 0.92;
+      if (
+        direction === 1 &&
+        gestureStartScrollY < trigger.start &&
+        trigger.start - gestureStartScrollY <= approach
+      ) {
+        return "enter-forward" as const;
+      }
+      if (
+        direction === -1 &&
+        gestureStartScrollY > trigger.end &&
+        gestureStartScrollY - trigger.end <= approach
+      ) {
+        return "enter-backward" as const;
+      }
+
+      return null;
     };
 
     const nearestStop = (progress: number) => {
@@ -122,7 +160,9 @@ export default function TenetStepLock() {
       if (!touch) return;
       startX = lastX = touch.clientX;
       startY = lastY = touch.clientY;
+      gestureStartScrollY = window.scrollY;
       captured = withinChapter();
+      captureMode = captured ? "inside" : null;
     };
 
     const onTouchMove = (event: TouchEvent) => {
@@ -135,14 +175,15 @@ export default function TenetStepLock() {
       const dx = lastX - startX;
       const dy = lastY - startY;
       const isVertical = Math.abs(dy) > Math.abs(dx) * 1.15;
+      const direction: 1 | -1 = dy < 0 ? 1 : -1;
 
-      /* A gesture may begin immediately above/below the pin and enter it with
-         momentum. Capture it as soon as the chapter becomes active so that the
-         same finger movement cannot consume several beats. */
-      if (!captured && isVertical && withinChapter()) captured = true;
+      if (!captured && isVertical) {
+        captureMode = captureForDirection(direction);
+        captured = captureMode !== null;
+      }
 
       if (captured && isVertical) {
-        event.preventDefault();
+        if (event.cancelable) event.preventDefault();
       }
     };
 
@@ -155,12 +196,30 @@ export default function TenetStepLock() {
       if (Math.abs(dy) <= Math.abs(dx) * 1.15) return;
       if (Math.abs(dy) < 34) return;
 
+      const trigger = chapterTrigger();
+      if (!trigger) return;
+
+      if (captureMode === "enter-forward") {
+        animateScroll(trigger.start);
+        captureMode = null;
+        return;
+      }
+
+      if (captureMode === "enter-backward") {
+        const span = trigger.end - trigger.start;
+        animateScroll(trigger.start + span * stops[stops.length - 1]);
+        captureMode = null;
+        return;
+      }
+
       /* Finger up = continue down the page; finger down = go back one beat. */
       advance(dy < 0 ? 1 : -1);
+      captureMode = null;
     };
 
     const onTouchCancel = () => {
       captured = false;
+      captureMode = null;
     };
 
     window.addEventListener("touchstart", onTouchStart, { passive: true });

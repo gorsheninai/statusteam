@@ -1650,6 +1650,14 @@ ol {
   height: 100svh;
   overflow: hidden;
 }
+@media (max-width: 899px) and (pointer: coarse) {
+  .tenets.is-pinned {
+    /* Vertical movement belongs to the four-step controller; keeping pinch
+       zoom and horizontal intent native preserves normal mobile access while
+       preventing iOS momentum from skipping multiple beats. */
+    touch-action: pan-x pinch-zoom;
+  }
+}
 .tenets.is-pinned .tenet {
   position: absolute;
   inset: 0;
