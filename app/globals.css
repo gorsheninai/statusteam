@@ -2428,7 +2428,7 @@ ol {
 }
 .foot-brand {
   display: block;
-  width: clamp(10rem, 26vw, 15rem);
+  width: min(10.5rem, 100%);
 }
 .foot-brand picture,
 .foot-brand img {
