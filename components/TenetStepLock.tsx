@@ -113,6 +113,16 @@ export default function TenetStepLock() {
       return best;
     };
 
+    const leavesChapter = (direction: 1 | -1) => {
+      const trigger = chapterTrigger();
+      if (!trigger) return false;
+      const current = nearestStop(trigger.progress);
+      return (
+        (direction === -1 && current === 0) ||
+        (direction === 1 && current === stops.length - 1)
+      );
+    };
+
     const animateScroll = (targetY: number, onComplete?: () => void) => {
       scrollTween?.kill();
       const state = { y: window.scrollY };
@@ -180,6 +190,20 @@ export default function TenetStepLock() {
       const dy = lastY - startY;
       const isVertical = Math.abs(dy) > Math.abs(dx) * 1.15;
       const direction: 1 | -1 = dy < 0 ? 1 : -1;
+
+      /* The four inner transitions are controlled, but the two outer edges
+         belong to the page. Do not preventDefault there: Safari can continue
+         the same gesture naturally above РИТМ or below СВОБОДА. */
+      if (
+        captured &&
+        captureMode === "inside" &&
+        isVertical &&
+        leavesChapter(direction)
+      ) {
+        captured = false;
+        captureMode = null;
+        return;
+      }
 
       if (!captured && isVertical) {
         captureMode = captureForDirection(direction);
