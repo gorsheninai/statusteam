@@ -353,7 +353,10 @@
 .st-page-two .st2-vanguard {
   position: relative;
   margin-block-start: 0;
-  padding-block: 3rem 2rem;
+  /* Phones: 3rem here put ~46px above the title's caps against ~24px below
+     it, so the chapter opened top-heavy. Matched to the gap under the title;
+     the 700px rule below restores 3rem, where the larger title balances it. */
+  padding-block: 1.6rem 2rem;
   isolation: isolate;
 }
 
@@ -446,6 +449,12 @@
 @media (min-width: 900px) {
   /* Mirrors the heading's own clamp(2.75rem, 1.96rem + 3.92vw, 5.75rem),
      scaled by the width-matching constant. */
+  /* The title only grows past its cap here, so this is where the wider top
+     padding starts earning its keep. Below 900px it stays at 1.6rem. */
+  .st-page-two .st2-vanguard {
+    padding-block-start: 3rem;
+  }
+
   .st-page-two .st2-vanguard-tag {
     margin-block-start: 0;
     font-size: clamp(2.75rem, 1.965rem + 3.932vw, 5.77rem);
@@ -752,10 +761,6 @@
 }
 
 @media (min-width: 700px) {
-  .st-page-two .st2-vanguard {
-    padding-block-start: 3rem;
-  }
-
   .st-page-two .st2-guest-viewport {
     block-size: clamp(26rem, 39vw, 36rem);
     margin-inline: 0;
