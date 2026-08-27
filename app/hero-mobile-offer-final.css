@@ -225,3 +225,21 @@
     margin-block-start: 0.25rem !important;
   }
 }
+
+/* Mobile city/date placement — independent from the CTA. The button keeps its
+   existing position, size and spacing; only the city/date line is taken out of
+   the hero-action flow and anchored symmetrically to the bottom of screen one. */
+@media (max-width: 899px) {
+  .hero-where {
+    position: absolute !important;
+    inset-inline-start: var(--gutter) !important;
+    inset-inline-end: var(--gutter) !important;
+    inset-block-end: calc(env(safe-area-inset-bottom) + 1.4rem) !important;
+    width: auto !important;
+    margin: 0 !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    z-index: 6 !important;
+  }
+}
