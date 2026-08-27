@@ -376,24 +376,27 @@
   text-align: center;
 }
 
-/* The show's own name is the chapter title now. It still spans the width the
-   removed «ПРЕДЫДУЩИЙ ПОКАЗ» line occupied, so these are that line's clamps
-   times a constant rather than sizes picked by eye. The constant folds in the
-   tracking: at 0.14em this string measures 13.40 per em against the display
-   line's 11.72. Change the tracking and the sizes must move with it, or the
-   title stops filling the measure. */
+/* The show's own name is the chapter title. Type is set to match «МАСШТАБ В
+   ЦИФРАХ» — the display face at 400 and -0.025em — and only the champagne
+   colour is its own.
+
+   The sizes are still calibrated, not chosen: the line fills the measure the
+   removed «ПРЕДЫДУЩИЙ ПОКАЗ» heading occupied. In the display face at
+   -0.025em this string measures 11.68 per em, so the clamps below are the old
+   heading's scaled to suit. Change the face or the tracking and the sizes
+   have to move with it, or the title stops filling the measure. */
 .st-page-two .st2-vanguard-tag {
   display: block;
   margin-block-start: 0;
-  /* letter-spacing also applies after the last glyph; pull it back so the
-     line stays optically centred in the column. */
-  margin-inline-end: -0.14em;
+  /* letter-spacing applies after the last glyph too, so it shifts the
+     centred line by half itself; pull that back. */
+  margin-inline-end: 0.025em;
   color: var(--st2-champagne);
-  font-family: var(--font-ui);
-  font-size: clamp(1.38rem, 6.65vw, 2.03rem);
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: clamp(1.58rem, 7.63vw, 2.33rem);
+  font-weight: 400;
   line-height: 1.1;
-  letter-spacing: 0.14em;
+  letter-spacing: -0.025em;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -445,7 +448,7 @@
      scaled by the width-matching constant. */
   .st-page-two .st2-vanguard-tag {
     margin-block-start: 0;
-    font-size: clamp(2.40rem, 1.713rem + 3.427vw, 5.03rem);
+    font-size: clamp(2.75rem, 1.965rem + 3.932vw, 5.77rem);
   }
 }
 
