@@ -417,8 +417,20 @@ export default function Motion() {
         });
 
         for (let i = 1; i < beats.length; i++) {
-          tl.to(word(i - 1), { yPercent: -110, duration: 0.5, ease: "power2.in" }, i)
-            .to(word(i), { yPercent: 0, duration: 0.55, ease: EASE }, i + 0.08)
+          /* On desktop the old and new words used to share 84% of their
+             travel time, so large labels visibly crossed through each other.
+             Keep the quicker overlap on touch, but give wide screens a clean
+             editorial hand-off: the outgoing word clears before the next one
+             enters. */
+          const wordOutDuration = wide ? 0.38 : 0.5;
+          const wordInStart = wide ? i + 0.4 : i + 0.08;
+
+          tl.to(
+            word(i - 1),
+            { yPercent: -110, duration: wordOutDuration, ease: "power2.in" },
+            i,
+          )
+            .to(word(i), { yPercent: 0, duration: 0.5, ease: EASE }, wordInStart)
             .to(shot(i - 1), { autoAlpha: 0, duration: 0.5, ease: "none" }, i)
             .fromTo(
               shot(i),
