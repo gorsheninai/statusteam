@@ -15,46 +15,38 @@
     scroll-margin-top: 0;
   }
 
-  /* The live desktop proof strip still contains neutral MEDIA/PARTNER
-     placeholders. It reads as unfinished UI and competes with the actual
-     statement, so desktop keeps the film and removes that temporary layer. */
+  /* The proof marquees are part of the approved desktop composition. Keep
+     them visible and reserve a clean band above them for the impact line. */
   .st-page-two .st2-proof-groups {
-    display: none !important;
+    display: grid !important;
   }
 
-  /* Restore the hierarchy approved on mobile: one restrained eyebrow, then
-     a two-line promise. On desktop it stays left-aligned and occupies the
-     lower third of the film instead of becoming one long red sentence. */
+  /* Desktop uses one long red statement. The higher inset prevents it from
+     colliding with the two restored proof marquees at the bottom of the film. */
   .st-page-two .st2-impact-copy {
-    inset-block-end: clamp(3.5rem, 8.5svh, 5.5rem) !important;
-    max-inline-size: min(64rem, calc(100% - var(--st2-gutter) * 2)) !important;
+    inset-block-end: clamp(10.5rem, 20svh, 13.5rem) !important;
+    max-inline-size: min(76rem, calc(100% - var(--st2-gutter) * 2)) !important;
   }
 
   .st-page-two .st2-impact-subgroup {
     display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.08rem !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    gap: 0.3em !important;
     width: max-content !important;
     max-width: 100% !important;
-    margin-block-start: 0.5rem !important;
-    white-space: normal !important;
+    margin-block-start: 0.6rem !important;
+    white-space: nowrap !important;
   }
 
   .st-page-two .st2-impact-tier2a,
   .st-page-two .st2-impact-tier2b {
-    display: block !important;
-    line-height: 0.94 !important;
-    letter-spacing: 0.025em !important;
+    display: inline-block !important;
+    font-size: clamp(2.25rem, 2.8vw, 3.25rem) !important;
+    line-height: 1 !important;
+    letter-spacing: 0.018em !important;
     text-transform: uppercase !important;
-  }
-
-  .st-page-two .st2-impact-tier2a {
-    font-size: clamp(2.65rem, 3.2vw, 3.55rem) !important;
-  }
-
-  .st-page-two .st2-impact-tier2b {
-    font-size: clamp(2.2rem, 2.65vw, 3rem) !important;
+    white-space: nowrap !important;
   }
 
   /* The archive card already has its own bottom breathing room. The previous
@@ -64,8 +56,19 @@
   }
 
   .st-page-two .st2-scale-shell {
+    max-inline-size: 86rem !important;
     padding-block-start: clamp(2.5rem, 4vw, 3.75rem) !important;
     padding-block-end: clamp(3.5rem, 5vw, 4.75rem) !important;
+  }
+
+  .st-page-two .st2-scale-title,
+  .st-page-two .st2-stat-number,
+  .st-page-two .st2-stat-label {
+    min-inline-size: 0;
+  }
+
+  .st-page-two .st2-stat-figure {
+    flex: none;
   }
 
   .st-page-two .st2-stats li.is-sentence .st2-stat-inline-label {
@@ -81,21 +84,77 @@
     margin-inline: auto;
   }
 
+  .pulse-scene .pulse-eyebrow {
+    font-size: clamp(1rem, 1.1vw, 1.3rem);
+    letter-spacing: 0.17em;
+  }
+
+  /* The preorder is one centered invitation followed by one wide form. */
+  .preorder-card {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    padding-block: clamp(4rem, 6vw, 6.5rem);
+  }
+
   .preorder-summary {
-    text-align: start;
+    text-align: center;
   }
 
   .preorder-action {
-    justify-items: start;
+    justify-items: center;
+    align-self: auto;
+    margin-top: clamp(0.85rem, 1.4vw, 1.25rem);
   }
 
   .preorder-copy {
-    margin-inline: 0;
-    text-align: start;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .preorder-panel,
+  .preorder-panel.is-open {
+    grid-column: 1;
+    margin-top: clamp(2.5rem, 4vw, 4rem);
   }
 
   .preorder-form {
     display: block;
+  }
+}
+
+/* A laptop-width canvas cannot support the title and the long 10M stat in
+   two columns without overlap. Stack only this intermediate desktop range. */
+@media (min-width: 1000px) and (max-width: 1199px) {
+  .st-page-two .st2-scale-shell {
+    display: block;
+  }
+
+  .st-page-two .st2-scale-head {
+    margin-block-end: clamp(2rem, 4vw, 3rem);
+  }
+
+  .st-page-two .st2-scale-title {
+    font-size: clamp(2.1rem, 3.7vw, 2.6rem);
+  }
+}
+
+@media (min-width: 1200px) {
+  .st-page-two .st2-scale-shell {
+    grid-template-columns: minmax(19rem, 0.72fr) minmax(0, 1.45fr);
+    gap: clamp(4rem, 6vw, 6rem);
+  }
+
+  .st-page-two .st2-scale-title {
+    font-size: clamp(2.1rem, 2.45vw, 2.7rem);
+  }
+
+  .st-page-two .st2-stats li {
+    grid-template-columns: minmax(20rem, 0.9fr) minmax(13rem, 1fr);
+    column-gap: clamp(2rem, 3vw, 3.25rem);
+  }
+
+  .st-page-two .st2-stat-number {
+    font-size: clamp(3rem, 3.35vw, 3.7rem);
   }
 }
 
