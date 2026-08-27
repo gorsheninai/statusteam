@@ -18,6 +18,7 @@ import "./hero-type-final.css";
 import "./page-two-type-final.css";
 import "./hero-mobile-offer-final.css";
 import "./tickets-preorder.css";
+import "./desktop-layout-polish.css";
 
 /* Core project faces are self-hosted. Cormorant Garamond is loaded through
    next/font, downloaded at build time and self-hosted in the production bundle. */
