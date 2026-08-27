@@ -409,7 +409,10 @@
    a full-width paragraph under a centred title reads as a CMS block. */
 .st-page-two .st2-vanguard-intro {
   margin-inline: auto;
-  margin-block-start: clamp(1.1rem, 2.4vw, 1.6rem);
+  /* Same step the «МАСШТАБ В ЦИФРАХ» head puts under itself, so the two
+     chapter titles sit off their copy identically. Keep these in sync with
+     .st2-scale-head's margin-block-end rather than tuning them apart. */
+  margin-block-start: clamp(1.75rem, 7vw, 2.75rem);
   max-inline-size: 46ch;
   /* Ranged right: the column stays centred under the lock-up, but the copy
      itself is read left to right off a straight edge. Centred running text
@@ -442,7 +445,6 @@
      the two beats closer so the pair still reads as one caption. */
   .st-page-two .st2-vanguard-intro {
     max-inline-size: 34ch;
-    margin-block-start: 1rem;
   }
 }
 
@@ -467,6 +469,8 @@
      while staying well inside a comfortable line length. */
   .st-page-two .st2-vanguard-intro {
     max-inline-size: 56ch;
+    /* The scale head switches to this step from 900px; match it here too. */
+    margin-block-start: clamp(2rem, 4vw, 3rem);
   }
 }
 
