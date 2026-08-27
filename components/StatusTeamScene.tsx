@@ -332,7 +332,7 @@ export default function StatusTeamScene() {
         <section className="st2-vanguard st2-shell" aria-labelledby="st2-vanguard-title">
           <header className="st2-vanguard-head" data-st2-section-title>
             <h2 id="st2-vanguard-title">ПРЕДЫДУЩИЙ ПОКАЗ</h2>
-            <span className="st2-vanguard-tag">«Славянский взгляд»</span>
+            <span className="st2-vanguard-tag">Славянский взгляд</span>
             <div className="st2-vanguard-intro">
               <p className="st2-vanguard-lead">
                 Новая эстетика женственности — сильной, чувственной и самобытной.

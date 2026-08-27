@@ -386,15 +386,27 @@
   text-wrap: balance;
 }
 
+/* The show title is set to span the SAME width as «ПРЕДЫДУЩИЙ ПОКАЗ» above
+   it. Its size is therefore not chosen — it is the heading's size times a
+   constant, and the constant is the ratio of the two strings' widths per em
+   (Tenor at -0.045/-0.055em tracking vs Onest at 0.22em, trailing letter-
+   space excluded). Both regimes below mirror the heading's own clamp, so the
+   pair stays width-matched at every width instead of at one of them.
+   If you change the heading's size, scale these by the same factor. */
 .st-page-two .st2-vanguard-tag {
   display: block;
-  margin-block-start: 0.6rem;
+  margin-block-start: 0.5rem;
+  /* letter-spacing also applies after the last glyph; pull it back so the
+     line stays optically centred under the heading. */
+  margin-inline-end: -0.22em;
   color: var(--st2-champagne);
   font-family: var(--font-ui);
-  font-size: 0.6875rem;
+  font-size: clamp(1.26rem, 6.07vw, 1.85rem);
   font-weight: 500;
+  line-height: 1.1;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* What the previous show was, in two beats: the statement, then the scale.
@@ -427,13 +439,6 @@
 }
 
 @media (max-width: 639px) {
-  .st-page-two .st2-vanguard-tag {
-    /* Keep the show title as one editorial caption on narrow phones. */
-    font-size: clamp(0.5rem, 2.35vw, 0.625rem);
-    letter-spacing: 0.14em;
-    white-space: nowrap;
-  }
-
   /* On phones the column is already narrow: let the copy use it, and pull
      the two beats closer so the pair still reads as one caption. */
   .st-page-two .st2-vanguard-intro {
@@ -442,9 +447,12 @@
   }
 }
 
-@media (min-width: 640px) {
+@media (min-width: 900px) {
+  /* Mirrors the heading's own clamp(2.75rem, 1.96rem + 3.92vw, 5.75rem),
+     scaled by the width-matching constant. */
   .st-page-two .st2-vanguard-tag {
-    font-size: 0.8125rem;
+    margin-block-start: 0.65rem;
+    font-size: clamp(2.19rem, 1.564rem + 3.128vw, 4.59rem);
   }
 }
 
