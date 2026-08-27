@@ -874,8 +874,8 @@ ol {
 .nav-tickets {
   display: inline-flex;
   align-items: center;
-  min-height: var(--control-min);
-  padding: 0.6rem 0.35rem;
+  min-height: 38px;
+  padding: 0.4rem 0.75rem;
   border: 1px solid var(--sand);
   color: var(--sand);
   font-family: var(--font-ui);
