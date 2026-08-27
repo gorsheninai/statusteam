@@ -250,9 +250,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
                     </span>
 
                     <span className="st2-guest-shade" aria-hidden="true" />
-                    <span className="st2-guest-copy">
-                      <strong>{guest.label}</strong>
-                    </span>
                   </button>
                 </div>
               );
