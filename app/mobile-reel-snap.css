@@ -1,0 +1,51 @@
+/* Reel-style paging for the first two screens — phones only.
+
+   The hero and the page-two film are each exactly one viewport tall and sit
+   flush against each other, so a gesture that stops between them leaves a
+   strip of both on screen. Proximity snap finishes the gesture when it comes
+   to rest near either boundary and stays out of the way everywhere else: the
+   remaining five chapters scroll normally, and nothing here can stop or slow
+   a scroll that is heading past them.
+
+   Three deliberate limits:
+
+   1. `proximity`, not `mandatory`. Mandatory snap with only two snap points
+      on a 8000px page fights every scroll that ends far from them, and can
+      strand content between points. Proximity only acts near the boundary.
+
+   2. No `scroll-snap-stop`. A fast flick toward the ticket scene is never
+      interrupted — one screen per swipe is the Reels behaviour, but this page
+      is a funnel, not a feed.
+
+   3. `(pointer: coarse)` is where SmoothScroll bails out, so snap never has
+      Lenis' animated scrollTop to fight. A narrow desktop window keeps Lenis
+      and stays unsnapped.
+
+   Pure CSS: no bundle cost, and a failed JS load changes nothing here.
+
+   If iOS' collapsing address bar makes this jitter mid-gesture — the viewport
+   height changes while the snap points are being resolved — the fix is to
+   delete the import in layout.tsx. Nothing else depends on this file. */
+
+@media (max-width: 899px) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+
+  .hero,
+  .st-page-two .st2-impact {
+    scroll-snap-align: start;
+    /* Flush to the viewport top: one screen at rest, nothing of the other.
+       html carries scroll-padding-top for the fixed header, which would
+       otherwise park each screen that far down and leave a readable strip of
+       the hero — its city/date line — above the film. A matching negative
+       scroll-margin cancels it here only; anchor targets keep their offset,
+       and nothing links to #hero.
+
+       It also keeps each snap area exactly the snapport's height. Leave the
+       area taller and, by spec, every position where it still covers the
+       snapport is a valid rest — the screen then settled 72px lower coming
+       from below than from above. */
+    scroll-margin-top: calc(-1 * (72px + env(safe-area-inset-top)));
+  }
+}

@@ -90,7 +90,12 @@
 @media (max-width: 899px) {
   /* Mobile hierarchy: small editorial eyebrow + large two-line statement. */
   .st-page-two .st2-impact-copy {
-    inset-block-start: clamp(1.9rem, 3.85svh, 2.5rem) !important;
+    /* Clear of the fixed header, not just of the film's top edge. The
+       chapter's resting position on phones is flush to the viewport, so an
+       offset measured from the section alone put this behind the nav. */
+    inset-block-start: calc(
+      72px + env(safe-area-inset-top) + clamp(0.75rem, 1.9svh, 1.15rem)
+    ) !important;
     inset-block-end: auto !important;
     inset-inline-start: 50% !important;
     inset-inline-end: auto !important;
