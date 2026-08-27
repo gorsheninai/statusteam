@@ -4,6 +4,17 @@
    editorial grid, tighter chapter joins and a usable full-width preorder. */
 
 @media (min-width: 900px) {
+  /* Treat the title and red offer as one campaign lock-up. Reallocate the
+     existing vertical space below the offer so the date and ticket CTA keep
+     their approved screen position. */
+  .hero-title {
+    margin-bottom: 8px !important;
+  }
+
+  .hero-statement {
+    margin-bottom: 84px !important;
+  }
+
   /* Lenis already applies the sticky-nav offset in lib/scroll.ts. Keeping the
      CSS scroll-padding and scroll-margin active as well triple-counted that
      offset and left every desktop anchor about 220px below the header. */
