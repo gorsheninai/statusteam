@@ -252,7 +252,7 @@ function ImpactVideo() {
           preload="auto"
           aria-label="Афтермуви показа «Славянский взгляд»"
         >
-          <source src="/media/СТАТУС_web_HQ_13-14MB.mp4" type="video/mp4" />
+          <source src="/media/СТАТУС_HQ_со_звуком_10-15MB.mp4" type="video/mp4" />
         </video>
         <button
           className={`st2-watch st2-watch-icon-only${muted ? "" : " is-active"}`}
