@@ -252,8 +252,7 @@ function ImpactVideo() {
           preload="auto"
           aria-label="Афтермуви показа «Славянский взгляд»"
         >
-          <source src="/media/show-reel.mp4" type="video/mp4" />
-          <source src="/media/show-reel.webm" type="video/webm" />
+          <source src="/media/status-team-web-universal-final.mp4" type="video/mp4" />
         </video>
         <button
           className={`st2-watch st2-watch-icon-only${muted ? "" : " is-active"}`}
