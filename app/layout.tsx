@@ -18,6 +18,7 @@ import "./hero-type-final.css";
 import "./page-two-type-final.css";
 import "./hero-mobile-offer-final.css";
 import "./cinematic-hero-transition.css";
+import "./hero-mobile-location-fix.css";
 import "./tickets-preorder.css";
 import "./desktop-layout-polish.css";
 
