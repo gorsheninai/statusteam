@@ -376,35 +376,24 @@
   text-align: center;
 }
 
-.st-page-two .st2-vanguard-head h2 {
-  color: var(--st2-white);
-  font-family: var(--font-display);
-  font-size: clamp(2.75rem, 1.96rem + 3.92vw, 5.75rem);
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.045em;
-  text-wrap: balance;
-}
-
-/* The show title is set to span the SAME width as «ПРЕДЫДУЩИЙ ПОКАЗ» above
-   it. Its size is therefore not chosen — it is the heading's size times a
-   constant, and the constant is the ratio of the two strings' widths per em
-   (Tenor at -0.045/-0.055em tracking vs Onest at 0.22em, trailing letter-
-   space excluded). Both regimes below mirror the heading's own clamp, so the
-   pair stays width-matched at every width instead of at one of them.
-   If you change the heading's size, scale these by the same factor. */
+/* The show's own name is the chapter title now. It still spans the width the
+   removed «ПРЕДЫДУЩИЙ ПОКАЗ» line occupied, so these are that line's clamps
+   times a constant rather than sizes picked by eye. The constant folds in the
+   tracking: at 0.14em this string measures 13.40 per em against the display
+   line's 11.72. Change the tracking and the sizes must move with it, or the
+   title stops filling the measure. */
 .st-page-two .st2-vanguard-tag {
   display: block;
-  margin-block-start: 0.5rem;
+  margin-block-start: 0;
   /* letter-spacing also applies after the last glyph; pull it back so the
-     line stays optically centred under the heading. */
-  margin-inline-end: -0.22em;
+     line stays optically centred in the column. */
+  margin-inline-end: -0.14em;
   color: var(--st2-champagne);
   font-family: var(--font-ui);
-  font-size: clamp(1.26rem, 6.07vw, 1.85rem);
+  font-size: clamp(1.38rem, 6.65vw, 2.03rem);
   font-weight: 500;
   line-height: 1.1;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -455,8 +444,8 @@
   /* Mirrors the heading's own clamp(2.75rem, 1.96rem + 3.92vw, 5.75rem),
      scaled by the width-matching constant. */
   .st-page-two .st2-vanguard-tag {
-    margin-block-start: 0.65rem;
-    font-size: clamp(2.19rem, 1.564rem + 3.128vw, 4.59rem);
+    margin-block-start: 0;
+    font-size: clamp(2.40rem, 1.713rem + 3.427vw, 5.03rem);
   }
 }
 

@@ -331,8 +331,11 @@ export default function StatusTeamScene() {
       {CONTENT.guests && (
         <section className="st2-vanguard st2-shell" aria-labelledby="st2-vanguard-title">
           <header className="st2-vanguard-head" data-st2-section-title>
-            <h2 id="st2-vanguard-title">ПРЕДЫДУЩИЙ ПОКАЗ</h2>
-            <span className="st2-vanguard-tag">Славянский взгляд</span>
+            {/* The show's own name is the chapter title now — it carries the
+                id the section is labelled by, so it stays a real heading. */}
+            <h2 id="st2-vanguard-title" className="st2-vanguard-tag">
+              Славянский взгляд
+            </h2>
             <div className="st2-vanguard-intro">
               <p className="st2-vanguard-lead">
                 Новая эстетика женственности — сильной, чувственной и самобытной.

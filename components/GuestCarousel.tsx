@@ -390,15 +390,6 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
             padding-block-end: 0 !important;
           }
 
-          /* The mobile heading remains one deliberate editorial line. */
-          .st-page-two .st2-vanguard-head h2 {
-            font-size: clamp(1.58rem, 7.6vw, 2.32rem) !important;
-            line-height: 1 !important;
-            letter-spacing: -0.055em !important;
-            white-space: nowrap !important;
-            text-wrap: nowrap !important;
-          }
-
           /* Compact the technical viewport without reintroducing the clipped
              top-border bug: 1.6rem remains larger than the active card's
              scale bleed on current mobile widths. */
