@@ -90,7 +90,7 @@
 @media (max-width: 899px) {
   /* Mobile hierarchy: small editorial eyebrow + large two-line statement. */
   .st-page-two .st2-impact-copy {
-    inset-block-start: clamp(1.35rem, 2.8svh, 1.9rem) !important;
+    inset-block-start: clamp(1.9rem, 3.85svh, 2.5rem) !important;
     inset-block-end: auto !important;
     inset-inline-start: 50% !important;
     inset-inline-end: auto !important;
