@@ -416,6 +416,10 @@
   margin-inline: auto;
   margin-block-start: clamp(1.1rem, 2.4vw, 1.6rem);
   max-inline-size: 46ch;
+  /* Ranged right: the column stays centred under the lock-up, but the copy
+     itself is read left to right off a straight edge. Centred running text
+     gives every line a different start and slows the read. */
+  text-align: start;
   text-wrap: pretty;
 }
 
