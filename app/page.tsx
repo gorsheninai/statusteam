@@ -59,21 +59,25 @@ const TENETS = [
   {
     word: "Ритм",
     img: "campaign-sand-drape",
+    height: 2498,
     alt: "Модель в светлом комплекте среди скульптурных драпировок песочного цвета",
   },
   {
     word: "Движение",
     img: "campaign-silhouette-drapes",
+    height: 2498,
     alt: "Модель в длинном платье с бахромой между тканевыми драпировками",
   },
   {
     word: "Сила",
     img: "campaign-beaded-dusk",
+    height: 1866,
     alt: "Модель в расшитом бисером образе на фоне оранжевого закатного неба",
   },
   {
     word: "Свобода",
     img: "campaign-palms-gold",
+    height: 1738,
     alt: "Модель в золотом воротнике и браслетах среди крупных пальмовых листьев",
   },
 ];
@@ -117,6 +121,8 @@ export default function Home() {
                       srcSet={srcset(HERO_ART.tall)}
                       sizes="100vw"
                       alt={HERO_ART.alt}
+                      width={1080}
+                      height={1913}
                       fetchPriority="high"
                     />
                   </picture>
@@ -209,6 +215,8 @@ export default function Home() {
                         src={`/media/${t.img}-1400.webp`}
                         srcSet={`/media/${t.img}-800.webp 800w, /media/${t.img}-1400.webp 1400w`}
                         sizes="100vw"
+                        width={1400}
+                        height={t.height}
                         alt={t.alt}
                         loading={i === 0 ? undefined : "lazy"}
                       />

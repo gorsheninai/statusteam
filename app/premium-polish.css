@@ -318,7 +318,7 @@ select:focus {
 /* Mobile-first safeguards and art direction. */
 @media (max-width: 639px) {
   :root {
-    --gutter: clamp(1.15rem, 5.1vw, 1.4rem);
+    --page-gutter: clamp(1.15rem, 5.1vw, 1.4rem);
     --chapter-pad: clamp(3.25rem, 14vw, 4.5rem);
     --chapter-pad-quiet: clamp(3.75rem, 16vw, 5.5rem);
   }

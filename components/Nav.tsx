@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { lockScroll, unlockScroll } from "@/lib/scroll";
 
 /* Four destinations plus the ticket button. Anything more and the row starts
@@ -16,6 +16,8 @@ export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [showTickets, setShowTickets] = useState(false);
   const [open, setOpen] = useState(false);
+  const openerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   /* The CTA belongs to every section after the hero. Measure the actual
      beginning of page two instead of inferring it from any viewport or hero
@@ -41,19 +43,53 @@ export default function Nav() {
     };
   }, []);
 
-  /* Lock the page behind the menu. Lenis owns the scroll, so the lock goes
-     through it rather than through body positioning. */
+  /* Lock the page behind the menu, keep keyboard focus inside the dialog and
+     return it to the opener after close. */
   useEffect(() => {
     if (!open) return;
-    lockScroll();
-    return () => unlockScroll();
-  }, [open]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+    lockScroll();
+    const opener = openerRef.current;
+    const menu = menuRef.current;
+    const focusable = () =>
+      menu
+        ? Array.from(
+            menu.querySelectorAll<HTMLElement>(
+              'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            ),
+          )
+        : [];
+    const focusFrame = window.requestAnimationFrame(() => focusable()[0]?.focus());
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const controls = focusable();
+      if (!controls.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener("keydown", onKey);
+      unlockScroll();
+      window.requestAnimationFrame(() => opener?.focus());
+    };
+  }, [open]);
 
   return (
     <>
@@ -92,6 +128,7 @@ export default function Nav() {
             Билеты
           </a>
           <button
+            ref={openerRef}
             className="nav-burger"
             onClick={() => setOpen(true)}
             aria-label="Открыть меню"
@@ -108,6 +145,7 @@ export default function Nav() {
           element to play on, and `inert` keeps it out of the tab order and
           the accessibility tree while it is shut. */}
       <div
+        ref={menuRef}
         id="site-menu"
         className={`menu ${open ? "is-open" : ""}`}
         role="dialog"
@@ -146,15 +184,6 @@ export default function Nav() {
         </div>
       </div>
 
-      <style>{`
-        @media (max-width: 639px) {
-          .nav-tickets {
-            min-height: 32px;
-            padding: 0.3rem 0.9rem;
-            line-height: 1;
-          }
-        }
-      `}</style>
     </>
   );
 }

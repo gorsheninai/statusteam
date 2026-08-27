@@ -32,7 +32,7 @@
     display: flex !important;
     flex-direction: row !important;
     align-items: baseline !important;
-    gap: 0.3em !important;
+    gap: clamp(0.75rem, 1.25vw, 1.125rem) !important;
     width: max-content !important;
     max-width: 100% !important;
     margin-block-start: 0.6rem !important;
@@ -82,7 +82,7 @@
      the first column of an internal grid, leaving half the section empty. */
   .tickets-inner {
     width: 100%;
-    max-width: 84rem;
+    max-width: var(--container-form);
     margin-inline: auto;
   }
 
@@ -145,9 +145,9 @@
      title rail, the same fluid editorial gutter and four ruled rows. */
   .st-page-two .st2-scale-shell {
     display: grid;
-    grid-template-columns: minmax(17.5rem, 30%) minmax(0, 1fr);
+    grid-template-columns: minmax(var(--editorial-rail-min), var(--editorial-rail)) minmax(0, 1fr);
     grid-template-rows: auto;
-    column-gap: clamp(4.5rem, 9vw, 10.625rem);
+    column-gap: var(--editorial-gap);
     align-items: start;
   }
 
@@ -159,7 +159,8 @@
   }
 
   .st-page-two .st2-scale-title {
-    font-size: clamp(2.1rem, 2.55vw, 3.2rem);
+    max-inline-size: 100%;
+    font-size: clamp(1.45rem, 2.3vw, 2.2rem);
     line-height: 0.94;
     letter-spacing: -0.035em;
   }
@@ -179,6 +180,7 @@
 
   .st-page-two .st2-stat-number {
     font-size: clamp(2.75rem, 3.2vw, 3.65rem);
+    font-variant-numeric: lining-nums tabular-nums;
   }
 
   .st-page-two .st2-stats li:last-child {
@@ -228,7 +230,7 @@
      drift to the edges on 1920–2560px displays. */
   .tickets-inner,
   .foot-inner {
-    max-width: 92rem;
+    max-width: var(--container-wide);
     margin-inline: auto;
   }
 }

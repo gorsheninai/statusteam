@@ -19,7 +19,7 @@
 .faq-scene > .faq-shell {
   max-inline-size: 48rem;
   margin-inline: auto;
-  padding-inline: 1.5rem;
+  padding-inline: var(--space-4);
 }
 
 .faq-scene .faq-layout {
@@ -70,7 +70,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
-  min-block-size: 2.5rem;
+  min-block-size: var(--control-min);
   margin-block-start: 1.5rem;
   padding-inline: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -204,8 +204,8 @@
   }
 
   .faq-scene > .faq-shell {
-    max-inline-size: 72rem;
-    padding-inline: 3rem;
+    max-inline-size: var(--container-editorial);
+    padding-inline: var(--space-6);
   }
 
   .faq-scene .faq-layout {

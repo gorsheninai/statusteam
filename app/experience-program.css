@@ -143,9 +143,9 @@
 @media (min-width: 1024px) {
   .exp-scene {
     display: grid;
-    grid-template-columns: minmax(280px, 30%) minmax(0, 1fr);
+    grid-template-columns: minmax(var(--editorial-rail-min), var(--editorial-rail)) minmax(0, 1fr);
     grid-template-rows: auto;
-    column-gap: clamp(72px, 9vw, 170px);
+    column-gap: var(--editorial-gap);
     align-items: start;
   }
 

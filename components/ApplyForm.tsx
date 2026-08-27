@@ -194,15 +194,15 @@ export default function ApplyForm({
 
       {consent && (
         <p className="field-check">
-          <input
-            id={fid("consent")}
-            name="consent"
-            type="checkbox"
-            required
-            value="yes"
-          />
           <label htmlFor={fid("consent")}>
-            Согласен на обработку персональных данных
+            <input
+              id={fid("consent")}
+              name="consent"
+              type="checkbox"
+              required
+              value="yes"
+            />
+            <span>Согласен на обработку персональных данных</span>
           </label>
         </p>
       )}
