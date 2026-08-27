@@ -585,6 +585,9 @@ export default function Motion() {
           "[data-st2-stats-band]",
         );
         if (statsBand) {
+          const statsList = statsBand.querySelector<HTMLElement>(
+            "[data-st2-stats-list]",
+          );
           const statCells = gsap.utils.toArray<HTMLElement>(
             "[data-st2-stat]",
             statsBand,
@@ -611,30 +614,24 @@ export default function Motion() {
 
           const statsTimeline = gsap.timeline({
             scrollTrigger: {
-              trigger: statsBand,
-              start: "top 88%",
+              trigger: statsList ?? statsBand,
+              start: wide ? "top 86%" : "top 88%",
               once: true,
             },
           });
 
           statsTimeline
-            .from(statsBand, {
-              opacity: 0,
-              y: 30,
-              duration: 0.8,
-              ease: EASE,
-              clearProps: "transform,opacity",
-            })
             .from(
               statCells,
               {
                 opacity: 0,
-                y: 14,
-                duration: 0.58,
-                stagger: 0.06,
+                y: wide ? 26 : 14,
+                duration: wide ? 0.8 : 0.58,
+                stagger: wide ? 0.08 : 0.06,
                 ease: EASE,
+                clearProps: "transform,opacity",
               },
-              0.12,
+              0,
             );
 
           statCounters.forEach((counter, index) => {
@@ -658,7 +655,7 @@ export default function Motion() {
                   counter.textContent = format(target);
                 },
               },
-              0.18 + index * 0.04,
+              wide ? 0.12 + index * 0.08 : 0.18 + index * 0.04,
             );
           });
 
@@ -710,6 +707,8 @@ export default function Motion() {
         gsap.utils
           .toArray<HTMLElement>('[data-reveal="lines"]')
           .forEach((el) => {
+            if (!wide && el.hasAttribute("data-desktop-reveal")) return;
+
             const split = splitLines(el);
 
             if (!split) {
