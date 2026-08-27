@@ -107,17 +107,19 @@
     text-align: center !important;
   }
 
-  /* Deliberately smaller so the long eyebrow visually matches the width of
-     the first red line: “ЗА РАМКАМИ”. */
+  /* Two rows, one statement per row, both set to the SAME rendered width.
+     Each size is expressed in vw and the pair of sizes is in a fixed ratio
+     (the two strings' natural widths at equal type size), so the two rows
+     stay width-matched at every phone width rather than at one of them. */
   .st-page-two .st2-impact-primary {
     width: max-content !important;
     max-width: 100% !important;
     margin-inline: auto !important;
     color: rgba(255, 254, 250, .92) !important;
-    font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
+    font-family: var(--font-display), var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
     font-weight: 400 !important;
-    font-size: clamp(.58rem, 2.9vw, .74rem) !important;
+    font-size: clamp(.95rem, 4.7vw, 1.62rem) !important;
     line-height: 1 !important;
     letter-spacing: .11em !important;
     text-align: center !important;
@@ -126,24 +128,23 @@
 
   .st-page-two .st2-impact-primary > span {
     white-space: nowrap !important;
-    /* Match the visible width of “ЗА РАМКАМИ” without promoting the
-       editorial eyebrow to the same font size. */
-    transform: scaleX(0.97) !important;
-    transform-origin: center center !important;
+    transform: none !important;
   }
 
+  /* Row, not column: “ЗА ПРЕДЕЛАМИ ПОДИУМА” is a single line on phones. */
   .st-page-two .st2-impact-subgroup {
     display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
     justify-content: center !important;
     align-self: center !important;
     inline-size: 100% !important;
     max-inline-size: 100% !important;
-    margin: .15rem auto 0 !important;
-    gap: .05rem !important;
+    margin: .34rem auto 0 !important;
+    font-size: clamp(1.19rem, 5.88vw, 2.03rem) !important;
+    gap: .24em !important;
     text-align: center !important;
-    white-space: normal !important;
+    white-space: nowrap !important;
     transform: none !important;
   }
 
@@ -167,18 +168,12 @@
     text-shadow: 0 1px 8px rgba(0, 0, 0, .24) !important;
   }
 
-  /* On phones the two red lines read as one balanced statement wrapped
-     across two rows — same weight, same size, width-matched below. */
-  .st-page-two .st2-impact-tier2a {
-    font-size: clamp(1.5rem, 7.2vw, 2.1rem) !important;
-  }
-
+  /* Both words are one statement on one row: they inherit the row's size. */
+  .st-page-two .st2-impact-tier2a,
   .st-page-two .st2-impact-tier2b {
-    max-inline-size: 88vw !important;
-    font-size: clamp(1.5rem, 7.2vw, 2.1rem) !important;
-    /* “подиума” is under half the length of “за пределами”; open the
-       tracking so the shorter line fills the same visible width. */
-    letter-spacing: 0.42em !important;
+    display: inline-block !important;
+    max-inline-size: none !important;
+    font-size: inherit !important;
   }
 
   /* Keep the icon-only sound control in the lower-right film position. */
