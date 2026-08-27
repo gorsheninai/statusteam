@@ -18,7 +18,17 @@
   /* Match the approved mobile CTA geometry without turning the desktop
      action into a full pill. */
   .hero-cta .btn.btn-solid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 58px !important;
+    align-items: stretch !important;
+    padding-left: 0 !important;
+    text-align: center !important;
     border-radius: 18px !important;
+  }
+
+  .hero-cta .btn.btn-solid .arrow {
+    grid-column: 2;
+    margin-inline-start: 0 !important;
   }
 
   /* Lenis already applies the sticky-nav offset in lib/scroll.ts. Keeping the
