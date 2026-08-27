@@ -173,7 +173,7 @@ export default function Home() {
               {/* One control. The exact date lives in the ticket scene. */}
               <div className="hero-cta" data-hero="cta">
                 <a className="btn btn-solid" href="#tickets">
-                  Забронировать место <Arrow />
+                  Купить билет <Arrow />
                 </a>
               </div>
             </div>

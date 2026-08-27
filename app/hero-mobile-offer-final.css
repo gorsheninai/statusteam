@@ -19,6 +19,11 @@
      older hero rules are changed elsewhere. */
   .hero-inner {
     --hero-mobile-axis: .35rem;
+    /* Flex only so the city/date line can be ordered after the CTA below.
+       Column + flex-start reproduces the block flow it replaces. */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
   }
 
   /* Rebalance the portrait crop without touching the type layer. The tall
@@ -116,9 +121,14 @@
     letter-spacing: .055em !important;
   }
 
-  /* Remove the secondary city/date line from the mobile hero only. */
+  /* City and date sit under the CTA on phones. The element precedes the CTA
+     in the document — where it belongs for reading order — so it is ordered
+     last visually rather than duplicated in the markup. */
   .hero-where {
-    display: none !important;
+    display: flex !important;
+    order: 1 !important;
+    margin-top: .85rem !important;
+    margin-bottom: 0 !important;
   }
 
   /* CTA box starts on exactly the same axis as both text levels. */
