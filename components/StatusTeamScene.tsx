@@ -22,56 +22,14 @@ const BRAND_LOGOS = [
   "PARTNER 06",
 ];
 
-const GUESTS: GuestCarouselItem[] = [
-  {
-    img: "archive-flower-crown",
-    widths: [700, 1200],
-    label: "Гость 01",
-    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
-  },
-  {
-    img: "archive-black-wings",
-    widths: [700, 1200],
-    label: "Гость 02",
-    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
-  },
-  {
-    img: "archive-backstage-bw",
-    widths: [700, 1200],
-    label: "Гость 03",
-    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
-  },
-  {
-    img: "archive-lineup",
-    widths: [640, 1000],
-    label: "Гость 04",
-    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
-  },
-  {
-    img: "runway-walk",
-    widths: [700, 1200],
-    label: "Гость 05",
-    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
-  },
-  {
-    img: "campaign-silver-portrait",
-    widths: [800, 1400],
-    label: "Гость 06",
-    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
-  },
-  {
-    img: "detail-profile",
-    widths: [500, 900],
-    label: "Гость 07",
-    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
-  },
-  {
-    img: "poster-duo-dusk",
-    widths: [600, 1000],
-    label: "Гость 08",
-    alt: "Временный кадр из предыдущего показа для будущего портрета гостя",
-  },
-];
+const GUEST_ORDER = [1, 2, 3, 5, 4, 7, 6, 9, 8, 10];
+
+const GUESTS: GuestCarouselItem[] = GUEST_ORDER.map((n, index) => ({
+  img: `show-${n}`,
+  widths: [700, 1200],
+  label: `Гость ${String(index + 1).padStart(2, "0")}`,
+  alt: "Кадр из предыдущего показа",
+}));
 
 const STATS: Array<{
   value: number;
