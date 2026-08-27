@@ -299,10 +299,10 @@ export default function StatusTeamScene() {
             </span>
             <span className="st2-impact-subgroup">
               <span className="st2-impact-tier2a">
-                за рамками
+                за пределами
                 <span className="st2-impact-hairline" aria-hidden="true" />
               </span>
-              <span className="st2-impact-tier2b">обычного показа</span>
+              <span className="st2-impact-tier2b">подиума</span>
             </span>
           </h2>
         </div>

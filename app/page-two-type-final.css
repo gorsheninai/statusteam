@@ -167,15 +167,18 @@
     text-shadow: 0 1px 8px rgba(0, 0, 0, .24) !important;
   }
 
-  /* On phones the two red lines form a semantic hierarchy, not two equal
-     labels: the promise leads, while the qualifier completes it. */
+  /* On phones the two red lines read as one balanced statement wrapped
+     across two rows — same weight, same size, width-matched below. */
   .st-page-two .st2-impact-tier2a {
-    font-size: clamp(1.54rem, 7.65vw, 2.25rem) !important;
+    font-size: clamp(1.5rem, 7.2vw, 2.1rem) !important;
   }
 
   .st-page-two .st2-impact-tier2b {
     max-inline-size: 88vw !important;
-    font-size: clamp(1.35rem, 6.75vw, 1.98rem) !important;
+    font-size: clamp(1.5rem, 7.2vw, 2.1rem) !important;
+    /* “подиума” is under half the length of “за пределами”; open the
+       tracking so the shorter line fills the same visible width. */
+    letter-spacing: 0.42em !important;
   }
 
   /* Keep the icon-only sound control in the lower-right film position. */
