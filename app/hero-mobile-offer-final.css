@@ -19,11 +19,17 @@
      older hero rules are changed elsewhere. */
   .hero-inner {
     --hero-mobile-axis: .35rem;
-    /* Flex only so the city/date line can be ordered after the CTA below.
-       Column + flex-start reproduces the block flow it replaces. */
+  }
+
+  /* Sized by its widest child, which is always the button — the date line is
+     30-60px narrower at every phone width — so the date can take width:100%
+     and centre itself on the button rather than on the column. */
+  .hero-action {
     display: flex !important;
     flex-direction: column !important;
     align-items: flex-start !important;
+    width: max-content !important;
+    max-width: 100% !important;
   }
 
   /* Rebalance the portrait crop without touching the type layer. The tall
@@ -121,14 +127,29 @@
     letter-spacing: .055em !important;
   }
 
-  /* City and date sit under the CTA on phones. The element precedes the CTA
-     in the document — where it belongs for reading order — so it is ordered
-     last visually rather than duplicated in the markup. */
+  /* City and date sit centred under the CTA on phones. The element precedes
+     the CTA in the document — where it belongs for reading order — so it is
+     ordered last visually rather than duplicated in the markup. */
   .hero-where {
     display: flex !important;
     order: 1 !important;
+    width: 100% !important;
+    justify-content: center !important;
     margin-top: .85rem !important;
     margin-bottom: 0 !important;
+    text-align: center !important;
+    /* White here, not the champagne it carries above the fold on desktop. */
+    color: #fff !important;
+  }
+
+  .hero-city,
+  .hero-when {
+    color: inherit !important;
+    opacity: 1 !important;
+  }
+
+  .hero-city::after {
+    color: inherit !important;
   }
 
   /* CTA box starts on exactly the same axis as both text levels. */

@@ -165,16 +165,22 @@ export default function Home() {
                 <span className="hero-statement-script">нижнего белья в России</span>
               </p>
 
-              <p className="hero-where" data-hero="where">
-                <span className="hero-city">{SHOW.city}</span>
-                <span className="hero-when">Ноябрь 2026</span>
-              </p>
+              {/* display:contents by default, so every desktop rule still
+                  sees these two as direct children of .hero-inner. It only
+                  becomes a real box on phones, where it gives the city/date
+                  line the button's exact width to centre itself in. */}
+              <div className="hero-action">
+                <p className="hero-where" data-hero="where">
+                  <span className="hero-city">{SHOW.city}</span>
+                  <span className="hero-when">Ноябрь 2026</span>
+                </p>
 
-              {/* One control. The exact date lives in the ticket scene. */}
-              <div className="hero-cta" data-hero="cta">
-                <a className="btn btn-solid" href="#tickets">
-                  Предзаказать билет <Arrow />
-                </a>
+                {/* One control. The exact date lives in the ticket scene. */}
+                <div className="hero-cta" data-hero="cta">
+                  <a className="btn btn-solid" href="#tickets">
+                    Предзаказать билет <Arrow />
+                  </a>
+                </div>
               </div>
             </div>
           </section>

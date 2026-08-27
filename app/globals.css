@@ -1231,6 +1231,13 @@ ol {
 }
 
 /* City and period, set into the composition rather than into a bar. */
+/* Transparent to layout everywhere except the phone rule that gives it a
+   box — every existing hero rule addresses .hero-where and .hero-cta as
+   direct children of .hero-inner, and this keeps that true. */
+.hero-action {
+  display: contents;
+}
+
 .hero-where {
   display: flex;
   align-items: baseline;
