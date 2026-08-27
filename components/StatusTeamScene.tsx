@@ -385,12 +385,16 @@ export default function StatusTeamScene() {
       <section className="st2-scale" aria-label="Масштаб STATUS TEAM в цифрах">
         <div className="st2-shell st2-scale-shell" data-st2-stats-band>
           <header className="st2-scale-head">
-            <h2 className="st2-scale-title">
+            <h2
+              className="st2-scale-title"
+              data-reveal="lines"
+              data-desktop-reveal
+            >
               Масштаб в цифрах
             </h2>
           </header>
 
-          <ul className="st2-stats">
+          <ul className="st2-stats" data-st2-stats-list>
             {STATS.map((stat) => (
               <li
                 className={stat.inlineLabel ? "is-sentence" : undefined}
