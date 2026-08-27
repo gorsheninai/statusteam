@@ -1,0 +1,147 @@
+/* Desktop composition pass.
+   This layer is intentionally loaded last and starts at 900px: the approved
+   phone composition remains untouched while wide screens get a consistent
+   editorial grid, tighter chapter joins and a usable full-width preorder. */
+
+@media (min-width: 900px) {
+  /* Lenis already applies the sticky-nav offset in lib/scroll.ts. Keeping the
+     CSS scroll-padding and scroll-margin active as well triple-counted that
+     offset and left every desktop anchor about 220px below the header. */
+  html.lenis-on {
+    scroll-padding-top: 0;
+  }
+
+  html.lenis-on [id] {
+    scroll-margin-top: 0;
+  }
+
+  /* The live desktop proof strip still contains neutral MEDIA/PARTNER
+     placeholders. It reads as unfinished UI and competes with the actual
+     statement, so desktop keeps the film and removes that temporary layer. */
+  .st-page-two .st2-proof-groups {
+    display: none !important;
+  }
+
+  /* Restore the hierarchy approved on mobile: one restrained eyebrow, then
+     a two-line promise. On desktop it stays left-aligned and occupies the
+     lower third of the film instead of becoming one long red sentence. */
+  .st-page-two .st2-impact-copy {
+    inset-block-end: clamp(3.5rem, 8.5svh, 5.5rem) !important;
+    max-inline-size: min(64rem, calc(100% - var(--st2-gutter) * 2)) !important;
+  }
+
+  .st-page-two .st2-impact-subgroup {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.08rem !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin-block-start: 0.5rem !important;
+    white-space: normal !important;
+  }
+
+  .st-page-two .st2-impact-tier2a,
+  .st-page-two .st2-impact-tier2b {
+    display: block !important;
+    line-height: 0.94 !important;
+    letter-spacing: 0.025em !important;
+    text-transform: uppercase !important;
+  }
+
+  .st-page-two .st2-impact-tier2a {
+    font-size: clamp(2.65rem, 3.2vw, 3.55rem) !important;
+  }
+
+  .st-page-two .st2-impact-tier2b {
+    font-size: clamp(2.2rem, 2.65vw, 3rem) !important;
+  }
+
+  /* The archive card already has its own bottom breathing room. The previous
+     section padding plus the stats padding produced an accidental 170px gap. */
+  .st-page-two .st2-vanguard {
+    padding-block-end: 0 !important;
+  }
+
+  .st-page-two .st2-scale-shell {
+    padding-block-start: clamp(2.5rem, 4vw, 3.75rem) !important;
+    padding-block-end: clamp(3.5rem, 5vw, 4.75rem) !important;
+  }
+
+  .st-page-two .st2-stats li.is-sentence .st2-stat-inline-label {
+    font-size: clamp(0.78rem, 0.72rem + 0.12vw, 0.875rem);
+    letter-spacing: 0.12em;
+  }
+
+  /* At 900px+ the panel spans the card. Its child used to remain trapped in
+     the first column of an internal grid, leaving half the section empty. */
+  .tickets-inner {
+    width: 100%;
+    max-width: 84rem;
+    margin-inline: auto;
+  }
+
+  .preorder-summary {
+    text-align: start;
+  }
+
+  .preorder-action {
+    justify-items: start;
+  }
+
+  .preorder-copy {
+    margin-inline: 0;
+    text-align: start;
+  }
+
+  .preorder-form {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .preorder-form .form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.34fr);
+    grid-template-rows: auto auto;
+    column-gap: clamp(3rem, 6vw, 6.5rem);
+    align-items: end;
+  }
+
+  .preorder-form .form-grid {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .preorder-form .field-check {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .preorder-form .form-foot {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    grid-template-columns: 1fr;
+    align-self: end;
+    margin-top: 0;
+  }
+
+  .preorder-form .form-foot .btn {
+    width: 100%;
+    min-height: 3.5rem;
+  }
+
+  .preorder-form .form-note {
+    max-width: 28ch;
+  }
+}
+
+@media (min-width: 1600px) {
+  /* Keep the wide chapters editorial rather than allowing their columns to
+     drift to the edges on 1920–2560px displays. */
+  .tickets-inner,
+  .foot-inner {
+    max-width: 92rem;
+    margin-inline: auto;
+  }
+}
