@@ -397,6 +397,35 @@
   text-transform: uppercase;
 }
 
+/* What the previous show was, in two beats: the statement, then the scale.
+   Measure is capped in ch so the lines stay readable as the column grows —
+   a full-width paragraph under a centred title reads as a CMS block. */
+.st-page-two .st2-vanguard-intro {
+  margin-inline: auto;
+  margin-block-start: clamp(1.1rem, 2.4vw, 1.6rem);
+  max-inline-size: 46ch;
+  text-wrap: pretty;
+}
+
+.st-page-two .st2-vanguard-lead {
+  margin: 0;
+  color: var(--st2-white);
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 0.86rem + 0.44vw, 1.24rem);
+  font-weight: 400;
+  line-height: 1.44;
+  letter-spacing: 0.005em;
+}
+
+.st-page-two .st2-vanguard-note {
+  margin: clamp(0.5rem, 1.1vw, 0.7rem) 0 0;
+  color: var(--st2-muted);
+  font-family: var(--font-body);
+  font-size: clamp(0.83rem, 0.78rem + 0.26vw, 1rem);
+  font-weight: 400;
+  line-height: 1.56;
+}
+
 @media (max-width: 639px) {
   .st-page-two .st2-vanguard-tag {
     /* Keep the show title as one editorial caption on narrow phones. */
@@ -404,11 +433,27 @@
     letter-spacing: 0.14em;
     white-space: nowrap;
   }
+
+  /* On phones the column is already narrow: let the copy use it, and pull
+     the two beats closer so the pair still reads as one caption. */
+  .st-page-two .st2-vanguard-intro {
+    max-inline-size: 34ch;
+    margin-block-start: 1rem;
+  }
 }
 
 @media (min-width: 640px) {
   .st-page-two .st2-vanguard-tag {
     font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 900px) {
+  /* The title is set very large here, so a 46ch column reads as a narrow
+     slot punched under it. Open the measure enough to balance the heading
+     while staying well inside a comfortable line length. */
+  .st-page-two .st2-vanguard-intro {
+    max-inline-size: 56ch;
   }
 }
 
