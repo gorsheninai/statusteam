@@ -354,7 +354,7 @@ select:focus {
 
   .nav-tickets {
     min-height: 44px;
-    padding-inline: 0.55rem;
+    padding-inline: 0.3rem;
     letter-spacing: 0.14em;
   }
 
