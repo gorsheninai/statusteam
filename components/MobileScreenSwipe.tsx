@@ -25,8 +25,10 @@ export default function MobileScreenSwipe() {
     let startY = 0;
     let startX = 0;
     let locked = false;
-    let transitioned = false;
+    let gestureTransitioned = false;
+    let transitionPlayed = false;
     let timer = 0;
+    let frame = 0;
 
     const enabled = () => query.matches && !reducedMotion.matches;
     const heroIsAtTop = () => window.scrollY <= 2;
@@ -52,9 +54,10 @@ export default function MobileScreenSwipe() {
     };
 
     const transition = (direction: "forward" | "back") => {
-      if (locked || !enabled()) return;
+      if (locked || transitionPlayed || !enabled()) return;
 
       locked = true;
+      transitionPlayed = true;
       lockScroll();
       root.classList.add(
         "mobile-screen-swap",
@@ -63,12 +66,18 @@ export default function MobileScreenSwipe() {
           : "mobile-screen-swap--from-status",
       );
 
-      window.requestAnimationFrame(() => {
-        root.classList.add(
-          direction === "forward"
-            ? "mobile-screen-swap--to-status"
-            : "mobile-screen-swap--to-hero",
-        );
+      /* Commit the starting planes before moving either one. A double frame
+         prevents Safari from coalescing both class changes into a single
+         paint, which was the source of the abrupt 1 → 2 jump. */
+      void status.offsetHeight;
+      frame = window.requestAnimationFrame(() => {
+        frame = window.requestAnimationFrame(() => {
+          root.classList.add(
+            direction === "forward"
+              ? "mobile-screen-swap--to-status"
+              : "mobile-screen-swap--to-hero",
+          );
+        });
       });
 
       timer = window.setTimeout(() => finish(direction), DURATION);
@@ -80,7 +89,7 @@ export default function MobileScreenSwipe() {
       if (!touch) return;
       startX = touch.clientX;
       startY = touch.clientY;
-      transitioned = false;
+      gestureTransitioned = false;
     };
 
     const onTouchMove = (event: TouchEvent) => {
@@ -89,6 +98,7 @@ export default function MobileScreenSwipe() {
         event.preventDefault();
         return;
       }
+      if (transitionPlayed) return;
 
       const touch = event.touches[0];
       if (!touch) return;
@@ -106,8 +116,8 @@ export default function MobileScreenSwipe() {
          leak through before the threshold is reached. */
       event.preventDefault();
 
-      if (!transitioned && Math.abs(deltaY) >= THRESHOLD) {
-        transitioned = true;
+      if (!gestureTransitioned && Math.abs(deltaY) >= THRESHOLD) {
+        gestureTransitioned = true;
         transition(forward ? "forward" : "back");
       }
     };
@@ -117,6 +127,7 @@ export default function MobileScreenSwipe() {
 
     return () => {
       if (timer) window.clearTimeout(timer);
+      if (frame) window.cancelAnimationFrame(frame);
       clearTransition();
       if (locked) unlockScroll();
       window.removeEventListener("touchstart", onTouchStart);

@@ -15,6 +15,7 @@ const LINKS = [
 export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [showTickets, setShowTickets] = useState(false);
+  const [hideOnMobileImpact, setHideOnMobileImpact] = useState(false);
   const [open, setOpen] = useState(false);
   const openerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,7 @@ export default function Nav() {
   useEffect(() => {
     const onScroll = () => {
       const pageTwo = document.querySelector<HTMLElement>("#statusteam");
+      const impact = document.querySelector<HTMLElement>(".st2-impact");
       const navHeight =
         document.querySelector<HTMLElement>(".nav")?.offsetHeight ?? 72;
       const isPastFirstScreen = pageTwo
@@ -33,6 +35,21 @@ export default function Nav() {
 
       setSolid(isPastFirstScreen);
       setShowTickets(isPastFirstScreen);
+
+      /* Screen two is the film itself on phones. Keep it genuinely full-frame,
+         then restore the header as soon as the following archive enters. */
+      const impactRect = impact?.getBoundingClientRect();
+      setHideOnMobileImpact(
+        window.matchMedia("(max-width: 767px)").matches &&
+          Boolean(
+              impactRect &&
+              impactRect.top <= navHeight &&
+              /* A small boundary tolerance restores the bar as the archive
+                 reaches it; fractional Safari geometry otherwise keeps the
+                 film state alive for one extra scroll step. */
+              impactRect.bottom > navHeight + 12,
+          ),
+      );
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -93,7 +110,9 @@ export default function Nav() {
 
   return (
     <>
-      <header className={`nav ${solid ? "is-solid" : ""}`}>
+      <header
+        className={`nav ${solid ? "is-solid" : ""}${hideOnMobileImpact ? " is-mobile-impact-hidden" : ""}`}
+      >
         <a className="nav-brand" href="#top" aria-label="STATUS TEAM — наверх">
           {/* The real wordmark, derived from logo.PNG in the repository root.
               Sized by height so the 6.43:1 lock-up keeps its proportions. */}

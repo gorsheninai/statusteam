@@ -94,6 +94,12 @@ for (const [name, width, height] of SIZES) {
     const pulse = buttons[1] ? getComputedStyle(buttons[1]) : null;
     const pulseArrow = buttons[1]?.querySelector(".arrow");
     const pulseArrowStyle = pulseArrow ? getComputedStyle(pulseArrow) : null;
+    const labels = Array.from(document.querySelectorAll(".hero-btn-label"));
+    const labelLineCounts = labels.map((item) => {
+      const range = document.createRange();
+      range.selectNodeContents(item);
+      return range.getClientRects().length;
+    });
     const heroAfter = getComputedStyle(document.querySelector(".hero"), "::after");
     return {
       count: boxes.length,
@@ -105,6 +111,7 @@ for (const [name, width, height] of SIZES) {
       desktopDateCentred: Math.abs(whereCentre - pairCentre) < 1,
       pulseTextColor: pulse?.color,
       pulseDividerColor: pulseArrowStyle?.borderInlineStartColor,
+      labelsSingleLine: labelLineCounts.every((count) => count === 1),
       mobileDate: heroAfter.content.replaceAll('"', ""),
       mobileDateBottom: Number.parseFloat(heroAfter.bottom),
     };
@@ -115,10 +122,12 @@ for (const [name, width, height] of SIZES) {
     `[${name}] preorder label is centred inside its text cell`);
   check(
     heroControls.pulseTextColor === "rgb(255, 255, 255)" &&
-      heroControls.pulseDividerColor === "rgb(255, 255, 255)",
-    `[${name}] participation text and inner divider are white`,
+      heroControls.pulseDividerColor === "rgb(181, 31, 46)",
+    `[${name}] participation text is white and its inner divider is red`,
   );
   if (width < 900) {
+    check(heroControls.labelsSingleLine,
+      `[${name}] both hero button labels stay on one line`);
     check(
       heroControls.mobileDate === "МОСКВА · НОЯБРЬ 2026" &&
         heroControls.mobileDateBottom > 0 &&

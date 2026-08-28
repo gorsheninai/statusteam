@@ -168,7 +168,31 @@
     margin: 0 !important;
     overflow: hidden !important;
     will-change: transform;
-    transition: transform 900ms cubic-bezier(0.76, 0, 0.24, 1) !important;
+    transition: transform 900ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  /* Secondary depth settles with the incoming film while the two full-screen
+     planes perform the primary hand-off. */
+  html.mobile-screen-swap--from-hero .st2-video video {
+    opacity: 0.78;
+    transform: scale(1.055);
+    transition:
+      opacity 760ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 900ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  html.mobile-screen-swap--from-hero.mobile-screen-swap--to-status .st2-video video {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+
+  /* The film page has no mobile header. Fade it as part of the one-time
+     hand-off, then Nav keeps it hidden until screen three begins. */
+  html.mobile-screen-swap--to-status .nav,
+  .nav.is-mobile-impact-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   html.mobile-screen-swap .hero-stage {

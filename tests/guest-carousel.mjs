@@ -1,6 +1,6 @@
 /* The archive carousel in «Славянский взгляд»: ten unique frames in the
-   requested order, two controls, a seamless 10 → 1 loop and two larger
-   portraits across on mobile. */
+   requested order, desktop controls, a seamless 10 → 1 loop and a larger
+   swipe-only editorial rail on mobile. */
 import { chromium } from "playwright";
 import fs from "node:fs";
 
@@ -54,7 +54,7 @@ for (const [name, width, height] of viewports) {
     order.join(" → "),
   );
 
-  /* Navigation is present on both pointer and touch layouts. */
+  /* Controls stay in the accessible DOM, but phones use swipe only. */
   expect(
     (await page.locator(".st2-guest-nav-button").count()) === 2,
     `[${name}] both carousel controls exist`,
@@ -101,6 +101,7 @@ for (const [name, width, height] of viewports) {
       bleedLeft: columnBox.left - stripBox.left,
       bleedRight: stripBox.right - columnBox.right,
       buttons: document.querySelectorAll(".st2-guest-nav-button").length,
+      navDisplay: getComputedStyle(document.querySelector(".st2-guest-nav")).display,
       maxGap,
       pageOverflow:
         document.documentElement.scrollWidth -
@@ -140,6 +141,11 @@ for (const [name, width, height] of viewports) {
   );
   expect(geometry.buttons === 2, `[${name}] the strip has two controls`);
   expect(
+    width < 768 ? geometry.navDisplay === "none" : geometry.navDisplay !== "none",
+    `[${name}] carousel arrows follow the desktop/mobile brief`,
+    geometry.navDisplay,
+  );
+  expect(
     geometry.maxGap >= 2 && geometry.maxGap <= 3.5,
     `[${name}] frames keep the narrow editorial gap`,
     `${geometry.maxGap}px`,
@@ -159,11 +165,11 @@ for (const [name, width, height] of viewports) {
     `${geometry.overflowX} / ${geometry.scrollable}px`,
   );
 
-  /* The requested composition is exact: three frames on desktop and two on
-     mobile, with no squeezed partial card at either edge. */
+  /* Desktop holds three frames; phones enlarge the portraits so one complete
+     frame and a strong preview of the second remain visible. */
   const visible = geometry.stripWidth / geometry.frameWidth;
   expect(
-    width >= 768 ? visible > 2.95 && visible < 3.1 : visible > 1.95 && visible < 2.1,
+    width >= 768 ? visible > 2.95 && visible < 3.1 : visible > 1.55 && visible < 1.7,
     `[${name}] the strip shows the right number of frames`,
     visible.toFixed(2),
   );
@@ -205,7 +211,16 @@ for (const [name, width, height] of viewports) {
     strip.scrollLeft = tenth.offsetLeft;
   });
   await page.waitForTimeout(150);
-  await page.locator(".st2-guest-nav-button.is-next").click();
+  if (width >= 768) {
+    await page.locator(".st2-guest-nav-button.is-next").click();
+  } else {
+    await page.evaluate(() => {
+      const strip = document.querySelector(".st2-guest-strip");
+      const frame = strip.querySelector(".st2-guest");
+      const gap = Number.parseFloat(getComputedStyle(strip).gap) || 0;
+      strip.scrollBy({ left: frame.getBoundingClientRect().width + gap });
+    });
+  }
   await page.waitForTimeout(700);
   const loopedSlide = await page.evaluate(() => {
     const strip = document.querySelector(".st2-guest-strip");

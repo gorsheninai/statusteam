@@ -563,6 +563,18 @@
 }
 
 @media (max-width: 767px) {
+  /* The phone composition intentionally shows one full portrait and a clear
+     portion of the next, matching the larger editorial rail in the reference.
+     Two photographs remain visible while each frame reads materially bigger. */
+  .st-page-two .st2-guest {
+    flex-basis: 62vw;
+  }
+
+  /* Touch owns phone navigation; desktop controls remain unchanged. */
+  .st-page-two .st2-guest-nav {
+    display: none;
+  }
+
   .st-page-two .st2-guest-nav-button {
     inline-size: 2.75rem;
     block-size: 2.75rem;

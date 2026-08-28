@@ -73,7 +73,7 @@
 }
 
 .hero-cta .btn-pulse .arrow {
-  border-inline-start: 1px solid #fff;
+  border-inline-start: 1px solid var(--red);
   color: #fff;
   font-size: 0;
 }
@@ -117,29 +117,29 @@
 
   .hero-cta .btn.btn-solid,
   .hero-cta .btn.btn-pulse {
-    grid-template-columns: minmax(0, 1fr) 38px;
+    grid-template-columns: minmax(0, 1fr) 32px;
     min-block-size: 62px !important;
     block-size: 62px;
-    font-size: clamp(9px, 2.45vw, 11px) !important;
-    line-height: 1.12;
-    letter-spacing: 0.035em !important;
-    white-space: normal !important;
+    font-size: clamp(8.5px, 2.3vw, 10px) !important;
+    line-height: 1;
+    letter-spacing: 0.015em !important;
+    white-space: nowrap !important;
   }
 
   .hero-btn-label {
-    padding-inline: 0.4rem;
-    text-wrap: balance;
+    padding-inline: 0.2rem;
+    white-space: nowrap;
   }
 
   .hero-cta .btn.btn-solid .arrow,
   .hero-cta .btn.btn-pulse .arrow {
-    inline-size: 38px !important;
-    min-inline-size: 38px !important;
+    inline-size: 32px !important;
+    min-inline-size: 32px !important;
     block-size: 62px !important;
   }
 
   .hero-cta .btn.btn-solid .arrow {
-    flex-basis: 38px !important;
+    flex-basis: 32px !important;
   }
 
   .hero-cta .btn-pulse {
@@ -154,13 +154,13 @@
 
   .hero-cta .btn.btn-solid,
   .hero-cta .btn.btn-pulse {
-    grid-template-columns: minmax(0, 1fr) 34px;
-    font-size: 8.5px !important;
+    grid-template-columns: minmax(0, 1fr) 30px;
+    font-size: 7.75px !important;
   }
 
   .hero-cta .btn.btn-solid .arrow,
   .hero-cta .btn.btn-pulse .arrow {
-    inline-size: 34px !important;
-    min-inline-size: 34px !important;
+    inline-size: 30px !important;
+    min-inline-size: 30px !important;
   }
 }
