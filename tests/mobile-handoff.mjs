@@ -59,6 +59,27 @@ const swipeUp = async () => {
   });
 };
 
+/* Sample both planes every frame. A single mid-flight probe is not enough:
+   when the start state is transitioned into rather than out of, the incoming
+   plane still reports a few pixels of travel before it is reversed, and a
+   `0 < top < viewport` assertion passes on a hand-off the eye reads as a cut. */
+const traceTravel = () =>
+  page.evaluate(() => {
+    const hero = document.querySelector(".hero-stage");
+    const status = document.querySelector(".st-page-two");
+    window.__travel = [];
+    const t0 = performance.now();
+    const tick = () => {
+      window.__travel.push([
+        Math.round(hero.getBoundingClientRect().top),
+        Math.round(status.getBoundingClientRect().top),
+      ]);
+      if (performance.now() - t0 < 1000) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+
+await traceTravel();
 await swipeUp();
 await page.waitForTimeout(120);
 
@@ -82,6 +103,18 @@ check(
 check(active.navVisibility === "hidden", "the mobile header leaves with screen one");
 
 await page.waitForTimeout(950);
+
+const travel = await page.evaluate(() => window.__travel ?? []);
+const statusStart = Math.max(...travel.map(([, top]) => top));
+const heroEnd = Math.min(...travel.map(([top]) => top));
+const statusSteps = new Set(travel.map(([, top]) => top)).size;
+check(
+  statusStart >= 760,
+  "screen two starts a full viewport below and slides up",
+  `highest sampled top ${statusStart} of 844`,
+);
+check(statusSteps >= 12, "screen two travels over many frames rather than cutting", String(statusSteps));
+check(heroEnd <= -800, "screen one clears the viewport", String(heroEnd));
 const landed = await page.evaluate(() => ({
   swapActive: document.documentElement.classList.contains("mobile-screen-swap"),
   impactTop: document.querySelector(".st2-impact").getBoundingClientRect().top,

@@ -171,6 +171,24 @@
     transition: transform 900ms cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
+  /* Arming the hand-off.
+
+     The start state and the `transition` above arrive in the same class
+     change, and a transition fires whenever the *after-change* style still
+     covers the property — so the browser used to animate the start state
+     itself: screen two set off downwards from translateY(0), got reversed two
+     frames later by `--to-status`, and landed back at 0 after three pixels.
+     Net effect on a phone: screen two simply appeared, and screen one slid up
+     underneath it where nothing could see it.
+
+     Committing the start state with transitions off is what makes the two
+     planes actually travel. A forced reflow alone does not do it — layout is
+     flushed, but the transition has already been started. */
+  html.mobile-screen-swap--arming .hero-stage,
+  html.mobile-screen-swap--arming .st.st-page-two {
+    transition: none !important;
+  }
+
   /* Secondary depth settles with the incoming film while the two full-screen
      planes perform the primary hand-off. */
   html.mobile-screen-swap--from-hero .st2-video video {
@@ -184,6 +202,12 @@
   html.mobile-screen-swap--from-hero.mobile-screen-swap--to-status .st2-video video {
     opacity: 1;
     transform: scale(1.01);
+  }
+
+  /* Same reason as the planes above: without this the film's settle is
+     transitioned into instead of out of, and it never plays. */
+  html.mobile-screen-swap--arming .st2-video video {
+    transition: none !important;
   }
 
   /* The film page has no mobile header. Fade it as part of the one-time
