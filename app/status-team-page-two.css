@@ -525,9 +525,9 @@
 
 .st-page-two .st2-guest {
   flex: 0 0 calc((100% - var(--st2-strip-gap)) / 2);
-  /* The reserved box: the sources are 3:4 and 2:3, so the common crop has to
-     be declared here or every deep link below this chapter lands short. */
-  aspect-ratio: 4 / 5;
+  /* Keep two frames across on a phone, but give them a taller editorial
+     crop so the photography reads larger without changing the rail width. */
+  aspect-ratio: 2 / 3;
   min-block-size: 0;
   overflow: hidden;
   scroll-snap-align: start;
@@ -755,6 +755,7 @@
 
   .st-page-two .st2-guest {
     flex-basis: calc((100% - (var(--st2-strip-gap) * 2)) / 3);
+    aspect-ratio: 4 / 5;
   }
 }
 
