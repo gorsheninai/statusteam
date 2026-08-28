@@ -88,6 +88,12 @@ for (const [name, width, height] of SIZES) {
     const button = boxes[0];
     const labelCentre = label ? label.left + label.width / 2 : 0;
     const textCellCentre = button && arrow ? button.left + (arrow.left - button.left) / 2 : 0;
+    const where = document.querySelector(".hero-where")?.getBoundingClientRect();
+    const pairCentre = boxes.length === 2 ? (boxes[0].left + boxes[1].right) / 2 : 0;
+    const whereCentre = where ? where.left + where.width / 2 : 0;
+    const pulse = buttons[1] ? getComputedStyle(buttons[1]) : null;
+    const pulseArrow = buttons[1]?.querySelector(".arrow");
+    const pulseArrowStyle = pulseArrow ? getComputedStyle(pulseArrow) : null;
     const heroAfter = getComputedStyle(document.querySelector(".hero"), "::after");
     return {
       count: boxes.length,
@@ -96,6 +102,9 @@ for (const [name, width, height] of SIZES) {
         Math.abs(boxes[0].width - boxes[1].width) < 1 &&
         Math.abs(boxes[0].height - boxes[1].height) < 1,
       preorderCentred: Math.abs(labelCentre - textCellCentre) < 1,
+      desktopDateCentred: Math.abs(whereCentre - pairCentre) < 1,
+      pulseTextColor: pulse?.color,
+      pulseDividerColor: pulseArrowStyle?.borderInlineStartColor,
       mobileDate: heroAfter.content.replaceAll('"', ""),
       mobileDateBottom: Number.parseFloat(heroAfter.bottom),
     };
@@ -104,9 +113,20 @@ for (const [name, width, height] of SIZES) {
     `[${name}] hero buttons have identical dimensions`);
   check(heroControls.preorderCentred,
     `[${name}] preorder label is centred inside its text cell`);
+  check(
+    heroControls.pulseTextColor === "rgb(255, 255, 255)" &&
+      heroControls.pulseDividerColor === "rgb(255, 255, 255)",
+    `[${name}] participation text and inner divider are white`,
+  );
   if (width < 900) {
-    check(heroControls.mobileDate === "МОСКВА · НОЯБРЬ 2026" && heroControls.mobileDateBottom > 0,
+    check(
+      heroControls.mobileDate === "МОСКВА · НОЯБРЬ 2026" &&
+        heroControls.mobileDateBottom > 0 &&
+        heroControls.mobileDateBottom <= 8,
       `[${name}] city and month stay anchored to the bottom of the first screen`);
+  } else {
+    check(heroControls.desktopDateCentred,
+      `[${name}] city and month are centred across both hero buttons`);
   }
 
   const clipped = await page.evaluate(() =>

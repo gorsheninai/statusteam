@@ -47,14 +47,14 @@
 }
 
 .hero-cta .btn-pulse {
-  --btn-fg: var(--sand);
+  --btn-fg: #fff;
   --btn-fill: var(--red);
-  --btn-hover-fg: var(--paper);
+  --btn-hover-fg: #fff;
   min-block-size: 60px;
   border: 1px solid var(--red);
   border-radius: 18px;
   background: rgba(16, 13, 12, 0.58);
-  color: var(--sand);
+  color: #fff;
   font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.055em;
@@ -73,8 +73,8 @@
 }
 
 .hero-cta .btn-pulse .arrow {
-  border-inline-start: 1px solid rgba(181, 31, 46, 0.78);
-  color: inherit;
+  border-inline-start: 1px solid #fff;
+  color: #fff;
   font-size: 0;
 }
 
@@ -93,6 +93,15 @@
 @media (min-width: 900px) {
   .hero-cta {
     inline-size: calc((var(--hero-action-width) * 2) + 0.75rem) !important;
+  }
+
+  /* Centre the location line across the complete two-button group, not
+     across the label's own intrinsic width. */
+  .hero-where {
+    inline-size: calc((var(--hero-action-width) * 2) + 0.75rem) !important;
+    width: calc((var(--hero-action-width) * 2) + 0.75rem) !important;
+    justify-content: center !important;
+    text-align: center !important;
   }
 }
 
