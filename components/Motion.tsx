@@ -36,6 +36,22 @@ export default function Motion() {
       const wide = window.matchMedia("(min-width: 1024px)").matches;
       const fine = window.matchMedia("(pointer: fine)").matches;
 
+      /* A refresh while the mobile hand-off is running measures a document
+         that does not exist yet: both first scenes are pulled out of flow —
+         7814px becomes 5191px on a 390x844 phone — and `.hero-stage` is
+         position:fixed, so every trigger anchored to it gets start and end
+         values taken from a plane the document no longer accounts for. Late
+         media is exactly what fires these, and on a real network it lands
+         seconds in, right where the hand-off is. Hold it until the landing. */
+      let refreshDeferred = false;
+      const refresh = () => {
+        if (root.classList.contains("mobile-screen-swap")) {
+          refreshDeferred = true;
+          return;
+        }
+        ScrollTrigger.refresh();
+      };
+
       /* The curtain owns the first 2s (see globals.css). The hero starts
          while the wings are still travelling, so the type is already rising
          as the gap opens rather than waiting politely behind it. When the
@@ -53,8 +69,16 @@ export default function Motion() {
         ".hero [data-pulse-title]",
       );
 
+      /* The mobile hand-off covers screen one and needs it to hold still
+         underneath. The entrance and the two idle loops below are the whole
+         of the hero's non-scroll-driven motion, so they are what has to be
+         told to stop — hence the handles. */
+      let entrance: gsap.core.Timeline | null = null;
+      let heartbeat: gsap.core.Timeline | null = null;
+
       if (curtain) {
         const tl = gsap.timeline({ defaults: { ease: EASE }, delay: OPEN });
+        entrance = tl;
 
         /* The parting curtain is the reveal; the frame behind it only comes
            to rest, pushing back out of a slow zoom. Two clip-path reveals in
@@ -97,7 +121,7 @@ export default function Motion() {
       /* Ken Burns. Slow enough that it is felt on the second glance, not the
          first — and it composes with the pointer offset because they are
          different properties on the same element. */
-      gsap.to(".hero-layer[data-depth='bg']", {
+      const kenBurns = gsap.to(".hero-layer[data-depth='bg']", {
         scale: 1.05,
         duration: 10,
         ease: "sine.inOut",
@@ -108,7 +132,8 @@ export default function Motion() {
       /* A single heartbeat on the title every six seconds. 1.5% — under the
          threshold of "animated", over the threshold of "alive". */
       if (heroTitle) {
-        gsap.timeline({ repeat: -1, repeatDelay: 5.4, delay: OPEN + 3 })
+        heartbeat = gsap
+          .timeline({ repeat: -1, repeatDelay: 5.4, delay: OPEN + 3 })
           .to(heroTitle, {
             scale: 1.015,
             duration: 0.3,
@@ -117,6 +142,37 @@ export default function Motion() {
           })
           .to(heroTitle, { scale: 1, duration: 0.3, ease: "sine.inOut" });
       }
+
+      /* MobileScreenSwipe asks for the hold through an event rather than a
+         global handle, so the two components stay independent and the
+         reduced-motion page — which never gets here — simply never answers. */
+      const onHeroHold = (event: Event) => {
+        const holding = Boolean(
+          (event as CustomEvent<{ holding?: boolean }>).detail?.holding,
+        );
+
+        if (holding) {
+          /* A finger can arrive mid-entrance: the curtain opens at 2.0s and
+             the last hero tween lands at ~3.5s. Finish it outright rather
+             than let the CTA rise and the lock-up's tracking settle while the
+             plane is being covered. */
+          entrance?.progress(1);
+          kenBurns.pause();
+          heartbeat?.pause();
+          return;
+        }
+
+        kenBurns.resume();
+        heartbeat?.resume();
+        if (refreshDeferred) {
+          refreshDeferred = false;
+          ScrollTrigger.refresh();
+        }
+      };
+      document.addEventListener("hero-hold", onHeroHold);
+      teardown.push(() =>
+        document.removeEventListener("hero-hold", onHeroHold),
+      );
 
       /* ============================================================
          PULSE TITLE — sand haze sweeps once across the lock-up
@@ -720,7 +776,7 @@ export default function Motion() {
               onComplete: () => split.revert(),
             });
           });
-        ScrollTrigger.refresh();
+        refresh();
       };
 
       if (document.fonts?.status === "loaded") splitReveals();
@@ -814,7 +870,7 @@ export default function Motion() {
 
       /* Late-loading media changes page height, and every pin above depends
          on that height being right. */
-      const onLoad = () => ScrollTrigger.refresh();
+      const onLoad = () => refresh();
       window.addEventListener("load", onLoad);
       let pending = Array.from(document.images).filter((i) => !i.complete);
       pending.forEach((i) =>
@@ -822,7 +878,7 @@ export default function Motion() {
           "load",
           () => {
             pending = pending.filter((p) => p !== i);
-            if (!pending.length) ScrollTrigger.refresh();
+            if (!pending.length) refresh();
           },
           { once: true },
         ),

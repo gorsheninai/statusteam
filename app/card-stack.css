@@ -217,8 +217,12 @@
      <html> and disappears the instant the transition classes are cleared,
      while Nav's hide is React state driven by a scroll listener and commits
      a frame or two later. Without the bridge the header paints for ~50ms at
-     the exact moment screen two lands. */
-  html.mobile-screen-swap--to-status .nav,
+     the exact moment screen two lands.
+
+     Keyed to `--from-hero` rather than `--to-status` so the bar is gone from
+     the arming frame: it sits above both planes, and one frame of it over a
+     hand-off that has already begun is a frame too many. */
+  html.mobile-screen-swap--from-hero .nav,
   html.mobile-screen-swap--settling .nav,
   .nav.is-mobile-impact-hidden {
     opacity: 0;
@@ -234,31 +238,25 @@
     z-index: 21 !important;
   }
 
-  html.mobile-screen-swap--from-hero .hero-stage {
-    transform: translateY(0) !important;
-  }
-
+  /* One plane travels, not two. Screen one is held at the viewport by the
+     fixed positioning above and never given a transform of its own: it stays
+     exactly where the reader left it while screen two comes up over the top
+     of it. The z-index pair already puts screen two in front, so the cover
+     needs nothing else — and screen one is uncovered for most of the travel,
+     which is why Motion is asked to stop the hero's idle motion for the
+     duration. A push moved both planes and made every remaining pixel of
+     movement inside screen one read as a wobble. */
   html.mobile-screen-swap--from-hero .st.st-page-two {
     transform: translateY(100%) !important;
-  }
-
-  html.mobile-screen-swap--from-hero.mobile-screen-swap--to-status .hero-stage {
-    transform: translateY(-100%) !important;
   }
 
   html.mobile-screen-swap--from-hero.mobile-screen-swap--to-status .st.st-page-two {
     transform: translateY(0) !important;
   }
 
-  html.mobile-screen-swap--from-status .hero-stage {
-    transform: translateY(-100%) !important;
-  }
-
+  /* The mirror: screen two withdraws downwards and uncovers a screen one that
+     never moved. */
   html.mobile-screen-swap--from-status .st.st-page-two {
-    transform: translateY(0) !important;
-  }
-
-  html.mobile-screen-swap--from-status.mobile-screen-swap--to-hero .hero-stage {
     transform: translateY(0) !important;
   }
 

@@ -76,6 +76,7 @@ const traceTravel = () =>
         Math.round(hero.getBoundingClientRect().top),
         Math.round(status.getBoundingClientRect().top),
         navStyle.visibility === "visible" && navStyle.opacity !== "0",
+        document.documentElement.classList.contains("mobile-screen-swap"),
       ]);
       if (performance.now() - t0 < 1000) requestAnimationFrame(tick);
     };
@@ -99,8 +100,8 @@ const active = await page.evaluate(() => {
 
 check(active.active, "the forward hand-off reaches its animated state");
 check(
-  active.heroTop < 0 && active.statusTop > 0 && active.statusTop < 844,
-  "both planes move through intermediate positions instead of jumping",
+  active.heroTop === 0 && active.statusTop > 0 && active.statusTop < 844,
+  "screen two is mid-travel while screen one holds its position",
   JSON.stringify(active),
 );
 check(active.navVisibility === "hidden", "the mobile header leaves with screen one");
@@ -108,26 +109,38 @@ check(active.navVisibility === "hidden", "the mobile header leaves with screen o
 await page.waitForTimeout(950);
 
 const travel = await page.evaluate(() => window.__travel ?? []);
-const statusStart = Math.max(...travel.map(([, top]) => top));
-const heroEnd = Math.min(...travel.map(([top]) => top));
-const statusSteps = new Set(travel.map(([, top]) => top)).size;
+/* The hand-off's own frames, marked by the class rather than by geometry:
+   screen two sits one viewport down both before the gesture and in its armed
+   start state, so its position cannot tell the two apart. */
+const moving = travel.filter(([, , , swap]) => swap);
+const statusStart = Math.max(...moving.map(([, top]) => top));
+const statusSteps = new Set(moving.map(([, top]) => top)).size;
 check(
   statusStart >= 760,
   "screen two starts a full viewport below and slides up",
   `highest sampled top ${statusStart} of 844`,
 );
 check(statusSteps >= 12, "screen two travels over many frames rather than cutting", String(statusSteps));
-check(heroEnd <= -800, "screen one clears the viewport", String(heroEnd));
+
+/* One plane travels. Screen one is covered, never pushed — and it holds still
+   to the pixel while it is uncovered, which is what the hero hold is for. */
+const heroTops = moving.map(([top]) => top);
+const heroSpread = Math.max(...heroTops) - Math.min(...heroTops);
+check(
+  heroSpread === 0,
+  "screen one does not move while screen two comes over it",
+  `${heroSpread}px of travel across ${moving.length} frames`,
+);
 
 /* The hand-off's own hide is a class on <html>; Nav's is React state behind a
    scroll listener. If the first is dropped before the second commits, the
    header paints over the film for a couple of frames right at the landing. */
-const moving = travel.slice(travel.findIndex(([heroTop]) => heroTop < 0));
-const headerFrames = moving.filter(([, , navVisible]) => navVisible).length;
+const landing = travel.slice(travel.indexOf(moving[0]));
+const headerFrames = landing.filter(([, , navVisible]) => navVisible).length;
 check(
   headerFrames === 0,
   "the header never flashes back while screen two lands",
-  `${headerFrames} frame(s) of ${moving.length} with a visible header`,
+  `${headerFrames} frame(s) of ${landing.length} with a visible header`,
 );
 const landed = await page.evaluate(() => ({
   swapActive: document.documentElement.classList.contains("mobile-screen-swap"),

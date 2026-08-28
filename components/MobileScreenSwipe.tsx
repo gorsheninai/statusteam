@@ -35,6 +35,14 @@ export default function MobileScreenSwipe() {
     const heroIsAtTop = () => window.scrollY <= 2;
     const statusIsAtTop = () => Math.abs(status.getBoundingClientRect().top) <= 2;
 
+    /* Screen one is uncovered for most of the travel, so anything still
+       moving inside it reads as a wobble under the incoming plane. Motion
+       owns that animation; it is asked to hold rather than reached into. */
+    const holdHero = (holding: boolean) =>
+      document.dispatchEvent(
+        new CustomEvent("hero-hold", { detail: { holding } }),
+      );
+
     const clearTransition = () => {
       root.classList.remove(
         "mobile-screen-swap",
@@ -73,7 +81,7 @@ export default function MobileScreenSwipe() {
       if (!locked) return;
       if (timer) window.clearTimeout(timer);
       timer = 0;
-      hero.removeEventListener("transitionend", onTravelEnd);
+      status.removeEventListener("transitionend", onTravelEnd);
 
       /* Return the planes to normal flow first: while they are fixed their
          box sits at the viewport top whatever the scroll position, so the
@@ -89,10 +97,14 @@ export default function MobileScreenSwipe() {
 
       unlockScroll();
       locked = false;
+      holdHero(false);
     };
 
     function onTravelEnd(event: TransitionEvent) {
-      if (event.target !== hero || event.propertyName !== "transform") return;
+      /* Screen two is the only plane that moves, so it owns the clock. The
+         target check matters: the film inside it transitions too, and those
+         events bubble up through this same listener. */
+      if (event.target !== status || event.propertyName !== "transform") return;
       finish(
         root.classList.contains("mobile-screen-swap--to-status")
           ? "forward"
@@ -106,6 +118,7 @@ export default function MobileScreenSwipe() {
       locked = true;
       transitionPlayed = true;
       lockScroll();
+      holdHero(true);
 
       /* Arm the two planes in their start positions with transitions
          suppressed. Without `--arming` the start state is itself animated —
@@ -136,7 +149,7 @@ export default function MobileScreenSwipe() {
             : "mobile-screen-swap--to-hero",
         );
 
-        hero.addEventListener("transitionend", onTravelEnd);
+        status.addEventListener("transitionend", onTravelEnd);
         /* The travel starts a frame after the gesture, so the clock has to
            start here rather than at the touch. `transitionend` normally lands
            first; this is the net for a backgrounded tab or a dropped event. */
@@ -190,10 +203,13 @@ export default function MobileScreenSwipe() {
       if (timer) window.clearTimeout(timer);
       if (frame) window.cancelAnimationFrame(frame);
       if (navFrame) window.cancelAnimationFrame(navFrame);
-      hero.removeEventListener("transitionend", onTravelEnd);
+      status.removeEventListener("transitionend", onTravelEnd);
       root.classList.remove("mobile-screen-swap--settling");
       clearTransition();
-      if (locked) unlockScroll();
+      if (locked) {
+        unlockScroll();
+        holdHero(false);
+      }
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
     };
