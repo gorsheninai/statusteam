@@ -8,6 +8,10 @@
 }
 
 .hero-cta {
+  --hero-pass-gold: #c6a87c;
+  --hero-pass-gold-hover: #d2b887;
+  --hero-pass-arrow: #4c1222;
+
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
@@ -18,13 +22,28 @@
 .hero-cta .btn.btn-pulse {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) 58px;
+  gap: 0 !important;
   align-items: stretch !important;
   inline-size: 100% !important;
   width: 100% !important;
   min-inline-size: 0 !important;
   min-width: 0 !important;
   padding: 0 !important;
+  overflow: hidden;
+  border: 1px solid var(--hero-pass-gold) !important;
+  border-radius: 18px !important;
+  color: #fff !important;
+  font-family: var(--font-ui) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.055em !important;
   text-align: center !important;
+  text-transform: uppercase;
+  transition:
+    transform 150ms cubic-bezier(.2, 0, 0, 1),
+    background-color 260ms cubic-bezier(.4, 0, .2, 1),
+    border-color 260ms cubic-bezier(.4, 0, .2, 1) !important;
 }
 
 .hero-btn-label {
@@ -32,6 +51,8 @@
   place-items: center;
   min-inline-size: 0;
   padding-inline: 1rem;
+  color: #fff;
+  white-space: nowrap;
 }
 
 .hero-cta .btn.btn-solid .arrow,
@@ -44,6 +65,25 @@
   block-size: 100% !important;
   min-inline-size: 58px !important;
   margin: 0 !important;
+  border: 0 !important;
+  color: var(--hero-pass-arrow) !important;
+  background: var(--hero-pass-gold) !important;
+  transition:
+    color 260ms cubic-bezier(.4, 0, .2, 1),
+    background-color 260ms cubic-bezier(.4, 0, .2, 1) !important;
+}
+
+/* The split cell is the backstage-pass signature. Both actions share it, so
+   the pair reads as one system while the burgundy label field keeps preorder
+   visually primary. */
+.hero-cta .btn.btn-solid {
+  background:
+    linear-gradient(105deg, rgba(118, 16, 40, .92), rgba(101, 13, 34, .76)) !important;
+}
+
+.hero-cta .btn.btn-solid::before,
+.hero-cta .btn.btn-pulse::before {
+  display: none !important;
 }
 
 .hero-cta .btn-pulse {
@@ -51,30 +91,10 @@
   --btn-fill: var(--red);
   --btn-hover-fg: #fff;
   min-block-size: 60px;
-  border: 1px solid var(--red);
-  border-radius: 18px;
-  background: rgba(16, 13, 12, 0.58);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.055em;
-}
-
-.hero-cta .btn-pulse::before {
-  background: var(--red) !important;
-  transform: scaleX(0) !important;
-  transform-origin: left center !important;
-  transition: transform 420ms cubic-bezier(.22, .8, .28, 1) !important;
-}
-
-.hero-cta .btn-pulse:hover::before,
-.hero-cta .btn-pulse:focus-visible::before {
-  transform: scaleX(1) !important;
+  background: rgba(16, 13, 12, 0.62) !important;
 }
 
 .hero-cta .btn-pulse .arrow {
-  border-inline-start: 1px solid var(--red);
-  color: #fff;
   font-size: 0;
 }
 
@@ -85,9 +105,32 @@
   transition: transform 420ms cubic-bezier(.22, .8, .28, 1);
 }
 
-.hero-cta .btn-pulse:hover .arrow::before,
-.hero-cta .btn-pulse:focus-visible .arrow::before {
+.hero-cta .btn.btn-solid:hover .arrow,
+.hero-cta .btn.btn-solid:focus-visible .arrow,
+.hero-cta .btn.btn-pulse:hover .arrow,
+.hero-cta .btn.btn-pulse:focus-visible .arrow {
+  color: #321016 !important;
+  background: var(--hero-pass-gold-hover) !important;
+}
+
+.hero-cta .btn.btn-solid:hover .arrow::before,
+.hero-cta .btn.btn-solid:focus-visible .arrow::before,
+.hero-cta .btn.btn-pulse:hover .arrow::before,
+.hero-cta .btn.btn-pulse:focus-visible .arrow::before {
   transform: translate(3px, -3px);
+}
+
+.hero-cta .btn.btn-solid:hover,
+.hero-cta .btn.btn-solid:focus-visible,
+.hero-cta .btn.btn-pulse:hover,
+.hero-cta .btn.btn-pulse:focus-visible {
+  color: #fff !important;
+  border-color: var(--hero-pass-gold-hover) !important;
+}
+
+.hero-cta .btn.btn-solid:active,
+.hero-cta .btn.btn-pulse:active {
+  transform: scale(.985);
 }
 
 @media (min-width: 900px) {
@@ -111,39 +154,42 @@
   }
 
   .hero-cta {
+    gap: 0.5rem !important;
     inline-size: calc(100% - var(--hero-mobile-axis)) !important;
     max-inline-size: none !important;
   }
 
   .hero-cta .btn.btn-solid,
   .hero-cta .btn.btn-pulse {
-    grid-template-columns: minmax(0, 1fr) 32px;
-    min-block-size: 62px !important;
-    block-size: 62px;
-    font-size: clamp(8.5px, 2.3vw, 10px) !important;
+    grid-template-columns: minmax(0, 1fr) 38px;
+    min-block-size: 56px !important;
+    block-size: 56px;
+    border-radius: 16px !important;
+    font-size: clamp(7.5px, 2.3vw, 9px) !important;
+    font-weight: 600 !important;
     line-height: 1;
-    letter-spacing: 0.015em !important;
+    letter-spacing: 0.02em !important;
     white-space: nowrap !important;
   }
 
   .hero-btn-label {
-    padding-inline: 0.2rem;
+    padding-inline: 0.25rem;
     white-space: nowrap;
   }
 
   .hero-cta .btn.btn-solid .arrow,
   .hero-cta .btn.btn-pulse .arrow {
-    inline-size: 32px !important;
-    min-inline-size: 32px !important;
-    block-size: 62px !important;
+    inline-size: 38px !important;
+    min-inline-size: 38px !important;
+    block-size: 56px !important;
   }
 
   .hero-cta .btn.btn-solid .arrow {
-    flex-basis: 32px !important;
+    flex-basis: 38px !important;
   }
 
   .hero-cta .btn-pulse {
-    min-block-size: 62px;
+    min-block-size: 56px;
   }
 }
 
@@ -154,13 +200,22 @@
 
   .hero-cta .btn.btn-solid,
   .hero-cta .btn.btn-pulse {
-    grid-template-columns: minmax(0, 1fr) 30px;
-    font-size: 7.75px !important;
+    grid-template-columns: minmax(0, 1fr) 34px;
+    font-size: 7.25px !important;
   }
 
   .hero-cta .btn.btn-solid .arrow,
   .hero-cta .btn.btn-pulse .arrow {
-    inline-size: 30px !important;
-    min-inline-size: 30px !important;
+    inline-size: 34px !important;
+    min-inline-size: 34px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta .btn.btn-solid,
+  .hero-cta .btn.btn-pulse,
+  .hero-cta .btn .arrow,
+  .hero-cta .btn .arrow::before {
+    transition: none !important;
   }
 }

@@ -18,25 +18,35 @@ await page.goto(URL, { waitUntil: "domcontentloaded" });
 await page.waitForTimeout(2400);
 
 const heroControls = await page.evaluate(() => {
+  const buttons = [...document.querySelectorAll(".hero-cta .btn")];
   const labels = [...document.querySelectorAll(".hero-btn-label")];
   const lineCounts = labels.map((label) => {
     const range = document.createRange();
     range.selectNodeContents(label);
     return range.getClientRects().length;
   });
-  const pulse = document.querySelector(".btn-pulse");
-  const divider = pulse.querySelector(".arrow");
+  const buttonStyles = buttons.map((button) => getComputedStyle(button));
+  const arrowStyles = buttons.map((button) => getComputedStyle(button.querySelector(".arrow")));
+  const labelStyles = labels.map((label) => getComputedStyle(label));
   return {
     singleLine: lineCounts.every((count) => count === 1),
-    text: getComputedStyle(pulse).color,
-    divider: getComputedStyle(divider).borderInlineStartColor,
+    sharedType:
+      buttonStyles[0].fontFamily === buttonStyles[1].fontFamily &&
+      buttonStyles[0].fontSize === buttonStyles[1].fontSize &&
+      buttonStyles[0].fontWeight === buttonStyles[1].fontWeight &&
+      buttonStyles[0].letterSpacing === buttonStyles[1].letterSpacing,
+    whiteLabels: labelStyles.every((style) => style.color === "rgb(255, 255, 255)"),
+    goldBorders: buttonStyles.every((style) => style.borderTopColor === "rgb(198, 168, 124)"),
+    goldArrowCells: arrowStyles.every((style) => style.backgroundColor === "rgb(198, 168, 124)"),
   };
 });
 check(heroControls.singleLine, "both mobile CTA labels stay on one line");
 check(
-  heroControls.text === "rgb(255, 255, 255)" &&
-    heroControls.divider === "rgb(181, 31, 46)",
-  "the participation CTA keeps white text and a red divider",
+  heroControls.sharedType &&
+    heroControls.whiteLabels &&
+    heroControls.goldBorders &&
+    heroControls.goldArrowCells,
+  "both mobile CTAs share white type, gold borders and gold arrow cells",
   JSON.stringify(heroControls),
 );
 
