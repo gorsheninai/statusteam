@@ -528,6 +528,8 @@
   /* The reserved box: the sources are 3:4 and 2:3, so the common crop has to
      be declared here or every deep link below this chapter lands short. */
   aspect-ratio: 4 / 5;
+  min-block-size: 0;
+  overflow: hidden;
   scroll-snap-align: start;
 }
 
@@ -535,6 +537,7 @@
   display: block;
   inline-size: 100%;
   block-size: 100%;
+  max-inline-size: none;
   /* Portrait sources under a 4/5 crop: bias upward so heads stay in frame. */
   object-fit: cover;
   object-position: 50% 32%;

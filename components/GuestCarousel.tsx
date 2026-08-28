@@ -69,8 +69,16 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
   const step = (direction: -1 | 1) => {
     const strip = stripRef.current;
     if (!strip) return;
+
+    // A full viewport equals one complete repeated run (three frames on
+    // desktop), so it lands on the same images and makes the controls appear
+    // inert. Advance by one editorial frame instead.
+    const frame = strip.querySelector<HTMLElement>(".st2-guest");
+    const gap = Number.parseFloat(getComputedStyle(strip).gap) || 0;
+    const distance = (frame?.getBoundingClientRect().width ?? strip.clientWidth) + gap;
+
     strip.scrollBy({
-      left: direction * strip.clientWidth,
+      left: direction * distance,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "auto"
         : "smooth",
