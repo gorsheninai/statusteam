@@ -218,16 +218,24 @@ export default function Motion() {
       }
 
       /* The photograph leaves at 60% of the page's speed. The layer is
-         oversized by --bleed, so the travel never exposes an edge. */
-      gsap.to(".hero [data-depth]", {
-        yPercent: 8,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-stage",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
+         oversized by --bleed, so the travel never exposes an edge.
+
+         Not on phones: there the hero leaves through HeroGate's hand-off,
+         which is a single rigid plane by definition. Any scrub against the
+         same travel would slide the photograph inside its own frame and
+         read as the drift the hand-off exists to avoid. */
+      const heroParallax = gsap.matchMedia();
+      heroParallax.add("(min-width: 900px)", () => {
+        gsap.to(".hero [data-depth]", {
+          yPercent: 8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero-stage",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
       });
 
       /* The second scene rises as a physical card. The hero recedes just
@@ -238,7 +246,9 @@ export default function Motion() {
       heroMotion.add(
         {
           desktop: "(min-width: 1200px)",
-          compact: "(max-width: 1199px)",
+          /* Stops at 900px: below it the hand-off owns the hero's exit and
+             wants no scale on it at all. */
+          compact: "(min-width: 900px) and (max-width: 1199px)",
         },
         (media) => {
           const { desktop } = media.conditions as { desktop: boolean };

@@ -1,5 +1,6 @@
 import Nav from "@/components/Nav";
 import Motion from "@/components/Motion";
+import HeroGate from "@/components/HeroGate";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import StatusTeamScene from "@/components/StatusTeamScene";
@@ -87,6 +88,7 @@ export default function Home() {
     <>
       <SmoothScroll />
       <Motion />
+      <HeroGate />
       <Cursor />
       <Nav />
 

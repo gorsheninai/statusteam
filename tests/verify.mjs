@@ -355,8 +355,11 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
   const wired = Boolean(process.env.NEXT_PUBLIC_FORM_ENDPOINT);
   check(wired || !/отправлена/i.test(note), "no fake success while the form is unwired", note.slice(0, 50));
 
-  /* Keyboard */
+  /* Keyboard. Tab only after hydration has settled: React replacing a node
+     mid-sequence drops focus to <body> and the run silently restarts from
+     the top of the tab order, which reads as missing focus rings. */
   await page.goto(URL, { waitUntil: "domcontentloaded" });
+  await settle(page);
   await page.keyboard.press("Tab");
   check(String(await page.evaluate(() => document.activeElement?.className)).includes("skip-link"),
     "skip link is the first tab stop");
