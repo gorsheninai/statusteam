@@ -106,7 +106,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
                   srcSet={`/media/${guest.img}-${guest.widths[0]}.webp ${guest.widths[0]}w, /media/${guest.img}-${guest.widths[1]}.webp ${guest.widths[1]}w`}
                   sizes="(min-width: 768px) 33vw, 50vw"
                   alt={copy === 1 ? guest.alt : ""}
-                  loading={copy === 1 ? "lazy" : undefined}
+                  loading="lazy"
                   draggable={false}
                 />
               </li>
