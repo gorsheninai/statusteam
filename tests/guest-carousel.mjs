@@ -44,21 +44,32 @@ for (const [name, width, height] of viewports) {
 
   expect(errors.length === 0, `[${name}] no browser errors`, errors.join(" | "));
   expect(await section.isVisible(), `[${name}] archive section is visible`);
+  /* Three copies of the ten frames: the loop hops between them, so the seam
+     between the last and the first never renders. */
   expect(
-    (await page.locator(".st2-guest").count()) === 10,
-    `[${name}] all ten archive frames are in the strip`,
+    (await page.locator(".st2-guest").count()) === 30,
+    `[${name}] the strip carries three copies of the ten frames`,
+  );
+  expect(
+    (await page.locator(".st2-guest[aria-hidden='true']").count()) === 20,
+    `[${name}] only one copy is announced to assistive technology`,
   );
 
-  /* The chrome the redesign removed must not creep back. */
+  /* The card chrome the redesign removed must not creep back. */
   expect(
     (await page.locator(
-      ".st2-guest-nav, .st2-guest-card, .st2-guest-shade, .st2-guest-viewport, .st2-guest-track",
+      ".st2-guest-card, .st2-guest-shade, .st2-guest-viewport, .st2-guest-track",
     ).count()) === 0,
-    `[${name}] arrows, cards and shades stay gone`,
+    `[${name}] cards, shades and the 3D track stay gone`,
+  );
+  expect(
+    (await page.locator(".st2-guest-nav-button").count()) === 2,
+    `[${name}] both arrows are present`,
   );
 
   const geometry = await page.evaluate(() => {
     const strip = document.querySelector(".st2-guest-strip");
+    const stage = document.querySelector(".st2-guest-stage");
     const frames = [...document.querySelectorAll(".st2-guest")];
     const first = frames[0];
     const firstStyle = getComputedStyle(first);
@@ -71,12 +82,15 @@ for (const [name, width, height] of viewports) {
     const column = document.querySelector(".st2-vanguard-head");
     const columnBox = column.getBoundingClientRect();
 
-    /* Largest gap between consecutive frames: the strip is a contact sheet,
-       so this has to be zero, not "small". */
-    let maxGap = 0;
+    /* Gaps between consecutive frames: a hairline of the chapter ground, and
+       the same hairline everywhere — an uneven pitch would make the loop's
+       re-centring visible. */
+    const gaps = [];
     for (let i = 1; i < boxes.length; i += 1) {
-      maxGap = Math.max(maxGap, boxes[i].left - boxes[i - 1].right);
+      gaps.push(boxes[i].left - boxes[i - 1].right);
     }
+    const maxGap = Math.max(...gaps);
+    const minGap = Math.min(...gaps);
 
     return {
       borderWidth: parseFloat(firstStyle.borderTopWidth),
@@ -96,10 +110,12 @@ for (const [name, width, height] of viewports) {
       frameWidth: boxes[0].width,
       stripWidth: stripBox.width,
       /* Full bleed: the strip escapes the shell's gutter on both sides. */
-      bleedLeft: columnBox.left - stripBox.left,
-      bleedRight: stripBox.right - columnBox.right,
+      bleedLeft: columnBox.left - stage.getBoundingClientRect().left,
+      bleedRight: stage.getBoundingClientRect().right - columnBox.right,
       buttons: strip.querySelectorAll("button").length,
       maxGap,
+      minGap,
+      stageWidth: stage.getBoundingClientRect().width,
       pageOverflow:
         document.documentElement.scrollWidth -
         document.documentElement.clientWidth,
@@ -136,11 +152,16 @@ for (const [name, width, height] of viewports) {
     `[${name}] the 3D perspective is gone`,
     geometry.perspective,
   );
-  expect(geometry.buttons === 0, `[${name}] the strip has no controls`);
+  expect(geometry.buttons === 0, `[${name}] the arrows sit outside the scroller`);
   expect(
-    Math.abs(geometry.maxGap) < 1,
-    `[${name}] frames butt against each other`,
+    geometry.maxGap >= 3 && geometry.maxGap <= 5,
+    `[${name}] frames are separated by a hairline, not a gutter`,
     `${geometry.maxGap}px`,
+  );
+  expect(
+    geometry.maxGap - geometry.minGap < 1,
+    `[${name}] the pitch is uniform across the loop seam`,
+    `${geometry.minGap} → ${geometry.maxGap}`,
   );
   expect(
     Math.abs(geometry.aspect - 0.8) < 0.02,
@@ -157,18 +178,15 @@ for (const [name, width, height] of viewports) {
     `${geometry.overflowX} / ${geometry.scrollable}px`,
   );
 
-  /* The affordance is the cut frame at the edge, so the visible count has to
-     stay fractional — a whole number reads as a finished row. */
-  const visible = geometry.stripWidth / geometry.frameWidth;
+  /* Two frames on phones, three from 900px, and they fit exactly — the
+     arrows carry the affordance now, so a cut frame would just read as a
+     mistake. */
+  const expected = width >= 900 ? 3 : 2;
+  const visible = geometry.stripWidth / (geometry.frameWidth + geometry.maxGap);
   expect(
-    Math.abs(visible - Math.round(visible)) > 0.1,
-    `[${name}] a frame is cut by the edge`,
-    visible.toFixed(2),
-  );
-  expect(
-    width >= 900 ? visible > 3.4 && visible < 5.2 : visible > 1.8 && visible < 3.6,
-    `[${name}] the strip shows the right number of frames`,
-    visible.toFixed(2),
+    Math.abs(visible - expected) < 0.05,
+    `[${name}] exactly ${expected} frames fill the strip`,
+    visible.toFixed(3),
   );
 
   expect(
@@ -182,22 +200,115 @@ for (const [name, width, height] of viewports) {
     `${geometry.pageOverflow}px`,
   );
 
-  /* Scrolling the strip must not drag the page sideways with it. */
-  await page.evaluate(() => {
-    document.querySelector(".st2-guest-strip").scrollLeft = 400;
+  /* The viewer starts on the middle copy, so there is runway in both
+     directions before the loop has to correct anything. */
+  const rest = await page.evaluate(() => {
+    const strip = document.querySelector(".st2-guest-strip");
+    return { left: strip.scrollLeft, setWidth: strip.scrollWidth / 3 };
   });
-  await page.waitForTimeout(200);
-  const afterScroll = await page.evaluate(() => ({
-    left: document.querySelector(".st2-guest-strip").scrollLeft,
-    pageOverflow:
-      document.documentElement.scrollWidth -
-      document.documentElement.clientWidth,
-  }));
-  expect(afterScroll.left > 100, `[${name}] the strip actually scrolls`);
   expect(
-    afterScroll.pageOverflow <= 1,
+    Math.abs(rest.left - rest.setWidth) < 2,
+    `[${name}] the strip rests on the middle copy`,
+    `${rest.left} vs ${rest.setWidth}`,
+  );
+
+  /* An arrow advances exactly one frame. */
+  const pitch = rest.setWidth / 10;
+  await page.locator(".st2-guest-nav-button.is-next").click();
+  await page.waitForTimeout(700);
+  const afterNext = await page.evaluate(
+    () => document.querySelector(".st2-guest-strip").scrollLeft,
+  );
+  expect(
+    Math.abs(afterNext - (rest.left + pitch)) < 3,
+    `[${name}] the next arrow advances one frame`,
+    `${afterNext} vs ${rest.left + pitch}`,
+  );
+
+  await page.locator(".st2-guest-nav-button.is-prev").click();
+  await page.waitForTimeout(700);
+  const afterPrev = await page.evaluate(
+    () => document.querySelector(".st2-guest-strip").scrollLeft,
+  );
+  expect(
+    Math.abs(afterPrev - rest.left) < 3,
+    `[${name}] the previous arrow steps back one frame`,
+    `${afterPrev} vs ${rest.left}`,
+  );
+
+  /* Past the tenth frame the strip must land back inside the middle copy
+     without the viewer seeing it: the correction is only valid if the frame
+     at the left edge is the same photograph before and after the hop. The
+     helper reports both, plus the frame index within the copy. */
+  const edgeFrame = () =>
+    page.evaluate(() => {
+      const strip = document.querySelector(".st2-guest-strip");
+      const stripLeft = strip.getBoundingClientRect().left;
+      const frames = [...strip.querySelectorAll(".st2-guest")];
+      const nearest = frames.reduce((best, frame) =>
+        Math.abs(frame.getBoundingClientRect().left - stripLeft) <
+        Math.abs(best.getBoundingClientRect().left - stripLeft)
+          ? frame
+          : best,
+      );
+      return {
+        src: nearest.querySelector("img").getAttribute("src"),
+        left: strip.scrollLeft,
+        setWidth: strip.scrollWidth / 3,
+      };
+    });
+
+  /* Forwards, off the end of the middle copy. */
+  await page.evaluate(() => {
+    const strip = document.querySelector(".st2-guest-strip");
+    strip.scrollLeft = (strip.scrollWidth / 3) * 2 + 40;
+  });
+  await page.waitForTimeout(80);
+  const beforeForward = await edgeFrame();
+  await page.waitForTimeout(500);
+  const afterForward = await edgeFrame();
+
+  expect(
+    afterForward.src === beforeForward.src,
+    `[${name}] the wrap keeps the same photograph at the edge`,
+    `${beforeForward.src} → ${afterForward.src}`,
+  );
+  expect(
+    afterForward.left > afterForward.setWidth * 0.5 &&
+      afterForward.left < afterForward.setWidth * 1.5,
+    `[${name}] scrolling past the last frame returns to the middle copy`,
+    `${afterForward.left} of ${afterForward.setWidth}`,
+  );
+
+  /* And the same backwards, off the front of it. */
+  await page.evaluate(() => {
+    document.querySelector(".st2-guest-strip").scrollLeft = 40;
+  });
+  await page.waitForTimeout(80);
+  const beforeBack = await edgeFrame();
+  await page.waitForTimeout(500);
+  const afterBack = await edgeFrame();
+
+  expect(
+    afterBack.src === beforeBack.src,
+    `[${name}] the backwards wrap keeps the same photograph at the edge`,
+    `${beforeBack.src} → ${afterBack.src}`,
+  );
+  expect(
+    afterBack.left > afterBack.setWidth * 0.5 &&
+      afterBack.left < afterBack.setWidth * 1.5,
+    `[${name}] scrolling before the first frame returns to the middle copy`,
+    `${afterBack.left} of ${afterBack.setWidth}`,
+  );
+
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+          document.documentElement.clientWidth <=
+        1,
+    ),
     `[${name}] scrolling the strip does not push the page`,
-    `${afterScroll.pageOverflow}px`,
   );
 
   await section.screenshot({ path: `${OUT}/guest-strip-${name}.png` });

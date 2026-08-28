@@ -477,28 +477,40 @@
 /* Archive strip -------------------------------------------- */
 
 /* The frames from «Славянский взгляд» run as one flat, full-bleed strip:
-   no perspective, no tween, no borders and no overlaid arrows. They butt
-   against each other at a single ratio and the row is moved by the
-   platform's own horizontal scroll — the frame cut by the viewport edge is
-   the affordance, the way a contact sheet gives you one. Nothing here needs
-   JS, so the strip is identical with the bundle missing. */
-.st-page-two .st2-guest-strip {
-  /* How many frames fill the viewport. The fraction is the point: a whole
-     number would end the row flush with the edge and read as finished. */
-  --st2-strip-frames: 2.2;
-
+   no perspective, no 3D and no card chrome. They are separated by a hairline
+   of the chapter's own ground rather than by a gutter — the strip reads as
+   one contact sheet, not as a row of cards. The row is moved by the
+   platform's own horizontal scroll, and it loops: the component keeps three
+   copies of the list in the DOM and hops between them once motion settles. */
+.st-page-two .st2-guest-stage {
+  position: relative;
   margin-block-start: clamp(1.5rem, 2vw, 2rem);
   /* Escape the shell's gutter with a negative margin, never width: 100vw —
      that counts the scrollbar. Past --st2-max the strip stops at the
      measure, which is what a 110rem shell is for. */
   margin-inline: calc(var(--st2-gutter) * -1);
+}
+
+.st-page-two .st2-guest-strip {
+  /* How many frames fill the viewport, and the hairline between them. The
+     gap is carried by each frame's trailing margin, not by a flex gap:
+     a flex gap is dropped after the last item of the row, which would make
+     the pitch uneven across the loop seam and the wrap visible. */
+  --st2-strip-frames: 2;
+  --st2-strip-gap: 4px;
+
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-color: rgba(198, 168, 124, 0.5) rgba(255, 255, 255, 0.07);
-  scrollbar-width: thin;
+  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  /* The scrollbar has to go: its thumb would jump every time the loop
+     re-centres, which is exactly the seam the loop exists to hide. */
+  scrollbar-width: none;
+}
+
+.st-page-two .st2-guest-strip::-webkit-scrollbar {
+  display: none;
 }
 
 /* The strip is a focusable scroll container, so the ring has to sit inside
@@ -508,32 +520,21 @@
   outline-offset: -2px;
 }
 
-.st-page-two .st2-guest-strip::-webkit-scrollbar {
-  block-size: 2px;
-}
-
-.st-page-two .st2-guest-strip::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.07);
-}
-
-.st-page-two .st2-guest-strip::-webkit-scrollbar-thumb {
-  background: rgba(198, 168, 124, 0.5);
-}
-
 .st-page-two .st2-guest-row {
   display: flex;
-  /* Frames butt against each other. A gap here turns the strip into cards. */
-  gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .st-page-two .st2-guest {
-  flex: 0 0 calc(100% / var(--st2-strip-frames));
+  /* N frames and N gaps fill the viewport exactly, so the pitch is uniform
+     and the loop can be measured as scrollWidth / 3. */
+  flex: 0 0 calc(100% / var(--st2-strip-frames) - var(--st2-strip-gap));
   /* The reserved box: the sources are 3:4 and 2:3, so the common crop has to
      be declared here or every deep link below this chapter lands short. */
   aspect-ratio: 4 / 5;
+  margin-inline-end: var(--st2-strip-gap);
   scroll-snap-align: start;
 }
 
@@ -544,6 +545,92 @@
   /* Portrait sources under a 4/5 crop: bias upward so heads stay in frame. */
   object-fit: cover;
   object-position: 50% 32%;
+}
+
+@media (min-width: 900px) {
+  .st-page-two .st2-guest-strip {
+    --st2-strip-frames: 3;
+  }
+}
+
+/* Arrows. The strip loops, so neither is ever disabled — there is no end to
+   arrive at. They sit over the outer frames rather than beside them: the
+   strip is full-bleed and has no margin to put them in. */
+.st-page-two .st2-guest-nav {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+}
+
+.st-page-two .st2-guest-nav-button {
+  position: absolute;
+  inset-block-start: 50%;
+  display: grid;
+  place-items: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  padding: 0;
+  border: 1px solid rgba(198, 168, 124, 0.72);
+  border-radius: 2px;
+  color: rgba(255, 255, 255, 0.94);
+  background: rgba(45, 8, 19, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transform: translateY(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.st-page-two .st2-guest-nav-button.is-prev {
+  inset-inline-start: max(0.35rem, env(safe-area-inset-left));
+}
+
+.st-page-two .st2-guest-nav-button.is-next {
+  inset-inline-end: max(0.35rem, env(safe-area-inset-right));
+}
+
+.st-page-two .st2-guest-nav-button svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.st-page-two .st2-guest-nav-button:focus-visible {
+  outline: 1px solid var(--st2-champagne);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-page-two .st2-guest-nav-button:hover {
+    color: var(--st2-ink);
+    border-color: var(--st2-champagne);
+    background: var(--st2-champagne);
+  }
+}
+
+@media (max-width: 899px) {
+  /* Tucked closer to the edge on phones, but the box stays 48px: the old
+     carousel's 46px arrows sat under the project's touch-target floor. */
+  .st-page-two .st2-guest-nav-button.is-prev {
+    inset-inline-start: 0.2rem;
+  }
+
+  .st-page-two .st2-guest-nav-button.is-next {
+    inset-inline-end: 0.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-page-two .st2-guest-nav-button {
+    transition: none;
+  }
 }
 
 /* One continuous archive chapter: previous-show imagery first, then the
@@ -695,18 +782,6 @@
     color: rgba(255, 255, 255, 0.92);
   }
 
-}
-
-@media (min-width: 700px) {
-  .st-page-two .st2-guest-strip {
-    --st2-strip-frames: 3.3;
-  }
-}
-
-@media (min-width: 1000px) {
-  .st-page-two .st2-guest-strip {
-    --st2-strip-frames: 4.5;
-  }
 }
 
 @media (min-width: 1000px) {
