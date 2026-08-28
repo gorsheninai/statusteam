@@ -35,18 +35,27 @@ const heroControls = await page.evaluate(() => {
       buttonStyles[0].fontSize === buttonStyles[1].fontSize &&
       buttonStyles[0].fontWeight === buttonStyles[1].fontWeight &&
       buttonStyles[0].letterSpacing === buttonStyles[1].letterSpacing,
-    whiteLabels: labelStyles.every((style) => style.color === "rgb(255, 255, 255)"),
-    goldBorders: buttonStyles.every((style) => style.borderTopColor === "rgb(198, 168, 124)"),
-    goldArrowCells: arrowStyles.every((style) => style.backgroundColor === "rgb(198, 168, 124)"),
+    paperLabels: labelStyles.every((style) => style.color === "rgb(241, 238, 232)"),
+    sandRules: buttonStyles.every((style) => /rgba?\(198, 168, 124/.test(style.borderTopColor)),
+    /* One stub, on the paying action. */
+    oneSandStub:
+      arrowStyles[0].backgroundColor === "rgb(198, 168, 124)" &&
+      arrowStyles[1].backgroundColor === "rgba(0, 0, 0, 0)",
+    stacked: buttons[0].getBoundingClientRect().bottom <= buttons[1].getBoundingClientRect().top + 1,
   };
 });
 check(heroControls.singleLine, "both mobile CTA labels stay on one line");
 check(
   heroControls.sharedType &&
-    heroControls.whiteLabels &&
-    heroControls.goldBorders &&
-    heroControls.goldArrowCells,
-  "both mobile CTAs share white type, gold borders and gold arrow cells",
+    heroControls.paperLabels &&
+    heroControls.sandRules &&
+    heroControls.oneSandStub,
+  "both mobile CTAs share paper type and sand rules, with one sand stub",
+  JSON.stringify(heroControls),
+);
+check(
+  heroControls.stacked,
+  "the two CTAs stack on a phone rather than sharing the width",
   JSON.stringify(heroControls),
 );
 

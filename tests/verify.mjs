@@ -117,10 +117,26 @@ for (const [name, width, height] of SIZES) {
         styles[0]?.fontSize === styles[1]?.fontSize &&
         styles[0]?.fontWeight === styles[1]?.fontWeight &&
         styles[0]?.letterSpacing === styles[1]?.letterSpacing,
-      whiteLabels: labelStyles.every((style) => style.color === "rgb(255, 255, 255)"),
-      goldBorders: styles.every((style) => style.borderTopColor === "rgb(198, 168, 124)"),
-      goldArrowCells: arrowStyles.every((style) => style.backgroundColor === "rgb(198, 168, 124)"),
-      compactMobilePadding: labelStyles.every((style) => Number.parseFloat(style.paddingInlineStart) <= 4),
+      paperLabels: labelStyles.every((style) => style.color === "rgb(241, 238, 232)"),
+      sandRules: styles.every((style) => /rgba?\(198, 168, 124/.test(style.borderTopColor)),
+      /* The pass reads as a ticket because one plane carries the stub, not
+         because both do — two sand cells was the gold-slab reading the brief
+         rules out. */
+      oneSandStub:
+        arrowStyles[0]?.backgroundColor === "rgb(198, 168, 124)" &&
+        arrowStyles[1]?.backgroundColor === "rgba(0, 0, 0, 0)",
+      squareCorners: styles.every((style) => Number.parseFloat(style.borderTopLeftRadius) === 0),
+      /* The secondary sits over the photograph. Anything much thinner than
+         this and the label's contrast becomes the frame's business: fully
+         transparent measured 1.2:1 at 1024, and the old 0.62 computes to
+         4.4:1 against a white worst case. */
+      secondaryGroundAlpha: Number(
+        (styles[1]?.backgroundColor.match(/rgba\([^)]*,\s*([\d.]+)\)/) || [, "1"])[1],
+      ),
+      uiWeight: labelStyles.every((style) => Number(style.fontWeight) <= 500),
+      /* A ticket sets its own text on its left edge. */
+      labelsRagLeft: labelStyles.every((style) => /start|left/.test(style.justifyItems)),
+      labelSize: Number.parseFloat(labelStyles[0]?.fontSize ?? 0),
       labelsSingleLine: labelLineCounts.every((count) => count === 1),
       mobileDate: heroAfter.content.replaceAll('"', ""),
       mobileDateBottom: Number.parseFloat(heroAfter.bottom),
@@ -128,17 +144,25 @@ for (const [name, width, height] of SIZES) {
   });
   check(heroControls.count === 2 && heroControls.equal,
     `[${name}] hero buttons have identical dimensions`);
-  check(heroControls.labelsCentred,
-    `[${name}] both labels are centred inside their text cells`);
+  check(heroControls.labelsRagLeft,
+    `[${name}] both labels sit on the pass's left edge`);
   check(heroControls.sharedType,
     `[${name}] both buttons share one typographic system`);
-  check(heroControls.whiteLabels && heroControls.goldBorders && heroControls.goldArrowCells,
-    `[${name}] backstage-pass gold cells and white labels render consistently`);
+  check(heroControls.paperLabels && heroControls.sandRules && heroControls.oneSandStub,
+    `[${name}] the pass keeps paper labels, sand rules and a single sand stub`);
+  check(heroControls.squareCorners && heroControls.uiWeight,
+    `[${name}] the pass stays square and inside the UI weight ceiling`);
+  check(heroControls.secondaryGroundAlpha >= 0.8,
+    `[${name}] the participation pass keeps an opaque ground under its label`,
+    `alpha ${heroControls.secondaryGroundAlpha}`);
+  /* The label clips silently inside overflow: hidden, and it was 8.97px on a
+     phone before this. Both halves of the floor are checked at every width. */
+  check(heroControls.labelsSingleLine,
+    `[${name}] both hero button labels stay on one line`);
+  check(heroControls.labelSize >= 13,
+    `[${name}] hero button labels stay at 13px or above`,
+    `${heroControls.labelSize}px`);
   if (width < 900) {
-    check(heroControls.compactMobilePadding,
-      `[${name}] mobile button label padding stays compact`);
-    check(heroControls.labelsSingleLine,
-      `[${name}] both hero button labels stay on one line`);
     check(
       heroControls.mobileDate === "МОСКВА · НОЯБРЬ 2026" &&
         heroControls.mobileDateBottom > 0 &&

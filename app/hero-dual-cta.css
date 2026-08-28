@@ -1,5 +1,21 @@
-/* Final hero CTA composition. Loaded last so the two-button brief wins over
-   the earlier single-button tuning without disturbing the rest of the hero. */
+/* Hero CTAs — «пропуск, выправленный».
+
+   The split ticket cell survives, because a button for a fashion show that
+   looks like a pass is the right idea. Everything the previous pass fought
+   with the system on does not:
+
+   - square, not 16px radius — nothing else on this page is rounded;
+   - sand is a hairline and a narrow cell, not a 38x56 field. Large flat sand
+     is exactly the black-and-gold cliché the brief rules out;
+   - burgundy is a flat field, not a 105deg gradient;
+   - Onest 500, which is the ceiling the type system sets for --font-ui;
+   - the labels are 13-14px instead of 8.97px. That size was not forced by the
+     text: it came from holding two buttons side by side on a 390px screen
+     with `nowrap` on long Cyrillic. They stack on phones instead.
+
+   Loaded last, so the !important here is what beats the earlier hero passes
+   (hero-type-final, hero-mobile-offer-final, desktop-layout-polish), not
+   decoration. */
 
 .hero-action {
   display: block !important;
@@ -8,50 +24,58 @@
 }
 
 .hero-cta {
-  --hero-pass-gold: #c6a87c;
-  --hero-pass-gold-hover: #d2b887;
-  --hero-pass-arrow: #4c1222;
+  --pass-line: #c6a87c;
+  --pass-line-quiet: rgba(198, 168, 124, 0.55);
+  --pass-cell-fg: var(--wine);
+  --pass-cell: 46px;
 
   display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
-  gap: 0.75rem !important;
+  gap: 0.5625rem !important;
 }
 
 .hero-cta .btn.btn-solid,
 .hero-cta .btn.btn-pulse {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 58px;
+  grid-template-columns: minmax(0, 1fr) var(--pass-cell);
   gap: 0 !important;
   align-items: stretch !important;
   inline-size: 100% !important;
   width: 100% !important;
   min-inline-size: 0 !important;
   min-width: 0 !important;
+  /* Both, because an earlier pass leaves min-height: 60px on the solid
+     variant alone — the pair stood 2px apart until this pinned them. */
+  block-size: 54px;
+  min-block-size: 54px !important;
   padding: 0 !important;
   overflow: hidden;
-  border: 1px solid var(--hero-pass-gold) !important;
-  border-radius: 18px !important;
-  color: #fff !important;
+  border: 1px solid var(--pass-line) !important;
+  border-radius: 0 !important;
   font-family: var(--font-ui) !important;
-  font-size: 15px !important;
-  font-weight: 600 !important;
+  /* The system's own button size, and it fits: at 320 the longest label
+     measures 186px against 201px of field. Nothing here is sized down to
+     make two buttons share a phone screen — they stack instead. */
+  font-size: var(--fs-small) !important;
+  font-weight: 500 !important;
   line-height: 1 !important;
-  letter-spacing: 0.055em !important;
-  text-align: center !important;
+  letter-spacing: 0.12em !important;
+  text-align: start !important;
   text-transform: uppercase;
   transition:
-    transform 150ms cubic-bezier(.2, 0, 0, 1),
-    background-color 260ms cubic-bezier(.4, 0, .2, 1),
-    border-color 260ms cubic-bezier(.4, 0, .2, 1) !important;
+    color 240ms cubic-bezier(.4, 0, .2, 1),
+    background-color 240ms cubic-bezier(.4, 0, .2, 1),
+    border-color 240ms cubic-bezier(.4, 0, .2, 1) !important;
 }
 
+/* A ticket's own text sits on its left edge; centring it made the pair read
+   as two web buttons that happen to have a cell bolted on. */
 .hero-btn-label {
   display: grid;
-  place-items: center;
+  place-items: center start;
   min-inline-size: 0;
-  padding-inline: 1rem;
-  color: #fff;
+  padding-inline: 0.9rem;
   white-space: nowrap;
 }
 
@@ -61,81 +85,133 @@
   inset: auto !important;
   display: grid;
   place-items: center;
-  inline-size: 58px !important;
+  inline-size: var(--pass-cell) !important;
   block-size: 100% !important;
-  min-inline-size: 58px !important;
+  min-inline-size: var(--pass-cell) !important;
   margin: 0 !important;
   border: 0 !important;
-  color: var(--hero-pass-arrow) !important;
-  background: var(--hero-pass-gold) !important;
+  border-inline-start: 1px solid var(--pass-line) !important;
+  /* hero-type-final.css hides the markup's own glyph with font-size: 0 and
+     draws it from ::before. Keep that arrangement — giving the cell a size
+     again renders both and the stub shows two arrows — and just take the
+     pseudo-element over. */
+  font-size: 0 !important;
   transition:
-    color 260ms cubic-bezier(.4, 0, .2, 1),
-    background-color 260ms cubic-bezier(.4, 0, .2, 1) !important;
+    color 240ms cubic-bezier(.4, 0, .2, 1),
+    background-color 240ms cubic-bezier(.4, 0, .2, 1),
+    border-color 240ms cubic-bezier(.4, 0, .2, 1) !important;
 }
 
-/* The split cell is the backstage-pass signature. Both actions share it, so
-   the pair reads as one system while the burgundy label field keeps preorder
-   visually primary. */
+.hero-cta .btn.btn-solid .arrow::before,
+.hero-cta .btn.btn-pulse .arrow::before {
+  content: "↗";
+  font-size: 16px !important;
+  line-height: 1;
+  transition: transform 380ms cubic-bezier(.22, .8, .28, 1);
+}
+
+/* Preorder leads on the fill; participation answers on the outline. The pair
+   still reads as one object because they share the cell. */
 .hero-cta .btn.btn-solid {
-  background:
-    linear-gradient(105deg, rgba(118, 16, 40, .92), rgba(101, 13, 34, .76)) !important;
+  color: var(--paper) !important;
+  background: var(--burgundy) !important;
 }
 
+.hero-cta .btn.btn-solid .arrow {
+  color: var(--pass-cell-fg) !important;
+  background: var(--pass-line) !important;
+}
+
+/* Ink at 0.82, not transparent and not the old 0.62.
+
+   Transparent puts the label straight on the photograph: measured against the
+   brightest ground under it, the pair ran from 6.0:1 at 430 down to 1.2:1 at
+   1024, where the button lands on a lit part of the frame. 0.62 was the same
+   bug more quietly — against a white worst case it computes to 4.4:1, just
+   under AA. At 0.82 the worst case a photograph can produce is
+   0.18x255 + 0.82x16 = 59, which holds paper at about 10:1, and the frame
+   still reads faintly through the field. */
+.hero-cta .btn.btn-pulse {
+  --btn-fg: var(--paper);
+  color: var(--paper) !important;
+  background: rgba(16, 13, 12, 0.82) !important;
+  border-color: var(--pass-line-quiet) !important;
+}
+
+.hero-cta .btn.btn-pulse .arrow {
+  color: var(--pass-line) !important;
+  background: transparent !important;
+  border-inline-start-color: var(--pass-line-quiet) !important;
+}
+
+/* The shared .btn wipe would slide a paper panel under a field this one
+   already fills. */
 .hero-cta .btn.btn-solid::before,
 .hero-cta .btn.btn-pulse::before {
   display: none !important;
 }
 
-.hero-cta .btn-pulse {
-  --btn-fg: #fff;
-  --btn-fill: var(--red);
-  --btn-hover-fg: #fff;
-  min-block-size: 60px;
-  background: rgba(16, 13, 12, 0.62) !important;
-}
-
-.hero-cta .btn-pulse .arrow {
-  font-size: 0;
-}
-
-.hero-cta .btn-pulse .arrow::before {
-  content: "↗";
-  font-size: 18px;
-  line-height: 1;
-  transition: transform 420ms cubic-bezier(.22, .8, .28, 1);
-}
-
-.hero-cta .btn.btn-solid:hover .arrow,
-.hero-cta .btn.btn-solid:focus-visible .arrow,
-.hero-cta .btn.btn-pulse:hover .arrow,
-.hero-cta .btn.btn-pulse:focus-visible .arrow {
-  color: #321016 !important;
-  background: var(--hero-pass-gold-hover) !important;
-}
-
-.hero-cta .btn.btn-solid:hover .arrow::before,
-.hero-cta .btn.btn-solid:focus-visible .arrow::before,
-.hero-cta .btn.btn-pulse:hover .arrow::before,
-.hero-cta .btn.btn-pulse:focus-visible .arrow::before {
-  transform: translate(3px, -3px);
-}
-
 .hero-cta .btn.btn-solid:hover,
-.hero-cta .btn.btn-solid:focus-visible,
+.hero-cta .btn.btn-solid:focus-visible {
+  color: var(--paper) !important;
+  background: var(--wine) !important;
+  border-color: var(--paper) !important;
+}
+
 .hero-cta .btn.btn-pulse:hover,
 .hero-cta .btn.btn-pulse:focus-visible {
-  color: #fff !important;
-  border-color: var(--hero-pass-gold-hover) !important;
+  color: var(--paper) !important;
+  background: rgba(37, 30, 28, 0.88) !important;
+  border-color: var(--paper) !important;
+}
+
+.hero-cta .btn:hover .arrow::before,
+.hero-cta .btn:focus-visible .arrow::before {
+  transform: translate(3px, -3px);
 }
 
 .hero-cta .btn.btn-solid:active,
 .hero-cta .btn.btn-pulse:active {
-  transform: scale(.985);
+  transform: translateY(1px);
+}
+
+@media (max-width: 899px) {
+  .hero-action {
+    inline-size: calc(100vw - (var(--gutter) * 2)) !important;
+  }
+
+  .hero-cta {
+    inline-size: calc(100% - var(--hero-mobile-axis)) !important;
+    max-inline-size: none !important;
+  }
+}
+
+/* Two across as soon as a column can hold the longest label at full size.
+   Below this the pair stacks; a 700px-wide button with a 190px label left on
+   its edge is not a composition. */
+@media (min-width: 700px) {
+  .hero-cta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem !important;
+  }
 }
 
 @media (min-width: 900px) {
   .hero-cta {
+    --pass-cell: 52px;
+
     inline-size: calc((var(--hero-action-width) * 2) + 0.75rem) !important;
+  }
+
+  .hero-cta .btn.btn-solid,
+  .hero-cta .btn.btn-pulse {
+    block-size: 58px;
+    min-block-size: 58px !important;
+    font-size: 14px !important;
+  }
+
+  .hero-btn-label {
+    padding-inline: 1.15rem;
   }
 
   /* Centre the location line across the complete two-button group, not
@@ -145,69 +221,6 @@
     width: calc((var(--hero-action-width) * 2) + 0.75rem) !important;
     justify-content: center !important;
     text-align: center !important;
-  }
-}
-
-@media (max-width: 899px) {
-  .hero-action {
-    inline-size: calc(100vw - (var(--gutter) * 2)) !important;
-  }
-
-  .hero-cta {
-    gap: 0.5rem !important;
-    inline-size: calc(100% - var(--hero-mobile-axis)) !important;
-    max-inline-size: none !important;
-  }
-
-  .hero-cta .btn.btn-solid,
-  .hero-cta .btn.btn-pulse {
-    grid-template-columns: minmax(0, 1fr) 38px;
-    min-block-size: 56px !important;
-    block-size: 56px;
-    border-radius: 16px !important;
-    font-size: clamp(7.5px, 2.3vw, 9px) !important;
-    font-weight: 600 !important;
-    line-height: 1;
-    letter-spacing: 0.02em !important;
-    white-space: nowrap !important;
-  }
-
-  .hero-btn-label {
-    padding-inline: 0.25rem;
-    white-space: nowrap;
-  }
-
-  .hero-cta .btn.btn-solid .arrow,
-  .hero-cta .btn.btn-pulse .arrow {
-    inline-size: 38px !important;
-    min-inline-size: 38px !important;
-    block-size: 56px !important;
-  }
-
-  .hero-cta .btn.btn-solid .arrow {
-    flex-basis: 38px !important;
-  }
-
-  .hero-cta .btn-pulse {
-    min-block-size: 56px;
-  }
-}
-
-@media (max-width: 340px) {
-  .hero-cta {
-    gap: 0.5rem !important;
-  }
-
-  .hero-cta .btn.btn-solid,
-  .hero-cta .btn.btn-pulse {
-    grid-template-columns: minmax(0, 1fr) 34px;
-    font-size: 7.25px !important;
-  }
-
-  .hero-cta .btn.btn-solid .arrow,
-  .hero-cta .btn.btn-pulse .arrow {
-    inline-size: 34px !important;
-    min-inline-size: 34px !important;
   }
 }
 
