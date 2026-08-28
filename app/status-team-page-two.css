@@ -754,8 +754,9 @@
   }
 
   .st-page-two .st2-guest {
+    /* Desktop keeps three frames across, with the same larger portrait
+       proportion as mobile — only the column count changes. */
     flex-basis: calc((100% - (var(--st2-strip-gap) * 2)) / 3);
-    aspect-ratio: 4 / 5;
   }
 }
 
