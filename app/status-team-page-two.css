@@ -483,21 +483,23 @@
    the affordance, the way a contact sheet gives you one. Nothing here needs
    JS, so the strip is identical with the bundle missing. */
 .st-page-two .st2-guest-strip {
-  /* How many frames fill the viewport. The fraction is the point: a whole
-     number would end the row flush with the edge and read as finished. */
-  --st2-strip-frames: 2.2;
+  /* Two full portraits on a phone; three on larger screens. */
+  --st2-strip-frames: 2;
+  --st2-strip-gap: 3px;
 
   margin-block-start: clamp(1.5rem, 2vw, 2rem);
   /* Escape the shell's gutter with a negative margin, never width: 100vw —
      that counts the scrollbar. Past --st2-max the strip stops at the
      measure, which is what a 110rem shell is for. */
   margin-inline: calc(var(--st2-gutter) * -1);
+  display: flex;
+  gap: var(--st2-strip-gap);
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-color: rgba(198, 168, 124, 0.5) rgba(255, 255, 255, 0.07);
-  scrollbar-width: thin;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -509,28 +511,20 @@
 }
 
 .st-page-two .st2-guest-strip::-webkit-scrollbar {
-  block-size: 2px;
-}
-
-.st-page-two .st2-guest-strip::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.07);
-}
-
-.st-page-two .st2-guest-strip::-webkit-scrollbar-thumb {
-  background: rgba(198, 168, 124, 0.5);
+  display: none;
 }
 
 .st-page-two .st2-guest-row {
   display: flex;
-  /* Frames butt against each other. A gap here turns the strip into cards. */
-  gap: 0;
+  flex: 0 0 100%;
+  gap: var(--st2-strip-gap);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .st-page-two .st2-guest {
-  flex: 0 0 calc(100% / var(--st2-strip-frames));
+  flex: 0 0 calc((100% - var(--st2-strip-gap)) / 2);
   /* The reserved box: the sources are 3:4 and 2:3, so the common crop has to
      be declared here or every deep link below this chapter lands short. */
   aspect-ratio: 4 / 5;
@@ -544,6 +538,60 @@
   /* Portrait sources under a 4/5 crop: bias upward so heads stay in frame. */
   object-fit: cover;
   object-position: 50% 32%;
+}
+
+.st-page-two .st2-guest-stage {
+  position: relative;
+}
+
+.st-page-two .st2-guest-nav {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.st-page-two .st2-guest-nav-button {
+  position: absolute;
+  inset-block-start: 50%;
+  display: grid;
+  place-items: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  padding: 0;
+  border: 1px solid rgba(198, 168, 124, 0.72);
+  border-radius: 0;
+  color: rgba(255, 255, 255, 0.94);
+  background: rgba(10, 10, 10, 0.58);
+  transform: translateY(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease;
+}
+
+.st-page-two .st2-guest-nav-button.is-prev { inset-inline-start: 0.6rem; }
+.st-page-two .st2-guest-nav-button.is-next { inset-inline-end: 0.6rem; }
+
+.st-page-two .st2-guest-nav-button svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 767px) {
+  .st-page-two .st2-guest-nav { display: none; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-page-two .st2-guest-nav-button:hover {
+    color: var(--st2-ink);
+    border-color: var(--st2-champagne);
+    background: var(--st2-champagne);
+  }
 }
 
 /* One continuous archive chapter: previous-show imagery first, then the
@@ -697,15 +745,13 @@
 
 }
 
-@media (min-width: 700px) {
+@media (min-width: 768px) {
   .st-page-two .st2-guest-strip {
-    --st2-strip-frames: 3.3;
+    --st2-strip-frames: 3;
   }
-}
 
-@media (min-width: 1000px) {
-  .st-page-two .st2-guest-strip {
-    --st2-strip-frames: 4.5;
+  .st-page-two .st2-guest {
+    flex-basis: calc((100% - (var(--st2-strip-gap) * 2)) / 3);
   }
 }
 

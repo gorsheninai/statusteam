@@ -4,7 +4,7 @@
    current Safari 26), only the visuals follow the user's real scroll position.
    Unsupported browsers simply keep the clean native transition. */
 
-@media (max-width: 899px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 768px) and (max-width: 899px) and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     /* The hero stays untouched for most of the gesture. Only its final third
        fades toward the shared ink background, creating a short film-like dip

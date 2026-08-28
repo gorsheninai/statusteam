@@ -230,36 +230,35 @@ export default function Motion() {
         },
       });
 
-      /* The second scene rises as a physical card. The hero recedes just
-         enough to establish depth via scale and position only — no opacity
-         change, so the lock-up and its type stay fully legible right up to
-         the moment the STATUS card physically covers them. */
+      /* Desktop keeps its editorial hand-off. On phones the first two scenes
+         are owned by MobileScreenSwipe instead: two full viewport planes,
+         never a shrinking card. */
       const heroMotion = gsap.matchMedia();
       heroMotion.add(
         {
           desktop: "(min-width: 1200px)",
-          compact: "(max-width: 1199px)",
+          compact: "(min-width: 768px) and (max-width: 1199px)",
         },
         (media) => {
           const { desktop } = media.conditions as { desktop: boolean };
           gsap.to(".hero-frame", {
-            scale: desktop ? 0.965 : 1.02,
+            scale: desktop ? 0.965 : 1,
             ease: "none",
             scrollTrigger: {
               trigger: ".hero-stage",
               start: "top top",
-              end: desktop ? "+=92%" : "bottom top",
+              end: "+=92%",
               scrub: true,
               invalidateOnRefresh: true,
             },
           });
           gsap.to(".hero-inner", {
-            yPercent: desktop ? -10 : -5,
+            yPercent: desktop ? -10 : 0,
             ease: "none",
             scrollTrigger: {
               trigger: ".hero-stage",
               start: "top top",
-              end: desktop ? "+=88%" : "bottom top",
+              end: "+=88%",
               scrub: true,
               invalidateOnRefresh: true,
             },

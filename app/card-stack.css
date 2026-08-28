@@ -145,3 +145,69 @@
     box-shadow: 0 -1px 0 rgba(213, 180, 123, 0.12) !important;
   }
 }
+
+/* MOBILE 1 ↔ 2 — a single Miu Miu-style vertical hand-off.
+   These classes exist only for the active 900ms transition. The two document
+   sections are otherwise untouched, so screen two returns to ordinary native
+   scrolling as soon as it lands exactly on the viewport. */
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .st.st-page-two {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  html.mobile-screen-swap .hero-stage,
+  html.mobile-screen-swap .st.st-page-two {
+    position: fixed !important;
+    inset: 0 !important;
+    inline-size: 100% !important;
+    block-size: 100vh !important;
+    block-size: 100svh !important;
+    min-block-size: 100svh !important;
+    max-block-size: 100svh !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    will-change: transform;
+    transition: transform 900ms cubic-bezier(0.76, 0, 0.24, 1) !important;
+  }
+
+  html.mobile-screen-swap .hero-stage {
+    z-index: 20 !important;
+  }
+
+  html.mobile-screen-swap .st.st-page-two {
+    z-index: 21 !important;
+  }
+
+  html.mobile-screen-swap--from-hero .hero-stage {
+    transform: translateY(0) !important;
+  }
+
+  html.mobile-screen-swap--from-hero .st.st-page-two {
+    transform: translateY(100%) !important;
+  }
+
+  html.mobile-screen-swap--from-hero.mobile-screen-swap--to-status .hero-stage {
+    transform: translateY(-100%) !important;
+  }
+
+  html.mobile-screen-swap--from-hero.mobile-screen-swap--to-status .st.st-page-two {
+    transform: translateY(0) !important;
+  }
+
+  html.mobile-screen-swap--from-status .hero-stage {
+    transform: translateY(-100%) !important;
+  }
+
+  html.mobile-screen-swap--from-status .st.st-page-two {
+    transform: translateY(0) !important;
+  }
+
+  html.mobile-screen-swap--from-status.mobile-screen-swap--to-hero .hero-stage {
+    transform: translateY(0) !important;
+  }
+
+  html.mobile-screen-swap--from-status.mobile-screen-swap--to-hero .st.st-page-two {
+    transform: translateY(100%) !important;
+  }
+}
