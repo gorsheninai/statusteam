@@ -376,7 +376,9 @@
 .st-page-two .st2-vanguard-head {
   position: relative;
   z-index: 4;
-  text-align: center;
+  /* Same left axis as the other chapter openings — title and statement read
+     as one editorial lock-up instead of two centred, unrelated blocks. */
+  text-align: start;
 }
 
 /* The show's own name is the chapter title. Type is set to match «МАСШТАБ В
@@ -391,9 +393,7 @@
 .st-page-two .st2-vanguard-tag {
   display: block;
   margin-block-start: 0;
-  /* letter-spacing applies after the last glyph too, so it shifts the
-     centred line by half itself; pull that back. */
-  margin-inline-end: 0.025em;
+  margin-inline-end: 0;
   color: var(--st2-champagne);
   font-family: var(--font-display);
   font-size: clamp(1.58rem, 7.63vw, 2.33rem);
@@ -408,15 +408,13 @@
    Measure is capped in ch so the lines stay readable as the column grows —
    a full-width paragraph under a centred title reads as a CMS block. */
 .st-page-two .st2-vanguard-intro {
-  margin-inline: auto;
+  margin-inline: 0;
   /* Same step the «МАСШТАБ В ЦИФРАХ» head puts under itself, so the two
      chapter titles sit off their copy identically. Keep these in sync with
      .st2-scale-head's margin-block-end rather than tuning them apart. */
   margin-block-start: clamp(1.75rem, 7vw, 2.75rem);
   max-inline-size: 46ch;
-  /* Ranged right: the column stays centred under the lock-up, but the copy
-     itself is read left to right off a straight edge. Centred running text
-     gives every line a different start and slows the read. */
+  /* The supporting line starts on the same stable left axis as the title. */
   text-align: start;
   text-wrap: pretty;
 }
@@ -429,15 +427,6 @@
   font-weight: 400;
   line-height: 1.44;
   letter-spacing: 0.005em;
-}
-
-.st-page-two .st2-vanguard-note {
-  margin: clamp(0.5rem, 1.1vw, 0.7rem) 0 0;
-  color: var(--st2-muted);
-  font-family: var(--font-body);
-  font-size: clamp(0.83rem, 0.78rem + 0.26vw, 1rem);
-  font-weight: 400;
-  line-height: 1.56;
 }
 
 @media (max-width: 639px) {
@@ -885,8 +874,7 @@
   }
 }
 
-/* Mobile archive header — one left axis, matching the opening line of the
-   STATUS TEAM film above. Desktop keeps its centred editorial composition. */
+/* Mobile archive header follows the same left axis as the desktop lock-up. */
 @media (max-width: 767px) {
   .st-page-two .st2-vanguard-head {
     text-align: start;
@@ -908,9 +896,6 @@
     line-height: 1.4;
   }
 
-  .st-page-two .st2-vanguard-note {
-    display: none;
-  }
 }
 
 /* Archive chapter join -------------------------------------- */

@@ -340,10 +340,6 @@ export default function StatusTeamScene() {
               <p className="st2-vanguard-lead">
                 Новая эстетика женственности — сильной, чувственной и самобытной.
               </p>
-              <p className="st2-vanguard-note">
-                30 моделей, знаковые бренды и один вечер, объединивший современную
-                моду с новым взглядом на русскую красоту.
-              </p>
             </div>
           </header>
 
