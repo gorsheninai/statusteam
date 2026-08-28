@@ -69,10 +69,13 @@ const traceTravel = () =>
     const status = document.querySelector(".st-page-two");
     window.__travel = [];
     const t0 = performance.now();
+    const nav = document.querySelector(".nav");
     const tick = () => {
+      const navStyle = getComputedStyle(nav);
       window.__travel.push([
         Math.round(hero.getBoundingClientRect().top),
         Math.round(status.getBoundingClientRect().top),
+        navStyle.visibility === "visible" && navStyle.opacity !== "0",
       ]);
       if (performance.now() - t0 < 1000) requestAnimationFrame(tick);
     };
@@ -115,6 +118,17 @@ check(
 );
 check(statusSteps >= 12, "screen two travels over many frames rather than cutting", String(statusSteps));
 check(heroEnd <= -800, "screen one clears the viewport", String(heroEnd));
+
+/* The hand-off's own hide is a class on <html>; Nav's is React state behind a
+   scroll listener. If the first is dropped before the second commits, the
+   header paints over the film for a couple of frames right at the landing. */
+const moving = travel.slice(travel.findIndex(([heroTop]) => heroTop < 0));
+const headerFrames = moving.filter(([, , navVisible]) => navVisible).length;
+check(
+  headerFrames === 0,
+  "the header never flashes back while screen two lands",
+  `${headerFrames} frame(s) of ${moving.length} with a visible header`,
+);
 const landed = await page.evaluate(() => ({
   swapActive: document.documentElement.classList.contains("mobile-screen-swap"),
   impactTop: document.querySelector(".st2-impact").getBoundingClientRect().top,

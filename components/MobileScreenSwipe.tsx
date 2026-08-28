@@ -29,6 +29,7 @@ export default function MobileScreenSwipe() {
     let transitionPlayed = false;
     let timer = 0;
     let frame = 0;
+    let navFrame = 0;
 
     const enabled = () => query.matches && !reducedMotion.matches;
     const heroIsAtTop = () => window.scrollY <= 2;
@@ -45,6 +46,29 @@ export default function MobileScreenSwipe() {
       );
     };
 
+    /* Hold the header down across the hand-off's own hide being dropped and
+       Nav's taking over. Nav hides itself from a scroll listener through
+       React state, which commits a frame or two after the synchronous class
+       change here — long enough to paint the bar over the film. Released as
+       soon as Nav has caught up, and capped so a landing that is not the film
+       screen (or a Nav that never mounts) still gets its header back. */
+    const bridgeNav = () => {
+      const nav = document.querySelector<HTMLElement>(".nav");
+      if (!nav) return;
+
+      root.classList.add("mobile-screen-swap--settling");
+      let waited = 0;
+      const release = () => {
+        if (nav.classList.contains("is-mobile-impact-hidden") || ++waited > 10) {
+          navFrame = 0;
+          root.classList.remove("mobile-screen-swap--settling");
+          return;
+        }
+        navFrame = window.requestAnimationFrame(release);
+      };
+      navFrame = window.requestAnimationFrame(release);
+    };
+
     const finish = (direction: "forward" | "back") => {
       if (!locked) return;
       if (timer) window.clearTimeout(timer);
@@ -56,8 +80,12 @@ export default function MobileScreenSwipe() {
          landing would be measured as zero. Nothing repaints between the two
          statements, so the reader never sees the untranslated document. */
       clearTransition();
-      if (direction === "forward") jumpToElement(status);
-      else window.scrollTo({ top: 0, behavior: "auto" });
+      if (direction === "forward") {
+        bridgeNav();
+        jumpToElement(status);
+      } else {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
 
       unlockScroll();
       locked = false;
@@ -161,7 +189,9 @@ export default function MobileScreenSwipe() {
     return () => {
       if (timer) window.clearTimeout(timer);
       if (frame) window.cancelAnimationFrame(frame);
+      if (navFrame) window.cancelAnimationFrame(navFrame);
       hero.removeEventListener("transitionend", onTravelEnd);
+      root.classList.remove("mobile-screen-swap--settling");
       clearTransition();
       if (locked) unlockScroll();
       window.removeEventListener("touchstart", onTouchStart);

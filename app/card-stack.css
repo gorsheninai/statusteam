@@ -211,8 +211,15 @@
   }
 
   /* The film page has no mobile header. Fade it as part of the one-time
-     hand-off, then Nav keeps it hidden until screen three begins. */
+     hand-off, then Nav keeps it hidden until screen three begins.
+
+     `--settling` bridges the two: the hand-off's own hide is a class on
+     <html> and disappears the instant the transition classes are cleared,
+     while Nav's hide is React state driven by a scroll listener and commits
+     a frame or two later. Without the bridge the header paints for ~50ms at
+     the exact moment screen two lands. */
   html.mobile-screen-swap--to-status .nav,
+  html.mobile-screen-swap--settling .nav,
   .nav.is-mobile-impact-hidden {
     opacity: 0;
     visibility: hidden;
