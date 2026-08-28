@@ -880,6 +880,34 @@
   }
 }
 
+/* Mobile archive header — one left axis, matching the opening line of the
+   STATUS TEAM film above. Desktop keeps its centred editorial composition. */
+@media (max-width: 767px) {
+  .st-page-two .st2-vanguard-head {
+    text-align: start;
+  }
+
+  .st-page-two .st2-vanguard-tag {
+    margin-inline-end: 0;
+  }
+
+  .st-page-two .st2-vanguard-intro {
+    max-inline-size: 32ch;
+    margin-block-start: 0.9rem;
+    margin-inline: 0;
+    text-align: start;
+  }
+
+  .st-page-two .st2-vanguard-lead {
+    font-size: clamp(0.98rem, 4.2vw, 1.08rem);
+    line-height: 1.4;
+  }
+
+  .st-page-two .st2-vanguard-note {
+    display: none;
+  }
+}
+
 /* Archive chapter join -------------------------------------- */
 
 /* Ported out of GuestCarousel's inline <style> when the carousel became a
