@@ -11,6 +11,7 @@ Two distinct bodies of material exist and must never be mixed:
 | `hero-*` | `header_16_9.png`, `header_9_16.png` | **ПУЛЬС КОНТИНЕНТА** (new show) | The opening frame, in two crops |
 | `campaign-*`, `poster-*`, `detail-*`, `runway-*` | `1–9.png`, `style1–7.png` | **ПУЛЬС КОНТИНЕНТА** (new show, Africa) | Desire, atmosphere, art direction |
 | `archive-*`, `show-reel*` | `pre1–4.PNG`, `video.mp4` | **СЛАВЯНСКИЙ ВЗГЛЯД** (previous show) | Proof — real photography, real audience |
+| `show-1…10` | see below — originals are in git history, not the root | **СЛАВЯНСКИЙ ВЗГЛЯД** (previous show) | The archive carousel |
 
 The `archive-*` stills and the reel are **real event photography/footage**. Photo credit visible in
 source: **Паша Доренский**. The campaign set is concept/key-art imagery for the upcoming show.
@@ -126,6 +127,31 @@ contact sheet. Held in reserve.
 - **Priority** — 1
 - **Notes** — Original is 24 MB; the served file is 5.7 MB. Never ship the original to the browser.
 
+### show-1 … show-10 · the archive carousel
+- **Type / orientation** — images, portrait, served `show-{n}-{640,900,1200}.webp` at a normalised
+  **2:3** (640×960, 900×1350, 1200×1800)
+- **Content** — ten frames from СЛАВЯНСКИЙ ВЗГЛЯД: runway walks, looks, the audience
+- **Mood** — real event photography, unfiltered
+- **Overlay** — ✗ none. The carousel carries no type over the frames
+- **Best use** — the archive rail in `#statusteam`, one frame per screen on a phone
+- **Priority** — 1
+- **Originals** — **not in the repository root.** They were removed in `d861719`; recover one with
+  `git show d861719^:public/media/{n}.webp`. They are 1365×2048 (2:3) for 2, 5, 7–10 and
+  1538×2048 (3:4) for 1, 3, 4, 6
+- **Notes** — Two things decide the sizes, and both are measured:
+  - The 3:4 originals (1, 3, 4, 6) are **cropped to 2:3 at generation, and the whole 173px comes
+    off the LEFT.** `object-fit: cover` was already taking the same 173px in the browser, but
+    centred — and the photographer's credit is set flush to the right edge, so a centred cut left
+    «ПАША ДОРЕН». Any crop on the right truncates the credit; take it off the left. This was
+    invisible while the frames were 43% of a phone's height and is not now.
+  - **1200w is the ceiling, and it is not the source's ceiling.** 1365w costs 87% more bytes for
+    14% more pixels (202 KB against 108 KB a frame): at 1365 there is no downscale left to damp
+    the film grain and the encoder pays for all of it. Ten frames weigh 0.38 / 0.66 / 1.02 MB
+    across the three rungs.
+  - `sizes` in `GuestCarousel.tsx` must track `.st2-guest`'s `flex-basis`. The browser budgets
+    resolution from `sizes`, not from the rendered box, so a stale value silently serves a soft
+    image at the exact width it is most visible.
+
 ### archive-lineup · from `pre2.PNG`
 - **Type / orientation** — image, **landscape** 1600×1202 (1.33) — the only landscape still
 - **Content** — full runway lineup, wings and flower crowns, stage lighting, audience at tables
@@ -164,5 +190,9 @@ contact sheet. Held in reserve.
 3. `campaign-palms-gold` (green) and `campaign-silver-portrait` (teal) are the two colour outliers.
    Use each exactly once, far apart.
 4. Real archive photography is never filtered. `archive-backstage-bw` is already monochrome.
-5. Portrait sources dominate (17 of 20). Any full-bleed landscape band must come from
+   The credit «ПАША ДОРЕНСКИЙ» sits flush to the right edge of every carousel frame: crop from the
+   left, never the right.
+5. Portrait sources dominate. Any full-bleed landscape band must come from
    `archive-lineup` or the reel.
+6. The carousel's frames are all 2:3 **as files**. Keep it that way: a rail that mixes proportions
+   either crops blind or steps in height as it scrolls.

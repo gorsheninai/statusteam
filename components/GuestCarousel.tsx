@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef } from "react";
 
 export type GuestCarouselItem = {
   img: string;
-  widths: [number, number];
+  /* Ascending, and every entry must exist in public/media. The largest is the
+     src fallback; the browser picks the rest against `sizes`. */
+  widths: number[];
   label: string;
   alt: string;
 };
@@ -116,9 +118,23 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
               data-carousel-slide={index + 1}
             >
               <img
-                src={`/media/${guest.img}-${guest.widths[1]}.webp`}
-                srcSet={`/media/${guest.img}-${guest.widths[0]}.webp ${guest.widths[0]}w, /media/${guest.img}-${guest.widths[1]}.webp ${guest.widths[1]}w`}
-                sizes="(min-width: 768px) 33vw, 50vw"
+                src={`/media/${guest.img}-${guest.widths[guest.widths.length - 1]}.webp`}
+                srcSet={guest.widths
+                  .map((w) => `/media/${guest.img}-${w}.webp ${w}w`)
+                  .join(", ")}
+                /* Must track .st2-guest's flex-basis, min() and all. The
+                   browser budgets resolution from this value, not from the
+                   rendered box: when it said 50vw against a 62vw frame it
+                   under-asked by a quarter and only escaped a soft image
+                   because the ladder's next rung happened to be close enough.
+
+                   `vh` rather than the rule's `svh`, on purpose. The preload
+                   scanner reads this before layout, and the two differ only
+                   while the URL bar is showing — where vh is the larger of
+                   the pair, so the miss is an over-ask. Where min() is not
+                   understood the whole entry is dropped and the fallback is
+                   100vw, which over-asks as well. */
+                sizes="(min-width: 768px) 33vw, min(88vw, 41.33vh)"
                 alt={copy === 1 ? guest.alt : ""}
                 loading="lazy"
                 draggable={false}

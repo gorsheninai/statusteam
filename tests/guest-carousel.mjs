@@ -96,7 +96,17 @@ for (const [name, width, height] of viewports) {
       overflowX: getComputedStyle(strip).overflowX,
       scrollable: strip.scrollWidth - strip.clientWidth,
       frameWidth: boxes[0].width,
+      frameHeight: boxes[0].height,
+      viewportHeight: window.innerHeight,
       stripWidth: stripBox.width,
+      /* For a srcset of w-descriptors the browser reports naturalWidth as the
+         width `sizes` resolved to, not the file's own width. That makes it the
+         one direct way to catch a `sizes` that has drifted from the layout —
+         which serves a soft image with no error anywhere. */
+      declaredWidth: img.naturalWidth,
+      candidates: (img.getAttribute("srcset") || "").split(",").length,
+      chosen: Number(((img.currentSrc || "").match(/-(\d+)\.webp$/) || [])[1] || 0),
+      dpr: window.devicePixelRatio,
       /* Full bleed: the strip escapes the shell's gutter on both sides. */
       bleedLeft: columnBox.left - stripBox.left,
       bleedRight: stripBox.right - columnBox.right,
@@ -165,13 +175,42 @@ for (const [name, width, height] of viewports) {
     `${geometry.overflowX} / ${geometry.scrollable}px`,
   );
 
-  /* Desktop holds three frames; phones enlarge the portraits so one complete
-     frame and a strong preview of the second remain visible. */
+  /* Desktop holds three frames; phones give one photograph the screen and keep
+     a strip of the next in view. The peek has to survive: the arrows are hidden
+     on touch, so it is the only thing saying the rail scrolls. */
   const visible = geometry.stripWidth / geometry.frameWidth;
   expect(
-    width >= 768 ? visible > 2.95 && visible < 3.1 : visible > 1.55 && visible < 1.7,
+    width >= 768 ? visible > 2.95 && visible < 3.1 : visible > 1.1 && visible < 1.25,
     `[${name}] the strip shows the right number of frames`,
     visible.toFixed(2),
+  );
+
+  if (width < 768) {
+    const screenHeight = geometry.frameHeight / geometry.viewportHeight;
+    expect(
+      screenHeight > 0.55,
+      `[${name}] one photograph owns the screen rather than reading as a thumbnail`,
+      `${Math.round(screenHeight * 100)}% of the viewport height`,
+    );
+  }
+
+  /* `sizes` is what the browser budgets resolution from, so it has to track
+     .st2-guest's flex-basis. Left stale it under-asks and quietly serves a
+     soft photograph at the width where it shows most. */
+  expect(
+    Math.abs(geometry.declaredWidth - geometry.frameWidth) / geometry.frameWidth < 0.06,
+    `[${name}] the declared sizes matches the rendered frame`,
+    `declared ${Math.round(geometry.declaredWidth)}px against ${Math.round(geometry.frameWidth)}px`,
+  );
+  expect(
+    geometry.candidates === 3,
+    `[${name}] the srcset offers all three rungs`,
+    `${geometry.candidates}`,
+  );
+  expect(
+    geometry.chosen >= Math.min(1200, geometry.frameWidth * geometry.dpr),
+    `[${name}] the chosen file covers the frame at this density`,
+    `${geometry.chosen}w for ${Math.round(geometry.frameWidth * geometry.dpr)}px`,
   );
 
   expect(

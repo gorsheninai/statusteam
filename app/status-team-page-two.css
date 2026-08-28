@@ -515,7 +515,9 @@
   inline-size: 100%;
   block-size: 100%;
   max-inline-size: none;
-  /* Portrait sources under a 4/5 crop: bias upward so heads stay in frame. */
+  /* Every source is cropped to 2:3 when it is generated, so cover has nothing
+     left to take off and the position never comes into play. Both stay as the
+     guard for a frame that arrives at some other proportion. */
   object-fit: cover;
   object-position: 50% 32%;
 }
@@ -563,11 +565,21 @@
 }
 
 @media (max-width: 767px) {
-  /* The phone composition intentionally shows one full portrait and a clear
-     portion of the next, matching the larger editorial rail in the reference.
-     Two photographs remain visible while each frame reads materially bigger. */
+  /* One photograph per screen with the next one showing, which is what the
+     client-approved reference does in its own archive: a single frame at the
+     full column width, around two thirds of the screen's height. At 62vw the
+     frame was 43% of an iPhone's height and the chapter read as thumbnails.
+
+     The peek is not decoration. The arrows below are hidden on touch, so the
+     strip of the next frame is the only thing telling a reader there is more
+     than one photograph here — which is why this is 88vw and not 100vw.
+
+     The height cap only binds on viewports that are wide but short: a small
+     tablet in portrait, or any phone in landscape, where 88vw would be taller
+     than the screen. Every real phone in portrait is width-bound. */
   .st-page-two .st2-guest {
-    flex-basis: 62vw;
+    flex-basis: 88vw;
+    flex-basis: min(88vw, calc(62svh * 2 / 3));
   }
 
   /* Touch owns phone navigation; desktop controls remain unchanged. */

@@ -26,7 +26,7 @@ const GUEST_ORDER = [1, 2, 3, 5, 4, 7, 6, 9, 8, 10];
 
 const GUESTS: GuestCarouselItem[] = GUEST_ORDER.map((n, index) => ({
   img: `show-${n}`,
-  widths: [700, 1200],
+  widths: [640, 900, 1200],
   label: `Гость ${String(index + 1).padStart(2, "0")}`,
   alt: "Кадр из предыдущего показа",
 }));
