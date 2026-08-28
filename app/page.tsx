@@ -177,10 +177,16 @@ export default function Home() {
                   <span className="hero-when">Ноябрь 2026</span>
                 </p>
 
-                {/* One control. The exact date lives in the ticket scene. */}
+                {/* Two equal paths: preorder and participation. The exact
+                    date still lives in the ticket scene. */}
                 <div className="hero-cta" data-hero="cta">
                   <a className="btn btn-solid" href="#tickets">
-                    Предзаказать билет <Arrow />
+                    <span className="hero-btn-label">Предзаказать билет</span>
+                    <Arrow />
+                  </a>
+                  <a className="btn btn-pulse" href="#join">
+                    <span className="hero-btn-label">Стать частью пульса</span>
+                    <Arrow />
                   </a>
                 </div>
               </div>

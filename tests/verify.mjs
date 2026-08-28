@@ -79,6 +79,36 @@ for (const [name, width, height] of SIZES) {
   });
   check(ov.doc <= ov.client + 1, `[${name}] no horizontal overflow`, `${ov.doc}>${ov.client}`);
 
+  const heroControls = await page.evaluate(() => {
+    const buttons = Array.from(document.querySelectorAll(".hero-cta .btn"));
+    const boxes = buttons.map((button) => button.getBoundingClientRect());
+    const preorder = buttons[0];
+    const label = preorder?.querySelector(".hero-btn-label")?.getBoundingClientRect();
+    const arrow = preorder?.querySelector(".arrow")?.getBoundingClientRect();
+    const button = boxes[0];
+    const labelCentre = label ? label.left + label.width / 2 : 0;
+    const textCellCentre = button && arrow ? button.left + (arrow.left - button.left) / 2 : 0;
+    const heroAfter = getComputedStyle(document.querySelector(".hero"), "::after");
+    return {
+      count: boxes.length,
+      equal:
+        boxes.length === 2 &&
+        Math.abs(boxes[0].width - boxes[1].width) < 1 &&
+        Math.abs(boxes[0].height - boxes[1].height) < 1,
+      preorderCentred: Math.abs(labelCentre - textCellCentre) < 1,
+      mobileDate: heroAfter.content.replaceAll('"', ""),
+      mobileDateBottom: Number.parseFloat(heroAfter.bottom),
+    };
+  });
+  check(heroControls.count === 2 && heroControls.equal,
+    `[${name}] hero buttons have identical dimensions`);
+  check(heroControls.preorderCentred,
+    `[${name}] preorder label is centred inside its text cell`);
+  if (width < 900) {
+    check(heroControls.mobileDate === "МОСКВА · НОЯБРЬ 2026" && heroControls.mobileDateBottom > 0,
+      `[${name}] city and month stay anchored to the bottom of the first screen`);
+  }
+
   const clipped = await page.evaluate(() =>
     Array.from(document.querySelectorAll(".pulse-line, .struct, .campaign"))
       .filter((el) => el.scrollWidth > el.clientWidth + 1)
@@ -162,10 +192,10 @@ for (const [name, width, height] of SIZES) {
 
   const heroCta = await page.evaluate(() => {
     const links = Array.from(document.querySelectorAll(".hero-inner a"));
-    return { n: links.length, href: links[0]?.getAttribute("href") };
+    return { n: links.length, hrefs: links.map((link) => link.getAttribute("href")) };
   });
-  check(heroCta.n === 1 && heroCta.href === "#tickets",
-    "hero offers one control and it points at the tickets", `${heroCta.n} → ${heroCta.href}`);
+  check(heroCta.n === 2 && heroCta.hrefs.join(" ") === "#tickets #join",
+    "hero offers preorder and participation controls", `${heroCta.n} → ${heroCta.hrefs.join(" ")}`);
 
   check(await page.locator(".faq-row").count() === 5, "FAQ has five questions");
   check(await page.locator(".tier").count() === 0, "unconfirmed ticket categories stay hidden");
@@ -263,7 +293,7 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 
   check(await page.locator(".nav-tickets").isVisible(), `[${label}] ticket button visible over the hero`);
 
-  await page.locator(".hero-inner a").click();
+  await page.locator('.hero-cta a[href="#tickets"]').click();
   await page.waitForTimeout(2200);
   const landed = await page.evaluate(() => {
     const t = document.querySelector("#tickets").getBoundingClientRect();

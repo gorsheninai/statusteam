@@ -20,21 +20,22 @@ const COPIES = [0, 1, 2];
  * to frame 1 without a visible edge; only its scroll position is corrected.
  */
 export default function GuestCarousel({ guests }: GuestCarouselProps) {
-  const stripRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLUListElement>(null);
   const correctingRef = useRef(false);
 
-  const runWidth = () => {
+  const runWidth = useCallback(() => {
     const strip = stripRef.current;
     if (!strip) return 0;
+    const frame = strip.querySelector<HTMLElement>(".st2-guest");
     const gap = Number.parseFloat(getComputedStyle(strip).gap) || 0;
-    return strip.clientWidth + gap;
-  };
+    return ((frame?.getBoundingClientRect().width ?? 0) + gap) * guests.length;
+  }, [guests.length]);
 
   const centreRail = useCallback(() => {
     const strip = stripRef.current;
     if (!strip || !guests.length) return;
     strip.scrollLeft = runWidth();
-  }, [guests.length]);
+  }, [guests.length, runWidth]);
 
   useEffect(() => {
     const strip = stripRef.current;
@@ -70,9 +71,9 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
     const strip = stripRef.current;
     if (!strip) return;
 
-    // A full viewport equals one complete repeated run (three frames on
-    // desktop), so it lands on the same images and makes the controls appear
-    // inert. Advance by one editorial frame instead.
+    // Advance by one editorial frame, not by the visible viewport. Moving by
+    // two or three frames made the controls feel disconnected from the image
+    // directly under the arrow.
     const frame = strip.querySelector<HTMLElement>(".st2-guest");
     const gap = Number.parseFloat(getComputedStyle(strip).gap) || 0;
     const distance = (frame?.getBoundingClientRect().width ?? strip.clientWidth) + gap;
@@ -87,7 +88,7 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
 
   return (
     <div className="st2-guest-stage" data-st2-guest-stage>
-      <div
+      <ul
         className="st2-guest-strip"
         ref={stripRef}
         role="region"
@@ -105,23 +106,27 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
           }
         }}
       >
-        {COPIES.map((copy) => (
-          <ul className="st2-guest-row" key={copy} aria-hidden={copy !== 1}>
-            {guests.map((guest) => (
-              <li className="st2-guest" key={`${copy}-${guest.label}`}>
-                <img
-                  src={`/media/${guest.img}-${guest.widths[1]}.webp`}
-                  srcSet={`/media/${guest.img}-${guest.widths[0]}.webp ${guest.widths[0]}w, /media/${guest.img}-${guest.widths[1]}.webp ${guest.widths[1]}w`}
-                  sizes="(min-width: 768px) 33vw, 50vw"
-                  alt={copy === 1 ? guest.alt : ""}
-                  loading="lazy"
-                  draggable={false}
-                />
-              </li>
-            ))}
-          </ul>
-        ))}
-      </div>
+        {COPIES.flatMap((copy) =>
+          guests.map((guest, index) => (
+            <li
+              className="st2-guest"
+              key={`${copy}-${guest.label}`}
+              aria-hidden={copy !== 1}
+              data-carousel-copy={copy}
+              data-carousel-slide={index + 1}
+            >
+              <img
+                src={`/media/${guest.img}-${guest.widths[1]}.webp`}
+                srcSet={`/media/${guest.img}-${guest.widths[0]}.webp ${guest.widths[0]}w, /media/${guest.img}-${guest.widths[1]}.webp ${guest.widths[1]}w`}
+                sizes="(min-width: 768px) 33vw, 50vw"
+                alt={copy === 1 ? guest.alt : ""}
+                loading="lazy"
+                draggable={false}
+              />
+            </li>
+          )),
+        )}
+      </ul>
 
       <div className="st2-guest-nav" aria-label="Навигация по кадрам">
         <button className="st2-guest-nav-button is-prev" type="button" onClick={() => step(-1)} aria-label="Предыдущие кадры">

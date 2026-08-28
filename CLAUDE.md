@@ -204,10 +204,10 @@ the end of `globals.css`). Campaign frames run full-bleed — a photograph insid
 padded container reads as a CMS. The vertical rhythm is deliberately tight: the
 change of ground carries the transition, so air between chapters is just scroll.
 
-**The hero carries exactly one link, and it goes to `#tickets`.** Getting from the
-first screen to the ticket scene in one click, and keeping the header's ticket button
-visible at every scroll position and every width (outside the burger on phones), is
-an acceptance criterion. `npm run verify` checks both.
+**The hero carries two equal links:** preorder goes to `#tickets`, participation goes
+to `#join`. Keeping both paths visible on the first screen and keeping the header's
+ticket button visible at every scroll position and every width (outside the burger on
+phones) is an acceptance criterion. `npm run verify` checks both.
 
 Scene 1's four beats run in a fixed order — phrase → aftermovie → guests → press →
 brands → numbers. Scene 4 is one preorder path until the date, venue and ticket

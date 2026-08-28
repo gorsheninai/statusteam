@@ -465,15 +465,10 @@
 
 /* Archive strip -------------------------------------------- */
 
-/* The frames from «Славянский взгляд» run as one flat, full-bleed strip:
-   no perspective, no tween, no borders and no overlaid arrows. They butt
-   against each other at a single ratio and the row is moved by the
-   platform's own horizontal scroll — the frame cut by the viewport edge is
-   the affordance, the way a contact sheet gives you one. Nothing here needs
-   JS, so the strip is identical with the bundle missing. */
+/* The frames from «Славянский взгляд» run as one flat, full-bleed strip.
+   Three technical copies create the seamless 10 → 1 loop; the accessible
+   middle copy still contains exactly the ten requested photographs. */
 .st-page-two .st2-guest-strip {
-  /* Two full portraits on a phone; three on larger screens. */
-  --st2-strip-frames: 2;
   --st2-strip-gap: 3px;
 
   margin-block-start: clamp(1.5rem, 2vw, 2rem);
@@ -483,6 +478,8 @@
   margin-inline: calc(var(--st2-gutter) * -1);
   display: flex;
   gap: var(--st2-strip-gap);
+  padding: 0;
+  list-style: none;
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
@@ -501,15 +498,6 @@
 
 .st-page-two .st2-guest-strip::-webkit-scrollbar {
   display: none;
-}
-
-.st-page-two .st2-guest-row {
-  display: flex;
-  flex: 0 0 100%;
-  gap: var(--st2-strip-gap);
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
 .st-page-two .st2-guest {
@@ -575,7 +563,13 @@
 }
 
 @media (max-width: 767px) {
-  .st-page-two .st2-guest-nav { display: none; }
+  .st-page-two .st2-guest-nav-button {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+  }
+
+  .st-page-two .st2-guest-nav-button.is-prev { inset-inline-start: 0.35rem; }
+  .st-page-two .st2-guest-nav-button.is-next { inset-inline-end: 0.35rem; }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -738,10 +732,6 @@
 }
 
 @media (min-width: 768px) {
-  .st-page-two .st2-guest-strip {
-    --st2-strip-frames: 3;
-  }
-
   .st-page-two .st2-guest {
     /* Desktop keeps three frames across, with the same larger portrait
        proportion as mobile — only the column count changes. */

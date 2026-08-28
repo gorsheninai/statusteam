@@ -1,9 +1,6 @@
-/* The archive strip in «Славянский взгляд».
-   The previous version of this file specified a 3D coverflow — rotation
-   angles, gold borders, grayscale side cards. That carousel is gone: the
-   chapter is now a flat, full-bleed contact sheet moved by the platform's
-   own horizontal scroll. What follows is the contract of that strip, and
-   most of it is the absence of the old one. */
+/* The archive carousel in «Славянский взгляд»: ten unique frames in the
+   requested order, two controls, a seamless 10 → 1 loop and two larger
+   portraits across on mobile. */
 import { chromium } from "playwright";
 import fs from "node:fs";
 
@@ -45,16 +42,22 @@ for (const [name, width, height] of viewports) {
   expect(errors.length === 0, `[${name}] no browser errors`, errors.join(" | "));
   expect(await section.isVisible(), `[${name}] archive section is visible`);
   expect(
-    (await page.locator(".st2-guest").count()) === 10,
-    `[${name}] all ten archive frames are in the strip`,
+    (await page.locator('.st2-guest[data-carousel-copy="1"]').count()) === 10,
+    `[${name}] the accessible carousel run contains exactly ten frames`,
+  );
+  const order = await page.locator('.st2-guest[data-carousel-copy="1"] img').evaluateAll((images) =>
+    images.map((image) => image.getAttribute("src")?.match(/show-(\d+)-/)?.[1]),
+  );
+  expect(
+    order.join(" ") === "1 2 3 5 4 7 6 9 8 10",
+    `[${name}] archive frames keep the requested order`,
+    order.join(" → "),
   );
 
-  /* The chrome the redesign removed must not creep back. */
+  /* Navigation is present on both pointer and touch layouts. */
   expect(
-    (await page.locator(
-      ".st2-guest-nav, .st2-guest-card, .st2-guest-shade, .st2-guest-viewport, .st2-guest-track",
-    ).count()) === 0,
-    `[${name}] arrows, cards and shades stay gone`,
+    (await page.locator(".st2-guest-nav-button").count()) === 2,
+    `[${name}] both carousel controls exist`,
   );
 
   const geometry = await page.evaluate(() => {
@@ -71,8 +74,7 @@ for (const [name, width, height] of viewports) {
     const column = document.querySelector(".st2-vanguard-head");
     const columnBox = column.getBoundingClientRect();
 
-    /* Largest gap between consecutive frames: the strip is a contact sheet,
-       so this has to be zero, not "small". */
+    /* Largest gap between consecutive frames: the designed hairline is 3px. */
     let maxGap = 0;
     for (let i = 1; i < boxes.length; i += 1) {
       maxGap = Math.max(maxGap, boxes[i].left - boxes[i - 1].right);
@@ -98,7 +100,7 @@ for (const [name, width, height] of viewports) {
       /* Full bleed: the strip escapes the shell's gutter on both sides. */
       bleedLeft: columnBox.left - stripBox.left,
       bleedRight: stripBox.right - columnBox.right,
-      buttons: strip.querySelectorAll("button").length,
+      buttons: document.querySelectorAll(".st2-guest-nav-button").length,
       maxGap,
       pageOverflow:
         document.documentElement.scrollWidth -
@@ -136,15 +138,15 @@ for (const [name, width, height] of viewports) {
     `[${name}] the 3D perspective is gone`,
     geometry.perspective,
   );
-  expect(geometry.buttons === 0, `[${name}] the strip has no controls`);
+  expect(geometry.buttons === 2, `[${name}] the strip has two controls`);
   expect(
-    Math.abs(geometry.maxGap) < 1,
-    `[${name}] frames butt against each other`,
+    geometry.maxGap >= 2 && geometry.maxGap <= 3.5,
+    `[${name}] frames keep the narrow editorial gap`,
     `${geometry.maxGap}px`,
   );
   expect(
-    Math.abs(geometry.aspect - 0.8) < 0.02,
-    `[${name}] every frame keeps the reserved 4/5 box`,
+    Math.abs(geometry.aspect - (2 / 3)) < 0.02,
+    `[${name}] every frame keeps the enlarged 2/3 portrait box`,
     geometry.aspect.toFixed(3),
   );
   expect(
@@ -157,16 +159,11 @@ for (const [name, width, height] of viewports) {
     `${geometry.overflowX} / ${geometry.scrollable}px`,
   );
 
-  /* The affordance is the cut frame at the edge, so the visible count has to
-     stay fractional — a whole number reads as a finished row. */
+  /* The requested composition is exact: three frames on desktop and two on
+     mobile, with no squeezed partial card at either edge. */
   const visible = geometry.stripWidth / geometry.frameWidth;
   expect(
-    Math.abs(visible - Math.round(visible)) > 0.1,
-    `[${name}] a frame is cut by the edge`,
-    visible.toFixed(2),
-  );
-  expect(
-    width >= 900 ? visible > 3.4 && visible < 5.2 : visible > 1.8 && visible < 3.6,
+    width >= 768 ? visible > 2.95 && visible < 3.1 : visible > 1.95 && visible < 2.1,
     `[${name}] the strip shows the right number of frames`,
     visible.toFixed(2),
   );
@@ -200,6 +197,28 @@ for (const [name, width, height] of viewports) {
     `${afterScroll.pageOverflow}px`,
   );
 
+  /* Put frame 10 on the leading edge, advance once, and confirm the next
+     visible frame is 1 even if the loop correction swaps technical copies. */
+  await page.evaluate(() => {
+    const strip = document.querySelector(".st2-guest-strip");
+    const tenth = document.querySelector('.st2-guest[data-carousel-copy="1"][data-carousel-slide="10"]');
+    strip.scrollLeft = tenth.offsetLeft;
+  });
+  await page.waitForTimeout(150);
+  await page.locator(".st2-guest-nav-button.is-next").click();
+  await page.waitForTimeout(700);
+  const loopedSlide = await page.evaluate(() => {
+    const strip = document.querySelector(".st2-guest-strip");
+    const edge = strip.getBoundingClientRect().left;
+    return [...document.querySelectorAll(".st2-guest")]
+      .map((frame) => ({
+        slide: frame.dataset.carouselSlide,
+        distance: Math.abs(frame.getBoundingClientRect().left - edge),
+      }))
+      .sort((a, b) => a.distance - b.distance)[0]?.slide;
+  });
+  expect(loopedSlide === "1", `[${name}] frame 10 advances directly to frame 1`, loopedSlide);
+
   await section.screenshot({ path: `${OUT}/guest-strip-${name}.png` });
   await page.close();
 }
@@ -211,5 +230,5 @@ if (failures.length) {
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exitCode = 1;
 } else {
-  console.log("Archive strip: PASS (flat, full-bleed, scrolls, no chrome)");
+  console.log("Archive carousel: PASS (10 frames, seamless loop, two controls)");
 }
