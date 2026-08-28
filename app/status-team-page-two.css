@@ -616,14 +616,12 @@
 }
 
 @media (max-width: 899px) {
-  /* Tucked closer to the edge on phones, but the box stays 48px: the old
-     carousel's 46px arrows sat under the project's touch-target floor. */
-  .st-page-two .st2-guest-nav-button.is-prev {
-    inset-inline-start: 0.2rem;
-  }
-
-  .st-page-two .st2-guest-nav-button.is-next {
-    inset-inline-end: 0.2rem;
+  /* No arrows on touch: the finger is the control, and two buttons parked
+     over the outer frames cover the photographs they are meant to reveal.
+     The strip still loops, and the keyboard still steps it. This is the
+     same breakpoint the frame count switches on. */
+  .st-page-two .st2-guest-nav {
+    display: none;
   }
 }
 

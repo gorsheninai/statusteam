@@ -62,9 +62,15 @@ for (const [name, width, height] of viewports) {
     ).count()) === 0,
     `[${name}] cards, shades and the 3D track stay gone`,
   );
+  /* Arrows are a pointer affordance only: on touch widths the finger is the
+     control and the buttons would sit over the photographs. */
+  const arrows = await page.locator(".st2-guest-nav-button").evaluateAll(
+    (nodes) => nodes.filter((n) => n.getClientRects().length > 0).length,
+  );
   expect(
-    (await page.locator(".st2-guest-nav-button").count()) === 2,
-    `[${name}] both arrows are present`,
+    arrows === (width >= 900 ? 2 : 0),
+    `[${name}] ${width >= 900 ? "both arrows are present" : "the arrows are gone"}`,
+    `${arrows}`,
   );
 
   const geometry = await page.evaluate(() => {
@@ -212,27 +218,36 @@ for (const [name, width, height] of viewports) {
     `${rest.left} vs ${rest.setWidth}`,
   );
 
-  /* An arrow advances exactly one frame. */
+  /* One step forward and one back returns to rest, whichever control the
+     width offers: the arrows on pointer widths, the keyboard on touch ones.
+     Both go through the same step(), so both must move exactly one pitch. */
   const pitch = rest.setWidth / 10;
-  await page.locator(".st2-guest-nav-button.is-next").click();
-  await page.waitForTimeout(700);
-  const afterNext = await page.evaluate(
-    () => document.querySelector(".st2-guest-strip").scrollLeft,
-  );
+  const stepBy = async (direction) => {
+    if (width >= 900) {
+      await page.locator(
+        `.st2-guest-nav-button.is-${direction > 0 ? "next" : "prev"}`,
+      ).click();
+    } else {
+      await page.locator(".st2-guest-strip").focus();
+      await page.keyboard.press(direction > 0 ? "ArrowRight" : "ArrowLeft");
+    }
+    await page.waitForTimeout(700);
+    return page.evaluate(
+      () => document.querySelector(".st2-guest-strip").scrollLeft,
+    );
+  };
+
+  const afterNext = await stepBy(1);
   expect(
     Math.abs(afterNext - (rest.left + pitch)) < 3,
-    `[${name}] the next arrow advances one frame`,
+    `[${name}] stepping forward advances one frame`,
     `${afterNext} vs ${rest.left + pitch}`,
   );
 
-  await page.locator(".st2-guest-nav-button.is-prev").click();
-  await page.waitForTimeout(700);
-  const afterPrev = await page.evaluate(
-    () => document.querySelector(".st2-guest-strip").scrollLeft,
-  );
+  const afterPrev = await stepBy(-1);
   expect(
     Math.abs(afterPrev - rest.left) < 3,
-    `[${name}] the previous arrow steps back one frame`,
+    `[${name}] stepping back returns one frame`,
     `${afterPrev} vs ${rest.left}`,
   );
 
