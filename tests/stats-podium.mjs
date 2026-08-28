@@ -40,7 +40,7 @@ for (const [name, width, height] of viewports) {
     const grid = document.querySelector(".st2-stats");
     const style = band ? getComputedStyle(band) : null;
     const columns = grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").length : 0;
-    const stage = document.querySelector(".st2-guest-stage");
+    const stage = document.querySelector(".st2-guest-strip");
     const bandBox = band?.getBoundingClientRect();
     const stageBox = stage?.getBoundingClientRect();
     return {

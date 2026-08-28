@@ -564,22 +564,9 @@ export default function Motion() {
           });
         }
 
-        const guestStage = statusScene.querySelector<HTMLElement>(
-          "[data-st2-guest-stage]",
-        );
-        if (guestStage) {
-          gsap.from(guestStage, {
-            opacity: 0,
-            y: 28,
-            duration: 0.86,
-            ease: EASE,
-            scrollTrigger: {
-              trigger: guestStage,
-              start: "top 88%",
-              once: true,
-            },
-          });
-        }
+        /* The archive strip deliberately has no entrance: it is a flat
+           contact sheet, and a fade would put motion back on the one block
+           this chapter is meant to hold still. */
 
         const statsBand = statusScene.querySelector<HTMLElement>(
           "[data-st2-stats-band]",

@@ -332,10 +332,15 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
   await page.waitForTimeout(400);
   check((await faq.getAttribute("class")).includes("is-open"), "FAQ row opens");
 
-  /* Ticket access */
-  await page.locator(".btn-buy").click();
-  await page.waitForTimeout(500);
-  check(await page.locator("#access-name").isVisible(), "the ticket CTA opens the access form");
+  /* Ticket access. While SALES_OPEN is false there is no .btn-buy to click:
+     the scene *is* the access form, standing open. Assert whichever of the
+     two shapes the config produces, so the suite runs either way. */
+  const buy = page.locator(".btn-buy");
+  if (await buy.count()) {
+    await buy.click();
+    await page.waitForTimeout(500);
+  }
+  check(await page.locator("#access-name").isVisible(), "the ticket scene reaches the access form");
   check(await page.locator("#access-consent").count() === 1, "access form asks for data consent");
 
   /* Forms never fake a send */
@@ -428,7 +433,7 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
       const r = el.getBoundingClientRect();
       if (r.width < 4 || r.height < 4) return;
       // text over imagery is scrim-dependent and can't be judged statically
-      if (el.closest(".hero, .media, .menu, .tenets, .posters, .zone, .preloader, .st2-guest-card")) return;
+      if (el.closest(".hero, .media, .menu, .tenets, .posters, .zone, .preloader")) return;
       const cs = getComputedStyle(el), bg = solid(el);
       const col = parse(cs.color);
       const fg = over({ ...col, a: col.a * eff(el) }, bg);
