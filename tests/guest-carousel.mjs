@@ -60,6 +60,8 @@ for (const [name, width, height] of viewports) {
     const stage = document.querySelector(".st2-guest-stage");
     const lead = document.querySelector(".st2-vanguard-intro");
     const heading = document.querySelector(".st2-vanguard-head");
+    const title = document.querySelector(".st2-vanguard-tag");
+    const scaleTitle = document.querySelector(".st2-scale-title");
     const nav = document.querySelector(".st2-guest-nav");
     const footer = document.querySelector(".st2-guest-footer");
     const stripBox = strip.getBoundingClientRect();
@@ -67,12 +69,22 @@ for (const [name, width, height] of viewports) {
     const stageBox = stage.getBoundingClientRect();
     const leadBox = lead.getBoundingClientRect();
     const headingBox = heading.getBoundingClientRect();
+    const titleBox = title.getBoundingClientRect();
     return {
       gap: parseFloat(getComputedStyle(strip).columnGap),
       aspect: cardBox.width / cardBox.height,
       stripWidth: stripBox.width,
       cardWidth: cardBox.width,
       alignment: Math.abs(stripBox.left - headingBox.left),
+      titleFits: titleBox.right <= headingBox.right + 1,
+      titleSizeDelta: Math.abs(
+        parseFloat(getComputedStyle(title).fontSize) -
+          parseFloat(getComputedStyle(scaleTitle).fontSize),
+      ),
+      titleLineHeightDelta: Math.abs(
+        parseFloat(getComputedStyle(title).lineHeight) -
+          parseFloat(getComputedStyle(scaleTitle).lineHeight),
+      ),
       copyGap: stageBox.top - leadBox.bottom,
       navDisplay: getComputedStyle(nav).display,
       footerDisplay: getComputedStyle(footer).display,
@@ -91,6 +103,12 @@ for (const [name, width, height] of viewports) {
   expect(geometry.pageOverflow <= 1, `[${name}] no page-level horizontal overflow`, `${geometry.pageOverflow}px`);
 
   if (width < 768) {
+    expect(geometry.titleFits, `[${name}] archive title fits without clipping`);
+    expect(
+      geometry.titleSizeDelta < 0.1 && geometry.titleLineHeightDelta < 0.1,
+      `[${name}] archive and scale titles use the same mobile size`,
+      `${geometry.titleSizeDelta}px / ${geometry.titleLineHeightDelta}px`,
+    );
     expect(geometry.navDisplay === "none", `[${name}] phone navigation is swipe-only`);
     expect(geometry.counter === "01 / 07", `[${name}] phone counter starts at 01 / 07`, geometry.counter);
     expect(geometry.cardWidth / width >= 0.79 && geometry.cardWidth / width <= 0.83, `[${name}] one large card plus a controlled next-card peek`, `${geometry.cardWidth}px`);

@@ -407,9 +407,11 @@
   margin-inline-end: 0;
   color: var(--st2-champagne);
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 8.8vw, 2.45rem);
+  /* Match «МАСШТАБ В ЦИФРАХ» exactly below the desktop breakpoint. The
+     previous 8.8vw setting exceeded the phone column and clipped the title. */
+  font-size: clamp(1.6rem, 7.7vw, 2.35rem);
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1;
   letter-spacing: -0.025em;
   text-transform: uppercase;
   white-space: nowrap;
