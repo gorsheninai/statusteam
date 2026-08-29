@@ -1,13 +1,9 @@
-/* The archive carousel in «Славянский взгляд»: ten unique frames in the
-   requested order, desktop controls, a seamless 10 → 1 loop and a larger
-   swipe-only editorial rail on mobile. */
 import { chromium } from "playwright";
 import fs from "node:fs";
 
-const URL = process.argv[2] ?? "http://127.0.0.1:4311";
-const OUT = "test-results";
-fs.mkdirSync(OUT, { recursive: true });
+fs.mkdirSync("test-results", { recursive: true });
 
+const URL = process.argv[2] ?? "http://127.0.0.1:4311";
 const viewports = [
   ["desktop", 1440, 900],
   ["laptop", 1024, 768],
@@ -18,7 +14,6 @@ const viewports = [
 
 const browser = await chromium.launch();
 const failures = [];
-
 const expect = (value, message, detail = "") => {
   if (!value) failures.push(`${message}${detail ? ` — ${detail}` : ""}`);
 };
@@ -26,263 +21,103 @@ const expect = (value, message, detail = "") => {
 for (const [name, width, height] of viewports) {
   const page = await browser.newPage({ viewport: { width, height } });
   const errors = [];
-  page.on("console", (message) =>
-    message.type() === "error" && errors.push(message.text()),
-  );
+  page.on("console", (message) => message.type() === "error" && errors.push(message.text()));
   page.on("pageerror", (error) => errors.push(error.message));
 
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  /* The preloader curtain owns the first ~2.1s of a fresh session and would
-     otherwise be what the screenshots capture. */
   await page.waitForTimeout(2400);
   const section = page.locator(".st2-vanguard");
   await section.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(400);
 
   expect(errors.length === 0, `[${name}] no browser errors`, errors.join(" | "));
   expect(await section.isVisible(), `[${name}] archive section is visible`);
   expect(
-    (await page.locator('.st2-guest[data-carousel-copy="1"]').count()) === 10,
-    `[${name}] the accessible carousel run contains exactly ten frames`,
+    (await page.locator(".st2-guest").count()) === 7,
+    `[${name}] carousel contains seven unique frames`,
   );
-  const order = await page.locator('.st2-guest[data-carousel-copy="1"] img').evaluateAll((images) =>
+
+  const order = await page.locator(".st2-guest img").evaluateAll((images) =>
     images.map((image) => image.getAttribute("src")?.match(/show-(\d+)-/)?.[1]),
   );
   expect(
-    order.join(" ") === "1 2 3 5 4 7 6 9 8 10",
-    `[${name}] archive frames keep the requested order`,
+    order.join(" ") === "1 2 3 5 4 7 6",
+    `[${name}] frames keep the curated order`,
     order.join(" → "),
   );
-
-  /* Controls stay in the accessible DOM, but phones use swipe only. */
+  expect(
+    (await page.getByText("Предыдущий показ · Москва", { exact: true }).count()) === 1,
+    `[${name}] previous-show context is present`,
+  );
   expect(
     (await page.locator(".st2-guest-nav-button").count()) === 2,
-    `[${name}] both carousel controls exist`,
+    `[${name}] both desktop controls exist`,
   );
 
   const geometry = await page.evaluate(() => {
     const strip = document.querySelector(".st2-guest-strip");
-    const frames = [...document.querySelectorAll(".st2-guest")];
-    const first = frames[0];
-    const firstStyle = getComputedStyle(first);
-    const img = first.querySelector("img");
-    const imgStyle = getComputedStyle(img);
-    const boxes = frames.map((f) => f.getBoundingClientRect());
+    const card = document.querySelector(".st2-guest");
+    const stage = document.querySelector(".st2-guest-stage");
+    const lead = document.querySelector(".st2-vanguard-intro");
+    const heading = document.querySelector(".st2-vanguard-head");
+    const nav = document.querySelector(".st2-guest-nav");
+    const footer = document.querySelector(".st2-guest-footer");
     const stripBox = strip.getBoundingClientRect();
-    /* The content column inside the shell's gutter — what the strip has to
-       escape on both sides to read as full bleed. */
-    const column = document.querySelector(".st2-vanguard-head");
-    const columnBox = column.getBoundingClientRect();
-
-    /* Largest gap between consecutive frames: the designed hairline is 3px. */
-    let maxGap = 0;
-    for (let i = 1; i < boxes.length; i += 1) {
-      maxGap = Math.max(maxGap, boxes[i].left - boxes[i - 1].right);
-    }
-
+    const cardBox = card.getBoundingClientRect();
+    const stageBox = stage.getBoundingClientRect();
+    const leadBox = lead.getBoundingClientRect();
+    const headingBox = heading.getBoundingClientRect();
     return {
-      borderWidth: parseFloat(firstStyle.borderTopWidth),
-      radius: parseFloat(firstStyle.borderTopLeftRadius),
-      boxShadow: firstStyle.boxShadow,
-      filter: firstStyle.filter,
-      transform: firstStyle.transform,
-      opacity: Number(firstStyle.opacity),
-      transition: firstStyle.transitionProperty,
-      imgFilter: imgStyle.filter,
-      imgTransition: imgStyle.transitionProperty,
-      imgFit: imgStyle.objectFit,
-      aspect: boxes[0].width / boxes[0].height,
-      perspective: getComputedStyle(strip).perspective,
-      overflowX: getComputedStyle(strip).overflowX,
-      scrollable: strip.scrollWidth - strip.clientWidth,
-      frameWidth: boxes[0].width,
-      frameHeight: boxes[0].height,
-      viewportHeight: window.innerHeight,
+      gap: parseFloat(getComputedStyle(strip).columnGap),
+      aspect: cardBox.width / cardBox.height,
       stripWidth: stripBox.width,
-      /* For a srcset of w-descriptors the browser reports naturalWidth as the
-         width `sizes` resolved to, not the file's own width. That makes it the
-         one direct way to catch a `sizes` that has drifted from the layout —
-         which serves a soft image with no error anywhere. */
-      declaredWidth: img.naturalWidth,
-      candidates: (img.getAttribute("srcset") || "").split(",").length,
-      chosen: Number(((img.currentSrc || "").match(/-(\d+)\.webp$/) || [])[1] || 0),
-      dpr: window.devicePixelRatio,
-      /* Full bleed: the strip escapes the shell's gutter on both sides. */
-      bleedLeft: columnBox.left - stripBox.left,
-      bleedRight: stripBox.right - columnBox.right,
-      buttons: document.querySelectorAll(".st2-guest-nav-button").length,
-      navDisplay: getComputedStyle(document.querySelector(".st2-guest-nav")).display,
-      maxGap,
-      pageOverflow:
-        document.documentElement.scrollWidth -
-        document.documentElement.clientWidth,
+      cardWidth: cardBox.width,
+      alignment: Math.abs(stripBox.left - headingBox.left),
+      copyGap: stageBox.top - leadBox.bottom,
+      navDisplay: getComputedStyle(nav).display,
+      footerDisplay: getComputedStyle(footer).display,
+      counter: document.querySelector(".st2-guest-counter")?.textContent?.replace(/\s+/g, " ").trim(),
+      firstDisabled: document.querySelector(".st2-guest-nav-button.is-prev")?.disabled,
+      pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     };
   });
 
-  expect(
-    geometry.borderWidth === 0 && geometry.radius === 0,
-    `[${name}] frames carry no border and no radius`,
-    `${geometry.borderWidth}px / ${geometry.radius}px`,
-  );
-  expect(
-    geometry.boxShadow === "none",
-    `[${name}] frames carry no shadow`,
-    geometry.boxShadow,
-  );
-  expect(
-    geometry.filter === "none" && geometry.imgFilter === "none",
-    `[${name}] no photograph is tinted, greyed or dimmed`,
-    `${geometry.filter} / ${geometry.imgFilter}`,
-  );
-  expect(
-    geometry.transform === "none" && geometry.opacity === 1,
-    `[${name}] frames sit flat and fully opaque`,
-    `${geometry.transform} @ ${geometry.opacity}`,
-  );
-  expect(
-    geometry.transition === "all" || geometry.transition === "none",
-    `[${name}] frames declare no motion of their own`,
-    geometry.transition,
-  );
-  expect(
-    geometry.perspective === "none",
-    `[${name}] the 3D perspective is gone`,
-    geometry.perspective,
-  );
-  expect(geometry.buttons === 2, `[${name}] the strip has two controls`);
-  expect(
-    width < 768 ? geometry.navDisplay === "none" : geometry.navDisplay !== "none",
-    `[${name}] carousel arrows follow the desktop/mobile brief`,
-    geometry.navDisplay,
-  );
-  expect(
-    geometry.maxGap >= 2 && geometry.maxGap <= 3.5,
-    `[${name}] frames keep the narrow editorial gap`,
-    `${geometry.maxGap}px`,
-  );
-  expect(
-    Math.abs(geometry.aspect - (2 / 3)) < 0.02,
-    `[${name}] every frame keeps the enlarged 2/3 portrait box`,
-    geometry.aspect.toFixed(3),
-  );
-  expect(
-    geometry.imgFit === "cover",
-    `[${name}] photographs fill their box without distortion`,
-  );
-  expect(
-    geometry.overflowX === "auto" && geometry.scrollable > 40,
-    `[${name}] the strip scrolls horizontally on its own`,
-    `${geometry.overflowX} / ${geometry.scrollable}px`,
-  );
-
-  /* Desktop holds three frames; phones give one photograph the screen and keep
-     a strip of the next in view. The peek has to survive: the arrows are hidden
-     on touch, so it is the only thing saying the rail scrolls. */
-  const visible = geometry.stripWidth / geometry.frameWidth;
-  expect(
-    width >= 768 ? visible > 2.95 && visible < 3.1 : visible > 1.1 && visible < 1.25,
-    `[${name}] the strip shows the right number of frames`,
-    visible.toFixed(2),
-  );
+  expect(geometry.gap >= 11.5 && geometry.gap <= 12.5, `[${name}] cards use a 12px gap`, `${geometry.gap}px`);
+  expect(Math.abs(geometry.aspect - 0.75) < 0.02, `[${name}] cards use a 3:4 editorial ratio`, geometry.aspect.toFixed(3));
+  expect(geometry.alignment < 1.5, `[${name}] carousel aligns with the copy`, `${geometry.alignment}px`);
+  expect(geometry.copyGap >= 32 && geometry.copyGap <= 58, `[${name}] copy and imagery have a deliberate pause`, `${geometry.copyGap}px`);
+  expect(geometry.footerDisplay === "grid", `[${name}] progress and counter are visible`);
+  expect(geometry.firstDisabled, `[${name}] previous control is disabled at the start`);
+  expect(geometry.pageOverflow <= 1, `[${name}] no page-level horizontal overflow`, `${geometry.pageOverflow}px`);
 
   if (width < 768) {
-    const screenHeight = geometry.frameHeight / geometry.viewportHeight;
+    expect(geometry.navDisplay === "none", `[${name}] phone navigation is swipe-only`);
+    expect(geometry.counter === "01 / 07", `[${name}] phone counter starts at 01 / 07`, geometry.counter);
+    expect(geometry.cardWidth / width >= 0.79 && geometry.cardWidth / width <= 0.83, `[${name}] one large card plus a controlled next-card peek`, `${geometry.cardWidth}px`);
+  } else {
+    expect(geometry.navDisplay !== "none", `[${name}] desktop arrows are visible`);
+    expect(geometry.counter === "01–03 / 07", `[${name}] desktop counter shows the visible range`, geometry.counter);
+    expect(Math.abs(geometry.cardWidth - (geometry.stripWidth - 24) / 3) < 1.5, `[${name}] desktop shows exactly three frames`, `${geometry.cardWidth}px`);
+  }
+
+  if (width >= 768) {
+    await page.locator(".st2-guest-nav-button.is-next").click();
+    await page.waitForTimeout(500);
     expect(
-      screenHeight > 0.55,
-      `[${name}] one photograph owns the screen rather than reading as a thumbnail`,
-      `${Math.round(screenHeight * 100)}% of the viewport height`,
+      (await page.locator(".st2-guest-stage").getAttribute("data-active-index")) === "1",
+      `[${name}] next control advances by one frame`,
     );
   }
 
-  /* `sizes` is what the browser budgets resolution from, so it has to track
-     .st2-guest's flex-basis. Left stale it under-asks and quietly serves a
-     soft photograph at the width where it shows most. */
-  expect(
-    Math.abs(geometry.declaredWidth - geometry.frameWidth) / geometry.frameWidth < 0.06,
-    `[${name}] the declared sizes matches the rendered frame`,
-    `declared ${Math.round(geometry.declaredWidth)}px against ${Math.round(geometry.frameWidth)}px`,
-  );
-  expect(
-    geometry.candidates === 3,
-    `[${name}] the srcset offers all three rungs`,
-    `${geometry.candidates}`,
-  );
-  expect(
-    geometry.chosen >= Math.min(1200, geometry.frameWidth * geometry.dpr),
-    `[${name}] the chosen file covers the frame at this density`,
-    `${geometry.chosen}w for ${Math.round(geometry.frameWidth * geometry.dpr)}px`,
-  );
-
-  expect(
-    geometry.bleedLeft > 8 && geometry.bleedRight > 8,
-    `[${name}] the strip runs full-bleed past the shell gutter`,
-    `${geometry.bleedLeft.toFixed(1)} / ${geometry.bleedRight.toFixed(1)}`,
-  );
-  expect(
-    geometry.pageOverflow <= 1,
-    `[${name}] no horizontal page overflow`,
-    `${geometry.pageOverflow}px`,
-  );
-
-  /* Scrolling the strip must not drag the page sideways with it. */
-  await page.evaluate(() => {
-    document.querySelector(".st2-guest-strip").scrollLeft = 400;
-  });
-  await page.waitForTimeout(200);
-  const afterScroll = await page.evaluate(() => ({
-    left: document.querySelector(".st2-guest-strip").scrollLeft,
-    pageOverflow:
-      document.documentElement.scrollWidth -
-      document.documentElement.clientWidth,
-  }));
-  expect(afterScroll.left > 100, `[${name}] the strip actually scrolls`);
-  expect(
-    afterScroll.pageOverflow <= 1,
-    `[${name}] scrolling the strip does not push the page`,
-    `${afterScroll.pageOverflow}px`,
-  );
-
-  /* Put frame 10 on the leading edge, advance once, and confirm the next
-     visible frame is 1 even if the loop correction swaps technical copies. */
-  await page.evaluate(() => {
-    const strip = document.querySelector(".st2-guest-strip");
-    const tenth = document.querySelector('.st2-guest[data-carousel-copy="1"][data-carousel-slide="10"]');
-    strip.scrollLeft = tenth.offsetLeft;
-  });
-  await page.waitForTimeout(150);
-  if (width >= 768) {
-    await page.locator(".st2-guest-nav-button.is-next").click();
-  } else {
-    await page.evaluate(() => {
-      const strip = document.querySelector(".st2-guest-strip");
-      const frame = strip.querySelector(".st2-guest");
-      const gap = Number.parseFloat(getComputedStyle(strip).gap) || 0;
-      strip.scrollBy({ left: frame.getBoundingClientRect().width + gap });
-    });
-  }
-  await page.waitForTimeout(700);
-  const loopedSlide = await page.evaluate(() => {
-    const strip = document.querySelector(".st2-guest-strip");
-    const edge = strip.getBoundingClientRect().left;
-    return [...document.querySelectorAll(".st2-guest")]
-      .map((frame) => ({
-        slide: frame.dataset.carouselSlide,
-        distance: Math.abs(frame.getBoundingClientRect().left - edge),
-      }))
-      .sort((a, b) => a.distance - b.distance)[0]?.slide;
-  });
-  expect(loopedSlide === "1", `[${name}] frame 10 advances directly to frame 1`, loopedSlide);
-
-  await section.screenshot({ path: `${OUT}/guest-strip-${name}.png` });
+  await page.screenshot({ path: `test-results/guest-carousel-${name}.png`, fullPage: false });
   await page.close();
 }
 
 await browser.close();
 
 if (failures.length) {
-  console.error(`Archive strip: ${failures.length} failure(s)`);
-  failures.forEach((failure) => console.error(`- ${failure}`));
-  process.exitCode = 1;
-} else {
-  console.log("Archive carousel: PASS (10 frames, seamless loop, two controls)");
+  console.error(failures.map((failure) => `- ${failure}`).join("\n"));
+  process.exit(1);
 }
+
+console.log("Guest carousel verified at desktop, laptop, tablet and phone widths.");

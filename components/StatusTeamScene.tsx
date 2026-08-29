@@ -22,7 +22,7 @@ const BRAND_LOGOS = [
   "PARTNER 06",
 ];
 
-const GUEST_ORDER = [1, 2, 3, 5, 4, 7, 6, 9, 8, 10];
+const GUEST_ORDER = [1, 2, 3, 5, 4, 7, 6];
 
 const GUESTS: GuestCarouselItem[] = GUEST_ORDER.map((n, index) => ({
   img: `show-${n}`,
@@ -331,14 +331,14 @@ export default function StatusTeamScene() {
       {CONTENT.guests && (
         <section className="st2-vanguard st2-shell" aria-labelledby="st2-vanguard-title">
           <header className="st2-vanguard-head" data-st2-section-title>
-            {/* The show's own name is the chapter title now — it carries the
-                id the section is labelled by, so it stays a real heading. */}
+            <p className="st2-vanguard-kicker">Предыдущий показ · Москва</p>
             <h2 id="st2-vanguard-title" className="st2-vanguard-tag">
               Славянский взгляд
             </h2>
             <div className="st2-vanguard-intro">
               <p className="st2-vanguard-lead">
-                Новая эстетика женственности — сильной, чувственной и самобытной.
+                30 моделей и знаковые бренды в fashion-шоу о новой эстетике
+                женственности — сильной, чувственной и самобытной.
               </p>
             </div>
           </header>

@@ -381,6 +381,17 @@
   text-align: start;
 }
 
+.st-page-two .st2-vanguard-kicker {
+  margin: 0 0 1rem;
+  color: rgba(198, 168, 124, 0.78);
+  font-family: var(--font-ui);
+  font-size: clamp(0.68rem, 0.64rem + 0.16vw, 0.78rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
 /* The show's own name is the chapter title. Type is set to match «МАСШТАБ В
    ЦИФРАХ» — the display face at 400 and -0.025em — and only the champagne
    colour is its own.
@@ -396,7 +407,7 @@
   margin-inline-end: 0;
   color: var(--st2-champagne);
   font-family: var(--font-display);
-  font-size: clamp(1.58rem, 7.63vw, 2.33rem);
+  font-size: clamp(2.1rem, 8.8vw, 2.45rem);
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -0.025em;
@@ -448,7 +459,7 @@
 
   .st-page-two .st2-vanguard-tag {
     margin-block-start: 0;
-    font-size: clamp(2.75rem, 1.965rem + 3.932vw, 5.77rem);
+    font-size: clamp(4.5rem, 5.5vw, 5rem);
   }
 }
 
@@ -465,17 +476,12 @@
 
 /* Archive strip -------------------------------------------- */
 
-/* The frames from «Славянский взгляд» run as one flat, full-bleed strip.
-   Three technical copies create the seamless 10 → 1 loop; the accessible
-   middle copy still contains exactly the ten requested photographs. */
+/* Seven selected frames form one finite editorial sequence. The rail stays
+   inside the text grid so the heading, copy and photography share one axis. */
 .st-page-two .st2-guest-strip {
-  --st2-strip-gap: 3px;
+  --st2-strip-gap: 12px;
 
-  margin-block-start: clamp(1.5rem, 2vw, 2rem);
-  /* Escape the shell's gutter with a negative margin, never width: 100vw —
-     that counts the scrollbar. Past --st2-max the strip stops at the
-     measure, which is what a 110rem shell is for. */
-  margin-inline: calc(var(--st2-gutter) * -1);
+  margin: 0;
   display: flex;
   gap: var(--st2-strip-gap);
   padding: 0;
@@ -502,9 +508,7 @@
 
 .st-page-two .st2-guest {
   flex: 0 0 calc((100% - var(--st2-strip-gap)) / 2);
-  /* Keep two frames across on a phone, but give them a taller editorial
-     crop so the photography reads larger without changing the rail width. */
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 3 / 4;
   min-block-size: 0;
   overflow: hidden;
   scroll-snap-align: start;
@@ -524,11 +528,15 @@
 
 .st-page-two .st2-guest-stage {
   position: relative;
+  min-inline-size: 0;
+  margin-block-start: clamp(2.25rem, 3.5vw, 3.5rem);
 }
 
 .st-page-two .st2-guest-nav {
   position: absolute;
-  inset: 0;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: calc(100% - 2.75rem);
   z-index: 2;
   pointer-events: none;
 }
@@ -548,7 +556,12 @@
   transform: translateY(-50%);
   pointer-events: auto;
   cursor: pointer;
-  transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease;
+  transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease, opacity 220ms ease;
+}
+
+.st-page-two .st2-guest-nav-button:disabled {
+  opacity: 0.24;
+  cursor: default;
 }
 
 .st-page-two .st2-guest-nav-button.is-prev { inset-inline-start: 0.6rem; }
@@ -564,22 +577,55 @@
   stroke-linejoin: round;
 }
 
+.st-page-two .st2-guest-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  margin-block-start: 1rem;
+}
+
+.st-page-two .st2-guest-progress {
+  position: relative;
+  block-size: 1px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.st-page-two .st2-guest-progress span {
+  position: absolute;
+  inset: 0;
+  background: var(--st2-champagne);
+  transform: scaleX(var(--st2-progress));
+  transform-origin: left center;
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.st-page-two .st2-guest-counter {
+  min-inline-size: 5.9rem;
+  margin: 0;
+  color: var(--st2-white);
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-align: end;
+}
+
+.st-page-two .st2-guest-counter-total {
+  color: rgba(255, 255, 255, 0.48);
+}
+
 @media (max-width: 767px) {
-  /* One photograph per screen with the next one showing, which is what the
-     client-approved reference does in its own archive: a single frame at the
-     full column width, around two thirds of the screen's height. At 62vw the
-     frame was 43% of an iPhone's height and the chapter read as thumbnails.
-
-     The peek is not decoration. The arrows below are hidden on touch, so the
-     strip of the next frame is the only thing telling a reader there is more
-     than one photograph here — which is why this is 88vw and not 100vw.
-
-     The height cap only binds on viewports that are wide but short: a small
-     tablet in portrait, or any phone in landscape, where 88vw would be taller
-     than the screen. Every real phone in portrait is width-bound. */
+  /* One large 3:4 frame owns the phone layout. The remaining column width and
+     the 12px gap expose a controlled piece of the next image as the swipe cue. */
   .st-page-two .st2-guest {
-    flex-basis: 88vw;
-    flex-basis: min(88vw, calc(62svh * 2 / 3));
+    flex-basis: min(82vw, 20rem);
+  }
+
+  .st-page-two .st2-guest-strip {
+    padding-inline-end: 12vw;
   }
 
   /* Touch owns phone navigation; desktop controls remain unchanged. */
@@ -597,7 +643,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .st-page-two .st2-guest-nav-button:hover {
+  .st-page-two .st2-guest-nav-button:not(:disabled):hover {
     color: var(--st2-ink);
     border-color: var(--st2-champagne);
     background: var(--st2-champagne);
@@ -900,7 +946,7 @@
 
   .st-page-two .st2-vanguard-intro {
     max-inline-size: 32ch;
-    margin-block-start: 0.9rem;
+    margin-block-start: 1.125rem;
     margin-inline: 0;
     text-align: start;
   }

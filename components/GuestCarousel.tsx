@@ -1,11 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 
 export type GuestCarouselItem = {
   img: string;
-  /* Ascending, and every entry must exist in public/media. The largest is the
-     src fallback; the browser picks the rest against `sizes`. */
   widths: number[];
   label: string;
   alt: string;
@@ -15,142 +13,162 @@ type GuestCarouselProps = {
   guests: GuestCarouselItem[];
 };
 
-const COPIES = [0, 1, 2];
+const DESKTOP_QUERY = "(min-width: 768px)";
 
-/**
- * A flat contact-sheet rail. Three equal runs let the row wrap from frame 10
- * to frame 1 without a visible edge; only its scroll position is corrected.
- */
 export default function GuestCarousel({ guests }: GuestCarouselProps) {
   const stripRef = useRef<HTMLUListElement>(null);
-  const correctingRef = useRef(false);
+  const animationFrameRef = useRef<number | null>(null);
+  const [firstVisible, setFirstVisible] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(1);
 
-  const runWidth = useCallback(() => {
+  const updatePosition = useCallback(() => {
     const strip = stripRef.current;
-    if (!strip) return 0;
-    const frame = strip.querySelector<HTMLElement>(".st2-guest");
-    const gap = Number.parseFloat(getComputedStyle(strip).gap) || 0;
-    return ((frame?.getBoundingClientRect().width ?? 0) + gap) * guests.length;
+    const firstCard = strip?.querySelector<HTMLElement>(".st2-guest");
+    if (!strip || !firstCard) return;
+
+    const gap = Number.parseFloat(getComputedStyle(strip).columnGap) || 0;
+    const step = firstCard.getBoundingClientRect().width + gap;
+    const nextVisibleCount = window.matchMedia(DESKTOP_QUERY).matches ? 3 : 1;
+    const lastStart = Math.max(guests.length - nextVisibleCount, 0);
+    const nextIndex = Math.min(Math.max(Math.round(strip.scrollLeft / step), 0), lastStart);
+
+    setVisibleCount(nextVisibleCount);
+    setFirstVisible(nextIndex);
   }, [guests.length]);
-
-  const centreRail = useCallback(() => {
-    const strip = stripRef.current;
-    if (!strip || !guests.length) return;
-    strip.scrollLeft = runWidth();
-  }, [guests.length, runWidth]);
 
   useEffect(() => {
     const strip = stripRef.current;
-    if (!strip || !guests.length) return;
-    const frame = window.requestAnimationFrame(centreRail);
-    const observer = new ResizeObserver(centreRail);
-    observer.observe(strip);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      observer.disconnect();
-    };
-  }, [centreRail, guests.length]);
-
-  const keepLooping = () => {
-    const strip = stripRef.current;
-    if (!strip || correctingRef.current) return;
-    const run = runWidth();
-    if (!run) return;
-
-    if (strip.scrollLeft < run * 0.22) {
-      correctingRef.current = true;
-      strip.scrollLeft += run;
-      correctingRef.current = false;
-    } else if (strip.scrollLeft > run * 1.78) {
-      correctingRef.current = true;
-      strip.scrollLeft -= run;
-      correctingRef.current = false;
-    }
-  };
-
-  const step = (direction: -1 | 1) => {
-    const strip = stripRef.current;
     if (!strip) return;
 
-    // Advance by one editorial frame, not by the visible viewport. Moving by
-    // two or three frames made the controls feel disconnected from the image
-    // directly under the arrow.
-    const frame = strip.querySelector<HTMLElement>(".st2-guest");
-    const gap = Number.parseFloat(getComputedStyle(strip).gap) || 0;
-    const distance = (frame?.getBoundingClientRect().width ?? strip.clientWidth) + gap;
+    const observer = new ResizeObserver(updatePosition);
+    observer.observe(strip);
+    updatePosition();
 
-    strip.scrollBy({
-      left: direction * distance,
+    return () => observer.disconnect();
+  }, [updatePosition]);
+
+  useEffect(
+    () => () => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+    },
+    [],
+  );
+
+  const handleScroll = () => {
+    if (animationFrameRef.current !== null) {
+      window.cancelAnimationFrame(animationFrameRef.current);
+    }
+    animationFrameRef.current = window.requestAnimationFrame(updatePosition);
+  };
+
+  const goTo = (index: number) => {
+    const strip = stripRef.current;
+    const firstCard = strip?.querySelector<HTMLElement>(".st2-guest");
+    if (!strip || !firstCard) return;
+
+    const gap = Number.parseFloat(getComputedStyle(strip).columnGap) || 0;
+    const lastStart = Math.max(guests.length - visibleCount, 0);
+    const nextIndex = Math.min(Math.max(index, 0), lastStart);
+
+    strip.scrollTo({
+      left: nextIndex * (firstCard.getBoundingClientRect().width + gap),
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "auto"
         : "smooth",
     });
   };
 
+  const lastVisible = Math.min(firstVisible + visibleCount, guests.length);
+  const lastStart = Math.max(guests.length - visibleCount, 0);
+  const progress = guests.length === 0 ? 1 : lastVisible / guests.length;
+  const format = (value: number) => String(value).padStart(2, "0");
+
   return (
-    <div className="st2-guest-stage" data-st2-guest-stage>
+    <div
+      className="st2-guest-stage"
+      data-st2-guest-stage
+      data-active-index={firstVisible}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Кадры предыдущего показа «Славянский взгляд»"
+    >
+      <p className="sr-only" id="st2-guest-instructions">
+        Листайте фотографии. На широком экране одновременно показаны три кадра.
+      </p>
+
       <ul
         className="st2-guest-strip"
         ref={stripRef}
-        role="region"
-        aria-label="Кадры предыдущего показа «Славянский взгляд»"
+        aria-describedby="st2-guest-instructions"
         tabIndex={0}
-        onScroll={keepLooping}
+        onScroll={handleScroll}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {
             event.preventDefault();
-            step(-1);
+            goTo(firstVisible - 1);
           }
           if (event.key === "ArrowRight") {
             event.preventDefault();
-            step(1);
+            goTo(firstVisible + 1);
           }
         }}
       >
-        {COPIES.flatMap((copy) =>
-          guests.map((guest, index) => (
-            <li
-              className="st2-guest"
-              key={`${copy}-${guest.label}`}
-              aria-hidden={copy !== 1}
-              data-carousel-copy={copy}
-              data-carousel-slide={index + 1}
-            >
-              <img
-                src={`/media/${guest.img}-${guest.widths[guest.widths.length - 1]}.webp`}
-                srcSet={guest.widths
-                  .map((w) => `/media/${guest.img}-${w}.webp ${w}w`)
-                  .join(", ")}
-                /* Must track .st2-guest's flex-basis, min() and all. The
-                   browser budgets resolution from this value, not from the
-                   rendered box: when it said 50vw against a 62vw frame it
-                   under-asked by a quarter and only escaped a soft image
-                   because the ladder's next rung happened to be close enough.
-
-                   `vh` rather than the rule's `svh`, on purpose. The preload
-                   scanner reads this before layout, and the two differ only
-                   while the URL bar is showing — where vh is the larger of
-                   the pair, so the miss is an over-ask. Where min() is not
-                   understood the whole entry is dropped and the fallback is
-                   100vw, which over-asks as well. */
-                sizes="(min-width: 768px) 33vw, min(88vw, 41.33vh)"
-                alt={copy === 1 ? guest.alt : ""}
-                loading="lazy"
-                draggable={false}
-              />
-            </li>
-          )),
-        )}
+        {guests.map((guest, index) => (
+          <li
+            className="st2-guest"
+            key={guest.label}
+            data-carousel-slide={index + 1}
+          >
+            <img
+              src={`/media/${guest.img}-${guest.widths[guest.widths.length - 1]}.webp`}
+              srcSet={guest.widths
+                .map((width) => `/media/${guest.img}-${width}.webp ${width}w`)
+                .join(", ")}
+              sizes="(min-width: 768px) 32vw, 82vw"
+              alt={guest.alt}
+              loading="lazy"
+              draggable={false}
+            />
+          </li>
+        ))}
       </ul>
 
       <div className="st2-guest-nav" aria-label="Навигация по кадрам">
-        <button className="st2-guest-nav-button is-prev" type="button" onClick={() => step(-1)} aria-label="Предыдущие кадры">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" /></svg>
+        <button
+          className="st2-guest-nav-button is-prev"
+          type="button"
+          onClick={() => goTo(firstVisible - 1)}
+          disabled={firstVisible === 0}
+          aria-label="Предыдущий кадр"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 5 8 12l7 7" />
+          </svg>
         </button>
-        <button className="st2-guest-nav-button is-next" type="button" onClick={() => step(1)} aria-label="Следующие кадры">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+        <button
+          className="st2-guest-nav-button is-next"
+          type="button"
+          onClick={() => goTo(firstVisible + 1)}
+          disabled={firstVisible === lastStart}
+          aria-label="Следующий кадр"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 5 7 7-7 7" />
+          </svg>
         </button>
+      </div>
+
+      <div className="st2-guest-footer">
+        <div className="st2-guest-progress" aria-hidden="true">
+          <span style={{ "--st2-progress": progress } as CSSProperties} />
+        </div>
+        <p className="st2-guest-counter" aria-live="polite">
+          <span>{format(firstVisible + 1)}</span>
+          {visibleCount > 1 && <span>–{format(lastVisible)}</span>}
+          <span className="st2-guest-counter-total"> / {format(guests.length)}</span>
+        </p>
       </div>
     </div>
   );
