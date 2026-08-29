@@ -54,6 +54,19 @@
   padding-block-end: var(--pad-chapter) !important;
 }
 
+@media (max-width: 767px) {
+  /* The archive footer and metrics title are one continuous editorial
+     chapter. Two full 64px beats created 128px of empty ground between them;
+     retain a clear seam without making the next heading feel detached. */
+  .st-page-two .st2-vanguard {
+    padding-block-end: 16px !important;
+  }
+
+  .st-page-two .st2-scale-shell {
+    padding-block-start: 24px !important;
+  }
+}
+
 /* ============================================================
    02 — ПУЛЬС. The scene itself stays at zero: .tenets pins
    edge to edge and any padding here is dead black under the pin.

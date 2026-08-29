@@ -111,6 +111,7 @@ function ImpactVideo() {
     if (video.readyState === 0) video.load();
 
     let active = false;
+    let screenSwapState: "enter" | "leave" | null = null;
     let raf = 0;
 
     const requestPlay = () => {
@@ -126,7 +127,13 @@ function ImpactVideo() {
     const syncPlayback = () => {
       const rect = section.getBoundingClientRect();
       const viewport = window.innerHeight || document.documentElement.clientHeight;
-      const shouldRun = rect.top <= viewport * 1.15 && rect.bottom >= -viewport * 0.12;
+      const visibleEnough = rect.top <= viewport * 0.72 && rect.bottom >= viewport * 0.12;
+      const shouldRun =
+        screenSwapState === "enter"
+          ? true
+          : screenSwapState === "leave"
+            ? false
+            : visibleEnough;
       active = shouldRun;
 
       if (active) requestPlay();
@@ -155,6 +162,28 @@ function ImpactVideo() {
       else video.pause();
     };
     const onPageShow = () => syncPlayback();
+    const onScreenSwap = (event: Event) => {
+      const state = (
+        event as CustomEvent<{ state?: "enter" | "leave" | "settle" }>
+      ).detail?.state;
+
+      if (state === "enter") {
+        /* Mobile Safari only allows gesture-free autoplay while muted. Start
+           the film from the swipe itself instead of waiting for transformed
+           geometry to reach IntersectionObserver. */
+        screenSwapState = "enter";
+        video.muted = true;
+        setMuted(true);
+      } else if (state === "leave") {
+        screenSwapState = "leave";
+      } else if (state === "settle") {
+        screenSwapState = null;
+      } else {
+        return;
+      }
+
+      syncPlayback();
+    };
 
     observer.observe(section);
     window.addEventListener("scroll", scheduleSync, { passive: true });
@@ -164,6 +193,7 @@ function ImpactVideo() {
     video.addEventListener("canplay", onReady);
     video.addEventListener("canplaythrough", onReady);
     document.addEventListener("visibilitychange", onVisibility);
+    document.addEventListener("impact-video-swap", onScreenSwap);
     window.addEventListener("pageshow", onPageShow);
 
     syncPlayback();
@@ -182,6 +212,7 @@ function ImpactVideo() {
       video.removeEventListener("canplay", onReady);
       video.removeEventListener("canplaythrough", onReady);
       document.removeEventListener("visibilitychange", onVisibility);
+      document.removeEventListener("impact-video-swap", onScreenSwap);
       window.removeEventListener("pageshow", onPageShow);
     };
   }, []);

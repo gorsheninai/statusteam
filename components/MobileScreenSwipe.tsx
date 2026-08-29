@@ -43,6 +43,11 @@ export default function MobileScreenSwipe() {
         new CustomEvent("hero-hold", { detail: { holding } }),
       );
 
+    const setImpactPlayback = (state: "enter" | "leave" | "settle") =>
+      document.dispatchEvent(
+        new CustomEvent("impact-video-swap", { detail: { state } }),
+      );
+
     const clearTransition = () => {
       root.classList.remove(
         "mobile-screen-swap",
@@ -94,6 +99,7 @@ export default function MobileScreenSwipe() {
       } else {
         window.scrollTo({ top: 0, behavior: "auto" });
       }
+      setImpactPlayback("settle");
 
       unlockScroll();
       locked = false;
@@ -119,6 +125,7 @@ export default function MobileScreenSwipe() {
       transitionPlayed = true;
       lockScroll();
       holdHero(true);
+      setImpactPlayback(direction === "forward" ? "enter" : "leave");
 
       /* Arm the two planes in their start positions with transitions
          suppressed. Without `--arming` the start state is itself animated —
@@ -209,6 +216,7 @@ export default function MobileScreenSwipe() {
       if (locked) {
         unlockScroll();
         holdHero(false);
+        setImpactPlayback("settle");
       }
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);

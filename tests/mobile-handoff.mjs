@@ -104,6 +104,8 @@ const active = await page.evaluate(() => {
     heroTop: hero.top,
     statusTop: status.top,
     navVisibility: getComputedStyle(document.querySelector(".nav")).visibility,
+    videoPlaying: !document.querySelector(".st2-video video").paused,
+    videoMuted: document.querySelector(".st2-video video").muted,
   };
 });
 
@@ -114,6 +116,11 @@ check(
   JSON.stringify(active),
 );
 check(active.navVisibility === "hidden", "the mobile header leaves with screen one");
+check(
+  active.videoPlaying && active.videoMuted,
+  "the muted film starts as soon as the swipe begins",
+  JSON.stringify(active),
+);
 
 await page.waitForTimeout(950);
 
@@ -155,10 +162,12 @@ const landed = await page.evaluate(() => ({
   swapActive: document.documentElement.classList.contains("mobile-screen-swap"),
   impactTop: document.querySelector(".st2-impact").getBoundingClientRect().top,
   navVisibility: getComputedStyle(document.querySelector(".nav")).visibility,
+  videoPlaying: !document.querySelector(".st2-video video").paused,
 }));
 check(!landed.swapActive, "temporary transition classes clear after landing");
 check(Math.abs(landed.impactTop) <= 2, "screen two lands exactly at the viewport top", String(landed.impactTop));
 check(landed.navVisibility === "hidden", "the header stays hidden across the film screen");
+check(landed.videoPlaying, "the film keeps playing after the swipe lands");
 
 await page.evaluate(() => document.querySelector(".st2-vanguard").scrollIntoView());
 await page.waitForTimeout(120);
