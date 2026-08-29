@@ -403,6 +403,7 @@
    have to move with it, or the title stops filling the measure. */
 .st-page-two .st2-vanguard-tag {
   display: block;
+  overflow: hidden;
   margin-block-start: 0;
   margin-inline-end: 0;
   color: var(--st2-champagne);
@@ -415,6 +416,10 @@
   letter-spacing: -0.025em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.st-page-two .st2-vanguard-tag-line {
+  display: block;
 }
 
 /* What the previous show was, in two beats: the statement, then the scale.

@@ -606,17 +606,60 @@ export default function Motion() {
           "[data-st2-section-title]",
         );
         if (vanguardTitle) {
-          gsap.from(vanguardTitle, {
-            opacity: 0,
-            y: 26,
-            duration: 0.8,
-            ease: EASE,
+          const vanguardKicker = vanguardTitle.querySelector<HTMLElement>(
+            ".st2-vanguard-kicker",
+          );
+          const vanguardTag = vanguardTitle.querySelector<HTMLElement>(
+            ".st2-vanguard-tag-line",
+          );
+          const vanguardIntro = vanguardTitle.querySelector<HTMLElement>(
+            ".st2-vanguard-intro",
+          );
+          const vanguardReveal = gsap.timeline({
             scrollTrigger: {
               trigger: vanguardTitle,
               start: "top 84%",
               once: true,
             },
           });
+
+          if (vanguardKicker) {
+            vanguardReveal.from(
+              vanguardKicker,
+              {
+                autoAlpha: 0,
+                y: 14,
+                duration: 0.52,
+                ease: EASE,
+              },
+              0,
+            );
+          }
+
+          if (vanguardTag) {
+            vanguardReveal.from(
+              vanguardTag,
+              {
+                yPercent: 112,
+                duration: 0.9,
+                ease: EASE,
+              },
+              0.16,
+            );
+          }
+
+          if (vanguardIntro) {
+            vanguardReveal.from(
+              vanguardIntro,
+              {
+                autoAlpha: 0,
+                y: 18,
+                duration: 0.72,
+                ease: EASE,
+              },
+              0.48,
+            );
+          }
         }
 
         /* The archive strip deliberately has no entrance: it is a flat

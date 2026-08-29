@@ -404,7 +404,7 @@ export default function StatusTeamScene() {
           <header className="st2-vanguard-head" data-st2-section-title>
             <p className="st2-vanguard-kicker">Предыдущий показ · Москва</p>
             <h2 id="st2-vanguard-title" className="st2-vanguard-tag">
-              Славянский взгляд
+              <span className="st2-vanguard-tag-line">Славянский взгляд</span>
             </h2>
             <div className="st2-vanguard-intro">
               <p className="st2-vanguard-lead">
