@@ -337,8 +337,9 @@ export default function StatusTeamScene() {
             </h2>
             <div className="st2-vanguard-intro">
               <p className="st2-vanguard-lead">
-                30 моделей и знаковые бренды в fashion-шоу о новой эстетике
-                женственности — сильной, чувственной и самобытной.
+                <span className="st2-vanguard-line">30 моделей и знаковые бренды —</span>{" "}
+                <span className="st2-vanguard-line">fashion-шоу о сильной, чувственной</span>{" "}
+                <span className="st2-vanguard-line">и самобытной женственности.</span>
               </p>
             </div>
           </header>

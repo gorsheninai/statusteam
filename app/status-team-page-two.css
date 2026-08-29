@@ -442,6 +442,10 @@
   letter-spacing: 0.005em;
 }
 
+.st-page-two .st2-vanguard-line {
+  display: inline;
+}
+
 @media (max-width: 639px) {
   /* On phones the column is already narrow: let the copy use it, and pull
      the two beats closer so the pair still reads as one caption. */
@@ -947,15 +951,25 @@
   }
 
   .st-page-two .st2-vanguard-intro {
-    max-inline-size: 32ch;
+    max-inline-size: none;
     margin-block-start: 1.125rem;
     margin-inline: 0;
     text-align: start;
+    text-wrap: wrap;
   }
 
   .st-page-two .st2-vanguard-lead {
-    font-size: clamp(0.98rem, 4.2vw, 1.08rem);
+    font-size: 0.9375rem;
     line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  /* The lead is an editorial caption, not a fluid CMS paragraph. These
+     three semantic beats keep its rhythm intentional instead of allowing
+     the browser to leave a short orphaned final line. Each beat can still
+     wrap on very narrow or zoomed viewports, so the copy never overflows. */
+  .st-page-two .st2-vanguard-line {
+    display: block;
   }
 
 }
