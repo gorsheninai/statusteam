@@ -22,6 +22,9 @@ import "./hero-mobile-location-fix.css";
 import "./tickets-preorder.css";
 import "./desktop-layout-polish.css";
 import "./hero-dual-cta.css";
+/* Vertical rhythm last: it settles the block padding every earlier pass set
+   by hand, so it has to see all of them. */
+import "./page-rhythm.css";
 
 /* Core project faces are self-hosted. Cormorant Garamond is loaded through
    next/font, downloaded at build time and self-hosted in the production bundle. */

@@ -205,9 +205,14 @@ for (const [name, width, height] of SIZES) {
     `[${name}] join heading stays uppercase on one line`,
   );
   check(joinHeading?.centered && joinHeading?.fits, `[${name}] join heading is centered without clipping`);
+  /* 64 at both widths, not 64/48. Tickets and participation are one
+     continuous wine chapter, so this seam is a beat boundary and takes the
+     beat step from app/page-rhythm.css — which is the value this check
+     already used above 768. The 48 below it was the last hand-set number
+     left on the page. */
   check(
-    Math.abs((joinHeading?.topPadding ?? 0) - (width >= 768 ? 64 : 48)) < 1,
-    `[${name}] join section uses compact top padding`,
+    Math.abs((joinHeading?.topPadding ?? 0) - 64) < 1,
+    `[${name}] join section opens on the beat step`,
     `${joinHeading?.topPadding}px`,
   );
   check(

@@ -1,0 +1,99 @@
+/* The page's vertical rhythm, in one place.
+
+   Every chapter used to carry hand-written block padding, and the values had
+   drifted apart: at 390 the archive beat opened on 26px, «Что вас ждёт» on 42,
+   «Участие» on 28, «Вопросы» on 40, and the carousel ran into the stats band
+   with nothing between them at all. Nothing was wrong with any single number;
+   what was wrong is that there were nine of them and no scale.
+
+   The scale is not invented here. Three suites already assert it and had been
+   failing against the CSS for some time:
+
+     tests/faq-editorial.mjs  — a chapter opens and closes on 80 / 112
+     tests/stats-podium.mjs   — a beat boundary is 64
+     tests/pulse-title.mjs    — a title block sits 40 / 64 off its own top
+
+   So the numbers below are the project's own; this file is what finally
+   applies them. Stepped at 768 rather than fluid because that is how those
+   specs are written — a clamp cannot hit 112 at 768 and 112 at 1440 both.
+
+   Loaded last, so `!important` here is what beats the earlier per-chapter
+   passes rather than decoration. */
+
+:root {
+  /* a group of type to the content it introduces */
+  --pad-group: 40px;
+  /* beat to beat inside one chapter, and across a seam two chapters share */
+  --pad-beat: 64px;
+  /* chapter to chapter, where the ground changes */
+  --pad-chapter: 80px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --pad-group: 64px;
+    --pad-beat: 64px;
+    --pad-chapter: 112px;
+  }
+}
+
+/* ============================================================
+   01 — STATUS TEAM. Three beats under one ground.
+   ============================================================ */
+
+/* The bottom is what the stats band is measured against: the suite reads the
+   distance from the carousel's own box to the top of the band, so this
+   padding is the whole of that gap. */
+.st-page-two .st2-vanguard {
+  padding-block: var(--pad-beat) var(--pad-beat) !important;
+}
+
+/* Last beat of the chapter, so it closes on the chapter step. */
+.st-page-two .st2-scale-shell {
+  padding-block-start: var(--pad-beat) !important;
+  padding-block-end: var(--pad-chapter) !important;
+}
+
+/* ============================================================
+   02 — ПУЛЬС. The scene itself stays at zero: .tenets pins
+   edge to edge and any padding here is dead black under the pin.
+   Only the lock-up block above it takes a step.
+   ============================================================ */
+
+/* hero-mobile-offer-final.css pins this block with !important at both ends,
+   which is why the lock-up opened on 22px against a specified 40. */
+.pulse-scene .pulse-intro {
+  padding-block-start: var(--pad-group) !important;
+  padding-block-end: var(--pad-group) !important;
+  padding-inline: 16px !important;
+}
+
+@media (min-width: 768px) {
+  .pulse-scene .pulse-intro {
+    padding-inline: 24px !important;
+  }
+}
+
+/* ============================================================
+   03–06 — the chapters that are ordinary flow.
+   ============================================================ */
+
+/* Paper between two ink grounds: it carries its own air on both sides
+   rather than letting the colour seam land on its last line. */
+.exp-scene {
+  padding-block: var(--pad-chapter) !important;
+}
+
+/* Tickets and participation are one continuous wine chapter, so the seam
+   between them is a beat, not a chapter. */
+.tickets {
+  padding-block: var(--pad-chapter) var(--pad-beat) !important;
+}
+
+.join {
+  padding-block: var(--pad-beat) var(--pad-chapter) !important;
+}
+
+.faq-scene {
+  padding-block: var(--pad-chapter) !important;
+}
