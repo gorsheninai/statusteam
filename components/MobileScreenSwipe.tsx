@@ -30,6 +30,7 @@ export default function MobileScreenSwipe() {
     let timer = 0;
     let frame = 0;
     let navFrame = 0;
+    let primedVideo: HTMLVideoElement | null = null;
 
     const enabled = () => query.matches && !reducedMotion.matches;
     const heroIsAtTop = () => window.scrollY <= 2;
@@ -47,6 +48,26 @@ export default function MobileScreenSwipe() {
       document.dispatchEvent(
         new CustomEvent("impact-video-swap", { detail: { state } }),
       );
+
+    /* iOS gives the first touchstart the strongest media user activation.
+       Prime the incoming film there, before touchmove crosses the transition
+       threshold. Muted + inline keeps this eligible for autoplay everywhere. */
+    const primeImpactVideo = () => {
+      const video = document.querySelector<HTMLVideoElement>(".st2-video video");
+      if (!video) return;
+
+      primedVideo = video;
+      video.defaultMuted = true;
+      video.muted = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.setAttribute("muted", "");
+      video.setAttribute("autoplay", "");
+      video.setAttribute("playsinline", "");
+      video.setAttribute("webkit-playsinline", "");
+      if (video.readyState === 0) video.load();
+      void video.play().catch(() => undefined);
+    };
 
     const clearTransition = () => {
       root.classList.remove(
@@ -171,6 +192,7 @@ export default function MobileScreenSwipe() {
       startX = touch.clientX;
       startY = touch.clientY;
       gestureTransitioned = false;
+      if (!transitionPlayed && heroIsAtTop()) primeImpactVideo();
     };
 
     const onTouchMove = (event: TouchEvent) => {
@@ -203,8 +225,17 @@ export default function MobileScreenSwipe() {
       }
     };
 
+    const onTouchEnd = () => {
+      /* A tap or short drag must not leave an off-screen film consuming data
+         and battery. A committed swipe is owned by ImpactVideo from here. */
+      if (!gestureTransitioned && primedVideo) primedVideo.pause();
+      primedVideo = null;
+    };
+
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
     return () => {
       if (timer) window.clearTimeout(timer);
@@ -220,6 +251,8 @@ export default function MobileScreenSwipe() {
       }
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
     };
   }, []);
 

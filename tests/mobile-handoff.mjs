@@ -93,7 +93,17 @@ const traceTravel = () =>
   });
 
 await traceTravel();
-await swipeUp();
+await page.locator("body").dispatchEvent("touchstart", {
+  touches: [{ identifier: 1, clientX: 195, clientY: 700 }],
+});
+await page.waitForTimeout(100);
+check(
+  await page.evaluate(() => !document.querySelector(".st2-video video").paused),
+  "the first trusted touch primes the muted film before travel",
+);
+await page.locator("body").dispatchEvent("touchmove", {
+  touches: [{ identifier: 1, clientX: 195, clientY: 600 }],
+});
 await page.waitForTimeout(120);
 
 const active = await page.evaluate(() => {

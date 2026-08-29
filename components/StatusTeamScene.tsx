@@ -113,15 +113,39 @@ function ImpactVideo() {
     let active = false;
     let screenSwapState: "enter" | "leave" | null = null;
     let raf = 0;
+    let retryTimer = 0;
+    let playAttempts = 0;
+
+    const clearPlayRetry = () => {
+      if (retryTimer) window.clearTimeout(retryTimer);
+      retryTimer = 0;
+    };
+
+    const schedulePlayRetry = () => {
+      if (!active || retryTimer || playAttempts >= 16) return;
+      retryTimer = window.setTimeout(() => {
+        retryTimer = 0;
+        requestPlay();
+      }, 250);
+    };
 
     const requestPlay = () => {
       if (!active || document.visibilityState === "hidden") return;
-      if (!video.paused && !video.ended) return;
+      if (!video.paused && !video.ended) {
+        clearPlayRetry();
+        playAttempts = 0;
+        return;
+      }
 
+      playAttempts += 1;
       const attempt = video.play();
       if (attempt) {
-        void attempt.catch(() => undefined);
+        void attempt.then(() => {
+          clearPlayRetry();
+          playAttempts = 0;
+        }).catch(schedulePlayRetry);
       }
+      schedulePlayRetry();
     };
 
     const syncPlayback = () => {
@@ -137,7 +161,11 @@ function ImpactVideo() {
       active = shouldRun;
 
       if (active) requestPlay();
-      else video.pause();
+      else {
+        clearPlayRetry();
+        playAttempts = 0;
+        video.pause();
+      }
     };
 
     const scheduleSync = () => {
@@ -162,6 +190,13 @@ function ImpactVideo() {
       else video.pause();
     };
     const onPageShow = () => syncPlayback();
+    const onPlaying = () => {
+      clearPlayRetry();
+      playAttempts = 0;
+    };
+    const onUnexpectedPause = () => {
+      if (active) schedulePlayRetry();
+    };
     const onScreenSwap = (event: Event) => {
       const state = (
         event as CustomEvent<{ state?: "enter" | "leave" | "settle" }>
@@ -192,6 +227,8 @@ function ImpactVideo() {
     video.addEventListener("loadeddata", onReady);
     video.addEventListener("canplay", onReady);
     video.addEventListener("canplaythrough", onReady);
+    video.addEventListener("playing", onPlaying);
+    video.addEventListener("pause", onUnexpectedPause);
     document.addEventListener("visibilitychange", onVisibility);
     document.addEventListener("impact-video-swap", onScreenSwap);
     window.addEventListener("pageshow", onPageShow);
@@ -204,6 +241,7 @@ function ImpactVideo() {
 
     return () => {
       if (raf) window.cancelAnimationFrame(raf);
+      clearPlayRetry();
       observer.disconnect();
       window.removeEventListener("scroll", scheduleSync);
       window.removeEventListener("resize", scheduleSync);
@@ -211,6 +249,8 @@ function ImpactVideo() {
       video.removeEventListener("loadeddata", onReady);
       video.removeEventListener("canplay", onReady);
       video.removeEventListener("canplaythrough", onReady);
+      video.removeEventListener("playing", onPlaying);
+      video.removeEventListener("pause", onUnexpectedPause);
       document.removeEventListener("visibilitychange", onVisibility);
       document.removeEventListener("impact-video-swap", onScreenSwap);
       window.removeEventListener("pageshow", onPageShow);
