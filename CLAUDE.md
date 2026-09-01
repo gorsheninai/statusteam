@@ -192,7 +192,7 @@ is the show's order and is a client requirement, not a preference:
 | 02 | `#pulse` | Следующая глава → the four tenets | ink |
 | 03 | `#experience` | Что вас ждёт + venue | paper |
 | 04 | `#tickets` | Предзаказ билетов | ink |
-| 05 | `#join` | Стать частью пульса — model / brand / press | wine |
+| 05 | `#join` | Моделям, брендам, партнёрам и СМИ — model / brand / press | wine |
 | 06 | `#faq` | Вопросы, then the footer | ink |
 
 Chapters alternate loud and quiet — a media chapter is always followed by a breathing

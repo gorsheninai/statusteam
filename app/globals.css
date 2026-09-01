@@ -2107,7 +2107,7 @@ ol {
 }
 
 /* ============================================================
-   05 — СТАТЬ ЧАСТЬЮ ПУЛЬСА
+   05 — МОДЕЛЯМ, БРЕНДАМ, ПАРТНЁРАМ И СМИ
    ============================================================ */
 
 .join {
@@ -2123,10 +2123,10 @@ ol {
   max-inline-size: 100%;
   margin: 0;
   color: #fff;
-  font-size: clamp(1.1rem, 5.7vw, 1.75rem);
+  font-size: clamp(0.65rem, 3.25vw, 1rem);
   font-weight: 400;
   line-height: 1.08;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.055em;
   white-space: nowrap;
 }
 
@@ -2139,7 +2139,8 @@ ol {
 
 @media (min-width: 480px) {
   .join-h {
-    font-size: clamp(1.75rem, 3.2vw, 3rem);
+    font-size: clamp(1rem, 2.6vw, 2.35rem);
+    letter-spacing: 0.065em;
   }
 }
 

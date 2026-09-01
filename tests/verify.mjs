@@ -199,7 +199,10 @@ for (const [name, width, height] of SIZES) {
       previousIsDivider: join.previousElementSibling?.matches(".pulse-rule") ?? false,
     };
   });
-  check(joinHeading?.text === "Стать частью пульса", `[${name}] join heading text is unchanged`);
+  check(
+    joinHeading?.text === "Моделям, брендам, партнёрам и СМИ",
+    `[${name}] join heading names every participation audience`,
+  );
   check(
     joinHeading?.whiteSpace === "nowrap" && joinHeading?.textTransform === "uppercase",
     `[${name}] join heading stays uppercase on one line`,

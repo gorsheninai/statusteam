@@ -185,7 +185,7 @@ export default function Home() {
                     <Arrow />
                   </a>
                   <a className="btn btn-pulse" href="#join">
-                    <span className="hero-btn-label">Стать частью пульса</span>
+                    <span className="hero-btn-label">Моделям, брендам, партнёрам и СМИ</span>
                     <Arrow />
                   </a>
                 </div>
@@ -294,12 +294,12 @@ export default function Home() {
         </section>
 
         {/* ============================================================
-            05 — СТАТЬ ЧАСТЬЮ ПУЛЬСА. Three doors: model, brand, press.
+            05 — МОДЕЛЯМ, БРЕНДАМ, ПАРТНЁРАМ И СМИ. Three doors: model, brand, press.
             ============================================================ */}
         <section className="join on-dark" id="join" data-bg="wine">
           <div className="shell join-head">
             <h2 className="join-h struct" data-reveal="lines">
-              Стать частью пульса
+              Моделям, брендам, партнёрам и СМИ
             </h2>
           </div>
 

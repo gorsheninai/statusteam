@@ -57,10 +57,10 @@
   /* The system's own button size, and it fits: at 320 the longest label
      measures 186px against 201px of field. Nothing here is sized down to
      make two buttons share a phone screen — they stack instead. */
-  font-size: var(--fs-small) !important;
+  font-size: 13px !important;
   font-weight: 500 !important;
   line-height: 1 !important;
-  letter-spacing: 0.12em !important;
+  letter-spacing: -0.01em !important;
   text-align: start !important;
   text-transform: uppercase;
   transition:
@@ -77,6 +77,19 @@
   min-inline-size: 0;
   padding-inline: 0.9rem;
   white-space: nowrap;
+}
+
+/* The participation route names every audience explicitly. On narrow phones
+   its line is optically condensed inside a wider layout box: the type stays
+   at the same readable 13px as the ticket pass, while the complete phrase
+   remains visible without wrapping or changing either pass's dimensions. */
+@media (max-width: 699px) {
+  .hero-cta .btn.btn-pulse .hero-btn-label {
+    inline-size: 120%;
+    padding-inline: 0;
+    transform: scaleX(0.833333);
+    transform-origin: left center;
+  }
 }
 
 .hero-cta .btn.btn-solid .arrow,
@@ -207,11 +220,11 @@
   .hero-cta .btn.btn-pulse {
     block-size: 58px;
     min-block-size: 58px !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
   }
 
   .hero-btn-label {
-    padding-inline: 1.15rem;
+    padding-inline: 0.75rem;
   }
 
   /* Centre the location line across the complete two-button group, not
