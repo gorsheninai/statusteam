@@ -86,7 +86,10 @@
 @media (max-width: 699px) {
   .hero-cta .btn.btn-pulse .hero-btn-label {
     inline-size: 120%;
-    padding-inline: 0;
+    /* This label is optically condensed to keep the full audience list on
+       one line. Compensate its padding before scale so its visible left edge
+       aligns exactly with the preorder label. */
+    padding-inline: 1.08rem;
     transform: scaleX(0.833333);
     transform-origin: left center;
   }
