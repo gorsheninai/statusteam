@@ -54,9 +54,9 @@ const ACCESS: Field[] = [
     name: "contact",
     label: "Почта или телефон",
     required: true,
-    autoComplete: "email",
+    autoComplete: "off",
     half: true,
-    placeholder: "you@mail.ru",
+    placeholder: "Почта или +7…",
   },
 ];
 
@@ -138,16 +138,22 @@ export default function ApplyForm({
       return;
     }
 
+    if (state === "sending") return;
     setState("sending");
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
     try {
       const res = await fetch(FORM_ENDPOINT, {
         method: "POST",
+        signal: controller.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ form: kind, ...data }),
       });
       setState(res.ok ? "sent" : "error");
     } catch {
       setState("error");
+    } finally {
+      window.clearTimeout(timeout);
     }
   }
 
@@ -180,6 +186,9 @@ export default function ApplyForm({
                 id={fid(f.name)}
                 name={f.name}
                 type={f.type ?? "text"}
+                min={f.type === "number" ? 1 : undefined}
+                max={f.name === "age" ? 120 : f.name === "height" ? 250 : undefined}
+                spellCheck={f.name === "contact" ? false : undefined}
                 required={f.required}
                 placeholder={f.placeholder}
                 autoComplete={f.autoComplete}

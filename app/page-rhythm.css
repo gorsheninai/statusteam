@@ -110,3 +110,33 @@
 .faq-scene {
   padding-block: var(--pad-chapter) !important;
 }
+
+/* Forms sit on their own calm ground; headers keep equal reading positions. */
+.join .zones { display: grid; grid-template-columns: minmax(0, 1fr); }
+.join .zone { transition: none; }
+.join .zone .zone-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) 24px;
+  grid-template-rows: auto auto; min-height: 140px;
+  padding: 1.5rem var(--gutter); align-content: center;
+}
+.join .zone .zone-title { font-size: clamp(1.3rem, 3vw, 2rem); line-height: 1.15; }
+.join .zone .zone-sub { font-size: 0.875rem; max-width: 42ch; opacity: 0.85; }
+.join .zone .zone-sign { grid-column: 2; grid-row: 1 / 3; margin: 0; }
+.join .zone .panel { background: var(--wine); }
+.join .zone .panel-inner { max-width: 54rem; margin-inline: auto; width: 100%; }
+.join .zone .panel-inner > * { padding-inline: var(--gutter); }
+.join .zone .zone-intro { padding-top: 1.5rem; font-size: 1rem; }
+.join .zone .form { padding-bottom: 2rem; }
+.join .zone.is-open .zone-media { opacity: 0.16; }
+.join .zone .zone-media { max-height: 180px; }
+.join .zone .zone-media::after { background: rgba(16,13,12,.65); }
+.join .zone .zone-steps { font-size: 0.9375rem; }
+@media (min-width: 1024px) {
+  .join .zones { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+  .join .zone .zone-head { min-height: 220px; padding: 2rem; align-content: start; }
+  .join .zone .zone-title { min-height: 2.3em; }
+  .join .zone .zone-media { max-height: 220px; }
+  .join .zones.has-open { grid-template-columns: minmax(0, 1fr); }
+  .join .zones.has-open .zone .zone-head { min-height: 120px; }
+  .join .zones.has-open .zone .zone-title { min-height: 0; }
+}

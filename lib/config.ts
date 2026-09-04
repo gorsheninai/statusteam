@@ -29,8 +29,8 @@ export const CONTENT: {
   brandLogos: boolean;
 } = {
   guests: true,
-  pressLogos: true,
-  brandLogos: true,
+  pressLogos: false,
+  brandLogos: false,
 };
 
 /* --- sales ----------------------------------------------------------- */

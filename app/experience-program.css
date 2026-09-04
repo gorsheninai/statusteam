@@ -256,3 +256,8 @@
 .tickets .posters {
   display: none !important;
 }
+
+/* Short programme descriptions are visible without an extra click. */
+.exp-program .exp-item { padding-block: 1.75rem; }
+.exp-program .exp-title { margin: 0; }
+.exp-program .exp-sub { margin-top: .65rem; padding: 0; opacity: 1; color: #514a46; font-size: 1rem; line-height: 1.55; }
