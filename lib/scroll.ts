@@ -64,7 +64,7 @@ export function scrollToAnchor(hash: string) {
        travel before the page is unlocked would scroll nowhere. `force` covers
        the same race from the other side. */
     requestAnimationFrame(() =>
-      lenis?.scrollTo(target, { offset, duration: 1.35, force: true }),
+      lenis?.scrollTo(target, { offset, immediate: true, force: true }),
     );
     return true;
   }
