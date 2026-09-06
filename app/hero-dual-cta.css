@@ -248,3 +248,18 @@
     transition: none !important;
   }
 }
+
+/* Preserve the full participation label without distorting the glyphs. */
+@media (max-width: 699px) {
+  .hero-cta .btn.btn-pulse .hero-btn-label {
+    inline-size: auto;
+    padding-inline: 0.65rem;
+    transform: none;
+    font-size: clamp(9px, 2.6vw, 13px);
+    letter-spacing: -0.025em;
+  }
+}
+@media (min-width: 900px) {
+  .hero-statement { margin-bottom: 44px !important; }
+  .hero-where { justify-content: flex-start !important; text-align: left !important; }
+}

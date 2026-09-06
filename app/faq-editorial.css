@@ -41,7 +41,7 @@
   color: #fff;
   /* Serif, per this instance's brief — the self-hosted Playfair Display
      already used for the aftermovie accent, not a new font. */
-  font-family: var(--ff-playfair), Georgia, serif;
+  font-family: var(--font-display), Georgia, serif;
   /* The 5fr left column plateaus once .faq-shell hits its 72rem cap
      (~413px wide at 1280px+), but a plain vw-based clamp keeps growing
      with the raw viewport — clipped "ЧАСТЫЕ ВОПРОСЫ" against its own
@@ -53,7 +53,8 @@
   letter-spacing: 0.02em;
   text-align: center;
   text-transform: uppercase;
-  white-space: nowrap;
+  white-space: normal;
+  text-wrap: balance;
 }
 
 .faq-scene .faq-copy {

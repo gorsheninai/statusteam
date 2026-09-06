@@ -183,3 +183,32 @@
     gap: clamp(2rem, 5vw, 5rem);
   }
 }
+
+/* Compact invitation: the fields and action share one readable measure. */
+.tickets .tickets-inner { max-width: 52rem; margin-inline: auto; }
+.tickets .preorder-card {
+  grid-template-columns: minmax(0, 1fr);
+  padding-block: 0;
+}
+.tickets .preorder-summary, .tickets .preorder-copy { text-align: left; }
+.tickets .preorder-heading { font-size: clamp(1.5rem, 4vw, 2.6rem); line-height: 1.15; }
+.tickets .preorder-action { margin-top: 1rem; justify-items: start; }
+.tickets .preorder-copy { margin-inline: 0; max-width: 38ch; }
+.tickets .preorder-panel.is-open { margin-top: 2rem; }
+.tickets .preorder-form { display: block; }
+.tickets .preorder-form .form { display: block; }
+.tickets .preorder-form .form-grid { gap: 1.5rem; }
+.tickets .preorder-form .form-foot { display: grid; margin-top: 1.5rem; }
+.tickets .preorder-form .form-foot .btn {
+  border-radius: 0; min-height: 56px; width: 100%;
+  font-size: 0.875rem; letter-spacing: 0.02em;
+}
+.form .field label { color: var(--paper); opacity: 0.9; font-size: 0.75rem; }
+.form input, .form textarea { font-size: 1rem; }
+.form input::placeholder, .form textarea::placeholder { color: #c5b7bb; opacity: 1; }
+.form .field-check { margin-top: 1.25rem; }
+.form .field-check label { min-height: 48px; line-height: 1.5; }
+.form .form-note { font-size: 0.875rem; line-height: 1.6; }
+@media (min-width: 640px) {
+  .tickets .preorder-form .form-foot .btn { width: fit-content; min-width: 18rem; }
+}

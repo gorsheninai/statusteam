@@ -91,6 +91,8 @@ function ImpactVideo() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
+  const [paused, setPaused] = useState(false);
+  const userPaused = useRef(false);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -101,6 +103,14 @@ function ImpactVideo() {
 
     video.defaultMuted = true;
     video.muted = true;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches) {
+      video.autoplay = false;
+      video.pause();
+      userPaused.current = true;
+      setPaused(true);
+      return;
+    }
     video.autoplay = true;
     video.playsInline = true;
     video.setAttribute("muted", "");
@@ -130,7 +140,7 @@ function ImpactVideo() {
     };
 
     const requestPlay = () => {
-      if (!active || document.visibilityState === "hidden") return;
+      if (!active || userPaused.current || document.visibilityState === "hidden") return;
       if (!video.paused && !video.ended) {
         clearPlayRetry();
         playAttempts = 0;
@@ -274,15 +284,28 @@ function ImpactVideo() {
         <video
           ref={videoRef}
           poster="/media/show-reel-poster.webp"
-          autoPlay
           muted={muted}
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           aria-label="Афтермуви показа «Славянский взгляд»"
         >
           <source src="/media/СТАТУС_HQ_со_звуком_10-15MB.mp4" type="video/mp4" />
         </video>
+        <button
+          type="button"
+          className="st2-playback"
+          onClick={() => {
+            const video = videoRef.current;
+            if (!video) return;
+            const shouldPause = !video.paused;
+            userPaused.current = shouldPause;
+            setPaused(shouldPause);
+            if (shouldPause) video.pause();
+            else void video.play().catch(() => setPaused(true));
+          }}
+          aria-label={paused ? "Продолжить афтермуви" : "Пауза афтермуви"}
+        >{paused ? "Смотреть" : "Пауза"}</button>
         <button
           className={`st2-watch st2-watch-icon-only${muted ? "" : " is-active"}`}
           type="button"

@@ -206,7 +206,7 @@ export default function Motion() {
           scrollTrigger: {
             trigger: sandReveal,
             start: "top 75%",
-            once: true,
+            toggleActions: "play none none none",
           },
         });
 
@@ -552,7 +552,7 @@ export default function Motion() {
             scrollTrigger: {
               trigger: statusScene.querySelector(".st2-impact"),
               start: "top 76%",
-              once: true,
+              toggleActions: "play none none none",
             },
           });
 
@@ -619,7 +619,7 @@ export default function Motion() {
             scrollTrigger: {
               trigger: vanguardTitle,
               start: "top 84%",
-              once: true,
+              toggleActions: "play none none none",
             },
           });
 
@@ -701,7 +701,7 @@ export default function Motion() {
             scrollTrigger: {
               trigger: statsList ?? statsBand,
               start: wide ? "top 86%" : "top 88%",
-              once: true,
+              toggleActions: "play none none none",
             },
           });
 
@@ -803,7 +803,7 @@ export default function Motion() {
                 opacity: 0,
                 duration: 1,
                 ease: EASE,
-                scrollTrigger: { trigger: el, start: "top 85%", once: true },
+                scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" },
               });
               return;
             }
@@ -813,7 +813,7 @@ export default function Motion() {
               duration: 0.95,
               stagger: 0.08,
               ease: EASE,
-              scrollTrigger: { trigger: el, start: "top 85%", once: true },
+              scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" },
               /* Give the text back to the browser once it has arrived: a
                  split heading does not re-wrap on rotate. */
               onComplete: () => split.revert(),
@@ -832,7 +832,7 @@ export default function Motion() {
         if (!frame) return;
 
         const tl = gsap.timeline({
-          scrollTrigger: { trigger: el, start: "top 82%", once: true },
+          scrollTrigger: { trigger: el, start: "top 82%", toggleActions: "play none none none" },
         });
         tl.from(frame, {
           clipPath: "inset(100% 0% 0% 0%)",
@@ -850,7 +850,7 @@ export default function Motion() {
           opacity: 0,
           duration: 0.8,
           ease: EASE,
-          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+          scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" },
         });
       });
 
@@ -863,7 +863,7 @@ export default function Motion() {
           duration: 0.9,
           delay: i * 0.09,
           ease: EASE,
-          scrollTrigger: { trigger: el.parentElement ?? el, start: "top 88%", once: true },
+          scrollTrigger: { trigger: el.parentElement ?? el, start: "top 88%", toggleActions: "play none none none" },
         });
       });
 

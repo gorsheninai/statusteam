@@ -43,7 +43,7 @@
   --font-body: var(--ff-onest), system-ui, sans-serif;
   --font-ui: var(--ff-onest), system-ui, sans-serif;
   --font-display: var(--ff-tenor), Georgia, serif;
-  --font-hero-anchor: var(--ff-droid-1997), "Arial Narrow", Arial, sans-serif;
+  --font-hero-anchor: var(--ff-tenor), "Arial Narrow", Arial, sans-serif;
   --font-hero-script: var(--ff-marck-script), cursive;
 
   /* Fluid scale */
@@ -1157,7 +1157,7 @@ ol {
 
 .eyebrow-badge {
   margin: 0 0 clamp(0.6rem, 1.6vw, 1rem);
-  font-family: var(--ff-playfair-italic);
+  font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
   font-size: clamp(0.75rem, 1.6vw, 0.95rem);
