@@ -140,3 +140,5 @@
   .join .zones.has-open .zone .zone-head { min-height: 120px; }
   .join .zones.has-open .zone .zone-title { min-height: 0; }
 }
+
+.foot-end .credit { color: #c8c1bb; opacity: 1; }

@@ -191,7 +191,7 @@
   padding-block: 0;
 }
 .tickets .preorder-summary, .tickets .preorder-copy { text-align: left; }
-.tickets .preorder-heading { font-size: clamp(1.65rem, 4vw, 2.6rem); line-height: 1.15; }
+.tickets .preorder-heading { font-size: clamp(1.5rem, 4vw, 2.6rem); line-height: 1.15; }
 .tickets .preorder-action { margin-top: 1rem; justify-items: start; }
 .tickets .preorder-copy { margin-inline: 0; max-width: 38ch; }
 .tickets .preorder-panel.is-open { margin-top: 2rem; }
