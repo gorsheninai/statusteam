@@ -98,9 +98,11 @@
 }
 
 /* Tickets and participation are one continuous wine chapter, so the seam
-   between them is a beat, not a chapter. */
+   between them is a beat, not a chapter — and that beat is .join's own
+   top padding below. Giving .tickets a matching bottom padding here would
+   stack to a 128px gap instead of the intended 64px one. */
 .tickets {
-  padding-block: var(--pad-chapter) var(--pad-beat) !important;
+  padding-block: var(--pad-chapter) 0 !important;
 }
 
 .join {
