@@ -28,6 +28,11 @@
   display: grid;
   min-width: 0;
   isolation: isolate;
+  /* .tickets opens on the chapter step (ground change from paper) but closes
+     on the beat step (.join shares this wine ground, per page-rhythm.css).
+     Made up here so the card still reads symmetric: top of card to heading
+     equals bottom of card to the next heading, both at the chapter step. */
+  padding-block-end: calc(var(--pad-chapter) - var(--pad-beat));
 }
 
 .preorder-summary,
