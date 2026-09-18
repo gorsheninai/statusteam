@@ -298,7 +298,7 @@ export default function Home() {
             ============================================================ */}
         <section className="join on-dark" id="join" data-bg="wine">
           <div className="shell join-head">
-            <h2 className="join-h struct" data-reveal="lines">
+            <h2 className="join-h" data-reveal="lines">
               Моделям, брендам, партнёрам и СМИ
             </h2>
           </div>
