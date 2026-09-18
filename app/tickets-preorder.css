@@ -27,7 +27,6 @@
   position: relative;
   display: grid;
   min-width: 0;
-  padding-block: clamp(2rem, 7vw, 2.75rem) clamp(1.25rem, 5vw, 1.5rem);
   isolation: isolate;
 }
 
@@ -157,7 +156,6 @@
     grid-template-columns: minmax(0, 1.12fr) minmax(20rem, 0.88fr);
     column-gap: clamp(3rem, 7vw, 8rem);
     align-items: center;
-    padding-block: clamp(3.75rem, 6vw, 6rem);
   }
 
   .preorder-heading {
