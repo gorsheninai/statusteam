@@ -210,7 +210,7 @@ for (const [name, width, height] of SIZES) {
     };
   });
   check(
-    joinHeading?.text === "Моделям, брендам, партнёрам и СМИ",
+    joinHeading?.text === "Моделям, брендам партнёрам и СМИ",
     `[${name}] join heading names every participation audience`,
   );
   check(
@@ -229,9 +229,12 @@ for (const [name, width, height] of SIZES) {
     `[${name}] join section opens on the beat step`,
     `${joinHeading?.topPadding}px`,
   );
+  /* --pad-group (page-rhythm.css): the join heading now sits at display
+     scale (see .join-h in globals.css), so it takes the same group-to-
+     content step as any other heading introducing a block below it. */
   check(
-    Math.abs((joinHeading?.categoriesGap ?? 0) - (width >= 768 ? 32 : 24)) < 1,
-    `[${name}] categories follow the join heading closely`,
+    Math.abs((joinHeading?.categoriesGap ?? 0) - (width >= 768 ? 64 : 40)) < 1,
+    `[${name}] categories follow the join heading at the group step`,
     `${joinHeading?.categoriesGap}px`,
   );
   check(!joinHeading?.previousIsDivider, `[${name}] broken divider before join is removed`);
