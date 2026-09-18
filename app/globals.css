@@ -2119,23 +2119,23 @@ ol {
   overflow: clip;
   text-align: center;
 }
-/* This heading must stay on one line at every width (verify enforces it),
-   which pins its size well below the display scale used elsewhere. Tenor
-   Sans is "large only" per the type system (CLAUDE.md) — set that small it
-   read as thin and mismatched next to .preorder-heading above it. Onest at
-   500 (the UI role's ceiling) is built to hold up at small sizes and reads
-   as an intentional label rather than a shrunken headline. */
+/* Set on two fixed lines — "Моделям, брендам," / "партнёрам и СМИ" — instead
+   of shrunk to fit the whole phrase on one. That lets it share the display
+   scale with .preorder-heading in tickets-preorder.css instead of dropping
+   to a size Tenor Sans was never meant to run at ("large only", CLAUDE.md).
+   Font-size/letter-spacing here must stay equal to .preorder-heading's —
+   that's the whole point of matching this heading to the one above it.
+   max-inline-size is tuned (see scratch measurements at 360–1440) so the
+   browser's own greedy wrap always breaks after "брендам," — verified
+   empirically, not by a forced line break, so splitLines's line-reveal
+   measures the same break the resting layout uses. */
 .join-h {
-  max-inline-size: 100%;
-  margin: 0;
+  max-inline-size: 22ch;
+  margin: 0 auto;
   color: #fff;
-  font-family: var(--font-ui);
-  font-size: clamp(0.75rem, 3.4vw, 1.85rem);
-  font-weight: 500;
-  line-height: 1.3;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  font-size: clamp(1.375rem, 1rem + 2.6vw, 2.5rem);
+  letter-spacing: -0.018em;
+  white-space: normal;
 }
 
 /* The line-reveal splitter temporarily replaces the centered heading with a

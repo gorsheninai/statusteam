@@ -188,12 +188,22 @@ for (const [name, width, height] of SIZES) {
     const headingBox = heading.getBoundingClientRect();
     const zonesBox = zones.getBoundingClientRect();
     const style = getComputedStyle(heading);
+
+    /* Rows, not the block box: a Range over the text reports one rect per
+       wrapped line, which is what "exactly two lines" actually means for a
+       block-level heading. */
+    const range = document.createRange();
+    range.selectNodeContents(heading);
+    const lineRects = Array.from(range.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
+    const rowTops = [...new Set(lineRects.map((r) => Math.round(r.top)))];
+    const maxLineWidth = Math.max(...lineRects.map((r) => r.width), 0);
+
     return {
       text: heading.textContent?.trim(),
-      whiteSpace: style.whiteSpace,
       textTransform: style.textTransform,
       centered: Math.abs(headingBox.left + headingBox.width / 2 - innerWidth / 2) < 1,
-      fits: heading.scrollWidth <= heading.clientWidth + 1,
+      lineCount: rowTops.length,
+      fits: maxLineWidth <= headingBox.width + 1,
       topPadding: headingBox.top - joinBox.top,
       categoriesGap: zonesBox.top - headingBox.bottom,
       previousIsDivider: join.previousElementSibling?.matches(".pulse-rule") ?? false,
@@ -204,8 +214,9 @@ for (const [name, width, height] of SIZES) {
     `[${name}] join heading names every participation audience`,
   );
   check(
-    joinHeading?.whiteSpace === "nowrap" && joinHeading?.textTransform === "uppercase",
-    `[${name}] join heading stays uppercase on one line`,
+    joinHeading?.lineCount === 2 && joinHeading?.textTransform === "uppercase",
+    `[${name}] join heading breaks into exactly two uppercase lines`,
+    `${joinHeading?.lineCount} line(s)`,
   );
   check(joinHeading?.centered && joinHeading?.fits, `[${name}] join heading is centered without clipping`);
   /* 64 at both widths, not 64/48. Tickets and participation are one
