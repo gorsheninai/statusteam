@@ -300,7 +300,7 @@ export default function Home() {
           <div className="shell join-head">
             <h2 className="join-h struct" data-reveal="up">
               <span className="join-h-line">Моделям, брендам</span>{" "}
-              <span className="join-h-line">партнёрам и СМИ</span>
+              <span className="join-h-line join-h-line-big">партнёрам и СМИ</span>
             </h2>
           </div>
 

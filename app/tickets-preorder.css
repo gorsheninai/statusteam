@@ -47,9 +47,12 @@
 /* Same face, size and tracking as .st2-scale-title («Масштаб в цифрах»,
    status-team-page-two.css) — one fixed clamp across every width rather
    than a separate desktop step, so the two stay identical everywhere
-   instead of only at one breakpoint. */
+   instead of only at one breakpoint. 7.5vw, not that title's own 7.7vw —
+   see the comment on .join-h in globals.css, which shares this exact
+   clamp and hit the same 320px overflow that title's coefficient carries
+   uncaught. */
 .preorder-heading {
-  font-size: clamp(1.6rem, 7.7vw, 2.35rem);
+  font-size: clamp(1.5rem, 7.5vw, 2.35rem);
   line-height: 1;
   letter-spacing: -0.025em;
   white-space: nowrap;
@@ -63,10 +66,10 @@
 
 .preorder-copy {
   max-width: 30ch;
-  margin-inline: 0;
+  margin-inline: auto;
   font-size: clamp(1rem, 0.94rem + 0.35vw, 1.2rem);
   line-height: 1.4;
-  text-align: start;
+  text-align: center;
 }
 
 .preorder-action .btn-buy {

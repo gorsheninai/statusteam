@@ -210,6 +210,7 @@ for (const [name, width, height] of SIZES) {
         })();
     const rowTops = [...new Set(lineRects.map((r) => Math.round(r.top)))];
     const maxLineWidth = Math.max(...lineRects.map((r) => r.width), 0);
+    const widths = lineRects.map((r) => r.width);
 
     return {
       text: heading.textContent?.trim(),
@@ -217,6 +218,7 @@ for (const [name, width, height] of SIZES) {
       centered: Math.abs(headingBox.left + headingBox.width / 2 - innerWidth / 2) < 1,
       lineCount: rowTops.length,
       fits: maxLineWidth <= headingBox.width + 1,
+      lineWidthSpread: widths.length === 2 ? Math.abs(widths[0] - widths[1]) : null,
       topPadding: headingBox.top - joinBox.top,
       categoriesGap: zonesBox.top - headingBox.bottom,
       previousIsDivider: join.previousElementSibling?.matches(".pulse-rule") ?? false,
@@ -234,6 +236,17 @@ for (const [name, width, height] of SIZES) {
   /* "centered" here is the heading box sitting on the shell's own axis, not
      its text-align — .join-h is left-aligned to match .st2-scale-title. */
   check(joinHeading?.centered && joinHeading?.fits, `[${name}] join heading sits in its shell without clipping`);
+  /* The 1.085em scale-up on the second line matches the first within a few
+     px at most widths, but font-size rounds to the nearest device pixel at
+     each breakpoint, so the ratio isn't perfectly continuous — up to ~9px
+     of residual spread shows up at a couple of sizes. Loose enough to pass
+     that, tight enough to catch a real mismatch (the pre-fix state here
+     was ~90px apart). */
+  check(
+    (joinHeading?.lineWidthSpread ?? 999) < 10,
+    `[${name}] join heading's two lines render close to the same width`,
+    `${joinHeading?.lineWidthSpread}px apart`,
+  );
   /* 64 at both widths, not 64/48. Tickets and participation are one
      continuous wine chapter, so this seam is a beat boundary and takes the
      beat step from app/page-rhythm.css — which is the value this check

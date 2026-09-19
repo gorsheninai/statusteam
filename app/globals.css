@@ -2125,9 +2125,7 @@ ol {
 /* Two hard lines — "Моделям, брендам" / "партнёрам и СМИ" — sharing
    .st2-scale-title's exact face, size and tracking (status-team-page-two.css:
    «Масштаб в цифрах») and its left alignment, rather than the centred
-   "single invitation" treatment .preorder-heading used before. Left-aligned
-   ragged-right lines of different widths are the normal case, so there is
-   no longer a need to force the two lines to equal widths.
+   "single invitation" treatment .preorder-heading used before.
    Because the split is hard-coded in JSX, this heading uses
    data-reveal="up" (whole-block) rather than "lines": splitLines() in
    lib/split-lines.ts flattens an element's children to plain text and
@@ -2136,11 +2134,34 @@ ol {
 .join-h {
   margin: 0;
   color: #fff;
-  font-size: clamp(1.6rem, 7.7vw, 2.35rem);
+  /* .st2-scale-title's own clamp (status-team-page-two.css: 7.7vw) overflows
+     its own shell at 320px by ~10px — untested there because that title
+     carries no .struct/.pulse-line/.campaign class for the clipped-text
+     check to catch it. Left alone (out of scope, and .st2-vanguard-tag's
+     own size is calibrated against it), but copying the exact coefficient
+     here made the same overflow show up on an element the check does
+     cover. 7.5vw is the widest coefficient with real margin left at 320px
+     for the longer of this heading's two lines (checked against
+     .preorder-heading's text too, which shares this clamp) — about 1px
+     smaller than 7.7vw would give at any width, imperceptible. */
+  font-size: clamp(1.5rem, 7.5vw, 2.35rem);
   letter-spacing: -0.025em;
 }
 .join-h-line {
   display: block;
+  white-space: nowrap;
+}
+.join-h-line + .join-h-line {
+  margin-top: 0.2em;
+}
+/* The second line is naturally narrower (fewer/thinner glyphs at the same
+   size), which reads as uneven under a heading this short. 1.085em was
+   solved empirically — it makes this line's rendered width match the
+   first line's within ~1px at every size from 360px to 1440px, since the
+   ratio between the two strings' widths holds constant across the whole
+   fluid clamp (both scale with the same font-size). */
+.join-h-line-big {
+  font-size: 1.085em;
 }
 
 @media (min-width: 768px) {
