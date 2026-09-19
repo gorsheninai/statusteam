@@ -44,15 +44,15 @@
   text-align: start;
 }
 
-/* Same face, size and tracking as .st2-scale-title («Масштаб в цифрах»,
-   status-team-page-two.css) — one fixed clamp across every width rather
-   than a separate desktop step, so the two stay identical everywhere
-   instead of only at one breakpoint. 7.5vw, not that title's own 7.7vw —
-   see the comment on .join-h in globals.css, which shares this exact
-   clamp and hit the same 320px overflow that title's coefficient carries
-   uncaught. */
+/* Same face and tracking as .st2-scale-title («Масштаб в цифрах»,
+   status-team-page-two.css: 7.5vw, not that title's own 7.7vw — see the
+   comment on .join-h in globals.css for why), but scaled 1.051x — this
+   text is naturally ~5% narrower than .join-h-line's "Моделям, брендам"
+   at the same size (different letters, same length), which read as
+   mismatched between the two headings sharing this wine chapter. Solved
+   empirically, holds within a few px at every width from 320–1440. */
 .preorder-heading {
-  font-size: clamp(1.5rem, 7.5vw, 2.35rem);
+  font-size: clamp(1.577rem, 7.883vw, 2.47rem);
   line-height: 1;
   letter-spacing: -0.025em;
   white-space: nowrap;
