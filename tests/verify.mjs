@@ -189,14 +189,28 @@ for (const [name, width, height] of SIZES) {
     const zonesBox = zones.getBoundingClientRect();
     const style = getComputedStyle(heading);
 
-    /* Rows, not the block box: a Range over the text reports one rect per
-       wrapped line, which is what "exactly two lines" actually means for a
-       block-level heading. */
-    const range = document.createRange();
-    range.selectNodeContents(heading);
-    const lineRects = Array.from(range.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
+    /* Rows, not the block box. This heading is two hard-coded .join-h-line
+       spans (see globals.css) rather than a natural wrap, so read the glyph
+       run inside each one directly (a Range confined to one line's own text
+       node) rather than the span's own box — that box stretches to the full
+       container width, which would make every width check trivially true.
+       Fall back to a Range over the whole heading for one that still wraps
+       its own plain text. */
+    const lineEls = heading.querySelectorAll(".join-h-line");
+    const lineRects = lineEls.length
+      ? Array.from(lineEls, (el) => {
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          return r.getBoundingClientRect();
+        })
+      : (() => {
+          const range = document.createRange();
+          range.selectNodeContents(heading);
+          return Array.from(range.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
+        })();
     const rowTops = [...new Set(lineRects.map((r) => Math.round(r.top)))];
     const maxLineWidth = Math.max(...lineRects.map((r) => r.width), 0);
+    const widths = lineRects.map((r) => r.width);
 
     return {
       text: heading.textContent?.trim(),
@@ -204,6 +218,7 @@ for (const [name, width, height] of SIZES) {
       centered: Math.abs(headingBox.left + headingBox.width / 2 - innerWidth / 2) < 1,
       lineCount: rowTops.length,
       fits: maxLineWidth <= headingBox.width + 1,
+      lineWidthSpread: widths.length === 2 ? Math.abs(widths[0] - widths[1]) : null,
       topPadding: headingBox.top - joinBox.top,
       categoriesGap: zonesBox.top - headingBox.bottom,
       previousIsDivider: join.previousElementSibling?.matches(".pulse-rule") ?? false,
@@ -219,6 +234,11 @@ for (const [name, width, height] of SIZES) {
     `${joinHeading?.lineCount} line(s)`,
   );
   check(joinHeading?.centered && joinHeading?.fits, `[${name}] join heading is centered without clipping`);
+  check(
+    (joinHeading?.lineWidthSpread ?? 99) < 3,
+    `[${name}] join heading's two lines render the same width`,
+    `${joinHeading?.lineWidthSpread}px apart`,
+  );
   /* 64 at both widths, not 64/48. Tickets and participation are one
      continuous wine chapter, so this seam is a beat boundary and takes the
      beat step from app/page-rhythm.css — which is the value this check
@@ -229,12 +249,12 @@ for (const [name, width, height] of SIZES) {
     `[${name}] join section opens on the beat step`,
     `${joinHeading?.topPadding}px`,
   );
-  /* --pad-group (page-rhythm.css): the join heading now sits at display
-     scale (see .join-h in globals.css), so it takes the same group-to-
-     content step as any other heading introducing a block below it. */
+  /* --pad-beat (page-rhythm.css), same 64px at every width: the join
+     heading sits at display scale now (see .join-h in globals.css), and
+     --pad-group's old 40/24px read as cramped under a block this size. */
   check(
-    Math.abs((joinHeading?.categoriesGap ?? 0) - (width >= 768 ? 64 : 40)) < 1,
-    `[${name}] categories follow the join heading at the group step`,
+    Math.abs((joinHeading?.categoriesGap ?? 0) - 64) < 1,
+    `[${name}] categories follow the join heading at the beat step`,
     `${joinHeading?.categoriesGap}px`,
   );
   check(!joinHeading?.previousIsDivider, `[${name}] broken divider before join is removed`);

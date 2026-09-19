@@ -2114,39 +2114,41 @@ ol {
   padding-block: 3rem var(--chapter-pad);
   color: var(--paper);
 }
-/* --pad-group (page-rhythm.css): the step from a group of type to the
-   content it introduces. The heading grew to display scale (see .join-h
-   below) but this margin stayed at its old small-label value, so the three
-   doors underneath read as stuck to it. */
+/* --pad-beat (page-rhythm.css): the heading now runs at display scale (see
+   .join-h below), and --pad-group still read as cramped under a block this
+   size — the three doors underneath looked stuck to it. */
 .join-head {
-  margin-bottom: var(--pad-group);
+  margin-bottom: var(--pad-beat);
   overflow: clip;
   text-align: center;
 }
-/* Set on two fixed lines — "Моделям, брендам" / "партнёрам и СМИ" — instead
-   of shrunk to fit the whole phrase on one. That lets it share the display
-   scale with .preorder-heading in tickets-preorder.css instead of dropping
-   to a size Tenor Sans was never meant to run at ("large only", CLAUDE.md).
-   Font-size/letter-spacing here must stay equal to .preorder-heading's —
-   that's the whole point of matching this heading to the one above it.
-   max-inline-size is tuned (see scratch measurements at 360–1440) so the
-   browser's own greedy wrap always breaks after "брендам" — verified
-   empirically, not by a forced line break, so splitLines's line-reveal
-   measures the same break the resting layout uses. */
+/* Two hard lines — "Моделям, брендам" / "партнёрам и СМИ" — sharing
+   .preorder-heading's exact display scale, not a natural wrap. That lets
+   this run at the size Tenor Sans is meant for ("large only", CLAUDE.md)
+   instead of shrinking to fit the whole phrase on one line.
+   The two lines are naturally different widths (16 vs 15 characters, but
+   .join-h-line-wide's letters are individually narrower), which reads as
+   uneven under a centered pair this short. join-h-line-wide's extra
+   tracking was solved empirically — 0.042em against the base -0.018em
+   matches .join-h-line's rendered width to within 0.1px at every size
+   from 22px to 40px (both are proportional em values, so the match holds
+   across the whole fluid range, not just the one size it was measured
+   at). Because the split is hard-coded in JSX, this heading uses
+   data-reveal="up" (whole-block) rather than "lines": splitLines() in
+   lib/split-lines.ts flattens an element's children to plain text and
+   rebuilds them from its own natural-wrap measurement, which would throw
+   away both the fixed line break and the per-line tracking. */
 .join-h {
-  max-inline-size: 22ch;
-  margin: 0 auto;
+  margin: 0;
   color: #fff;
   font-size: clamp(1.375rem, 1rem + 2.6vw, 2.5rem);
   letter-spacing: -0.018em;
-  white-space: normal;
 }
-
-/* The line-reveal splitter temporarily replaces the centered heading with a
-   fit-content mask. Keep that transient mask centered too, so reverting the
-   split after the animation cannot produce a horizontal jump. */
-.join-h .ln {
-  margin-inline: auto;
+.join-h-line {
+  display: block;
+}
+.join-h-line-wide {
+  letter-spacing: 0.042em;
 }
 
 @media (min-width: 768px) {
