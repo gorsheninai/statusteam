@@ -121,25 +121,27 @@
     letter-spacing: 0.17em;
   }
 
-  /* The preorder is one centered invitation followed by one wide form. */
+  /* The preorder is one left-anchored invitation followed by one wide form —
+     matching .st2-scale-title's own alignment (status-team-page-two.css)
+     rather than the centred "single invitation" treatment used before. */
   .preorder-card {
     grid-template-columns: minmax(0, 1fr);
     justify-items: stretch;
   }
 
   .preorder-summary {
-    text-align: center;
+    text-align: start;
   }
 
   .preorder-action {
-    justify-items: center;
+    justify-items: start;
     align-self: auto;
     margin-top: clamp(0.85rem, 1.4vw, 1.25rem);
   }
 
   .preorder-copy {
-    margin-inline: auto;
-    text-align: center;
+    margin-inline: 0;
+    text-align: start;
   }
 
   .preorder-panel,

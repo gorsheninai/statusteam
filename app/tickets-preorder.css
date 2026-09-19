@@ -41,13 +41,17 @@
 }
 
 .preorder-summary {
-  text-align: center;
+  text-align: start;
 }
 
+/* Same face, size and tracking as .st2-scale-title («Масштаб в цифрах»,
+   status-team-page-two.css) — one fixed clamp across every width rather
+   than a separate desktop step, so the two stay identical everywhere
+   instead of only at one breakpoint. */
 .preorder-heading {
-  font-size: clamp(1.375rem, 1rem + 2.6vw, 2.5rem);
+  font-size: clamp(1.6rem, 7.7vw, 2.35rem);
   line-height: 1;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.025em;
   white-space: nowrap;
 }
 
@@ -59,10 +63,10 @@
 
 .preorder-copy {
   max-width: 30ch;
-  margin-inline: auto;
+  margin-inline: 0;
   font-size: clamp(1rem, 0.94rem + 0.35vw, 1.2rem);
   line-height: 1.4;
-  text-align: center;
+  text-align: start;
 }
 
 .preorder-action .btn-buy {
@@ -161,10 +165,6 @@
     grid-template-columns: minmax(0, 1.12fr) minmax(20rem, 0.88fr);
     column-gap: clamp(3rem, 7vw, 8rem);
     align-items: center;
-  }
-
-  .preorder-heading {
-    font-size: clamp(2.25rem, 3vw, 3.5rem);
   }
 
   .preorder-action {
