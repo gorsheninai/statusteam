@@ -161,6 +161,15 @@
   .tickets + .join {
     padding-block-start: 4rem;
   }
+
+  /* Phones keep the size settled on above (already near the ceiling for
+     the space a fixed one-line heading has there). From here up there's
+     real room, and this is a scene title, not a sub-label — grow it
+     toward .exp-h's own range («Что вас ждёт» runs ~44-70px across this
+     span) instead of staying pinned at the phone size. */
+  .preorder-heading {
+    font-size: clamp(2.75rem, 5vw, 4.25rem);
+  }
 }
 
 @media (min-width: 900px) {

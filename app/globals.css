@@ -2167,6 +2167,13 @@ ol {
     padding-block-start: 4rem;
   }
 
+  /* Same reasoning as .preorder-heading in tickets-preorder.css: phones
+     keep the settled size, but from here up there's room to read as a
+     scene title rather than a sub-label. Same clamp as .preorder-heading
+     so the two stay matched. */
+  .join-h {
+    font-size: clamp(2.75rem, 5vw, 4.25rem);
+  }
 }
 
 .zones {
