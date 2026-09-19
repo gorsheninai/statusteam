@@ -2114,11 +2114,8 @@ ol {
   padding-block: 3rem var(--chapter-pad);
   color: var(--paper);
 }
-/* --pad-beat (page-rhythm.css): the heading now runs at display scale (see
-   .join-h below), and --pad-group still read as cramped under a block this
-   size — the three doors underneath looked stuck to it. */
 .join-head {
-  margin-bottom: var(--pad-beat);
+  margin-bottom: 2rem;
   overflow: clip;
   text-align: start;
 }

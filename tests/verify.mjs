@@ -257,12 +257,9 @@ for (const [name, width, height] of SIZES) {
     `[${name}] join section opens on the beat step`,
     `${joinHeading?.topPadding}px`,
   );
-  /* --pad-beat (page-rhythm.css), same 64px at every width: the join
-     heading sits at display scale now (see .join-h in globals.css), and
-     --pad-group's old 40/24px read as cramped under a block this size. */
   check(
-    Math.abs((joinHeading?.categoriesGap ?? 0) - 64) < 1,
-    `[${name}] categories follow the join heading at the beat step`,
+    Math.abs((joinHeading?.categoriesGap ?? 0) - 32) < 1,
+    `[${name}] categories follow the join heading closely`,
     `${joinHeading?.categoriesGap}px`,
   );
   check(!joinHeading?.previousIsDivider, `[${name}] broken divider before join is removed`);
