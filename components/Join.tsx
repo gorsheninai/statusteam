@@ -104,6 +104,7 @@ export default function Join() {
               id={`zone-${z.id}`}
               className={`panel ${isOpen ? "is-open" : ""}`}
               aria-hidden={!isOpen}
+              inert={!isOpen}
             >
               <div className="panel-inner">
                 <p className="zone-intro">{z.intro}</p>

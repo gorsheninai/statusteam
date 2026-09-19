@@ -48,7 +48,7 @@ export default function Tickets() {
         >
           <div className="panel-inner">
             <div className="preorder-form">
-              <ApplyForm kind="access" consent submitLabel="Отправить" />
+              <ApplyForm kind="access" consent submitLabel="Оставить предзаказ" />
             </div>
           </div>
         </div>

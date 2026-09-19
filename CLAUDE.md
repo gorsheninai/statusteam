@@ -334,3 +334,13 @@ here blocks first paint: every script is deferred and LCP is the hero image.
 - **Guest names, press and brand logos** — grey placeholders; the marquee items are
   `<span>`s waiting to become `<img>`s.
 - **Social / contact links** — omitted rather than invented.
+
+## Responsive polish — September 2026
+
+Current typography loads only Tenor Sans and Onest. Programme descriptions are
+visible without disclosure controls. Ticket preorder uses a 52rem maximum measure
+and a rectangular labelled action. Participation panels use an opaque wine ground
+and inert while closed; open desktop panels expand into a full-width list rather
+than compressing neighbouring forms. Press and partner placeholders are gated off.
+Video supports explicit pause, metadata preload and reduced-motion opt-out.
+Form requests time out after 15 seconds. Delivery still requires a configured endpoint.

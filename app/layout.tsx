@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Cormorant_Garamond } from "next/font/google";
 import { PULSE_PATH } from "@/lib/pulse-path";
 import TenetStepLock from "@/components/TenetStepLock";
 import "./globals.css";
@@ -52,47 +51,6 @@ const onest = localFont({
   fallback: ["system-ui", "sans-serif"],
 });
 
-/* EDITORIAL — upright Playfair Display. */
-const playfair = localFont({
-  src: "./fonts/PlayfairDisplay-Cyrillic-Variable.ttf",
-  variable: "--ff-playfair",
-  weight: "400 900",
-  style: "normal",
-  display: "swap",
-  fallback: ["Georgia", "serif"],
-});
-
-/* EDITORIAL ITALIC — Playfair Display Italic 400 retained for other editorial uses. */
-const playfairItalic = localFont({
-  src: "./fonts/PlayfairDisplay-Italic-Cyrillic.ttf",
-  variable: "--ff-playfair-italic",
-  weight: "400",
-  style: "italic",
-  display: "swap",
-  fallback: ["Georgia", "serif"],
-});
-
-/* COUTURE ACCENT — Cormorant Garamond Medium Italic 500, OFL, Cyrillic. */
-const cormorantGaramond = Cormorant_Garamond({
-  subsets: ["cyrillic", "latin"],
-  variable: "--ff-cormorant-garamond",
-  weight: "500",
-  style: "italic",
-  display: "swap",
-  fallback: ["Georgia", "serif"],
-});
-
-/* HERO FASHION — Droid 1997 Regular (CC0). Retained as an available project
-   face even though the current hero lock-up no longer uses it. */
-const droid1997 = localFont({
-  src: "./fonts/Droid-1997-Regular.woff2",
-  variable: "--ff-droid-1997",
-  weight: "400",
-  style: "normal",
-  display: "swap",
-  fallback: ["Arial Narrow", "Arial", "sans-serif"],
-});
-
 export const metadata: Metadata = {
   metadataBase: new URL("https://statusteam.show"),
   title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
@@ -124,7 +82,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${tenor.variable} ${onest.variable} ${playfair.variable} ${playfairItalic.variable} ${cormorantGaramond.variable} ${droid1997.variable}`}
+      className={`${tenor.variable} ${onest.variable}`}
     >
       <body>
         <script dangerouslySetInnerHTML={{ __html: PRELOAD_ONCE }} />

@@ -238,7 +238,7 @@
   inline-size: fit-content;
   max-inline-size: 100%;
   color: var(--burgundy);
-  font-family: var(--ff-playfair-italic), Georgia, serif;
+  font-family: var(--font-display), Georgia, serif;
   font-size: clamp(1.15rem, 7.5vw, 2.15rem);
   font-weight: 500;
   font-style: italic;
@@ -263,7 +263,7 @@
   margin-block-start: -0.2rem;
   padding-inline-start: clamp(0.6rem, 3vw, 1.75rem);
   color: var(--paper);
-  font-family: var(--ff-playfair-italic), Georgia, serif;
+  font-family: var(--font-display), Georgia, serif;
   font-size: clamp(0.95rem, 5.6vw, 1.6rem);
   font-weight: 400;
   font-style: italic;
@@ -1018,3 +1018,5 @@
     padding-block: 0.5rem !important;
   }
 }
+
+.st2-playback { position: absolute; z-index: 5; bottom: 1rem; right: 1rem; min-height: 48px; padding: .75rem 1rem; color: var(--paper); background: rgba(16,13,12,.85); border: 1px solid rgba(241,238,232,.5); font-family: var(--font-ui); cursor: pointer; }
