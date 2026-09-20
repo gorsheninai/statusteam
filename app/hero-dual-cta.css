@@ -17,6 +17,10 @@
    (hero-type-final, hero-mobile-offer-final, desktop-layout-polish), not
    decoration. */
 
+.hero-offer-stack {
+  display: contents;
+}
+
 .hero-action {
   display: block !important;
   inline-size: max-content;
@@ -214,12 +218,11 @@
 
 @media (min-width: 900px) {
   /* Desktop reference composition:
-     - the two actions sit directly under the red offer as one wide row;
-     - the row grows with the viewport and lands at 66rem on the reference
-       1904px desktop, matching the screenshot proportions;
-     - city/date is taken out of flow and anchored to the lower-left corner;
-     - the full title/offer/CTA lock-up sits 50px lower than the previous pass;
-     - phones remain completely untouched. */
+     - title/offer/actions keep the approved 50px-lower vertical placement;
+     - the CTA row is exactly as wide as the red offer line above it;
+     - two equal buttons share that width with a restrained editorial gap;
+     - button labels are geometrically centred while arrows stay at the edge;
+     - city/date remains independently anchored near the lower-left corner. */
   .hero-inner {
     --hero-content-lift: clamp(6.875rem, calc(26.25svh - 50px), 13.875rem);
     --hero-section-pad-bottom: 4rem;
@@ -227,63 +230,89 @@
     transform: translateY(calc(-1 * var(--hero-content-lift))) !important;
   }
 
-  /* On the reference frame the red statement ends roughly one text-line
-     above the CTA row. The earlier 84px gap pushed the buttons too low. */
+  /* max-content is intentionally driven by .hero-statement. .hero-action is
+     percentage-sized, so it follows rather than contributing a wider intrinsic
+     size. This keeps the CTA pair locked to the visible offer line. */
+  .hero-offer-stack {
+    display: block;
+    width: max-content;
+    max-width: calc(100vw - (var(--gutter) * 2) - 1.64rem);
+    margin-inline-start: .82rem;
+    margin-inline-end: auto;
+  }
+
   .hero-statement {
-    margin-bottom: 34px !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+    margin-bottom: 40px !important;
   }
 
   .hero-action {
     inline-size: 100% !important;
+    width: 100% !important;
     max-inline-size: none !important;
   }
 
   .hero-cta {
-    inline-size: min(58vw, 66rem) !important;
-    width: min(58vw, 66rem) !important;
+    inline-size: 100% !important;
+    width: 100% !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.25rem !important;
+    gap: 18px !important;
   }
 
-  /* Desktop uses one clean flat action surface per route. The arrow stays
-     inline at the far edge — no boxed stub — exactly like the reference. */
   .hero-cta .btn.btn-solid,
   .hero-cta .btn.btn-pulse {
+    position: relative;
     display: flex !important;
     grid-template-columns: none !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    block-size: clamp(56px, 3.8vw, 72px);
-    min-block-size: clamp(56px, 3.8vw, 72px) !important;
-    padding-inline: 1.125rem !important;
-    font-size: clamp(10px, 0.84vw, 16px) !important;
+    justify-content: center !important;
+    block-size: clamp(58px, 3.35vw, 64px);
+    min-block-size: clamp(58px, 3.35vw, 64px) !important;
+    padding-inline: 3.25rem !important;
+    font-size: clamp(14px, 0.95vw, 17px) !important;
     letter-spacing: 0.045em !important;
+    text-align: center !important;
   }
 
   .hero-btn-label {
+    display: block;
     padding-inline: 0;
+    text-align: center;
   }
 
   .hero-cta .btn.btn-solid .arrow,
   .hero-cta .btn.btn-pulse .arrow {
+    position: absolute !important;
+    inset-block-start: 50% !important;
+    inset-inline-end: 1.125rem !important;
+    inset-block-end: auto !important;
+    inset-inline-start: auto !important;
     inline-size: auto !important;
     min-inline-size: 0 !important;
     block-size: auto !important;
+    margin: 0 !important;
     border-inline-start: 0 !important;
-    margin-inline-start: 0.75rem !important;
     background: transparent !important;
     color: currentColor !important;
+    transform: translateY(-50%) !important;
   }
 
   .hero-cta .btn.btn-solid .arrow::before,
   .hero-cta .btn.btn-pulse .arrow::before {
-    font-size: clamp(13px, 0.95vw, 18px) !important;
+    font-size: clamp(14px, 0.95vw, 18px) !important;
   }
 
-  /* Keep the date on the same left axis as the CTA pair, but visually pin it
-     close to the viewport foot. Because .hero-inner itself is lifted, the
-     inset compensates for that lift without applying a transform to the
-     [data-hero] node (important for reduced-motion). */
+  .hero-cta .btn:hover .arrow::before,
+  .hero-cta .btn:focus-visible .arrow::before {
+    transform: translate(3px, -3px);
+  }
+
+  /* Same left axis as the offer/CTA wrapper. */
   .hero-where {
     position: absolute !important;
     inset-inline-start: calc(var(--gutter) + .82rem) !important;
