@@ -109,6 +109,15 @@
   padding-block: var(--pad-beat) var(--pad-chapter) !important;
 }
 
+/* The pulse rule already provides its own 49px visual pause. On phones the
+   following participation title needs only a short breath, not a second full
+   beat of empty wine ground. */
+@media (max-width: 767px) {
+  .pulse-rule + .join {
+    padding-block-start: clamp(1.5rem, 7.5vw, 2rem) !important;
+  }
+}
+
 .faq-scene {
   padding-block: var(--pad-chapter) !important;
 }
