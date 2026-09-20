@@ -105,6 +105,12 @@ html {
   background: var(--ink);
   /* clip (not hidden) keeps position:sticky working */
   overflow-x: clip;
+  /* The browser's own tap flash — a translucent box the OS draws on any
+     tapped element, unrelated to and on top of our own hover/focus states.
+     Every interactive element already has an intentional state of its own
+     (.field input's border, .btn's hover, :focus-visible's outline), so
+     this default is just noise on top of it. */
+  -webkit-tap-highlight-color: transparent;
 }
 /* Lenis owns the scroll when it is running; two smoothing engines on one
    document fight and stall mid-travel. */
