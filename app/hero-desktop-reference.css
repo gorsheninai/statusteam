@@ -1,6 +1,31 @@
 /* Desktop hero — approved 1672 x 941 campaign composition.
    Mobile remains an independent poster with its existing crop and controls. */
 @media (min-width: 900px) {
+  /* Desktop participation title is one centred editorial lock-up. The
+     mobile two-line treatment remains unchanged below this breakpoint. */
+  .join-head {
+    text-align: center;
+  }
+
+  .join-h {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.28em;
+    font-size: clamp(2.25rem, 3.6vw, 4.25rem);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .join-h-line,
+  .join-h-line-big {
+    display: inline;
+    width: auto;
+    margin: 0 !important;
+    font-size: inherit;
+    white-space: nowrap;
+  }
+
   .nav:not(.is-solid) {
     padding-block: 1rem;
     padding-inline: 4.45vw;
