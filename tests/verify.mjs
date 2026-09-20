@@ -150,6 +150,10 @@ for (const [name, width, height] of SIZES) {
       uiWeight: labelStyles.every((style) => Number(style.fontWeight) <= 500),
       /* A ticket sets its own text on its left edge. */
       labelsRagLeft: labelStyles.every((style) => /start|left/.test(style.justifyItems)),
+      labelsButtonCentered: boxes.every((box, index) => {
+        const label = buttons[index]?.querySelector(".hero-btn-label")?.getBoundingClientRect();
+        return Boolean(label) && Math.abs((label.left + label.width / 2) - (box.left + box.width / 2)) < 1.5;
+      }),
       labelSize: Number.parseFloat(labelStyles[0]?.fontSize ?? 0),
       labelsSingleLine: labelLineCounts.every((count) => count === 1),
       noArrowCollision,
@@ -159,8 +163,13 @@ for (const [name, width, height] of SIZES) {
   });
   check(heroControls.count === 2 && heroControls.equal,
     `[${name}] hero buttons have identical dimensions`);
-  check(heroControls.labelsRagLeft,
-    `[${name}] both labels sit on the pass's left edge`);
+  if (width < 900) {
+    check(heroControls.labelsRagLeft,
+      `[${name}] both mobile labels sit on the pass's left edge`);
+  } else {
+    check(heroControls.labelsButtonCentered,
+      `[${name}] both desktop labels are geometrically centred in their buttons`);
+  }
   check(heroControls.sharedType,
     `[${name}] both buttons share one typographic system`);
   check(heroControls.paperLabels && heroControls.sandRules,
