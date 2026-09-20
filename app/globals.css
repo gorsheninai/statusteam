@@ -2162,50 +2162,19 @@ ol {
   font-size: 1.085em;
 }
 
-/* Match the mobile cap-height of «В программе» while keeping both fixed
-   participation lines on the exact visual measure established by
-   «Предзаказ открыт». Each string has different glyph widths, so each line
-   needs its own optical horizontal correction. At 390px both paint to
-   ~340px and share the same 20px shell edge; the correction stays stable
-   across the 320–430px phone range. */
+/* Keep the mobile display type uncompressed, with the same tracking as
+   «В программе». The two strings have different natural widths, so the base
+   size and the existing 1.085em second-line ratio establish one shared
+   visual measure without distorting Tenor Sans letterforms. */
 @media (max-width: 640px) {
   .join-h {
-    font-size: clamp(2.15rem, 11.1vw, 4.3rem);
+    font-size: clamp(1.525rem, 7.6vw, 3.1rem);
     line-height: 0.94;
     letter-spacing: -0.045em;
   }
 
   .join-h-line {
-    width: max-content;
-    transform-origin: left center;
-  }
-
-  .join-h-line:first-child {
-    transform: scaleX(0.685);
-  }
-
-  .join-h-line-big {
-    font-size: 1em;
-    transform: scaleX(0.745);
-  }
-}
-
-@media (max-width: 340px) {
-  .join-h-line:first-child {
-    transform: scaleX(0.68);
-  }
-
-  .join-h-line-big {
-    transform: scaleX(0.74);
-  }
-}
-
-/* At the top edge of the phone range the shared type clamp reaches its
-   ceiling; trim the wider first line by one final optical step so its right
-   edge cannot pass the preorder heading. */
-@media (min-width: 600px) and (max-width: 640px) {
-  .join-h-line:first-child {
-    transform: scaleX(0.684);
+    width: auto;
   }
 }
 
