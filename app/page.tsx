@@ -161,33 +161,34 @@ export default function Home() {
                 </span>
               </h1>
 
-              {/* TODO: replace-content */}
-              <p className="hero-statement" data-hero="statement">
-                <span className="hero-statement-anchor">Крупнейший fashion-показ</span>
-                <span className="hero-statement-script">нижнего белья в России</span>
-              </p>
-
-              {/* display:contents by default, so every desktop rule still
-                  sees these two as direct children of .hero-inner. It only
-                  becomes a real box on phones, where it gives the city/date
-                  line the button's exact width to centre itself in. */}
-              <div className="hero-action">
-                <p className="hero-where" data-hero="where">
-                  <span className="hero-city">{SHOW.city}</span>
-                  <span className="hero-when">Ноябрь 2026</span>
+              {/* Desktop: this wrapper lets the CTA row inherit the exact
+                  intrinsic width of the red offer line. On mobile it becomes
+                  display:contents, so the approved phone composition is unchanged. */}
+              <div className="hero-offer-stack">
+                {/* TODO: replace-content */}
+                <p className="hero-statement" data-hero="statement">
+                  <span className="hero-statement-anchor">Крупнейший fashion-показ</span>
+                  <span className="hero-statement-script">нижнего белья в России</span>
                 </p>
 
-                {/* Two equal paths: preorder and participation. The exact
-                    date still lives in the ticket scene. */}
-                <div className="hero-cta" data-hero="cta">
-                  <a className="btn btn-solid" href="#tickets">
-                    <span className="hero-btn-label">Предзаказать билет</span>
-                    <Arrow />
-                  </a>
-                  <a className="btn btn-pulse" href="#join">
-                    <span className="hero-btn-label">Моделям, брендам, партнёрам и СМИ</span>
-                    <Arrow />
-                  </a>
+                <div className="hero-action">
+                  <p className="hero-where" data-hero="where">
+                    <span className="hero-city">{SHOW.city}</span>
+                    <span className="hero-when">Ноябрь 2026</span>
+                  </p>
+
+                  {/* Two equal paths: preorder and participation. The exact
+                      date still lives in the ticket scene. */}
+                  <div className="hero-cta" data-hero="cta">
+                    <a className="btn btn-solid" href="#tickets">
+                      <span className="hero-btn-label">Предзаказать билет</span>
+                      <Arrow />
+                    </a>
+                    <a className="btn btn-pulse" href="#join">
+                      <span className="hero-btn-label">Моделям, брендам, партнёрам и СМИ</span>
+                      <Arrow />
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
