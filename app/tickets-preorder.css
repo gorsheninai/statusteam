@@ -67,10 +67,9 @@
   }
 
   .preorder-heading {
-    /* This phrase paints ~5.3% narrower at the same size. Match the
-       visible measure of «Моделям, брендам» with its own fluid type scale,
-       without altering letter proportions. */
-    font-size: clamp(1.577rem, calc(-0.45rem + 10vw), 2.194rem);
+    /* Same display scale as the title of the following section. The long
+       phrase stays on one line while preserving its natural letterforms. */
+    font-size: clamp(1.525rem, 7.6vw, 3.1rem);
     line-height: 0.94;
     letter-spacing: -0.045em;
   }
