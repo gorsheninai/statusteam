@@ -213,49 +213,50 @@
 }
 
 @media (min-width: 900px) {
-  /* Fluid, not the old fixed 362px-per-button (--hero-action-width, sized
-     to match the date line under the old small-text/boxed-arrow design).
-     That fixed width already ran wider than .hero-inner's own box below
-     ~950px, and it left the pair stuck at the same width from 900 all the
-     way to 1920 — no bigger than a laptop needs it to be, and not fitting
-     a desktop with room to spare either. Filling .hero-action's own width
-     (capped at 58rem so it doesn't sprawl on very wide screens) and
-     splitting it 1fr/1fr means the pair can never overflow its box, and
-     grows with real room instead of sitting at one fixed size throughout. */
+  /* Desktop reference composition:
+     - the two actions sit directly under the red offer as one wide row;
+     - the row grows with the viewport and lands at 66rem on the reference
+       1904px desktop, matching the screenshot proportions;
+     - city/date is taken out of flow and anchored to the lower-left corner;
+     - phones remain completely untouched. */
+  .hero-inner {
+    --hero-content-lift: clamp(10rem, 26.25svh, 17rem);
+    --hero-section-pad-bottom: 4rem;
+    --hero-date-bottom: 2.25rem;
+    transform: translateY(calc(-1 * var(--hero-content-lift))) !important;
+  }
+
+  /* On the reference frame the red statement ends roughly one text-line
+     above the CTA row. The earlier 84px gap pushed the buttons too low. */
+  .hero-statement {
+    margin-bottom: 34px !important;
+  }
+
   .hero-action {
-    inline-size: min(100%, 58rem) !important;
+    inline-size: 100% !important;
+    max-inline-size: none !important;
   }
 
   .hero-cta {
-    inline-size: 100% !important;
+    inline-size: min(58vw, 66rem) !important;
+    width: min(58vw, 66rem) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem !important;
   }
 
-  /* Desktop drops the boarding-pass cell: a bordered sub-box for the arrow
-     reads as a ticketing-SaaS widget at this size, and the 12px label inside
-     a 58px-tall box was mostly empty padding. One flat block instead, with
-     the label at a size that actually fills it and the arrow inline instead
-     of boxed. Phones keep the pass exactly as before — this is scoped to
-     the width where these two already stopped matching the type below
-     them ("Что вас ждёт" and the rest run at display scale).
-     font-size is fluid because "Моделям, брендам, партнёрам и СМИ" is the
-     binding constraint, not the shorter preorder label — both share this
-     rule (identical type is asserted by verify.mjs), so the longer one
-     decides how big either can get. Solved against the pair's own real
-     rendered width at each width from 900–1920 (not the naive vw-of-
-     viewport math, which overstates how much room .hero-action's own
-     padding leaves) so the label cannot run into the arrow at any size —
-     that collision is what the flat 15px this replaced actually did. */
+  /* Desktop uses one clean flat action surface per route. The arrow stays
+     inline at the far edge — no boxed stub — exactly like the reference. */
   .hero-cta .btn.btn-solid,
   .hero-cta .btn.btn-pulse {
     display: flex !important;
     grid-template-columns: none !important;
     align-items: center !important;
     justify-content: space-between !important;
-    block-size: clamp(48px, 4vw, 64px);
-    min-block-size: clamp(48px, 4vw, 64px) !important;
-    padding-inline: 1rem !important;
-    font-size: clamp(9px, calc(1.22vw - 3px), 15px) !important;
-    letter-spacing: 0.03em !important;
+    block-size: clamp(56px, 3.8vw, 72px);
+    min-block-size: clamp(56px, 3.8vw, 72px) !important;
+    padding-inline: 1.125rem !important;
+    font-size: clamp(10px, 0.84vw, 16px) !important;
+    letter-spacing: 0.045em !important;
   }
 
   .hero-btn-label {
@@ -268,26 +269,42 @@
     min-inline-size: 0 !important;
     block-size: auto !important;
     border-inline-start: 0 !important;
-    margin-inline-start: 0.625rem !important;
+    margin-inline-start: 0.75rem !important;
     background: transparent !important;
     color: currentColor !important;
   }
 
   .hero-cta .btn.btn-solid .arrow::before,
   .hero-cta .btn.btn-pulse .arrow::before {
-    font-size: clamp(12px, calc(1.22vw - 3px), 18px) !important;
+    font-size: clamp(13px, 0.95vw, 18px) !important;
   }
 
-  /* Left-aligned, on the same axis as .hero-title/.hero-statement and the
-     button pair below (hero-type-final.css's own .82rem left offset) —
-     not centred across the button row's width. Centring this one line
-     broke the single left margin the rest of the hero block runs on,
-     which is the thing that actually reads as "composed" here. */
+  /* Keep the date on the same left axis as the CTA pair, but visually pin it
+     close to the viewport foot. Because .hero-inner itself is lifted, the
+     inset compensates for that lift without applying a transform to the
+     [data-hero] node (important for reduced-motion). */
   .hero-where {
+    position: absolute !important;
+    inset-inline-start: calc(var(--gutter) + .82rem) !important;
+    inset-inline-end: auto !important;
+    inset-block-end: calc(
+      var(--hero-date-bottom) - var(--hero-section-pad-bottom) - var(--hero-content-lift)
+    ) !important;
     inline-size: max-content !important;
     width: max-content !important;
     justify-content: flex-start !important;
+    margin: 0 !important;
     text-align: left !important;
+    transform: none !important;
+    z-index: 6;
+  }
+}
+
+/* globals.css increases the hero's bottom padding by .5rem at 1280px.
+   Mirror that value so the viewport-anchored date does not drift. */
+@media (min-width: 1280px) {
+  .hero-inner {
+    --hero-section-pad-bottom: 4.5rem;
   }
 }
 
