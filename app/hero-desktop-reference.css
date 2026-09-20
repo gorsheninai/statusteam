@@ -36,62 +36,12 @@
     object-position: center center;
   }
 
+  /* The gold ring and lower sweep are baked into the approved hero artwork.
+     Keep the CSS layer clean so no duplicate bands sit on top of the models. */
   .hero-frame::before,
   .hero-media::before {
-    content: "";
-    position: absolute;
-    z-index: 2;
-    pointer-events: none;
-    border: 1px solid rgba(198, 168, 124, 0.78);
-    border-radius: 50%;
-  }
-
-  .hero-frame::before {
-    /* Both contours now sit in the lower field of the image. They frame the
-       models' silhouette instead of cutting through their faces and hands. */
-    width: min(74vw, 1240px);
-    aspect-ratio: 1;
-    left: 31%;
-    top: 76%;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 43%,
-      transparent 57%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 43%,
-      transparent 57%,
-      transparent 100%
-    );
-    box-shadow:
-      0 0 8px rgba(255, 210, 139, 0.42),
-      0 0 22px rgba(198, 168, 124, 0.2);
-  }
-
-  .hero-media::before {
-    width: min(69vw, 1160px);
-    aspect-ratio: 1;
-    left: 11%;
-    top: 86%;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 40%,
-      transparent 54%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 40%,
-      transparent 54%,
-      transparent 100%
-    );
-    opacity: 0.75;
+    content: none;
+    display: none;
   }
 
   .hero-frame::after {
