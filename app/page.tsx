@@ -293,6 +293,10 @@ export default function Home() {
           </div>
         </section>
 
+        {/* The shared pulse rule closes the preorder beat before the
+            participation doors begin. */}
+        <PulseRule />
+
         {/* ============================================================
             05 — МОДЕЛЯМ, БРЕНДАМ, ПАРТНЁРАМ И СМИ. Three doors: model, brand, press.
             ============================================================ */}
