@@ -154,7 +154,7 @@ export default function Home() {
             <div className="hero-inner shell">
               <p className="hero-kicker" aria-hidden="true">
                 <span />
-                Fashion объединяет континенты
+                Объединяем континенты
               </p>
               <h1 className="hero-title" data-pulse-title>
                 <span className="pulse-mask" data-hero="t1">
@@ -195,10 +195,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
-              <p className="hero-footer-note" aria-hidden="true">
-                Больше чем показ<br />это движение
-              </p>
             </div>
           </section>
         </div>
