@@ -230,13 +230,16 @@
     padding-inline: 0.75rem;
   }
 
-  /* Centre the location line across the complete two-button group, not
-     across the label's own intrinsic width. */
+  /* Left-aligned, on the same axis as .hero-title/.hero-statement and the
+     button pair below (hero-type-final.css's own .82rem left offset) —
+     not centred across the button row's width. Centring this one line
+     broke the single left margin the rest of the hero block runs on,
+     which is the thing that actually reads as "composed" here. */
   .hero-where {
-    inline-size: calc((var(--hero-action-width) * 2) + 0.75rem) !important;
-    width: calc((var(--hero-action-width) * 2) + 0.75rem) !important;
-    justify-content: center !important;
-    text-align: center !important;
+    inline-size: max-content !important;
+    width: max-content !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
   }
 }
 

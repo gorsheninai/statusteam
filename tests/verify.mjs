@@ -92,8 +92,8 @@ for (const [name, width, height] of SIZES) {
       };
     });
     const where = document.querySelector(".hero-where")?.getBoundingClientRect();
-    const pairCentre = boxes.length === 2 ? (boxes[0].left + boxes[1].right) / 2 : 0;
-    const whereCentre = where ? where.left + where.width / 2 : 0;
+    const pairLeft = boxes[0]?.left ?? 0;
+    const whereLeft = where ? where.left : 0;
     const styles = buttons.map((button) => getComputedStyle(button));
     const arrowStyles = buttons.map((button) => getComputedStyle(button.querySelector(".arrow")));
     const labelStyles = buttons.map((button) => getComputedStyle(button.querySelector(".hero-btn-label")));
@@ -111,7 +111,7 @@ for (const [name, width, height] of SIZES) {
         Math.abs(boxes[0].width - boxes[1].width) < 1 &&
         Math.abs(boxes[0].height - boxes[1].height) < 1,
       labelsCentred: labelCentres.every(({ label, cell }) => Math.abs(label - cell) < 1),
-      desktopDateCentred: Math.abs(whereCentre - pairCentre) < 1,
+      desktopDateLeftAligned: Math.abs(whereLeft - pairLeft) < 1,
       sharedType:
         styles[0]?.fontFamily === styles[1]?.fontFamily &&
         styles[0]?.fontSize === styles[1]?.fontSize &&
@@ -169,8 +169,8 @@ for (const [name, width, height] of SIZES) {
         heroControls.mobileDateBottom <= 8,
       `[${name}] city and month stay anchored to the bottom of the first screen`);
   } else {
-    check(heroControls.desktopDateCentred,
-      `[${name}] city and month are centred across both hero buttons`);
+    check(heroControls.desktopDateLeftAligned,
+      `[${name}] city and month share the button pair's left edge`);
   }
 
   const clipped = await page.evaluate(() =>
