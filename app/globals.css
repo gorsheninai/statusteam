@@ -2181,22 +2181,22 @@ ol {
   }
 
   .join-h-line:first-child {
-    transform: scaleX(0.71);
+    transform: scaleX(0.685);
   }
 
   .join-h-line-big {
     font-size: 1em;
-    transform: scaleX(0.77);
+    transform: scaleX(0.745);
   }
 }
 
 @media (max-width: 340px) {
   .join-h-line:first-child {
-    transform: scaleX(0.7045);
+    transform: scaleX(0.68);
   }
 
   .join-h-line-big {
-    transform: scaleX(0.765);
+    transform: scaleX(0.74);
   }
 }
 
@@ -2205,7 +2205,7 @@ ol {
    edge cannot pass the preorder heading. */
 @media (min-width: 600px) and (max-width: 640px) {
   .join-h-line:first-child {
-    transform: scaleX(0.709);
+    transform: scaleX(0.684);
   }
 }
 
