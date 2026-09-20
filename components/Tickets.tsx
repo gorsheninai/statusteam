@@ -19,7 +19,7 @@ export default function Tickets() {
 
       <div className="preorder-action">
         <p className="preorder-copy">
-          Оставьте контакт — получите доступ к билетам первыми.
+          Оставьте контакт — получите доступ к билетам первым.
         </p>
 
         {SALES_OPEN && TICKETS_URL ? (
