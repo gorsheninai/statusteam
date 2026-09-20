@@ -285,3 +285,9 @@
     display: none;
   }
 }
+
+/* The city and month read as one clean editorial line in the reference. */
+.hero-city::after {
+  content: none !important;
+  margin-inline: 0 !important;
+}
