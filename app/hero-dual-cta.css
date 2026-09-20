@@ -217,23 +217,20 @@
 }
 
 @media (min-width: 900px) {
-  /* Desktop composition follows the approved screenshot:
-     the models own the right side; the type builds one centred editorial
-     column on the left. The show title is the widest element, while the
-     offer / stacked CTAs / date form a narrower column centred beneath it. */
+  /* Match the approved desktop screenshot: the whole left composition sits
+     in the lower half of the hero, with the title broad and the offer/CTA
+     column centred beneath it. */
   .hero-inner {
-    --hero-content-lift: clamp(6.875rem, calc(26.25svh - 50px), 13.875rem);
+    --hero-content-lift: clamp(0.75rem, 1.4svh, 1.5rem);
     transform: translateY(calc(-1 * var(--hero-content-lift))) !important;
   }
 
-  /* Quieter title: about 14% smaller than the previous desktop lock-up,
-     slightly tighter, with a little more air between its two rows. */
   .hero-title {
     width: max-content !important;
     max-width: 64vw !important;
-    margin-inline-start: 1.5rem !important;
+    margin-inline-start: 2.4rem !important;
     margin-inline-end: auto !important;
-    margin-bottom: 32px !important;
+    margin-bottom: 34px !important;
   }
 
   .hero-title .pulse-mask + .pulse-mask {
@@ -247,8 +244,7 @@
     line-height: 0.9 !important;
   }
 
-  /* The lower module is deliberately narrower and shifted right so its
-     centre sits under the title, matching the supplied desktop reference. */
+  /* Narrow column under the title, matching the reference proportions. */
   .hero-offer-stack {
     display: block;
     width: clamp(28rem, 30vw, 34rem);
@@ -257,17 +253,24 @@
     margin-inline-end: auto;
   }
 
+  /* Force the offer into the same deliberate two-line lock-up shown in the
+     reference instead of letting its intrinsic width stretch across the hero. */
   .hero-statement {
+    display: grid !important;
+    gap: 3px !important;
     width: 100% !important;
     max-width: 100% !important;
-    margin-inline: 0 !important;
-    margin-bottom: 14px !important;
+    margin: 0 0 14px !important;
     text-align: left !important;
     white-space: normal !important;
   }
 
   .hero-statement-anchor,
   .hero-statement-script {
+    display: block !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin: 0 !important;
     white-space: nowrap !important;
   }
 
@@ -280,7 +283,6 @@
     max-inline-size: none !important;
   }
 
-  /* Screenshot layout: one button per row. */
   .hero-cta {
     order: 1;
     inline-size: 100% !important;
@@ -333,8 +335,6 @@
     font-size: clamp(14px, 0.95vw, 18px) !important;
   }
 
-  /* Date returns to the flow and sits centred beneath the stacked buttons,
-     as in the reference. */
   .hero-where {
     position: static !important;
     order: 2;
