@@ -103,6 +103,20 @@ for (const [name, width, height] of SIZES) {
       range.selectNodeContents(item);
       return range.getClientRects().length;
     });
+    /* The actual glyph run can outrun its own label box slightly (uppercase
+       tracking rounds oddly at some sizes) without outrunning the arrow —
+       measure the text itself against the arrow's own left edge, not the
+       label container against the button. */
+    const noArrowCollision = buttons.every((button) => {
+      const label = button.querySelector(".hero-btn-label");
+      const arrow = button.querySelector(".arrow");
+      if (!label || !arrow) return true;
+      const range = document.createRange();
+      range.selectNodeContents(label);
+      const textRight = range.getBoundingClientRect().right;
+      const arrowLeft = arrow.getBoundingClientRect().left;
+      return textRight <= arrowLeft + 1;
+    });
     const heroAfter = getComputedStyle(document.querySelector(".hero"), "::after");
     return {
       count: boxes.length,
@@ -138,6 +152,7 @@ for (const [name, width, height] of SIZES) {
       labelsRagLeft: labelStyles.every((style) => /start|left/.test(style.justifyItems)),
       labelSize: Number.parseFloat(labelStyles[0]?.fontSize ?? 0),
       labelsSingleLine: labelLineCounts.every((count) => count === 1),
+      noArrowCollision,
       mobileDate: heroAfter.content.replaceAll('"', ""),
       mobileDateBottom: Number.parseFloat(heroAfter.bottom),
     };
@@ -148,8 +163,20 @@ for (const [name, width, height] of SIZES) {
     `[${name}] both labels sit on the pass's left edge`);
   check(heroControls.sharedType,
     `[${name}] both buttons share one typographic system`);
-  check(heroControls.paperLabels && heroControls.sandRules && heroControls.oneSandStub,
-    `[${name}] the pass keeps paper labels, sand rules and a single sand stub`);
+  check(heroControls.paperLabels && heroControls.sandRules,
+    `[${name}] the pass keeps paper labels and sand rules`);
+  if (width < 900) {
+    check(heroControls.oneSandStub,
+      `[${name}] the pass keeps a single sand stub`);
+  }
+  /* >=900: the boarding-pass cell is gone (hero-dual-cta.css) — the arrow
+     sits inline instead of boxed, so what actually matters is that the
+     longer label's own text never reaches it. That's the bug a flat 15px
+     produced here before the fluid clamp: the label and arrow visibly
+     overlapped even though no automated check caught it (the button's own
+     overflow: hidden clips it, so it never became a scrollWidth issue). */
+  check(heroControls.noArrowCollision,
+    `[${name}] the hero button label never reaches its own arrow`);
   check(heroControls.squareCorners && heroControls.uiWeight,
     `[${name}] the pass stays square and inside the UI weight ceiling`);
   check(heroControls.secondaryGroundAlpha >= 0.8,
@@ -159,10 +186,16 @@ for (const [name, width, height] of SIZES) {
      phone before this. Both halves of the floor are checked at every width. */
   check(heroControls.labelsSingleLine,
     `[${name}] both hero button labels stay on one line`);
-  check(heroControls.labelSize >= 13,
-    `[${name}] hero button labels stay at 13px or above`,
-    `${heroControls.labelSize}px`);
+  /* 13px was the floor the old fixed-width boarding pass needed at every
+     width, phone included. >=900 is a different, fluid layout now (see
+     hero-dual-cta.css) — the longer participation label sets how big the
+     pair can run, and physically can't hold 13px+ side-by-side with its
+     twin below ~1300px without the collision noArrowCollision catches.
+     Below 900 the pass is untouched, so the old floor still applies. */
   if (width < 900) {
+    check(heroControls.labelSize >= 13,
+      `[${name}] hero button labels stay at 13px or above`,
+      `${heroControls.labelSize}px`);
     check(
       heroControls.mobileDate === "МОСКВА · НОЯБРЬ 2026" &&
         heroControls.mobileDateBottom > 0 &&
