@@ -121,8 +121,19 @@ export default function Motion() {
       /* Ken Burns. Slow enough that it is felt on the second glance, not the
          first — and it composes with the pointer offset because they are
          different properties on the same element. */
-      const kenBurns = gsap.to(".hero-layer[data-depth='bg']", {
-        scale: 1.05,
+      const heroBackground = ".hero-layer[data-depth='bg']";
+      if (wide) {
+        /* The approved desktop frame is a slightly tighter crop than the
+           raw 16:9 artwork. Anchor the figures to the floor so the extra
+           scale lifts their faces without moving the seated pose. */
+        gsap.set(heroBackground, {
+          scale: 1.04,
+          transformOrigin: "center bottom",
+        });
+      }
+
+      const kenBurns = gsap.to(heroBackground, {
+        scale: wide ? 1.055 : 1.05,
         duration: 10,
         ease: "sine.inOut",
         repeat: -1,

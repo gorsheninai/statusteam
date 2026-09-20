@@ -22,6 +22,7 @@ import "./hero-mobile-location-fix.css";
 import "./tickets-preorder.css";
 import "./desktop-layout-polish.css";
 import "./hero-dual-cta.css";
+import "./hero-desktop-reference.css";
 /* Vertical rhythm last: it settles the block padding every earlier pass set
    by hand, so it has to see all of them. */
 import "./page-rhythm.css";
