@@ -217,26 +217,23 @@
 }
 
 @media (min-width: 900px) {
-  /* Desktop reference composition:
-     - title/offer/actions keep the approved 50px-lower vertical placement;
-     - the CTA row is exactly as wide as the red offer line above it;
-     - two equal buttons share that width with a restrained editorial gap;
-     - button labels are geometrically centred while arrows stay at the edge;
-     - city/date remains independently anchored near the lower-left corner. */
+  /* Desktop composition follows the approved screenshot:
+     the models own the right side; the type builds one centred editorial
+     column on the left. The show title is the widest element, while the
+     offer / stacked CTAs / date form a narrower column centred beneath it. */
   .hero-inner {
     --hero-content-lift: clamp(6.875rem, calc(26.25svh - 50px), 13.875rem);
-    --hero-section-pad-bottom: 4rem;
-    --hero-date-bottom: 2.25rem;
     transform: translateY(calc(-1 * var(--hero-content-lift))) !important;
   }
 
-  /* The right-hand model composition is already carrying the image.
-     The title therefore becomes a quieter editorial counterweight:
-     ~14% smaller, slightly tighter tracking, a touch more interline air,
-     and a 24px optical nudge right. */
+  /* Quieter title: about 14% smaller than the previous desktop lock-up,
+     slightly tighter, with a little more air between its two rows. */
   .hero-title {
+    width: max-content !important;
+    max-width: 64vw !important;
     margin-inline-start: 1.5rem !important;
     margin-inline-end: auto !important;
+    margin-bottom: 32px !important;
   }
 
   .hero-title .pulse-mask + .pulse-mask {
@@ -250,38 +247,47 @@
     line-height: 0.9 !important;
   }
 
-  /* max-content is intentionally driven by .hero-statement. .hero-action is
-     percentage-sized, so it follows rather than contributing a wider intrinsic
-     size. This keeps the CTA pair locked to the visible offer line. */
+  /* The lower module is deliberately narrower and shifted right so its
+     centre sits under the title, matching the supplied desktop reference. */
   .hero-offer-stack {
     display: block;
-    width: max-content;
-    max-width: calc(100vw - (var(--gutter) * 2) - 1.64rem);
-    margin-inline-start: .82rem;
+    width: clamp(28rem, 30vw, 34rem);
+    max-width: calc(100vw - (var(--gutter) * 2) - 2rem);
+    margin-inline-start: clamp(7.5rem, 10.5vw, 11.5rem);
     margin-inline-end: auto;
   }
 
   .hero-statement {
-    width: max-content !important;
+    width: 100% !important;
     max-width: 100% !important;
-    margin-inline-start: 0 !important;
-    margin-inline-end: 0 !important;
-    margin-bottom: 40px !important;
+    margin-inline: 0 !important;
+    margin-bottom: 14px !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+
+  .hero-statement-anchor,
+  .hero-statement-script {
+    white-space: nowrap !important;
   }
 
   .hero-action {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     inline-size: 100% !important;
     width: 100% !important;
     max-inline-size: none !important;
   }
 
+  /* Screenshot layout: one button per row. */
   .hero-cta {
+    order: 1;
     inline-size: 100% !important;
     width: 100% !important;
-    margin-inline-start: 0 !important;
-    margin-inline-end: 0 !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px !important;
+    margin: 0 !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 20px !important;
   }
 
   .hero-cta .btn.btn-solid,
@@ -327,26 +333,20 @@
     font-size: clamp(14px, 0.95vw, 18px) !important;
   }
 
-  .hero-cta .btn:hover .arrow::before,
-  .hero-cta .btn:focus-visible .arrow::before {
-    transform: translate(3px, -3px);
-  }
-
-  /* Same left axis as the offer/CTA wrapper. */
+  /* Date returns to the flow and sits centred beneath the stacked buttons,
+     as in the reference. */
   .hero-where {
-    position: absolute !important;
-    inset-inline-start: calc(var(--gutter) + .82rem) !important;
-    inset-inline-end: auto !important;
-    inset-block-end: calc(
-      var(--hero-date-bottom) - var(--hero-section-pad-bottom) - var(--hero-content-lift)
-    ) !important;
-    inline-size: max-content !important;
-    width: max-content !important;
-    justify-content: flex-start !important;
-    margin: 0 !important;
-    text-align: left !important;
+    position: static !important;
+    order: 2;
+    align-self: stretch !important;
+    inline-size: 100% !important;
+    width: 100% !important;
+    justify-content: center !important;
+    margin: 34px 0 0 !important;
+    color: #c6a87c !important;
+    text-align: center !important;
     transform: none !important;
-    z-index: 6;
+    z-index: auto;
   }
 }
 
