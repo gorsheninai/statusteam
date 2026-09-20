@@ -72,7 +72,7 @@
     font-size: clamp(2.15rem, 11.1vw, 4.3rem);
     line-height: 0.94;
     letter-spacing: -0.045em;
-    transform: scaleX(0.748);
+    transform: scaleX(0.72);
     transform-origin: left center;
   }
 }
@@ -82,7 +82,7 @@
    360–430px phones. */
 @media (max-width: 340px) {
   .preorder-heading {
-    transform: scaleX(0.746);
+    transform: scaleX(0.718);
   }
 }
 
