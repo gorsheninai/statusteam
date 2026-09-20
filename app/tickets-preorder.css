@@ -67,9 +67,9 @@
   }
 
   .preorder-heading {
-    /* Same display scale as the title of the following section. The long
-       phrase stays on one line while preserving its natural letterforms. */
-    font-size: clamp(1.525rem, 7.6vw, 3.1rem);
+    /* This line has naturally narrower glyphs than «Моделям, брендам».
+       Grow it 5.5% so the painted, not just CSS, scale is the same. */
+    font-size: clamp(1.609rem, 8.02vw, 3.27rem);
     line-height: 0.94;
     letter-spacing: -0.045em;
   }
