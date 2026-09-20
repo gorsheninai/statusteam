@@ -2162,6 +2162,44 @@ ol {
   font-size: 1.085em;
 }
 
+/* Match the mobile cap-height of «В программе» while keeping both fixed
+   participation lines on the exact visual measure established by
+   «Предзаказ открыт». Each string has different glyph widths, so each line
+   needs its own optical horizontal correction. At 390px both paint to
+   ~340px and share the same 20px shell edge; the correction stays stable
+   across the 320–430px phone range. */
+@media (max-width: 640px) {
+  .join-h {
+    font-size: clamp(2.15rem, 11.1vw, 4.3rem);
+    line-height: 0.94;
+    letter-spacing: -0.045em;
+  }
+
+  .join-h-line {
+    width: max-content;
+    transform-origin: left center;
+  }
+
+  .join-h-line:first-child {
+    transform: scaleX(0.714);
+  }
+
+  .join-h-line-big {
+    font-size: 1em;
+    transform: scaleX(0.774);
+  }
+}
+
+@media (max-width: 340px) {
+  .join-h-line:first-child {
+    transform: scaleX(0.7085);
+  }
+
+  .join-h-line-big {
+    transform: scaleX(0.769);
+  }
+}
+
 @media (min-width: 768px) {
   .join {
     padding-block-start: 4rem;

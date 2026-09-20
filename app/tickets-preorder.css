@@ -58,6 +58,34 @@
   white-space: nowrap;
 }
 
+/* On phones this heading must carry the same vertical display scale as
+   «В программе». The string is much longer, so using .exp-h's font-size
+   without optical width correction would paint roughly 455px of type into
+   a ~350px shell at 390px. Keep the identical cap-height, line-height and
+   tracking, then condense only the horizontal axis. The resulting painted
+   width is ~340px at 390px — the established preorder measure — without
+   changing the copy or forcing an extra line. */
+@media (max-width: 640px) {
+  .preorder-heading {
+    display: inline-block;
+    width: max-content;
+    font-size: clamp(2.15rem, 11.1vw, 4.3rem);
+    line-height: 0.94;
+    letter-spacing: -0.045em;
+    transform: scaleX(0.748);
+    transform-origin: left center;
+  }
+}
+
+/* Preserve the optical measure on the 320px stress viewport, where the
+   fixed 20px gutters consume a larger share of the line than on modern
+   360–430px phones. */
+@media (max-width: 340px) {
+  .preorder-heading {
+    transform: scaleX(0.746);
+  }
+}
+
 .preorder-action {
   display: grid;
   gap: 1.125rem;
