@@ -2181,22 +2181,31 @@ ol {
   }
 
   .join-h-line:first-child {
-    transform: scaleX(0.714);
+    transform: scaleX(0.71);
   }
 
   .join-h-line-big {
     font-size: 1em;
-    transform: scaleX(0.774);
+    transform: scaleX(0.77);
   }
 }
 
 @media (max-width: 340px) {
   .join-h-line:first-child {
-    transform: scaleX(0.7085);
+    transform: scaleX(0.7045);
   }
 
   .join-h-line-big {
-    transform: scaleX(0.769);
+    transform: scaleX(0.765);
+  }
+}
+
+/* At the top edge of the phone range the shared type clamp reaches its
+   ceiling; trim the wider first line by one final optical step so its right
+   edge cannot pass the preorder heading. */
+@media (min-width: 600px) and (max-width: 640px) {
+  .join-h-line:first-child {
+    transform: scaleX(0.709);
   }
 }
 
