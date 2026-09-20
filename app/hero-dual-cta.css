@@ -230,6 +230,26 @@
     transform: translateY(calc(-1 * var(--hero-content-lift))) !important;
   }
 
+  /* The right-hand model composition is already carrying the image.
+     The title therefore becomes a quieter editorial counterweight:
+     ~14% smaller, slightly tighter tracking, a touch more interline air,
+     and a 24px optical nudge right. */
+  .hero-title {
+    margin-inline-start: 1.5rem !important;
+    margin-inline-end: auto !important;
+  }
+
+  .hero-title .pulse-mask + .pulse-mask {
+    margin-top: 8px !important;
+  }
+
+  .hero-title .pulse-line,
+  .hero-title .pulse-line + .pulse-line {
+    --pulse-spread: 0.072em;
+    font-size: clamp(2.4rem, 5.3vw, 5.7rem) !important;
+    line-height: 0.9 !important;
+  }
+
   /* max-content is intentionally driven by .hero-statement. .hero-action is
      percentage-sized, so it follows rather than contributing a wider intrinsic
      size. This keeps the CTA pair locked to the visible offer line. */
