@@ -218,9 +218,10 @@
      - the row grows with the viewport and lands at 66rem on the reference
        1904px desktop, matching the screenshot proportions;
      - city/date is taken out of flow and anchored to the lower-left corner;
+     - the full title/offer/CTA lock-up sits 50px lower than the previous pass;
      - phones remain completely untouched. */
   .hero-inner {
-    --hero-content-lift: clamp(10rem, 26.25svh, 17rem);
+    --hero-content-lift: clamp(6.875rem, calc(26.25svh - 50px), 13.875rem);
     --hero-section-pad-bottom: 4rem;
     --hero-date-bottom: 2.25rem;
     transform: translateY(calc(-1 * var(--hero-content-lift))) !important;
