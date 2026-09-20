@@ -62,8 +62,14 @@
    proportions and the same tracking. This phrase is longer, so its own
    fluid type scale — rather than horizontal compression — sets the measure. */
 @media (max-width: 640px) {
+  .preorder-summary {
+    text-align: center;
+  }
+
   .preorder-heading {
-    font-size: clamp(1.6rem, 8vw, 3.2rem);
+    /* Shares the copy line's measure on phones, while the phrase stays
+       optically large enough to lead the form. */
+    font-size: clamp(1.625rem, calc(-0.135rem + 8.8vw), 2.23rem);
     line-height: 0.94;
     letter-spacing: -0.045em;
   }
