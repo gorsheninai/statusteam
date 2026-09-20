@@ -2167,6 +2167,10 @@ ol {
    size and the existing 1.085em second-line ratio establish one shared
    visual measure without distorting Tenor Sans letterforms. */
 @media (max-width: 640px) {
+  .join-head {
+    text-align: center;
+  }
+
   .join-h {
     font-size: clamp(1.525rem, 7.6vw, 3.1rem);
     line-height: 0.94;
