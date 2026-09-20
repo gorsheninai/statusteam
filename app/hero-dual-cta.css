@@ -53,14 +53,14 @@
   overflow: hidden;
   border: 1px solid var(--pass-line) !important;
   border-radius: 0 !important;
-  font-family: var(--font-ui) !important;
-  /* The system's own button size, and it fits: at 320 the longest label
-     measures 186px against 201px of field. Nothing here is sized down to
-     make two buttons share a phone screen — they stack instead. */
-  font-size: 13px !important;
-  font-weight: 500 !important;
+  /* The pass labels belong to the campaign's display system, not the
+     utilitarian UI layer. Tenor also echoes the title directly above. */
+  font-family: var(--font-display) !important;
+  /* The long participation label remains comfortably within its pass. */
+  font-size: 12px !important;
+  font-weight: 400 !important;
   line-height: 1 !important;
-  letter-spacing: -0.01em !important;
+  letter-spacing: 0.04em !important;
   text-align: start !important;
   text-transform: uppercase;
   transition:
@@ -223,7 +223,7 @@
   .hero-cta .btn.btn-pulse {
     block-size: 58px;
     min-block-size: 58px !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
   }
 
   .hero-btn-label {
