@@ -145,6 +145,13 @@
   min-width: 0;
 }
 
+/* A quieter hover than the site-wide wipe-fill (.btn::before, globals.css):
+   that reveal scales from the bottom, so mid-transition the button is half
+   ink/half paper with the label's colour interpolating independently of
+   where the fill has actually reached — the label can turn hard to read for
+   a beat. This is the one button people are about to submit a form with, so
+   it gets a plain background/text crossfade instead: same paper-on-hover
+   result, no reveal to desync from the label. */
 .preorder-form .form-foot .btn {
   width: 100%;
   min-width: 0;
@@ -156,6 +163,18 @@
   border-radius: 999px;
   text-align: center;
   white-space: normal;
+  transition: background-color var(--t-base) var(--ease-out),
+    border-color var(--t-base) var(--ease-out),
+    color var(--t-base) var(--ease-out);
+}
+.preorder-form .form-foot .btn::before {
+  content: none;
+}
+.preorder-form .form-foot .btn:hover,
+.preorder-form .form-foot .btn:focus-visible {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
 }
 
 .preorder-form .form-foot .btn .arrow {
