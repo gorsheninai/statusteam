@@ -1,6 +1,77 @@
 /* Desktop hero — approved 1672 x 941 campaign composition.
    Mobile remains an independent poster with its existing crop and controls. */
 @media (min-width: 900px) {
+  /* PREORDER — desktop reference composition: centred title and lead, then
+     the two fields as one clean row with consent/button aligned underneath. */
+  .preorder-card {
+    display: block;
+  }
+
+  .preorder-summary {
+    text-align: center;
+  }
+
+  .preorder-heading {
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    line-height: 0.98;
+  }
+
+  .preorder-action {
+    display: block;
+    margin-top: clamp(1.5rem, 2.8vw, 2.5rem);
+    text-align: center;
+  }
+
+  .preorder-copy {
+    font-size: clamp(1rem, 1.35vw, 1.5rem);
+    letter-spacing: 0;
+  }
+
+  .preorder-panel,
+  .preorder-panel.is-open {
+    margin-top: clamp(4rem, 6vw, 6rem) !important;
+  }
+
+  .preorder-form .form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: clamp(3rem, 6vw, 7rem);
+    row-gap: 2.5rem;
+    align-items: start;
+  }
+
+  .preorder-form .form-grid {
+    display: contents;
+  }
+
+  .preorder-form .field:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .preorder-form .field:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .preorder-form .field-check {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 0;
+  }
+
+  .preorder-form .form-foot {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0;
+    align-self: start;
+  }
+
+  .preorder-form .form-foot .btn {
+    min-height: 3.75rem;
+  }
+
   /* Desktop participation title is one centred editorial lock-up. The
      mobile two-line treatment remains unchanged below this breakpoint. */
   .join-head {
