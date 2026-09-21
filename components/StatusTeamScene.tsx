@@ -22,10 +22,19 @@ const BRAND_LOGOS = [
   "PARTNER 06",
 ];
 
-const GUEST_ORDER = [1, 2, 3, 5, 4, 7, 6];
+/* 11–26: added 2026-09, placed first and in order per the client's request.
+   The original curated set (show-1..10, only 7 of the 10 frames chosen) now
+   trails behind them rather than being dropped. */
+const NEW_ARCHIVE_ORDER = Array.from({ length: 16 }, (_, i) => 11 + i);
+const ARCHIVE_ORDER = [1, 2, 3, 5, 4, 7, 6];
 
-const GUESTS: GuestCarouselItem[] = GUEST_ORDER.map((n, index) => ({
-  img: `show-${n}`,
+const GUEST_SOURCES = [
+  ...NEW_ARCHIVE_ORDER.map((n) => `status-${n}`),
+  ...ARCHIVE_ORDER.map((n) => `show-${n}`),
+];
+
+const GUESTS: GuestCarouselItem[] = GUEST_SOURCES.map((img, index) => ({
+  img,
   widths: [640, 900, 1200],
   label: `Гость ${String(index + 1).padStart(2, "0")}`,
   alt: "Кадр из предыдущего показа",

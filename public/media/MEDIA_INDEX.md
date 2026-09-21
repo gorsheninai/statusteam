@@ -152,6 +152,30 @@ contact sheet. Held in reserve.
     resolution from `sizes`, not from the rendered box, so a stale value silently serves a soft
     image at the exact width it is most visible.
 
+### status-11 … status-26 · the archive carousel, continued
+- **Type / orientation** — images, portrait, served `status-{n}-{640,900,1200}.webp` at the same
+  normalised **2:3** as show-1..10 (640×960, 900×1350, 1200×1800)
+- **Content** — sixteen more frames from СЛАВЯНСКИЙ ВЗГЛЯД: backstage, runway, finale lineup,
+  audience — same photographer, same event as show-1..10
+- **Mood** — real event photography, unfiltered
+- **Overlay** — ✗ none
+- **Best use** — the archive rail in `#statusteam` (`GuestCarousel`, aria-label «Славянский
+  взгляд»). Added 2026-09; placed first and in order, with show-1..10's curated seven trailing
+  after them rather than dropped
+- **Priority** — 1
+- **Originals** — `status_11.jpg` … `status_26.jpg` in the repository root, untouched, per this
+  file's own root-originals convention. They are large camera JPEGs (2–16 MB each); never ship
+  one to the browser
+- **Notes**
+  - Fourteen of the sixteen arrive already 2:3 (2667×4000) or close enough (3200×4000, centre
+    crop). Three — 14, 19, 23 — are the same 1538×2048 3:4 originals show-1..10 already had, with
+    the photographer's credit «ПАША ДОРЕНСКИЙ» set flush to the right edge: the same 173px comes
+    off the LEFT for the same reason (a centred or right-side crop truncates the credit)
+  - Generated with `sharp`, quality 82, `fit: "fill"` after an exact-ratio `extract`. Heavier than
+    show-1..10 per frame (avg. ~190 KB at 1200w against show's 84 KB) — these frames carry more
+    stage-light grain; lazy-loaded like the rest of the carousel, so this is bandwidth on demand,
+    not page weight
+
 ### archive-lineup · from `pre2.PNG`
 - **Type / orientation** — image, **landscape** 1600×1202 (1.33) — the only landscape still
 - **Content** — full runway lineup, wings and flower crowns, stage lighting, audience at tables
