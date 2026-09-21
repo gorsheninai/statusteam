@@ -140,7 +140,8 @@
 
   .hero-ornaments {
     position: absolute;
-    z-index: 4;
+    /* Above the photo, below the soft scrim (3), title and controls (5). */
+    z-index: 2;
     inset: 0;
     overflow: hidden;
     contain: paint;
