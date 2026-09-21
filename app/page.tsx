@@ -10,6 +10,7 @@ import Join from "@/components/Join";
 import Faq from "@/components/Faq";
 import ApplyForm from "@/components/ApplyForm";
 import PulseRule from "@/components/PulseRule";
+import Arc from "@/components/Arc";
 import { SHOW } from "@/lib/config";
 
 const Arrow = () => (
@@ -293,6 +294,8 @@ export default function Home() {
             campaign title, placeholder inventory or decorative photograph.
             ============================================================ */}
         <section className="tickets on-dark" id="tickets" data-bg="wine">
+          {/* First child, so the preorder card paints over it in DOM order. */}
+          <Arc rings={2} />
           <div className="shell tickets-inner">
             <Tickets />
           </div>
@@ -320,6 +323,8 @@ export default function Home() {
             06 — ВОПРОСЫ. The last quiet beat before the footer.
             ============================================================ */}
         <section className="faq-scene on-dark" id="faq" data-bg="ink">
+          {/* First child, so everything the scene says paints over it. */}
+          <Arc rings={2} />
           <div className="shell faq-shell">
             <div className="faq-layout">
               <div className="faq-intro" data-reveal="up">

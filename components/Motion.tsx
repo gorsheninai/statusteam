@@ -341,7 +341,13 @@ export default function Motion() {
         const isFinal = el.hasAttribute("data-pulse-final");
         const isHero = Boolean(el.closest(".hero"));
         const state = { v: isFinal ? 1 : 0 };
-        const write = () => el.style.setProperty("--pulse", String(state.v));
+        /* The section gets the value too: the arc motif reads --pulse by
+           inheritance, and it is a sibling of the title, not a child. */
+        const scene = el.closest<HTMLElement>("section");
+        const write = () => {
+          el.style.setProperty("--pulse", String(state.v));
+          scene?.style.setProperty("--pulse", String(state.v));
+        };
         /* The hero instance is written by the entrance timeline instead —
            overwriting it here would cancel the settle. */
         if (!isHero) write();
@@ -370,6 +376,36 @@ export default function Motion() {
           });
         }
       });
+
+      /* ============================================================
+         ARC — the key-art geometry, drawn on approach
+
+         `pathLength={1}` makes the dash values dimensionless, so one tween
+         fits every radius and a resize needs no recompute. The stroke is
+         drawn from nothing to whole and then left alone: the resting state
+         is the full ring, which is what the no-JS and reduced-motion page
+         already shows.
+         ============================================================ */
+
+      if (window.matchMedia("(min-width: 900px)").matches) {
+        gsap.utils.toArray<SVGCircleElement>("[data-arc] circle").forEach((ring, i) => {
+          gsap.fromTo(
+            ring,
+            { strokeDasharray: 1, strokeDashoffset: 1 },
+            {
+              strokeDashoffset: 0,
+              duration: 2.1,
+              delay: (i % 2) * 0.16,
+              ease: EASE,
+              scrollTrigger: {
+                trigger: ring.closest("section") ?? ring,
+                start: "top 78%",
+                once: true,
+              },
+            },
+          );
+        });
+      }
 
       /* ============================================================
          BACKGROUND FIELD — one ground for the whole page

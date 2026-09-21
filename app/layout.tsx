@@ -27,6 +27,11 @@ import "./hero-desktop-reference.css";
    by hand, so it has to see all of them. */
 import "./page-rhythm.css";
 
+/* The arc motif sits behind every scene it appears in, so it loads after the
+   rhythm pass and before nothing: it sets no spacing and claims no z-index
+   above 0. */
+import "./arc-motif.css";
+
 /* Core project faces are self-hosted. Cormorant Garamond is loaded through
    next/font, downloaded at build time and self-hosted in the production bundle. */
 

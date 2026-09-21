@@ -1,0 +1,94 @@
+/* ============================================================
+   ARC — the key-art circle, continued as a line.
+
+   The hero artwork already carries the ring; the CSS layer stays off it
+   (hero-desktop-reference.css says why). So the motif starts *below* the
+   photograph, on the flat grounds, and behind everything: the arc never
+   crosses a frame or a word, it sits under them.
+
+   --sand is a rule colour here. Stroke only — never a fill, never a
+   gradient, never a glow. The photography supplies the light; the page
+   supplies the geometry.
+   ============================================================ */
+
+.arc {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  inline-size: var(--arc-size, 96%);
+  aspect-ratio: 1;
+  inset-block-start: var(--arc-y, 50%);
+  inset-inline-start: var(--arc-x, 50%);
+  translate: -50% -50%;
+  /* The line has to stop, not be cut: the mask fades the ring out towards
+     its own edges. Alpha only — the stroke's colour is untouched. */
+  -webkit-mask: radial-gradient(closest-side, #000 58%, transparent 97%);
+  mask: radial-gradient(closest-side, #000 58%, transparent 97%);
+}
+
+.arc svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+.arc circle {
+  fill: none;
+  stroke: var(--sand);
+  stroke-width: 1;
+  /* 1px at every scale. Without it the ring thickens with the viewport. */
+  vector-effect: non-scaling-stroke;
+  /* A whisper, and no brighter: the outer ring sits at --sand-dim's own
+     alpha, the inner one at roughly two thirds of it. */
+  opacity: calc(0.42 - var(--i) * 0.14);
+  /* The rings breathe with the lock-up: GSAP writes --pulse (0–1) on the
+     section, and the ring answers with a fraction of a percent of scale. */
+  transform-box: fill-box;
+  transform-origin: center;
+  scale: calc(1 + var(--pulse, 0) * 0.014);
+}
+
+/* --- per scene ---------------------------------------------------------
+   Offsets are fractions of the measure, not round numbers, and no two
+   instances share a centre: the motif recurs, the composition does not.
+
+   Only scenes with real empty ground get one. `#pulse` does not: its band is
+   the lock-up's own 200px-tall strip, and a ring inside it is invisible —
+   measured, not assumed.
+
+   Both hosts need a clip, or the ring leaves the scene and lands on the one
+   below. `overflow: clip` (not hidden) keeps them out of scroll-container
+   duty, and the clip margin leaves room for a focus ring to breathe. */
+
+#tickets,
+#faq {
+  position: relative;
+  overflow: clip;
+  overflow-clip-margin: 6px;
+}
+
+/* 04 · БИЛЕТЫ — the ring enters behind the title and sweeps out under the
+   form, across the empty wine the preorder card leaves below it. */
+#tickets .arc {
+  --arc-x: 71%;
+  --arc-y: 57%;
+  --arc-size: 88%;
+}
+
+/* 06 · ВОПРОСЫ — the last quiet beat answers from the other side. */
+#faq .arc {
+  --arc-x: 27%;
+  --arc-y: 53%;
+  --arc-size: 74%;
+}
+
+/* --- desktop only ------------------------------------------------------
+   Below 900px the scenes are tight to the measure; a ring behind them reads
+   as a scratch, not as art direction. Motion skips the tween at the same
+   width, so nothing animates an element nobody can see. */
+@media (max-width: 899px) {
+  .arc {
+    display: none;
+  }
+}
