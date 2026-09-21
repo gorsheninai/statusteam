@@ -4,6 +4,11 @@
   display: none;
 }
 
+.pulse-scene[data-bg="ink"],
+.pulse-scene[data-bg="ink"] .pulse-intro {
+  background-color: #000;
+}
+
 @media (min-width: 1024px) {
   .pulse-scene .tenets {
     display: none;
@@ -11,7 +16,7 @@
 
   .pulse-editorial {
     display: block;
-    background: var(--ink-deep);
+    background: #000;
   }
 
   .pulse-editorial-spread {
@@ -78,12 +83,6 @@
     margin-top: clamp(4rem, 16vh, 11rem);
   }
 
-  .pulse-editorial-copy small {
-    margin-top: clamp(2rem, 9vh, 6rem);
-    color: var(--sand);
-    font: 400 0.62rem/1.4 var(--ff-onest), sans-serif;
-    letter-spacing: 0.22em;
-  }
 }
 
 @media (min-width: 1024px) and (max-width: 1300px) {

@@ -215,7 +215,6 @@ export default function Home() {
                 <div className="pulse-editorial-copy" aria-hidden="true">
                   <span>{TENETS[start].word}</span>
                   <span>{TENETS[start + 1].word}</span>
-                  <small>STATUS TEAM / МОСКВА 2026</small>
                 </div>
               </div>
             ))}
