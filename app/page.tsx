@@ -10,6 +10,7 @@ import Join from "@/components/Join";
 import Faq from "@/components/Faq";
 import ApplyForm from "@/components/ApplyForm";
 import PulseRule from "@/components/PulseRule";
+import PulseBeat from "@/components/PulseBeat";
 import { SHOW } from "@/lib/config";
 
 const Arrow = () => (
@@ -195,6 +196,9 @@ export default function Home() {
             <h2 className="pulse-title" data-sand-title>
               <span className="pulse-title-fit">ПУЛЬС КОНТИНЕНТА</span>
             </h2>
+            {/* The chapter's namesake, drawn: the lock-up gets the beat the
+                rest of the page only implies through tracking. */}
+            <PulseBeat />
           </div>
 
           <div className="pulse-editorial" aria-label="Четыре образа Пульса континента">

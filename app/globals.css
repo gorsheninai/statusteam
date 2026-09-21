@@ -1639,6 +1639,126 @@ ol {
   will-change: filter;
 }
 
+/* The lock-up's heartbeat. Same path as the chapter dividers, set under the
+   title at roughly the title's own measure, so it reads as the mark of this
+   lock-up rather than as another rule. One copy rests; a bright copy shows
+   only through a narrow window that travels the line and then holds dark —
+   which is what makes it a beat and not the divider's endless crawl.
+   No JS: it is decoration, and a decoration that needs a bundle to appear
+   is a decoration that sometimes does not. */
+.pulse-beat {
+  position: relative;
+  z-index: 1;
+  /* ~0.62 of the lock-up's own width at every step: the title is nowrap at
+     5vw until its 4.5rem cap, so a vw-based measure tracks it without
+     measuring it in JS. Checked at 390 / 768 / 1024 / 1440 / 1920. */
+  inline-size: min(88%, clamp(13rem, 45vw, 41rem));
+  margin: clamp(1.1rem, 2.6vh, 2.1rem) auto 0;
+}
+.pulse-beat-line {
+  display: block;
+  inline-size: 100%;
+  /* preserveAspectRatio is none, so height is a free variable: the line is
+     flat everywhere but the spike, and at the width of a title rather than
+     of the page the spike needs the extra height or it shrinks to a nick. */
+  block-size: clamp(20px, 2.4vw, 34px);
+}
+.pulse-beat-line path {
+  fill: none;
+  stroke: var(--sand);
+  stroke-width: 1;
+  /* The viewBox is squashed to fit the title's measure; without this the
+     hairline squashes with it and the spike's diagonals go thin. */
+  vector-effect: non-scaling-stroke;
+}
+.pulse-beat-rest {
+  opacity: 0.3;
+  animation: pulse-beat-lift var(--beat-cycle) ease-in-out infinite;
+}
+/* WINDOW_W below and the two keyframe sets are one mechanism: the window is
+   16% of the mark, the copy inside is 100/16 = 625% of the window (so, the
+   mark's own width), and every travel distance is expressed in each box's
+   own width. Change the 16% and all four numbers move together. */
+.pulse-beat {
+  --beat-cycle: 4.6s;
+}
+.pulse-beat-window {
+  position: absolute;
+  inset: 0;
+  inline-size: 16%;
+  overflow: hidden;
+  opacity: 0;
+  animation: pulse-beat-window var(--beat-cycle) linear infinite;
+}
+.pulse-beat-live {
+  inline-size: 625%;
+  animation: pulse-beat-hold var(--beat-cycle) linear infinite;
+}
+.pulse-beat-live path {
+  stroke: var(--paper);
+}
+@keyframes pulse-beat-window {
+  0% {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+  7% {
+    opacity: 0.95;
+  }
+  56% {
+    opacity: 0.95;
+  }
+  62% {
+    opacity: 0;
+    transform: translate3d(625%, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(625%, 0, 0);
+  }
+}
+/* The counter-slide: the same distances, scaled by 16/100, so the bright
+   copy stays registered on the resting line while its window moves. */
+@keyframes pulse-beat-hold {
+  0% {
+    transform: translate3d(16%, 0, 0);
+  }
+  62%,
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+/* The window crosses the spike (x 492–546 of 1200) about a quarter of the
+   way through; the resting line lifts as it passes, so the two copies read
+   as one mark catching light rather than two stacked lines. */
+@keyframes pulse-beat-lift {
+  0%,
+  22% {
+    opacity: 0.3;
+  }
+  29% {
+    opacity: 0.5;
+  }
+  38%,
+  100% {
+    opacity: 0.3;
+  }
+}
+/* Reduced motion gets the mark, not a moving one — the same deal the rest of
+   the page makes: the plain document, nothing faded out or half-drawn. */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-beat-rest {
+    opacity: 0.38;
+    animation: none;
+  }
+  .pulse-beat-window {
+    display: none;
+  }
+}
+
+/* Tenor Sans sets wide: below this the lock-up is wider than the phone and
+   slides under .pulse-title's mask, which clips it silently — the document
+   never scrolls sideways, so no overflow check catches it. */
 @media (max-width: 519px) {
   .pulse-title-fit {
     transform: scaleX(0.78);
