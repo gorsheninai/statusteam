@@ -10,9 +10,10 @@
   .pulse-scene .pulse-beat { display: none; }
 
   .pulse-editorial {
-    --photo-width: clamp(220px, 18vw, 310px);
+    --photo-width: clamp(308px, 25.2vw, 434px);
     --photo-height: calc(var(--photo-width) * 16 / 9);
-    --photo-step: calc(var(--photo-height) * 0.58);
+    /* Each next portrait covers only the bottom 16% of the previous one. */
+    --photo-step: calc(var(--photo-height) * 0.84);
     position: relative;
     display: block;
     min-height: calc(var(--photo-height) + 3 * var(--photo-step) + 5rem);
@@ -29,16 +30,16 @@
   .pulse-editorial-photo {
     position: absolute;
     top: calc(var(--step-index) * var(--photo-step));
-    left: calc(50% + var(--photo-offset));
+    left: 50%;
     z-index: calc(1 + var(--step-index));
     width: var(--photo-width);
     margin: 0;
     transform: translateX(-50%);
   }
-  .pulse-editorial-photo-1 { --step-index: 0; --photo-offset: -0.5vw; }
-  .pulse-editorial-photo-2 { --step-index: 1; --photo-offset: 1.2vw; }
-  .pulse-editorial-photo-3 { --step-index: 2; --photo-offset: -1.2vw; }
-  .pulse-editorial-photo-4 { --step-index: 3; --photo-offset: 0.5vw; }
+  .pulse-editorial-photo-1 { --step-index: 0; }
+  .pulse-editorial-photo-2 { --step-index: 1; }
+  .pulse-editorial-photo-3 { --step-index: 2; }
+  .pulse-editorial-photo-4 { --step-index: 3; }
   .pulse-editorial-photo img {
     display: block;
     width: 100%;
