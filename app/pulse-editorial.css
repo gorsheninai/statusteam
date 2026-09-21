@@ -7,8 +7,6 @@
 @media (min-width: 1024px) {
   .pulse-scene .tenets { display: none; }
   .pulse-scene .pulse-intro { padding-block: clamp(3rem, 5vw, 5rem) 0; }
-  .pulse-scene .pulse-beat { display: none; }
-
   .pulse-editorial {
     --photo-width: clamp(308px, 25.2vw, 434px);
     --photo-height: calc(var(--photo-width) * 16 / 9);
