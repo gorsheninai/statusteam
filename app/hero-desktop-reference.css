@@ -132,107 +132,45 @@
     object-position: center center;
   }
 
-  /* Decorative arcs must remain visible, so they sit above the opaque
-     hero photo but below every UI element. The masks remove the portions
-     that would visually cut across the models, making the lines read as
-     if they continue behind the photography. */
+  /* Lightweight desktop linework. The paths are static SVG strokes:
+     no blur, no mask-image, no filter and no large painted CSS ellipses.
+     This keeps the hero cheap while GSAP moves the photo/frame. */
   .hero {
     isolation: isolate;
   }
 
-  .hero-frame::before,
-  .hero-curtain::before,
-  .hero-media::before {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    border: 1px solid rgba(198, 168, 124, 0.66);
-    border-radius: 50%;
-    z-index: 2;
-    box-shadow:
-      0 0 7px rgba(255, 214, 150, 0.22),
-      0 0 18px rgba(198, 168, 124, 0.10);
-  }
-
-  /* Upper sweep. Visible in the free dark field, then fades before
-     reaching the figures. */
-  .hero-curtain::before {
-    width: min(82vw, 1380px);
-    height: min(72vw, 1180px);
-    left: 25%;
-    top: min(-42vw, -430px);
-    transform: rotate(-7deg);
-    opacity: 0.58;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 38%,
-      rgba(0, 0, 0, 0.92) 44%,
-      transparent 54%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 38%,
-      rgba(0, 0, 0, 0.92) 44%,
-      transparent 54%,
-      transparent 100%
-    );
-  }
-
-  /* Main lower sweep entering from the left-bottom corner. */
-  .hero-frame::before {
-    width: min(83vw, 1380px);
-    height: min(34vw, 560px);
-    left: -4%;
-    bottom: min(-21vw, -235px);
-    transform: rotate(-5deg);
-    opacity: 0.72;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 43%,
-      rgba(0, 0, 0, 0.9) 49%,
-      transparent 58%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 43%,
-      rgba(0, 0, 0, 0.9) 49%,
-      transparent 58%,
-      transparent 100%
-    );
-  }
-
-  /* Quiet secondary lower contour. */
-  .hero-media::before {
-    width: min(70vw, 1160px);
-    height: min(27vw, 450px);
-    left: 8%;
-    bottom: min(-18vw, -195px);
-    transform: rotate(4deg);
-    opacity: 0.38;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 40%,
-      transparent 55%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 40%,
-      transparent 55%,
-      transparent 100%
-    );
-  }
-
   .hero-frame {
     z-index: 1;
+  }
+
+  .hero-orbits {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .hero-orbit {
+    fill: none;
+    stroke: rgba(198, 168, 124, 0.68);
+    stroke-width: 1.15;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hero-orbit-top {
+    opacity: 0.58;
+  }
+
+  .hero-orbit-bottom-main {
+    opacity: 0.72;
+  }
+
+  .hero-orbit-bottom-soft {
+    opacity: 0.38;
   }
 
   .hero-inner {
