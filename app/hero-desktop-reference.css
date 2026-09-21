@@ -106,13 +106,6 @@
     height: 28px;
   }
 
-  .nav:not(.is-solid) .nav-links {
-    position: absolute;
-    left: 48%;
-    gap: clamp(3.8rem, 4.15vw, 4.4rem);
-    transform: translateX(-50%);
-  }
-
   .nav:not(.is-solid) .nav-links a {
     font-size: 0.78rem;
     letter-spacing: 0.18em;
