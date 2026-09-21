@@ -107,17 +107,6 @@ export default function Home() {
             {/* The stage curtain that opens this is the preloader; here the
                 frame only settles out of a slow push-in. */}
             <div className="hero-frame">
-              <div className="hero-ornaments" aria-hidden="true">
-                <svg className="hero-orbit hero-orbit-top" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
-                  <ellipse cx="50" cy="50" rx="49" ry="49" pathLength="100" vectorEffect="non-scaling-stroke" />
-                </svg>
-                <svg className="hero-orbit hero-orbit-lower" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
-                  <ellipse cx="50" cy="50" rx="49" ry="49" pathLength="100" vectorEffect="non-scaling-stroke" />
-                </svg>
-                <svg className="hero-orbit hero-orbit-lower-secondary" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
-                  <ellipse cx="50" cy="50" rx="49" ry="49" pathLength="100" vectorEffect="non-scaling-stroke" />
-                </svg>
-              </div>
               <div className="hero-curtain" data-curtain>
                 <div className="media hero-media">
                   {/* TODO: replace-content */}
