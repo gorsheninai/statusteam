@@ -151,6 +151,29 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Static desktop-only linework. One lightweight SVG replaces the
+                large masked/glowing CSS ellipses so the first screen stays
+                cheap to composite while scrolling and during the hero zoom. */}
+            <svg
+              className="hero-orbits"
+              viewBox="0 0 1672 941"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path
+                className="hero-orbit hero-orbit-top"
+                d="M 610 -92 C 995 -164 1450 -62 1718 350"
+              />
+              <path
+                className="hero-orbit hero-orbit-bottom-main"
+                d="M -105 865 C 210 665 505 700 785 1005"
+              />
+              <path
+                className="hero-orbit hero-orbit-bottom-soft"
+                d="M 45 970 C 365 735 665 790 955 1035"
+              />
+            </svg>
+
             <div className="hero-inner shell">
               <p className="hero-kicker" aria-hidden="true">
                 <span />
