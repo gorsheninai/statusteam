@@ -30,16 +30,16 @@
   .pulse-editorial-photo {
     position: absolute;
     top: calc(var(--step-index) * var(--photo-step));
-    left: 50%;
+    left: calc(50% + var(--photo-offset));
     z-index: calc(1 + var(--step-index));
     width: var(--photo-width);
     margin: 0;
     transform: translateX(-50%);
   }
-  .pulse-editorial-photo-1 { --step-index: 0; }
-  .pulse-editorial-photo-2 { --step-index: 1; }
-  .pulse-editorial-photo-3 { --step-index: 2; }
-  .pulse-editorial-photo-4 { --step-index: 3; }
+  .pulse-editorial-photo-1 { --step-index: 0; --photo-offset: -0.6vw; }
+  .pulse-editorial-photo-2 { --step-index: 1; --photo-offset: 2.4vw; }
+  .pulse-editorial-photo-3 { --step-index: 2; --photo-offset: -2.6vw; }
+  .pulse-editorial-photo-4 { --step-index: 3; --photo-offset: 1.5vw; }
   .pulse-editorial-photo img {
     display: block;
     width: 100%;
