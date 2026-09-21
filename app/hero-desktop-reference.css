@@ -1,5 +1,12 @@
 /* Desktop hero — approved 1672 x 941 campaign composition.
    Mobile remains an independent poster with its existing crop and controls. */
+/* The arcs are a desktop composition: below 900px the hero is an independent
+   poster and carries none of them. The element ships at every width, so it is
+   hidden here and turned on inside the desktop query. */
+.hero-arcs {
+  display: none;
+}
+
 @media (min-width: 900px) {
   /* PREORDER — desktop reference composition: centred title and lead, then
      the two fields as one clean row with consent/button aligned underneath. */
@@ -135,20 +142,41 @@
   /* Decorative arcs must remain visible, so they sit above the opaque
      hero photo but below every UI element. The masks remove the portions
      that would visually cut across the models, making the lines read as
-     if they continue behind the photography. */
+     if they continue behind the photography.
+
+     They are NOT pseudo-elements of .hero-frame / .hero-curtain / .hero-media,
+     and must not become them again. Those three are transformed on every
+     scroll frame (the frame's scale scrub, the curtain's settle, the layers'
+     parallax and Ken Burns), and a masked, shadowed ellipse 1380px wide is
+     re-rasterised with its transformed ancestor each time. Three of them
+     overlapping cost ~8ms a frame here — the hero dropped to ~30fps on a
+     scroll that otherwise holds ~43. Hoisted into one static, promoted
+     layer they are rasterised once and only composited: ~1ms.
+
+     So: one wrapper, promoted, nothing animated inside it, a sibling of
+     .hero-frame rather than a descendant. `will-change` on the arcs
+     themselves does not help — the re-raster comes from the ancestor
+     transform, not from the arcs' own layer status. */
   .hero {
     isolation: isolate;
   }
 
-  .hero-frame::before,
-  .hero-curtain::before,
-  .hero-media::before {
-    content: "";
+  .hero-arcs {
+    display: block;
     position: absolute;
+    inset: 0;
+    z-index: 2;
     pointer-events: none;
+    /* Cache this layer's raster: the hero repaints every scroll frame and
+       this content never changes. */
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .hero-arcs i {
+    position: absolute;
     border: 1px solid rgba(198, 168, 124, 0.66);
     border-radius: 50%;
-    z-index: 2;
     box-shadow:
       0 0 7px rgba(255, 214, 150, 0.22),
       0 0 18px rgba(198, 168, 124, 0.10);
@@ -156,7 +184,7 @@
 
   /* Upper sweep. Visible in the free dark field, then fades before
      reaching the figures. */
-  .hero-curtain::before {
+  .hero-arcs i[data-arc="upper"] {
     width: min(82vw, 1380px);
     height: min(72vw, 1180px);
     left: 25%;
@@ -182,7 +210,7 @@
   }
 
   /* Main lower sweep entering from the left-bottom corner. */
-  .hero-frame::before {
+  .hero-arcs i[data-arc="lower"] {
     width: min(83vw, 1380px);
     height: min(34vw, 560px);
     left: -4%;
@@ -208,7 +236,7 @@
   }
 
   /* Quiet secondary lower contour. */
-  .hero-media::before {
+  .hero-arcs i[data-arc="quiet"] {
     width: min(70vw, 1160px);
     height: min(27vw, 450px);
     left: 8%;

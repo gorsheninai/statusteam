@@ -151,6 +151,16 @@ export default function Home() {
               </div>
             </div>
 
+            {/* The decorative arcs live here, outside .hero-frame, on purpose:
+                see hero-desktop-reference.css. Everything inside the frame is
+                transformed every scroll frame, and a masked arc in there is
+                re-rasterised with it. */}
+            <div className="hero-arcs" aria-hidden="true">
+              <i data-arc="upper" />
+              <i data-arc="lower" />
+              <i data-arc="quiet" />
+            </div>
+
             <div className="hero-inner shell">
               <p className="hero-kicker" aria-hidden="true">
                 <span />
