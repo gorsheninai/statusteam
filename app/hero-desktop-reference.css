@@ -380,3 +380,46 @@
   content: none !important;
   margin-inline: 0 !important;
 }
+
+/* Short desktop viewports — the approved composition, scaled to fit.
+   The stack above (top padding → kicker → lock-up → offer → buttons →
+   city line) was built against a ~900px-tall window, and every gap in it
+   bottoms out on a rem minimum, so on a laptop window of 600–780px the
+   clamps stop giving and МОСКВА · НОЯБРЬ 2026 — the last item, and the
+   one carrying the date — falls below the fold. The hero is exactly one
+   viewport tall and the page does not scroll inside it, so nothing
+   reveals it: it is simply gone. These rules lower those minimums on
+   short windows only; a tall window still gets the reference spacing
+   untouched. */
+@media (min-width: 900px) and (max-height: 820px) {
+  .hero-inner {
+    padding-top: clamp(6.4rem, 15vh, 9.5rem);
+  }
+
+  .hero-kicker {
+    margin-bottom: clamp(1.1rem, 3.1vh, 2rem);
+  }
+
+  .hero-statement {
+    margin: clamp(0.7rem, 1.9vh, 1.1rem) 0 clamp(1rem, 2.6vh, 1.8rem) !important;
+  }
+
+  .hero-cta {
+    gap: clamp(0.75rem, 1.9vh, 1.25rem) !important;
+  }
+
+  /* Still a 48px-plus target at the smallest step. */
+  .hero-cta .btn.btn-solid,
+  .hero-cta .btn.btn-pulse {
+    height: clamp(3.5rem, 8.2vh, 4.55rem) !important;
+    min-height: clamp(3.5rem, 8.2vh, 4.55rem) !important;
+  }
+
+  .hero-where {
+    margin: clamp(1.4rem, 3.6vh, 2.8rem) 0 0 !important;
+  }
+
+  .hero-footer-note {
+    bottom: clamp(1.6rem, 4vh, 3.9rem);
+  }
+}
