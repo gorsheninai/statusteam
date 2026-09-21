@@ -57,30 +57,10 @@ const srcset = (a: { name: string; widths: number[] }) =>
 /* The four beats of the pinned chapter. Campaign imagery only — the archive
    belongs to the previous show and lives in the STATUS TEAM scene. */
 const TENETS = [
-  {
-    word: "Ритм",
-    img: "campaign-sand-drape",
-    height: 2498,
-    alt: "Модель в светлом комплекте среди скульптурных драпировок песочного цвета",
-  },
-  {
-    word: "Движение",
-    img: "campaign-silhouette-drapes",
-    height: 2498,
-    alt: "Модель в длинном платье с бахромой между тканевыми драпировками",
-  },
-  {
-    word: "Сила",
-    img: "campaign-beaded-dusk",
-    height: 1866,
-    alt: "Модель в расшитом бисером образе на фоне оранжевого закатного неба",
-  },
-  {
-    word: "Свобода",
-    img: "campaign-palms-gold",
-    height: 1738,
-    alt: "Модель в золотом воротнике и браслетах среди крупных пальмовых листьев",
-  },
+  { word: "Ритм", img: "Status_1", alt: "Ритм — кадр фотосерии STATUS TEAM" },
+  { word: "Движение", img: "Status_2", alt: "Движение — кадр фотосерии STATUS TEAM" },
+  { word: "Сила", img: "Status_3", alt: "Сила — кадр фотосерии STATUS TEAM" },
+  { word: "Свобода", img: "Status_4", alt: "Свобода — кадр фотосерии STATUS TEAM" },
 ];
 
 export default function Home() {
@@ -222,24 +202,14 @@ export default function Home() {
               <div className="tenet" key={t.word}>
                 <figure className="tenet-shot">
                   <div className="media">
-                    <picture>
-                      {/* An 800px source is still above 2x at common iPhone
-                          widths while cutting the four decoded textures by
-                          roughly two thirds. Wider screens keep 1400px. */}
-                      <source
-                        media="(max-width: 599px)"
-                        srcSet={`/media/${t.img}-800.webp`}
-                      />
-                      <img
-                        src={`/media/${t.img}-1400.webp`}
-                        srcSet={`/media/${t.img}-800.webp 800w, /media/${t.img}-1400.webp 1400w`}
-                        sizes="100vw"
-                        width={1400}
-                        height={t.height}
-                        alt={t.alt}
-                        loading={i === 0 ? undefined : "lazy"}
-                      />
-                    </picture>
+                    <img
+                      src={`/media/${t.img}.webp`}
+                      width={816}
+                      height={1456}
+                      alt={t.alt}
+                      loading={i === 0 ? undefined : "lazy"}
+                      decoding="async"
+                    />
                   </div>
                 </figure>
 
