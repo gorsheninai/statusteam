@@ -132,103 +132,74 @@
     object-position: center center;
   }
 
-  /* Decorative arcs must remain visible, so they sit above the opaque
-     hero photo but below every UI element. The masks remove the portions
-     that would visually cut across the models, making the lines read as
-     if they continue behind the photography. */
+  /* Lightweight SVG ornaments: no masks, blur or filters. Keeping the
+     contours as simple vector strokes prevents a full hero repaint while the
+     image and scroll choreography are moving. */
   .hero {
     isolation: isolate;
   }
 
-  .hero-frame::before,
-  .hero-curtain::before,
-  .hero-media::before {
-    content: "";
+  .hero-ornaments {
     position: absolute;
+    z-index: 4;
+    inset: 0;
+    overflow: hidden;
+    contain: paint;
     pointer-events: none;
-    border: 1px solid rgba(198, 168, 124, 0.66);
-    border-radius: 50%;
-    z-index: 2;
-    box-shadow:
-      0 0 7px rgba(255, 214, 150, 0.22),
-      0 0 18px rgba(198, 168, 124, 0.10);
   }
 
-  /* Upper sweep. Visible in the free dark field, then fades before
-     reaching the figures. */
-  .hero-curtain::before {
+  .hero-orbit {
+    position: absolute;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .hero-orbit ellipse {
+    fill: none;
+    stroke: rgba(198, 168, 124, 0.66);
+    stroke-width: 1;
+  }
+
+  .hero-orbit-top {
     width: min(82vw, 1380px);
     height: min(72vw, 1180px);
     left: 25%;
     top: min(-42vw, -430px);
-    transform: rotate(-7deg);
     opacity: 0.58;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 38%,
-      rgba(0, 0, 0, 0.92) 44%,
-      transparent 54%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 38%,
-      rgba(0, 0, 0, 0.92) 44%,
-      transparent 54%,
-      transparent 100%
-    );
+    transform: rotate(-7deg);
   }
 
-  /* Main lower sweep entering from the left-bottom corner. */
-  .hero-frame::before {
+  .hero-orbit-top ellipse {
+    stroke-dasharray: 43 57;
+    stroke-dashoffset: 48;
+  }
+
+  .hero-orbit-lower {
     width: min(83vw, 1380px);
     height: min(34vw, 560px);
     left: -4%;
     bottom: min(-21vw, -235px);
-    transform: rotate(-5deg);
     opacity: 0.72;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 43%,
-      rgba(0, 0, 0, 0.9) 49%,
-      transparent 58%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 43%,
-      rgba(0, 0, 0, 0.9) 49%,
-      transparent 58%,
-      transparent 100%
-    );
+    transform: rotate(-5deg);
   }
 
-  /* Quiet secondary lower contour. */
-  .hero-media::before {
+  .hero-orbit-lower ellipse {
+    stroke-dasharray: 49 51;
+    stroke-dashoffset: 49;
+  }
+
+  .hero-orbit-lower-secondary {
     width: min(70vw, 1160px);
     height: min(27vw, 450px);
     left: 8%;
     bottom: min(-18vw, -195px);
-    transform: rotate(4deg);
     opacity: 0.38;
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 40%,
-      transparent 55%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      90deg,
-      #000 0%,
-      #000 40%,
-      transparent 55%,
-      transparent 100%
-    );
+    transform: rotate(4deg);
+  }
+
+  .hero-orbit-lower-secondary ellipse {
+    stroke-dasharray: 40 60;
+    stroke-dashoffset: 48;
   }
 
   .hero-frame {
