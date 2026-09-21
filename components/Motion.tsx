@@ -118,16 +118,27 @@ export default function Motion() {
         }
       }
 
-      /* Keep the large photo still after the short entrance. Continuously
-         transforming a viewport-sized image behind the SVG arcs and scrim
-         consumes GPU bandwidth even when the visitor is doing nothing. */
+      /* Ken Burns. Slow enough that it is felt on the second glance, not the
+         first — and it composes with the pointer offset because they are
+         different properties on the same element. */
       const heroBackground = ".hero-layer[data-depth='bg']";
       if (wide) {
+        /* The approved desktop frame is a slightly tighter crop than the
+           raw 16:9 artwork. Anchor the figures to the floor so the extra
+           scale lifts their faces without moving the seated pose. */
         gsap.set(heroBackground, {
           scale: 1.04,
           transformOrigin: "center bottom",
         });
       }
+
+      const kenBurns = gsap.to(heroBackground, {
+        scale: wide ? 1.055 : 1.05,
+        duration: 10,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
 
       /* A single heartbeat on the title every six seconds. 1.5% — under the
          threshold of "animated", over the threshold of "alive". */
@@ -157,10 +168,12 @@ export default function Motion() {
              than let the CTA rise and the lock-up's tracking settle while the
              plane is being covered. */
           entrance?.progress(1);
+          kenBurns.pause();
           heartbeat?.pause();
           return;
         }
 
+        kenBurns.resume();
         heartbeat?.resume();
         if (refreshDeferred) {
           refreshDeferred = false;
@@ -243,6 +256,47 @@ export default function Motion() {
         }
       }
 
+      /* Pointer parallax, written straight to the layers with quickTo: no
+         React state, no re-render, one rAF-driven tween per axis. */
+      if (fine) {
+        const TRAVEL: Record<string, number> = { bg: 3, model: 6.5, fg: 10 };
+        const layers = gsap.utils
+          .toArray<HTMLElement>(".hero [data-depth]")
+          .map((el) => ({
+            travel: TRAVEL[el.dataset.depth ?? "bg"] ?? 3,
+            x: gsap.quickTo(el, "x", { duration: 0.9, ease: "power3.out" }),
+            y: gsap.quickTo(el, "y", { duration: 0.9, ease: "power3.out" }),
+          }));
+
+        if (layers.length) {
+          const onMove = (e: PointerEvent) => {
+            const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+            const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+            layers.forEach((l) => {
+              l.x(-nx * l.travel);
+              l.y(-ny * l.travel);
+            });
+          };
+          window.addEventListener("pointermove", onMove, { passive: true });
+          teardown.push(() =>
+            window.removeEventListener("pointermove", onMove),
+          );
+        }
+      }
+
+      /* The photograph leaves at 60% of the page's speed. The layer is
+         oversized by --bleed, so the travel never exposes an edge. */
+      gsap.to(".hero [data-depth]", {
+        yPercent: 8,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero-stage",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
       /* Desktop keeps its editorial hand-off. On phones the first two scenes
          are owned by MobileScreenSwipe instead: two full viewport planes,
          never a shrinking card. */
@@ -254,6 +308,17 @@ export default function Motion() {
         },
         (media) => {
           const { desktop } = media.conditions as { desktop: boolean };
+          gsap.to(".hero-frame", {
+            scale: desktop ? 0.965 : 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero-stage",
+              start: "top top",
+              end: "+=92%",
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          });
           gsap.to(".hero-inner", {
             yPercent: desktop ? -10 : 0,
             ease: "none",
