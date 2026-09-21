@@ -1556,6 +1556,12 @@ ol {
 .js-motion .pulse-scene[data-bg] {
   background-color: var(--ink);
 }
+/* The intro sits on the chapter's own ground: same --ink as the four
+   tenet beats below it. It used to paint a colder #0a0a0a with a sand
+   radial haze over it, which read as a separate, browner panel butted
+   against the black of the pinned chapter — a visible seam at the join.
+   No local background of its own, no glow: one black through the whole
+   scene. */
 .pulse-intro {
   --sand-mask: 100%;
   position: relative;
@@ -1564,20 +1570,7 @@ ol {
   align-items: center;
   padding: 2.25rem 1.5rem 2.5rem;
   overflow: hidden;
-  background: #0a0a0a;
-}
-.pulse-intro::before {
-  content: "";
-  position: absolute;
-  inset: -80% 4%;
-  z-index: 0;
-  background: radial-gradient(
-    ellipse at 42% 50%,
-    rgba(197, 168, 128, 0.13),
-    rgba(197, 168, 128, 0.035) 34%,
-    transparent 66%
-  );
-  pointer-events: none;
+  background: var(--ink);
 }
 .pulse-intro::after {
   content: "";
