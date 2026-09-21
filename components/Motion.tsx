@@ -438,7 +438,7 @@ export default function Motion() {
         ? gsap.utils.toArray<HTMLElement>(".tenet", tenets)
         : [];
 
-      if (tenets && beats.length > 1) {
+      if (!wide && tenets && beats.length > 1) {
         /* The stacked layout only exists while this runs. Without it the four
            beats are an ordinary vertical sequence, which is what a reader
            with no JS gets. */

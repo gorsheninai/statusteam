@@ -197,6 +197,31 @@ export default function Home() {
             </h2>
           </div>
 
+          <div className="pulse-editorial" aria-label="Четыре образа Пульса континента">
+            {[0, 2].map((start) => (
+              <div className="pulse-editorial-spread" key={start}>
+                {[start, start + 1].map((index) => (
+                  <figure className={`pulse-editorial-photo pulse-editorial-photo-${index + 1}`} key={TENETS[index].word}>
+                    <img
+                      src={`/media/${TENETS[index].img}.webp`}
+                      width={816}
+                      height={1456}
+                      alt={TENETS[index].alt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <figcaption>{String(index + 1).padStart(2, "0")} / 04</figcaption>
+                  </figure>
+                ))}
+                <div className="pulse-editorial-copy" aria-hidden="true">
+                  <span>{TENETS[start].word}</span>
+                  <span>{TENETS[start + 1].word}</span>
+                  <small>STATUS TEAM / МОСКВА 2026</small>
+                </div>
+              </div>
+            ))}
+          </div>
+
           <div className="tenets" data-tenets>
             {TENETS.map((t, i) => (
               <div className="tenet" key={t.word}>
