@@ -132,70 +132,12 @@
     object-position: center center;
   }
 
-  /* Continuous lightweight SVG contours. No mask, blur or dashed stroke;
-     the viewport alone crops each complete ellipse into an upper or lower arc. */
-  .hero {
-    isolation: isolate;
-  }
-
-  .hero-ornaments {
-    position: absolute;
-    /* Above the photo, below the soft scrim (3), title and controls (5). */
-    z-index: 2;
-    inset: 0;
-    overflow: hidden;
-    contain: paint;
-    pointer-events: none;
-  }
-
-  .hero-orbit {
-    position: absolute;
-    overflow: visible;
-    pointer-events: none;
-  }
-
-  .hero-orbit ellipse {
-    fill: none;
-    stroke: rgba(198, 168, 124, 0.66);
-    stroke-width: 1;
-  }
-
-  .hero-orbit-top {
-    width: min(82vw, 1380px);
-    height: min(72vw, 1180px);
-    left: 25%;
-    top: min(-42vw, -430px);
-    opacity: 0.58;
-    transform: rotate(-7deg);
-  }
-
-
-  .hero-orbit-lower {
-    width: min(83vw, 1380px);
-    height: min(34vw, 560px);
-    left: -4%;
-    bottom: min(-21vw, -235px);
-    opacity: 0.72;
-    transform: rotate(-5deg);
-  }
-
-
-  .hero-orbit-lower-secondary {
-    width: min(70vw, 1160px);
-    height: min(27vw, 450px);
-    left: 8%;
-    bottom: min(-18vw, -195px);
-    opacity: 0.38;
-    transform: rotate(4deg);
-  }
-
-
-  .hero-frame {
-    z-index: 1;
-  }
-
-  .hero-inner {
-    z-index: 5;
+  /* The gold ring and lower sweep are baked into the approved hero artwork.
+     Keep the CSS layer clean so no duplicate bands sit on top of the models. */
+  .hero-frame::before,
+  .hero-media::before {
+    content: none;
+    display: none;
   }
 
   .hero-frame::after {
