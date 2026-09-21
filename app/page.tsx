@@ -210,7 +210,6 @@ export default function Home() {
                       loading="lazy"
                       decoding="async"
                     />
-                    <figcaption>{String(index + 1).padStart(2, "0")} / 04</figcaption>
                   </figure>
                 ))}
                 <div className="pulse-editorial-copy" aria-hidden="true">
