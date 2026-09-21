@@ -414,7 +414,8 @@
 
 @media (max-width: 899px) {
   .hero-kicker,
-  .hero-footer-note {
+  .hero-footer-note,
+  .hero-orbits {
     display: none;
   }
 }
