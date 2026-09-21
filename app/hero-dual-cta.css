@@ -358,35 +358,6 @@
   }
 }
 
-/* Mobile keeps the desktop CTA type treatment: Tenor, the same 1.08rem
-   optical size, and a genuinely centred label. The arrow remains anchored
-   at the right edge so it does not pull the text's visual centre. */
-@media (max-width: 899px) {
-  .hero-cta .btn.btn-solid,
-  .hero-cta .btn.btn-pulse {
-    font-family: var(--font-display) !important;
-    font-size: 1.08rem !important;
-    font-weight: 400 !important;
-    letter-spacing: 0.045em !important;
-    text-align: center !important;
-  }
-
-  .hero-cta .hero-btn-label {
-    display: block !important;
-    flex: 1 1 auto;
-    width: 100%;
-    min-width: 0;
-    padding-inline: 2.75rem 2rem !important;
-    text-align: center !important;
-  }
-
-  .hero-cta .btn.btn-pulse .hero-btn-label {
-    width: 100%;
-    transform: scaleX(0.82);
-    transform-origin: center center;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-cta .btn.btn-solid,
   .hero-cta .btn.btn-pulse,

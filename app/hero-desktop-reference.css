@@ -375,6 +375,37 @@
   }
 }
 
+/* Keep the phone CTAs in the same typographic system as desktop: Onest,
+   1.04rem, medium weight and the same tracking. Center the label against the
+   whole button, while the arrow stays pinned to the right edge. */
+@media (max-width: 899px) {
+  .hero-cta .btn.btn-solid,
+  .hero-cta .btn.btn-pulse {
+    font-family: var(--font-ui) !important;
+    font-size: 1.04rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.16em !important;
+    text-align: center !important;
+  }
+
+  .hero-cta .hero-btn-label {
+    position: absolute !important;
+    inset: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 2.8rem !important;
+    text-align: center !important;
+    pointer-events: none;
+  }
+
+  .hero-cta .btn.btn-pulse .hero-btn-label {
+    transform: scaleX(0.8);
+    transform-origin: center center;
+  }
+}
+
 /* The city and month read as one clean editorial line in the reference. */
 .hero-city::after {
   content: none !important;
