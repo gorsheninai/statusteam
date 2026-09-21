@@ -132,9 +132,8 @@
     object-position: center center;
   }
 
-  /* Lightweight SVG ornaments: no masks, blur or filters. Keeping the
-     contours as simple vector strokes prevents a full hero repaint while the
-     image and scroll choreography are moving. */
+  /* Continuous lightweight SVG contours. No mask, blur or dashed stroke;
+     the viewport alone crops each complete ellipse into an upper or lower arc. */
   .hero {
     isolation: isolate;
   }
@@ -169,10 +168,6 @@
     transform: rotate(-7deg);
   }
 
-  .hero-orbit-top ellipse {
-    stroke-dasharray: 43 57;
-    stroke-dashoffset: 48;
-  }
 
   .hero-orbit-lower {
     width: min(83vw, 1380px);
@@ -183,10 +178,6 @@
     transform: rotate(-5deg);
   }
 
-  .hero-orbit-lower ellipse {
-    stroke-dasharray: 49 51;
-    stroke-dashoffset: 49;
-  }
 
   .hero-orbit-lower-secondary {
     width: min(70vw, 1160px);
@@ -197,10 +188,6 @@
     transform: rotate(4deg);
   }
 
-  .hero-orbit-lower-secondary ellipse {
-    stroke-dasharray: 40 60;
-    stroke-dashoffset: 48;
-  }
 
   .hero-frame {
     z-index: 1;
