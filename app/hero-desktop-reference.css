@@ -132,9 +132,10 @@
     object-position: center center;
   }
 
-  /* Desktop-only decorative sweeps. They live in the lower-right field of
-     the hero, after the CTA column ends, so the artwork never cuts through
-     the title, buttons or city/date lock-up. Mobile keeps the clean crop. */
+  /* Desktop-only decorative sweeps:
+     upper orbital arc plus two lower sweeps. They stay behind the hero
+     artwork/content and never enter the text/button interaction layer. */
+  .hero-curtain::before,
   .hero-frame::before,
   .hero-media::before {
     content: "";
@@ -144,10 +145,22 @@
     border-radius: 50%;
     z-index: 2;
     box-shadow:
-      0 0 7px rgba(255, 214, 150, 0.24),
+      0 0 7px rgba(255, 214, 150, 0.20),
       0 0 18px rgba(198, 168, 124, 0.10);
   }
 
+  /* Upper arc — starts above the models and sweeps behind the photo field,
+     echoing the reference without crossing the left-side UI. */
+  .hero-curtain::before {
+    width: min(78vw, 1320px);
+    height: min(66vw, 1120px);
+    left: 36%;
+    top: min(-34vw, -330px);
+    transform: rotate(-7deg);
+    opacity: 0.56;
+  }
+
+  /* Lower primary arc — low enough to read as a continuation under the photo. */
   .hero-frame::before {
     width: min(72vw, 1200px);
     height: min(25vw, 420px);
@@ -157,6 +170,7 @@
     opacity: 0.70;
   }
 
+  /* Lower secondary arc — quieter supporting contour. */
   .hero-media::before {
     width: min(59vw, 980px);
     height: min(19vw, 320px);
