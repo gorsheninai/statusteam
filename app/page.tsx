@@ -202,26 +202,37 @@ export default function Home() {
           </div>
 
           <div className="pulse-editorial" aria-label="Четыре образа Пульса континента">
-            {[0, 2].map((start) => (
-              <div className="pulse-editorial-spread" key={start}>
-                {[start, start + 1].map((index) => (
-                  <figure className={`pulse-editorial-photo pulse-editorial-photo-${index + 1}`} key={TENETS[index].word}>
-                    <img
-                      src={`/media/${TENETS[index].img}.webp`}
-                      width={816}
-                      height={1456}
-                      alt={TENETS[index].alt}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </figure>
-                ))}
-                <div className="pulse-editorial-copy" aria-hidden="true">
-                  <span>{TENETS[start].word}</span>
-                  <span>{TENETS[start + 1].word}</span>
-                </div>
-              </div>
-            ))}
+            <div className="pulse-editorial-stage">
+              {TENETS.map((tenet, index) => (
+                <figure
+                  className={`pulse-editorial-photo pulse-editorial-photo-${index + 1}`}
+                  key={tenet.word}
+                >
+                  <img
+                    src={`/media/${tenet.img}.webp`}
+                    width={816}
+                    height={1456}
+                    alt={tenet.alt}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <figcaption className="pulse-editorial-caption">
+                    <span className="pulse-editorial-number">0{index + 1}</span>
+                    <span className="pulse-editorial-word">{tenet.word}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="pulse-editorial-side pulse-editorial-side-left" aria-hidden="true">
+              ЧЕТЫРЕ ОБРАЗА<br />ОДИН ПУЛЬС
+            </p>
+            <p className="pulse-editorial-side pulse-editorial-side-right" aria-hidden="true">
+              МОДА НЕ ЗНАЕТ<br />ГРАНИЦ
+            </p>
+            <p className="pulse-editorial-footer" aria-hidden="true">
+              STATUS TEAM <span /> FASHION SHOW
+            </p>
+            <p className="pulse-editorial-scroll" aria-hidden="true">ЛИСТАЙТЕ <span /></p>
           </div>
 
           <div className="tenets" data-tenets>
