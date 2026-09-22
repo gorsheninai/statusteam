@@ -353,9 +353,12 @@ select:focus {
   }
 
   .nav-tickets {
-    min-height: 36px;
-    padding-block: 0.35rem;
-    padding-inline: 0.45rem;
+    /* Was 36px/0.35rem 0.45rem — same over-padded look as the base rule,
+       just more visible at phone widths where it sits closest to the
+       wordmark and the burger. */
+    min-height: 30px;
+    padding-block: 0.2rem;
+    padding-inline: 0.34rem;
     letter-spacing: 0.14em;
   }
 

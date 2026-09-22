@@ -889,8 +889,11 @@ ol {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 38px;
-  padding: 0.4rem 0.5rem;
+  /* Was 38px/0.4rem 0.5rem — against the wordmark and the plain burger
+     lines either side of it, that much air read as its own block rather
+     than a third control the same weight as the other two. */
+  min-height: 32px;
+  padding: 0.25rem 0.35rem;
   border: 1px solid var(--sand);
   color: var(--sand);
   font-family: var(--font-ui);
