@@ -80,7 +80,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — coin-and-chain silver headpiece and necklaces, vessel raised overhead, teal sky
 - **Mood** — sculptural, frontal, powerful
 - **Overlay** — ★★ flat teal sky at top
-- **Best use** — the «Я бренд / партнёр» door in `#join` (swapped with archive-lineup 2026-09, client request) — it reads as *portrait of a participant*
+- **Best use** — held in reserve. Was the «Я бренд / партнёр» door in `#join`; replaced 2026-09 by the client's own photo-guests. Still *portrait of a participant* if a door needs one again
 - **Priority** — 1
 - **Notes** — Teal is the one cool colour in the library; it makes burgundy sing. Crop high (`center 18%`).
 
@@ -176,12 +176,31 @@ contact sheet. Held in reserve.
     stage-light grain; lazy-loaded like the rest of the carousel, so this is bandwidth on demand,
     not page weight
 
+### photo-guests · client-supplied, `2.jpg`
+- **Type / orientation** — image, landscape 4000×2667 (1.5)
+- **Content** — guest tables under the STATUS TEAM stage backdrop, warm red house light
+- **Mood** — occasion, scale, real
+- **Best use** — the «Я бренд / партнёр» door in `#join` — proof of a full house
+- **Priority** — 1
+- **Originals** — `2.jpg` in the repository root, untouched
+- **Notes** — Added 2026-09, client request, direct swap for campaign-silver-portrait in this
+  door. No crop needed at generation — the box is `object-fit: cover`, same as every other door.
+
+### photo-press · client-supplied, `3.jpg`
+- **Type / orientation** — image, landscape 4000×2667 (1.5), already monochrome
+- **Content** — photographers and blogers shooting at the STATUS TEAM backdrop
+- **Mood** — press, in-the-room, real
+- **Best use** — the «Я СМИ / блогер» door in `#join`; already monochrome, needs no filter
+- **Priority** — 1
+- **Originals** — `3.jpg` in the repository root, untouched
+- **Notes** — Added 2026-09, client request, direct swap for archive-backstage-bw in this door.
+
 ### archive-lineup · from `pre2.PNG`
 - **Type / orientation** — image, **landscape** 1600×1202 (1.33) — the only landscape still
 - **Content** — full runway lineup, wings and flower crowns, stage lighting, audience at tables
 - **Mood** — scale, occasion, real
 - **Overlay** — ★★ dark upper band
-- **Best use** — the «Я модель» door in `#join` (swapped with campaign-silver-portrait 2026-09, client request) — proof of a full house
+- **Best use** — the «Я модель» door in `#join` — proof of a full house
 - **Priority** — 1
 - **Notes** — Photographer watermark bottom-right. Do not crop it out; credit instead.
 
@@ -190,7 +209,7 @@ contact sheet. Held in reserve.
 - **Content** — black-and-white backstage portrait, veil, grain
 - **Mood** — quiet, film, intimate
 - **Overlay** — ★★★ large dark negative space at left
-- **Best use** — the «Я СМИ / блогер» door in `#join`; already monochrome, needs no filter
+- **Best use** — held in reserve. Was the «Я СМИ / блогер» door in `#join`; replaced 2026-09 by the client's own photo-press. Still used once, in the guest wall (`Guests.tsx`)
 - **Priority** — 1
 
 ### archive-black-wings · from `pre3.PNG` · archive-flower-crown · from `pre4.PNG`

@@ -25,11 +25,12 @@ const ZONES = [
     id: "brand",
     title: "Я бренд / партнёр",
     sub: "Интеграция в шоу, контент и аудитория STATUS TEAM.",
-    /* Swapped with "model" above, image only — client's request. */
-    img: "campaign-silver-portrait",
-    w: [800, 1400],
-    h: 1738,
-    alt: "Портрет модели в серебряном головном уборе и украшениях на фоне неба",
+    /* Client-supplied photo (2.jpg, 2026-09): the guest tables under the
+       STATUS TEAM stage backdrop — reads as proof of a full house. */
+    img: "photo-guests",
+    w: [700, 1400],
+    h: 933,
+    alt: "Гости за столами в зале показа на фоне сцены с лого STATUS TEAM",
     intro: "Три формата участия. Каждый собирается под задачу бренда.",
     steps: [
       ["Коллекция", "Отдельный выход с собственной сценой, светом и музыкой"],
@@ -42,10 +43,12 @@ const ZONES = [
     id: "press",
     title: "Я СМИ / блогер",
     sub: "Аккредитация на показ.",
-    img: "archive-backstage-bw",
-    w: [700, 1200],
-    h: 1800,
-    alt: "Чёрно-белый кадр: модель в вуали перед выходом на подиум",
+    /* Client-supplied photo (3.jpg, 2026-09): press at the STATUS TEAM
+       backdrop, already monochrome — needs no filter. */
+    img: "photo-press",
+    w: [700, 1400],
+    h: 933,
+    alt: "Фотографы и блогеры снимают на фоне бэкдропа STATUS TEAM",
     intro: "Аккредитация открывается за месяц до показа. Заявку можно оставить сейчас.",
     steps: [
       ["Съёмка", "Работа в зале и в backstage по согласованию"],
