@@ -99,17 +99,40 @@
 
   .nav:not(.is-solid) {
     padding-block: 1rem;
-    padding-inline: 4.45vw;
+    /* Was 4.45vw, its own value distinct from --gutter (the solid state's
+       padding). --gutter clamps close to 4.2vw here, but "close" still
+       shifted .nav-brand's left edge by a few px between states — pin it
+       to the exact same custom property the solid rule below uses. */
+    padding-inline: var(--gutter);
   }
 
+  /* Fixed at the logo's own top-of-hero size (28px tall × its 6.4:1 ratio),
+     in both states. .nav-brand img shrinks to .is-solid's 21px on scroll,
+     but inside this constant box, left-aligned by the flex default — so
+     scrolling changes the logo's size, never .nav-brand's, and everything
+     space-between positions off of it (.nav-links, .nav-end) stays put. */
+  .nav-brand {
+    width: 180px;
+  }
+
+  /* .nav-brand carries a fixed width (below, desktop only) so this logo can
+     still shrink into .is-solid's 21px on scroll without moving anything
+     to its right: the box stays put, only the image inside it changes
+     size. Without that box, .nav-links and .nav-end would visibly slide
+     — space-between recomputes every item's position from every item's
+     width, not just the ones that changed. */
   .nav:not(.is-solid) .nav-brand img {
     height: 28px;
   }
 
-  .nav:not(.is-solid) .nav-links a {
-    font-size: 0.78rem;
-    letter-spacing: 0.18em;
-  }
+  /* .nav-links intentionally does NOT get a bigger size here (it once did,
+     0.78rem against .is-solid's ~0.69rem): unlike the logo, its own width
+     is responsive (the gap between links scales with viewport width), so
+     it has no fixed box to shrink inside of — any font-size difference
+     between states moves its own right edge, and therefore recomputes
+     .nav-end's gap too. Keeping it constant is what keeps the whole row's
+     layout identical on scroll; only the logo (in its fixed box) and the
+     bar's own padding-block are the "size" that changes. */
 
   .hero {
     display: block;
