@@ -65,7 +65,24 @@
   min-block-size: 100vh;
   min-block-size: 100svh;
   overflow: clip;
-  background: var(--st2-ink-raised);
+  /* Was a flat fill for the whole box. .st2-vanguard right after this has
+     no background of its own — it shows .st's own wine radial glow
+     (::before, below) straight through. That glow is continuous, but this
+     box painted a flat, unvarying colour over it and then simply stopped
+     at its own bottom edge, so the glow appeared to *start* exactly there
+     — a real edge, even though the two colours are close, because flat
+     meeting sloped reads as a line (the eye catches the change in
+     gradient behaviour, not just the change in value). Fading the last
+     140px to transparent lets the glow already showing through fade
+     itself in, instead of switching on. That span sits behind the
+     marquees' own last row (ВМЕСТЕ С НАМИ), which is intentional — the
+     hand-off has to happen where content already is, not in a gap. */
+  background: linear-gradient(
+    180deg,
+    var(--st2-ink-raised) 0%,
+    var(--st2-ink-raised) calc(100% - 140px),
+    transparent 100%
+  );
 }
 
 .st-page-two .st2-impact-copy {
