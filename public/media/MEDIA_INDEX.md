@@ -80,7 +80,7 @@ source: **Паша Доренский**. The campaign set is concept/key-art ima
 - **Content** — coin-and-chain silver headpiece and necklaces, vessel raised overhead, teal sky
 - **Mood** — sculptural, frontal, powerful
 - **Overlay** — ★★ flat teal sky at top
-- **Best use** — the «Я модель» door in `#join` — it reads as *portrait of a participant*
+- **Best use** — the «Я бренд / партнёр» door in `#join` (swapped with archive-lineup 2026-09, client request) — it reads as *portrait of a participant*
 - **Priority** — 1
 - **Notes** — Teal is the one cool colour in the library; it makes burgundy sing. Crop high (`center 18%`).
 
@@ -181,7 +181,7 @@ contact sheet. Held in reserve.
 - **Content** — full runway lineup, wings and flower crowns, stage lighting, audience at tables
 - **Mood** — scale, occasion, real
 - **Overlay** — ★★ dark upper band
-- **Best use** — the «Я бренд / партнёр» door in `#join` — proof of a full house
+- **Best use** — the «Я модель» door in `#join` (swapped with campaign-silver-portrait 2026-09, client request) — proof of a full house
 - **Priority** — 1
 - **Notes** — Photographer watermark bottom-right. Do not crop it out; credit instead.
 
