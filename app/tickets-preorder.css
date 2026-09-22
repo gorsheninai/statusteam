@@ -84,7 +84,11 @@
 .preorder-copy {
   max-width: none;
   margin-inline: auto;
-  font-size: clamp(0.65625rem, 3.25vw, 0.875rem);
+  /* A step below .preorder-heading's own scale — at phone widths this line
+     was tracking the 0.875rem cap almost as early as the heading tracks
+     its own, so the invitation copy read at the same visual weight as
+     "Предзаказ открыт" instead of sitting under it. */
+  font-size: clamp(0.5625rem, 2.75vw, 0.75rem);
   line-height: 1.4;
   letter-spacing: -0.02em;
   text-align: center;
