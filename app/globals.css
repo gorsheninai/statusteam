@@ -325,6 +325,14 @@ ol {
   color: var(--btn-hover-fg, var(--ink));
 }
 .btn .arrow {
+  /* Some buttons (the hero's dual CTA) set the label's own font-family to
+     Tenor Sans, which has no arrow glyphs at all (see design-tokens) — the
+     span inherits that and the browser falls through Tenor's fallback
+     chain to nothing, landing on the OS emoji font. iOS Safari renders
+     that as a boxed colour glyph; desktop happens to find a plain system
+     glyph first, which is why this was invisible there. Pin the glyph to
+     Onest explicitly so it never depends on which button it sits in. */
+  font-family: var(--font-ui);
   transition: transform var(--t-base) var(--ease-out);
 }
 .btn:hover .arrow {
