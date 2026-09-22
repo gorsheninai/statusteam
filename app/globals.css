@@ -752,14 +752,18 @@ ol {
    ground, so a transparent rule directly above it exposed whatever dark
    colour the ground still was at that scroll position — a black bar
    stranding the rule between two sections it didn't visually belong to
-   either. Paint it ink explicitly there so it reads as the dark
-   chapter's closing line instead. */
+   either. Paint it explicitly there so it reads as the dark chapter's
+   closing line instead of a stray bar. */
 .pulse-rule {
   position: relative;
   padding-block: clamp(0.9rem, 2.2vw, 1.5rem);
 }
+/* #000, not var(--ink) — .pulse-scene above this divider is flat #000
+   throughout (the client wants that chapter black with no exceptions),
+   so the divider that closes it has to match or it reads as its own,
+   slightly warmer block. */
 .pulse-scene + .pulse-rule {
-  background: var(--ink);
+  background: #000;
 }
 .pulse-rule svg {
   display: block;
