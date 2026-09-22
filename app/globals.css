@@ -1561,22 +1561,28 @@ ol {
    field logic itself. Needs the [data-bg] in the selector to actually
    win — a plain ".pulse-scene" rule loses the specificity tie against
    the transparency rule above regardless of source order. */
-/* Pure #000 rather than var(--ink) — the client asked for this specific
-   chapter flat black, not the warm-shifted ink the rest of the page uses.
-   .pulse-intro below carries the same #000 for exactly the reason in its
-   own comment: two different blacks meeting at a shared edge reads as a
-   seam, so every layer here (section, intro, the desktop portrait stage
-   in pulse-editorial.css) must match, not just the one someone is
-   looking at. */
+/* Pure #000 — the client asked for this chapter flat black, not the
+   warm-shifted var(--ink) the rest of the page uses. It fades in from
+   #090909, the exact final stop of the previous chapter's own tail
+   gradient (status-team-page-two.css's .st2-scale) — so the two chapters
+   meet at one continuous value instead of a hard cut from that gradient's
+   near-black into a flatly different black right at the seam. 220px is
+   short enough to read as a shared edge, not a chapter of its own; the
+   gradient holds #000 for the rest of this (very tall, pinned) section.
+   .pulse-intro right below goes transparent so this shows through it —
+   see its own rule. */
 .js-motion .pulse-scene[data-bg] {
-  background-color: #000;
+  background: linear-gradient(180deg, #090909 0%, #000 220px, #000 100%);
 }
-/* The intro sits on the chapter's own ground: pure #000, matching
-   .pulse-scene above. It used to paint a colder #0a0a0a with a sand
-   radial haze over it, which read as a separate, browner panel butted
-   against the black of the pinned chapter — a visible seam at the join.
-   No local background of its own, no glow: one black through the whole
-   scene. */
+/* Transparent under .js-motion so .pulse-scene's own top fade (above)
+   shows through it uninterrupted; painting #000 here again would cut the
+   fade off at .pulse-intro's own top edge, which is exactly the seam that
+   fade exists to remove. The no-JS fallback (pulse-editorial.css) keeps a
+   flat #000 — a page with no JS has no field to blend, so there's nothing
+   to fade from. */
+.js-motion .pulse-scene[data-bg] .pulse-intro {
+  background: transparent;
+}
 .pulse-intro {
   --sand-mask: 100%;
   position: relative;
