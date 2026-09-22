@@ -1,13 +1,14 @@
 /* Desktop: four uncropped portraits in one centred, overlapping editorial. */
 .pulse-editorial { display: none; }
 
-/* Both must resolve to the exact same black as .pulse-scene's own
-   var(--ink) fill (globals.css) — a flat #000 here wins by specificity
-   over .pulse-intro's own var(--ink) and reads as a warm seam wherever
-   .pulse-scene's own box is visible above it (its padding-top, added for
-   the >=1600px review breakpoint in status-team-final.css). */
+/* Pure #000, matching .pulse-scene's own fill in globals.css (the client
+   asked for this chapter flat black rather than the page's usual warm
+   var(--ink)). Both selectors must resolve to the exact same value —
+   a mismatch here reads as a seam wherever .pulse-scene's own box is
+   visible above .pulse-intro (its padding-top, added for the >=1600px
+   review breakpoint in status-team-final.css). */
 .pulse-scene[data-bg="ink"],
-.pulse-scene[data-bg="ink"] .pulse-intro { background-color: var(--ink); }
+.pulse-scene[data-bg="ink"] .pulse-intro { background-color: #000; }
 
 @media (min-width: 1024px) {
   .pulse-scene .tenets { display: none; }
@@ -22,9 +23,9 @@
     min-height: calc(var(--photo-height) + 3 * var(--photo-step) + 5rem);
     padding-top: clamp(1rem, 1.8vw, 2rem);
     padding-bottom: 5rem;
-    /* Same var(--ink) as .pulse-scene and .pulse-intro above it — see
-       the note on the #000 rule near the top of this file. */
-    background: var(--ink);
+    /* Same #000 as .pulse-scene and .pulse-intro above it — see the
+       note on the #000 rule near the top of this file. */
+    background: #000;
   }
   .pulse-editorial-stage {
     position: relative;

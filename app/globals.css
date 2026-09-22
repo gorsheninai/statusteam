@@ -1561,11 +1561,18 @@ ol {
    field logic itself. Needs the [data-bg] in the selector to actually
    win — a plain ".pulse-scene" rule loses the specificity tie against
    the transparency rule above regardless of source order. */
+/* Pure #000 rather than var(--ink) — the client asked for this specific
+   chapter flat black, not the warm-shifted ink the rest of the page uses.
+   .pulse-intro below carries the same #000 for exactly the reason in its
+   own comment: two different blacks meeting at a shared edge reads as a
+   seam, so every layer here (section, intro, the desktop portrait stage
+   in pulse-editorial.css) must match, not just the one someone is
+   looking at. */
 .js-motion .pulse-scene[data-bg] {
-  background-color: var(--ink);
+  background-color: #000;
 }
-/* The intro sits on the chapter's own ground: same --ink as the four
-   tenet beats below it. It used to paint a colder #0a0a0a with a sand
+/* The intro sits on the chapter's own ground: pure #000, matching
+   .pulse-scene above. It used to paint a colder #0a0a0a with a sand
    radial haze over it, which read as a separate, browner panel butted
    against the black of the pinned chapter — a visible seam at the join.
    No local background of its own, no glow: one black through the whole
@@ -1578,7 +1585,7 @@ ol {
   align-items: center;
   padding: 2.25rem 1.5rem 2.5rem;
   overflow: hidden;
-  background: var(--ink);
+  background: #000;
 }
 .pulse-intro::after {
   content: "";
