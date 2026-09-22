@@ -411,7 +411,7 @@ export default function StatusTeamScene() {
       {CONTENT.guests && (
         <section className="st2-vanguard st2-shell" aria-labelledby="st2-vanguard-title">
           <header className="st2-vanguard-head" data-st2-section-title>
-            <p className="st2-vanguard-kicker">Предыдущий показ · Москва</p>
+            <p className="st2-vanguard-kicker">Предыдущий показ · Москва · Сколково</p>
             <h2 id="st2-vanguard-title" className="st2-vanguard-tag">
               <span className="st2-vanguard-tag-line">Славянский взгляд</span>
             </h2>
