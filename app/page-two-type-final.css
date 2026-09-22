@@ -46,7 +46,9 @@
   display: inline-block !important;
   margin: 0 !important;
   padding: 0 !important;
-  color: #C9344A !important;
+  /* Was #C9344A (wine-red) — matched to "СЛАВЯНСКИЙ ВЗГЛЯД"'s own
+     champagne, client request. */
+  color: var(--st2-champagne) !important;
   font-family: var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
   font-style: normal !important;
   font-weight: 400 !important;
@@ -153,7 +155,9 @@
     display: block !important;
     margin: 0 !important;
     padding: 0 !important;
-    color: #C9344A !important;
+    /* Was #C9344A (wine-red) — matched to "СЛАВЯНСКИЙ ВЗГЛЯД"'s own
+       champagne, client request. */
+    color: var(--st2-champagne) !important;
     font-family: var(--font-display), var(--ff-tenor), "Helvetica Neue", Arial, sans-serif !important;
     font-style: normal !important;
     font-weight: 400 !important;
