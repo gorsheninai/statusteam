@@ -985,11 +985,18 @@
    flat strip. These are the chapter join, not the carousel: the metrics band
    continues the archive ground instead of starting a new one, so it must
    keep the imagery's own gradient and lose its shell border. */
+/* Final stop is pure #000, not #090909 — .pulse-scene right after this
+   is flat #000 from its own first pixel (the client wants that chapter's
+   ground black with no exceptions, including behind "НОВОЕ ШОУ STATUS
+   TEAM" at its very top), so the fade has to finish and land on #000
+   before the boundary, not carry a barely-different near-black across it.
+   A #090909-to-#000 hop, however small on paper, still reads as a seam at
+   the exact edge where a dark UI photo like this meets a flat fill. */
 .st-page-two .st2-scale {
   margin-block-start: 0 !important;
   padding-block: 0 !important;
   background:
-    linear-gradient(180deg, #16080d 0%, #13090c 36%, #0f090a 66%, #090909 100%) !important;
+    linear-gradient(180deg, #16080d 0%, #13090c 36%, #0f090a 66%, #000 100%) !important;
 }
 
 .st-page-two .st2-scale-shell {

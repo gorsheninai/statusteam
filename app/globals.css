@@ -1561,27 +1561,17 @@ ol {
    field logic itself. Needs the [data-bg] in the selector to actually
    win — a plain ".pulse-scene" rule loses the specificity tie against
    the transparency rule above regardless of source order. */
-/* Pure #000 — the client asked for this chapter flat black, not the
-   warm-shifted var(--ink) the rest of the page uses. It fades in from
-   #090909, the exact final stop of the previous chapter's own tail
-   gradient (status-team-page-two.css's .st2-scale) — so the two chapters
-   meet at one continuous value instead of a hard cut from that gradient's
-   near-black into a flatly different black right at the seam. 220px is
-   short enough to read as a shared edge, not a chapter of its own; the
-   gradient holds #000 for the rest of this (very tall, pinned) section.
-   .pulse-intro right below goes transparent so this shows through it —
-   see its own rule. */
+/* Pure #000 from its very first pixel — the client wants this chapter's
+   ground flat black, no exceptions, including directly behind "НОВОЕ ШОУ
+   STATUS TEAM" at the top. A fade tried here once (blending .pulse-scene's
+   own top into black over ~220px) put that text on a background that
+   hadn't reached #000 yet — wrong trade. The seam with the previous
+   chapter is smoothed from the OTHER side instead: .st2-scale's own tail
+   gradient (status-team-page-two.css) now ends at #000 itself, so the fade
+   finishes before the boundary and this section can just be flat black
+   throughout. */
 .js-motion .pulse-scene[data-bg] {
-  background: linear-gradient(180deg, #090909 0%, #000 220px, #000 100%);
-}
-/* Transparent under .js-motion so .pulse-scene's own top fade (above)
-   shows through it uninterrupted; painting #000 here again would cut the
-   fade off at .pulse-intro's own top edge, which is exactly the seam that
-   fade exists to remove. The no-JS fallback (pulse-editorial.css) keeps a
-   flat #000 — a page with no JS has no field to blend, so there's nothing
-   to fade from. */
-.js-motion .pulse-scene[data-bg] .pulse-intro {
-  background: transparent;
+  background-color: #000;
 }
 .pulse-intro {
   --sand-mask: 100%;
