@@ -594,42 +594,6 @@ ol {
 }
 
 /* ============================================================
-   GRAIN — one tiling turbulence sprite, moved by transform.
-   ============================================================ */
-
-.grain {
-  position: fixed;
-  inset: -60px;
-  z-index: 120;
-  pointer-events: none;
-  opacity: 0.042;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");
-  background-size: 180px 180px;
-  will-change: transform;
-  animation: grain 5.6s steps(6) infinite;
-}
-@keyframes grain {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  20% {
-    transform: translate3d(-14px, 8px, 0);
-  }
-  40% {
-    transform: translate3d(10px, -12px, 0);
-  }
-  60% {
-    transform: translate3d(-8px, -6px, 0);
-  }
-  80% {
-    transform: translate3d(12px, 10px, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-/* ============================================================
    CURSOR — mounted only on a fine pointer at desktop width.
    ============================================================ */
 

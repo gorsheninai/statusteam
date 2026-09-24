@@ -26,7 +26,6 @@ export default function Tickets() {
           <a
             className="btn btn-solid btn-buy"
             href={TICKETS_URL}
-            data-magnetic
             rel="noopener"
           >
             Купить билет

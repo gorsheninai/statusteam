@@ -69,12 +69,8 @@ export default function Motion() {
         ".hero [data-pulse-title]",
       );
 
-      /* The mobile hand-off covers screen one and needs it to hold still
-         underneath. The entrance and the two idle loops below are the whole
-         of the hero's non-scroll-driven motion, so they are what has to be
-         told to stop — hence the handles. */
+      /* Finish the entrance when the mobile hand-off covers this screen. */
       let entrance: gsap.core.Timeline | null = null;
-      let heartbeat: gsap.core.Timeline | null = null;
 
       if (curtain) {
         const tl = gsap.timeline({ defaults: { ease: EASE }, delay: OPEN });
@@ -118,40 +114,12 @@ export default function Motion() {
         }
       }
 
-      /* Ken Burns. Slow enough that it is felt on the second glance, not the
-         first — and it composes with the pointer offset because they are
-         different properties on the same element. */
-      const heroBackground = ".hero-layer[data-depth='bg']";
+      /* Keep the approved desktop crop without a continuous zoom. */
       if (wide) {
-        /* The approved desktop frame is a slightly tighter crop than the
-           raw 16:9 artwork. Anchor the figures to the floor so the extra
-           scale lifts their faces without moving the seated pose. */
-        gsap.set(heroBackground, {
+        gsap.set(".hero-layer[data-depth='bg']", {
           scale: 1.04,
           transformOrigin: "center bottom",
         });
-      }
-
-      const kenBurns = gsap.to(heroBackground, {
-        scale: wide ? 1.055 : 1.05,
-        duration: 10,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-
-      /* A single heartbeat on the title every six seconds. 1.5% — under the
-         threshold of "animated", over the threshold of "alive". */
-      if (heroTitle) {
-        heartbeat = gsap
-          .timeline({ repeat: -1, repeatDelay: 5.4, delay: OPEN + 3 })
-          .to(heroTitle, {
-            scale: 1.015,
-            duration: 0.3,
-            ease: "sine.inOut",
-            transformOrigin: "left center",
-          })
-          .to(heroTitle, { scale: 1, duration: 0.3, ease: "sine.inOut" });
       }
 
       /* MobileScreenSwipe asks for the hold through an event rather than a
@@ -168,13 +136,9 @@ export default function Motion() {
              than let the CTA rise and the lock-up's tracking settle while the
              plane is being covered. */
           entrance?.progress(1);
-          kenBurns.pause();
-          heartbeat?.pause();
           return;
         }
 
-        kenBurns.resume();
-        heartbeat?.resume();
         if (refreshDeferred) {
           refreshDeferred = false;
           ScrollTrigger.refresh();
@@ -877,50 +841,6 @@ export default function Motion() {
           scrollTrigger: { trigger: el.parentElement ?? el, start: "top 88%", once: true },
         });
       });
-
-      /* ============================================================
-         MAGNETIC BUTTONS
-         ============================================================ */
-
-      if (fine && wide) {
-        const magnets = gsap.utils
-          .toArray<HTMLElement>("[data-magnetic]")
-          .map((el) => ({
-            el,
-            x: gsap.quickTo(el, "x", { duration: 0.4, ease: "power3.out" }),
-            y: gsap.quickTo(el, "y", { duration: 0.4, ease: "power3.out" }),
-          }));
-
-        if (magnets.length) {
-          const RADIUS = 80;
-          const PULL = 8;
-          const onMove = (e: PointerEvent) => {
-            magnets.forEach((m) => {
-              const b = m.el.getBoundingClientRect();
-              if (!b.width) return;
-              const cx = b.left + b.width / 2;
-              const cy = b.top + b.height / 2;
-              /* Distance to the button's edge, not its centre — otherwise a
-                 wide button pulls from inside itself. */
-              const dx = Math.max(Math.abs(e.clientX - cx) - b.width / 2, 0);
-              const dy = Math.max(Math.abs(e.clientY - cy) - b.height / 2, 0);
-              const dist = Math.hypot(dx, dy);
-              if (dist > RADIUS) {
-                m.x(0);
-                m.y(0);
-                return;
-              }
-              const force = 1 - dist / RADIUS;
-              m.x(((e.clientX - cx) / (b.width / 2 + RADIUS)) * PULL * force * 2);
-              m.y(((e.clientY - cy) / (b.height / 2 + RADIUS)) * PULL * force * 2);
-            });
-          };
-          window.addEventListener("pointermove", onMove, { passive: true });
-          teardown.push(() =>
-            window.removeEventListener("pointermove", onMove),
-          );
-        }
-      }
 
       /* Late-loading media changes page height, and every pin above depends
          on that height being right. */

@@ -212,7 +212,6 @@ export default function ApplyForm({
           className="btn btn-solid"
           type="submit"
           disabled={state === "sending"}
-          data-magnetic={variant === "full" ? "" : undefined}
         >
           {state === "sending" ? "Отправляем…" : submitLabel ?? SUBMIT[kind]}
           <span className="arrow" aria-hidden="true">

@@ -151,7 +151,6 @@ export default function RootLayout({
         {children}
         <TenetStepLock />
 
-        <div className="grain" aria-hidden="true" />
       </body>
     </html>
   );
