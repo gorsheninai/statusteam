@@ -54,9 +54,15 @@ export default function Nav() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
+    /* In-app browsers can move their toolbar without a window resize. Keep
+       the film's header visibility in sync with the visual viewport too. */
+    window.visualViewport?.addEventListener("resize", onScroll, { passive: true });
+    window.visualViewport?.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      window.visualViewport?.removeEventListener("resize", onScroll);
+      window.visualViewport?.removeEventListener("scroll", onScroll);
     };
   }, []);
 

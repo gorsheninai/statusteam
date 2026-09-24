@@ -29,6 +29,7 @@ export default function MobileScreenSwipe() {
     let transitionPlayed = false;
     let timer = 0;
     let frame = 0;
+    let landingFrame = 0;
     let navFrame = 0;
     let primedVideo: HTMLVideoElement | null = null;
 
@@ -114,20 +115,27 @@ export default function MobileScreenSwipe() {
       timer = 0;
       status.removeEventListener("transitionend", onTravelEnd);
 
-      /* Return the planes to normal flow first: while they are fixed their
-         box sits at the viewport top whatever the scroll position, so the
-         landing would be measured as zero. Nothing repaints between the two
-         statements, so the reader never sees the untranslated document. */
+      /* Restore normal flow and unlock scrolling before positioning the
+         second screen. iOS WebViews can ignore window.scrollTo entirely
+         while html/body still have overflow:hidden. */
       clearTransition();
+      if (direction === "forward") bridgeNav();
+      unlockScroll();
       if (direction === "forward") {
-        bridgeNav();
         jumpToElement(status);
+        /* WebViews may complete the overflow/layout update on the next frame.
+           Correct only a missed landing; leave subsequent native swipes free. */
+        landingFrame = window.requestAnimationFrame(() => {
+          landingFrame = 0;
+          if (Math.abs(status.getBoundingClientRect().top) > 2) {
+            jumpToElement(status);
+          }
+        });
       } else {
         window.scrollTo({ top: 0, behavior: "auto" });
       }
       setImpactPlayback("settle");
 
-      unlockScroll();
       locked = false;
       holdHero(false);
     };
@@ -245,6 +253,7 @@ export default function MobileScreenSwipe() {
     return () => {
       if (timer) window.clearTimeout(timer);
       if (frame) window.cancelAnimationFrame(frame);
+      if (landingFrame) window.cancelAnimationFrame(landingFrame);
       if (navFrame) window.cancelAnimationFrame(navFrame);
       status.removeEventListener("transitionend", onTravelEnd);
       root.classList.remove("mobile-screen-swap--settling");
