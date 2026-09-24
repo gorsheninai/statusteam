@@ -1046,7 +1046,7 @@
 /* First show: a new archival chapter after “Славянский взгляд”. */
 .st-page-two .st2-first-show {
   position: relative;
-  padding-block: clamp(4rem, 9vw, 7rem) clamp(3rem, 7vw, 5rem);
+  padding-block: clamp(1.25rem, 2.4vw, 2.5rem) clamp(3rem, 7vw, 5rem);
   background: #16080d;
 }
 
@@ -1063,7 +1063,7 @@
 }
 
 .st-page-two .st2-first-show .st2-guest-stage {
-  margin-block-start: clamp(2rem, 4vw, 3.5rem);
+  margin-block-start: clamp(1.25rem, 2vw, 1.75rem);
 }
 
 .st-page-two .st2-first-show .st2-guest {
@@ -1078,6 +1078,6 @@
 
 @media (max-width: 767px) {
   .st-page-two .st2-first-show {
-    padding-block-start: 4.25rem;
+    padding-block-start: 1.5rem;
   }
 }

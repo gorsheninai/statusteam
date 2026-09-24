@@ -41,11 +41,9 @@
    01 — STATUS TEAM. Three beats under one ground.
    ============================================================ */
 
-/* The bottom is what the stats band is measured against: the suite reads the
-   distance from the carousel's own box to the top of the band, so this
-   padding is the whole of that gap. */
+/* The first-show heading now follows the archive carousel directly. */
 .st-page-two .st2-vanguard {
-  padding-block: var(--pad-beat) var(--pad-beat) !important;
+  padding-block: var(--pad-beat) 0 !important;
 }
 
 /* Last beat of the chapter, so it closes on the chapter step. */
@@ -55,11 +53,8 @@
 }
 
 @media (max-width: 767px) {
-  /* The archive footer and metrics title are one continuous editorial
-     chapter. Two full 64px beats created 128px of empty ground between them;
-     retain a clear seam without making the next heading feel detached. */
   .st-page-two .st2-vanguard {
-    padding-block-end: 16px !important;
+    padding-block-end: 0 !important;
   }
 
   .st-page-two .st2-scale-shell {
