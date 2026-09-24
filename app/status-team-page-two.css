@@ -1076,6 +1076,12 @@
   object-position: center;
 }
 
+/* The last, landscape runway frame fills its portrait slot. */
+.st-page-two .st2-first-show .st2-guest:last-child img {
+  object-fit: cover;
+  object-position: center;
+}
+
 @media (max-width: 767px) {
   .st-page-two .st2-first-show {
     padding-block-start: 1.5rem;
