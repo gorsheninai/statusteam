@@ -1054,12 +1054,12 @@
 
 .st-page-two .st2-first-show-kicker {
   margin: 0;
-  color: var(--st2-champagne);
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.16em;
+  color: var(--st2-white);
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 0.86rem + 0.44vw, 1.24rem);
+  font-weight: 400;
+  line-height: 1.44;
+  letter-spacing: 0.005em;
 }
 
 .st-page-two .st2-first-show .st2-guest-stage {
@@ -1085,5 +1085,11 @@
 @media (max-width: 767px) {
   .st-page-two .st2-first-show {
     padding-block-start: 1.5rem;
+  }
+
+  .st-page-two .st2-first-show-kicker {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
   }
 }
