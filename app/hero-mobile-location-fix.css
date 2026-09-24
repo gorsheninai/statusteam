@@ -1,9 +1,15 @@
 /* Final mobile location line. Keep the CTA completely untouched.
    The original city/date node stays in the markup for desktop, but is hidden
    on phones because it lives inside .hero-action. A visual mobile copy is
-   anchored to the full .hero viewport instead, so it cannot overlap the CTA. */
+   anchored to the full .hero viewport instead. */
 
 @media (max-width: 899px) {
+  .hero {
+    /* The date moves up by the safe-area inset. Give the CTA the same lift
+       so Instagram's in-app browser keeps a gap between the two. */
+    padding-bottom: calc(2.5rem + env(safe-area-inset-bottom)) !important;
+  }
+
   .hero-action > .hero-where {
     display: none !important;
   }
