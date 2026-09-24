@@ -657,3 +657,30 @@ select:focus-visible {
   transform: translateY(0);
   transition-delay: 0s;
 }
+
+/* Keep pointer focus clean in the program and application flows. Keyboard
+   focus uses type or the existing field underline instead of a box. */
+.exp-scene .exp-trigger:focus,
+.tickets .preorder-form :is(input, textarea, button):focus,
+.join :is(.zone-head, .form input, .form textarea, .form button):focus {
+  outline: none !important;
+}
+
+.exp-scene .exp-trigger:focus-visible .exp-title,
+.join .zone-head:focus-visible .zone-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.tickets .preorder-form .form-foot .btn:focus-visible,
+.join .form-foot .btn:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.tickets .preorder-form .field-check label:has(input:focus-visible) span,
+.join .field-check label:has(input:focus-visible) span {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
