@@ -1042,3 +1042,77 @@
     padding-block: 0.5rem !important;
   }
 }
+
+/* First show: a new archival chapter after “Славянский взгляд”. */
+.st-page-two .st2-first-show {
+  position: relative;
+  padding-block: clamp(4rem, 9vw, 7rem) clamp(3rem, 7vw, 5rem);
+  background: #16080d;
+}
+
+.st-page-two .st2-first-show-head { text-align: start; }
+
+.st-page-two .st2-first-show-kicker {
+  margin: 0 0 clamp(1.25rem, 2.8vw, 2rem);
+  color: var(--st2-champagne);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+}
+
+.st-page-two .st2-first-show-title {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  color: var(--st2-white);
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 9vw, 8rem);
+  font-weight: 400;
+  line-height: 0.99;
+  letter-spacing: -0.055em;
+}
+
+.st-page-two .st2-first-show-title span:last-child {
+  margin-inline-start: clamp(1.25rem, 11vw, 9rem);
+  color: var(--st2-champagne);
+}
+
+.st-page-two .st2-first-show-description {
+  margin: clamp(1.25rem, 3vw, 2rem) 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.15vw, 1.125rem);
+  line-height: 1.5;
+}
+
+.st-page-two .st2-first-show .st2-guest-stage {
+  margin-block-start: clamp(2rem, 4vw, 3.5rem);
+}
+
+.st-page-two .st2-first-show .st2-guest {
+  background: #090809;
+}
+
+/* Original camera frames have different proportions; show every full frame. */
+.st-page-two .st2-first-show .st2-guest img {
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (max-width: 767px) {
+  .st-page-two .st2-first-show {
+    padding-block-start: 4.25rem;
+  }
+
+  .st-page-two .st2-first-show-title {
+    font-size: clamp(2.75rem, 12vw, 5rem);
+  }
+
+  .st-page-two .st2-first-show-title span:last-child {
+    margin-inline-start: clamp(1rem, 10vw, 3rem);
+  }
+}

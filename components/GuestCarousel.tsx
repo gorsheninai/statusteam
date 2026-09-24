@@ -1,21 +1,24 @@
 "use client";
 
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useCallback, useEffect, useId, useRef, useState } from "react";
 
 export type GuestCarouselItem = {
   img: string;
   widths: number[];
   label: string;
   alt: string;
+  src?: string;
 };
 
 type GuestCarouselProps = {
   guests: GuestCarouselItem[];
+  carouselLabel?: string;
 };
 
 const DESKTOP_QUERY = "(min-width: 768px)";
 
-export default function GuestCarousel({ guests }: GuestCarouselProps) {
+export default function GuestCarousel({ guests, carouselLabel = "Кадры предыдущего показа «Славянский взгляд»" }: GuestCarouselProps) {
+  const instructionsId = useId();
   const stripRef = useRef<HTMLUListElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [firstVisible, setFirstVisible] = useState(0);
@@ -92,16 +95,16 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
       data-active-index={firstVisible}
       role="region"
       aria-roledescription="carousel"
-      aria-label="Кадры предыдущего показа «Славянский взгляд»"
+      aria-label={carouselLabel}
     >
-      <p className="sr-only" id="st2-guest-instructions">
+      <p className="sr-only" id={instructionsId}>
         Листайте фотографии. На широком экране одновременно показаны три кадра.
       </p>
 
       <ul
         className="st2-guest-strip"
         ref={stripRef}
-        aria-describedby="st2-guest-instructions"
+        aria-describedby={instructionsId}
         tabIndex={0}
         onScroll={handleScroll}
         onKeyDown={(event) => {
@@ -122,8 +125,8 @@ export default function GuestCarousel({ guests }: GuestCarouselProps) {
             data-carousel-slide={index + 1}
           >
             <img
-              src={`/media/${guest.img}-${guest.widths[guest.widths.length - 1]}.webp`}
-              srcSet={guest.widths
+              src={guest.src ?? `/media/${guest.img}-${guest.widths[guest.widths.length - 1]}.webp`}
+              srcSet={guest.src ? undefined : guest.widths
                 .map((width) => `/media/${guest.img}-${width}.webp ${width}w`)
                 .join(", ")}
               sizes="(min-width: 768px) 32vw, 82vw"

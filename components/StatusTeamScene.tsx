@@ -33,6 +33,17 @@ const GUEST_SOURCES = [
   ...ARCHIVE_ORDER.map((n) => `show-${n}`),
 ];
 
+// 5.jpg is not present in public/media yet. Add it here when the file arrives.
+const FIRST_SHOW_PHOTOS = Array.from({ length: 22 }, (_, index) => index + 1)
+  .filter((number) => number !== 5)
+  .map((number): GuestCarouselItem => ({
+    img: String(number),
+    src: `/media/${number}.jpg`,
+    widths: [],
+    label: `Первый показ — кадр ${number}`,
+    alt: `Первый показ STATUS TEAM, фотография ${number}`,
+  }));
+
 const GUESTS: GuestCarouselItem[] = GUEST_SOURCES.map((img, index) => ({
   img,
   widths: [640, 900, 1200],
@@ -427,6 +438,20 @@ export default function StatusTeamScene() {
           <GuestCarousel guests={GUESTS} />
         </section>
       )}
+
+      <section className="st2-first-show st2-shell" aria-labelledby="st2-first-show-title">
+        <header className="st2-first-show-head">
+          <p className="st2-first-show-kicker">STATUS TEAM · НАЧАЛО ИСТОРИИ</p>
+          <h2 id="st2-first-show-title" className="st2-first-show-title">
+            <span>ПЕРВЫЙ</span><span>ВЫХОД</span>
+          </h2>
+          <p className="st2-first-show-description">Кадры первого показа</p>
+        </header>
+        <GuestCarousel
+          guests={FIRST_SHOW_PHOTOS}
+          carouselLabel="Фотографии первого показа STATUS TEAM"
+        />
+      </section>
 
       <section className="st2-scale" aria-label="Масштаб STATUS TEAM в цифрах">
         <div className="st2-shell st2-scale-shell" data-st2-stats-band>
