@@ -441,11 +441,10 @@ export default function StatusTeamScene() {
 
       <section className="st2-first-show st2-shell" aria-labelledby="st2-first-show-title">
         <header className="st2-first-show-head">
-          <p className="st2-first-show-kicker">STATUS TEAM · НАЧАЛО ИСТОРИИ</p>
+          <p className="st2-first-show-kicker">ПЕРВЫЙ ПОКАЗ</p>
           <h2 id="st2-first-show-title" className="st2-first-show-title">
             <span>ПЕРВЫЙ</span><span>ВЫХОД</span>
           </h2>
-          <p className="st2-first-show-description">Кадры первого показа</p>
         </header>
         <GuestCarousel
           guests={FIRST_SHOW_PHOTOS}
