@@ -2940,6 +2940,10 @@ ol {
 @media (min-width: 1024px) {
   .nav-links {
     display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .nav-burger {
     display: none;
