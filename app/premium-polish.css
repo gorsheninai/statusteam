@@ -15,9 +15,8 @@ html {
   scroll-padding-top: calc(72px + env(safe-area-inset-top));
 }
 
-[id] {
-  scroll-margin-top: calc(72px + env(safe-area-inset-top));
-}
+/* The root scroll padding already clears the sticky nav for native anchors.
+   Adding the same offset to every target doubles the gap on direct links. */
 
 .nav {
   padding-top: calc(0.8rem + env(safe-area-inset-top));

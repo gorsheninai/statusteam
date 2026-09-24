@@ -21,6 +21,7 @@ export default function TenetStepLock() {
     const mobile = window.matchMedia("(max-width: 899px) and (pointer: coarse)");
     if (!mobile.matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.location.hash && window.location.hash !== "#top") return;
 
     const tenets = document.querySelector<HTMLElement>("[data-tenets]");
     if (!tenets) return;

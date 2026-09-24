@@ -38,8 +38,7 @@ const FIRST_SHOW_PHOTOS = Array.from({ length: 22 }, (_, index) => index + 1)
   .filter((number) => number !== 5)
   .map((number): GuestCarouselItem => ({
     img: String(number),
-    src: `/media/${number}.jpg`,
-    widths: [],
+    widths: [640, 1200],
     label: `Первый показ — кадр ${number}`,
     alt: `Первый показ STATUS TEAM, фотография ${number}`,
   }));
@@ -128,7 +127,14 @@ function ImpactVideo() {
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
 
-    if (video.readyState === 0) video.load();
+    // The poster is enough until the visitor approaches this 14 MB film.
+    const ensureSource = () => {
+      const source = video.querySelector<HTMLSourceElement>("source[data-src]");
+      if (!source?.dataset.src) return;
+      source.src = source.dataset.src;
+      delete source.dataset.src;
+      video.load();
+    };
 
     let active = false;
     let screenSwapState: "enter" | "leave" | null = null;
@@ -151,6 +157,7 @@ function ImpactVideo() {
 
     const requestPlay = () => {
       if (!active || document.visibilityState === "hidden") return;
+      ensureSource();
       if (!video.paused && !video.ended) {
         clearPlayRetry();
         playAttempts = 0;
@@ -281,6 +288,13 @@ function ImpactVideo() {
     const video = videoRef.current;
     if (!video) return;
 
+    const source = video.querySelector<HTMLSourceElement>("source[data-src]");
+    if (source?.dataset.src) {
+      source.src = source.dataset.src;
+      delete source.dataset.src;
+      video.load();
+    }
+
     const nextMuted = !muted;
     video.muted = nextMuted;
     setMuted(nextMuted);
@@ -298,10 +312,10 @@ function ImpactVideo() {
           muted={muted}
           loop
           playsInline
-          preload="auto"
+          preload="none"
           aria-label="Афтермуви показа «Славянский взгляд»"
         >
-          <source src="/media/СТАТУС_HQ_со_звуком_10-15MB.mp4" type="video/mp4" />
+          <source data-src="/media/СТАТУС_HQ_со_звуком_10-15MB.mp4" type="video/mp4" />
         </video>
         <button
           className={`st2-watch st2-watch-icon-only${muted ? "" : " is-active"}`}

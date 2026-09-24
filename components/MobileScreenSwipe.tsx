@@ -65,7 +65,12 @@ export default function MobileScreenSwipe() {
       video.setAttribute("autoplay", "");
       video.setAttribute("playsinline", "");
       video.setAttribute("webkit-playsinline", "");
-      if (video.readyState === 0) video.load();
+      const source = video.querySelector<HTMLSourceElement>("source[data-src]");
+      if (source?.dataset.src) {
+        source.src = source.dataset.src;
+        delete source.dataset.src;
+        video.load();
+      }
       void video.play().catch(() => undefined);
     };
 

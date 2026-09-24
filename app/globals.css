@@ -2739,7 +2739,8 @@ ol {
   color: var(--ink);
   border: 0;
   border-radius: 0;
-  font-size: 0.875rem;
+  /* iOS Safari (including Instagram's in-app browser) zooms inputs below 16px. */
+  font-size: 1rem;
 }
 .foot-sub .form-inline .field input::placeholder {
   color: rgba(16, 13, 12, 0.45);

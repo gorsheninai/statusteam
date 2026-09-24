@@ -27,6 +27,12 @@ export default function Motion() {
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (calm.matches) return;
 
+    /* A browser may position a direct hash link below the pinned chapter
+       before React mounts. Building ScrollTriggers from that position can
+       invalidate their refresh order (and crash the whole page on phones).
+       Direct entries use the already-readable static section layout. */
+    if (window.location.hash && window.location.hash !== "#top") return;
+
     const root = document.documentElement;
     root.classList.add("js-motion");
 
