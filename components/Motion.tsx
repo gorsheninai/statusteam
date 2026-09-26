@@ -713,6 +713,50 @@ export default function Motion() {
           }
         }
 
+        const firstShowHead = statusScene.querySelector<HTMLElement>(
+          ".st2-first-show-head",
+        );
+        if (firstShowHead) {
+          const firstShowTag = firstShowHead.querySelector<HTMLElement>(
+            ".st2-first-show-title .st2-vanguard-tag-line",
+          );
+          const firstShowCopy = firstShowHead.querySelector<HTMLElement>(
+            ".st2-first-show-copy",
+          );
+          const firstShowReveal = gsap.timeline({
+            scrollTrigger: {
+              trigger: firstShowHead,
+              start: "top 84%",
+              once: true,
+            },
+          });
+
+          if (firstShowTag) {
+            firstShowReveal.from(
+              firstShowTag,
+              {
+                yPercent: 112,
+                duration: 0.9,
+                ease: EASE,
+              },
+              0.16,
+            );
+          }
+
+          if (firstShowCopy) {
+            firstShowReveal.from(
+              firstShowCopy,
+              {
+                autoAlpha: 0,
+                y: 18,
+                duration: 0.72,
+                ease: EASE,
+              },
+              0.48,
+            );
+          }
+        }
+
         /* The archive strip deliberately has no entrance: it is a flat
            contact sheet, and a fade would put motion back on the one block
            this chapter is meant to hold still. */
