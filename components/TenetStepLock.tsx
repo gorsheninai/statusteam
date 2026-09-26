@@ -21,12 +21,12 @@ export default function TenetStepLock() {
     const mobile = window.matchMedia("(max-width: 899px) and (pointer: coarse)");
     if (!mobile.matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.location.hash && window.location.hash !== "#top") return;
 
     const tenets = document.querySelector<HTMLElement>("[data-tenets]");
     if (!tenets) return;
 
     const beats = Array.from(tenets.querySelectorAll<HTMLElement>(".tenet"));
-    const dots = Array.from(tenets.querySelectorAll<HTMLButtonElement>(".tenet-dot"));
     if (beats.length < 2) return;
 
     /* ScrollTrigger may restore the document's previous scroll behavior as an
@@ -251,42 +251,6 @@ export default function TenetStepLock() {
       captureMode = null;
     };
 
-    const syncCurrentDot = () => {
-      const trigger = chapterTrigger();
-      if (!trigger) return;
-      const active = nearestStop(trigger.progress);
-      dots.forEach((dot, index) => {
-        if (index === active) dot.setAttribute("aria-current", "step");
-        else dot.removeAttribute("aria-current");
-      });
-    };
-
-    const onDotClick = (event: MouseEvent) => {
-      const button = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>(
-        "button[data-tenet-go]",
-      );
-      if (!button) return;
-      const index = Number(button.dataset.tenetGo);
-      if (!Number.isInteger(index) || index < 0 || index >= beats.length) return;
-      event.preventDefault();
-
-      const trigger = chapterTrigger();
-      if (trigger) {
-        const span = trigger.end - trigger.start;
-        animateScroll(trigger.start + span * stops[index]);
-      } else {
-        beats[index].scrollIntoView({
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-            ? "auto"
-            : "smooth",
-          block: "start",
-        });
-      }
-    };
-
-    tenets.addEventListener("click", onDotClick);
-    ScrollTrigger.addEventListener("update", syncCurrentDot);
-
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
@@ -299,8 +263,6 @@ export default function TenetStepLock() {
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("touchcancel", onTouchCancel);
-      tenets.removeEventListener("click", onDotClick);
-      ScrollTrigger.removeEventListener("update", syncCurrentDot);
     };
   }, []);
 

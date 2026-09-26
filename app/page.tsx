@@ -3,7 +3,6 @@ import Motion from "@/components/Motion";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import MobileScreenSwipe from "@/components/MobileScreenSwipe";
-import TenetStepLock from "@/components/TenetStepLock";
 import StatusTeamScene from "@/components/StatusTeamScene";
 import Experience from "@/components/Experience";
 import Tickets from "@/components/Tickets";
@@ -93,7 +92,6 @@ export default function Home() {
       <Cursor />
       <Nav />
       <MobileScreenSwipe />
-      <TenetStepLock />
 
       {/* The single ground the whole page sits on. Sections go transparent
           once GSAP is driving and this field interpolates between their
