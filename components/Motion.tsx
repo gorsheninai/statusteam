@@ -226,6 +226,64 @@ export default function Motion() {
         }
       }
 
+      /* ============================================================
+         PULSE EDITORIAL — four portraits arrive on the beat
+         ============================================================ */
+
+      if (wide) {
+        const editorialStage = document.querySelector<HTMLElement>(
+          ".pulse-editorial-stage",
+        );
+        const editorialPhotos = editorialStage
+          ? gsap.utils.toArray<HTMLElement>(
+              ".pulse-editorial-photo img",
+              editorialStage,
+            )
+          : [];
+        const editorialCaptions = editorialStage
+          ? gsap.utils.toArray<HTMLElement>(
+              ".pulse-editorial-caption",
+              editorialStage,
+            )
+          : [];
+
+        if (editorialPhotos.length) {
+          const editorialTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: editorialStage,
+              start: "top 78%",
+              once: true,
+            },
+          });
+
+          editorialTimeline.from(editorialPhotos, {
+            y: 48,
+            opacity: 0,
+            scale: 0.975,
+            transformOrigin: "50% 50%",
+            duration: 0.82,
+            stagger: 0.14,
+            ease: EASE,
+            clearProps: "transform,opacity",
+          });
+
+          if (editorialCaptions.length) {
+            editorialTimeline.from(
+              editorialCaptions,
+              {
+                y: 14,
+                autoAlpha: 0,
+                duration: 0.58,
+                stagger: 0.14,
+                ease: EASE,
+                clearProps: "transform,opacity,visibility",
+              },
+              0.12,
+            );
+          }
+        }
+      }
+
       /* Pointer parallax, written straight to the layers with quickTo: no
          React state, no re-render, one rAF-driven tween per axis. */
       if (fine) {
