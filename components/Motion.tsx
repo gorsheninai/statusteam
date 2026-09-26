@@ -227,61 +227,59 @@ export default function Motion() {
       }
 
       /* ============================================================
-         PULSE EDITORIAL — four portraits arrive on the beat
+         PULSE EDITORIAL — each portrait enters as it reaches the viewport
          ============================================================ */
 
       if (wide) {
         const editorialStage = document.querySelector<HTMLElement>(
           ".pulse-editorial-stage",
         );
-        const editorialPhotos = editorialStage
+        const editorialCards = editorialStage
           ? gsap.utils.toArray<HTMLElement>(
-              ".pulse-editorial-photo img",
-              editorialStage,
-            )
-          : [];
-        const editorialCaptions = editorialStage
-          ? gsap.utils.toArray<HTMLElement>(
-              ".pulse-editorial-caption",
+              ".pulse-editorial-photo",
               editorialStage,
             )
           : [];
 
-        if (editorialPhotos.length) {
-          const editorialTimeline = gsap.timeline({
+        editorialCards.forEach((card) => {
+          const photo = card.querySelector<HTMLElement>("img");
+          const caption = card.querySelector<HTMLElement>(
+            ".pulse-editorial-caption",
+          );
+          const cardTimeline = gsap.timeline({
             scrollTrigger: {
-              trigger: editorialStage,
-              start: "top 78%",
+              trigger: card,
+              start: "top 82%",
               once: true,
             },
           });
 
-          editorialTimeline.from(editorialPhotos, {
-            y: 48,
-            opacity: 0,
-            scale: 0.975,
-            transformOrigin: "50% 50%",
-            duration: 0.82,
-            stagger: 0.14,
-            ease: EASE,
-            clearProps: "transform,opacity",
-          });
+          if (photo) {
+            cardTimeline.from(photo, {
+              y: 48,
+              opacity: 0,
+              scale: 0.975,
+              transformOrigin: "50% 50%",
+              duration: 0.82,
+              ease: EASE,
+              clearProps: "transform,opacity",
+            });
+          }
 
-          if (editorialCaptions.length) {
-            editorialTimeline.from(
-              editorialCaptions,
+          if (caption) {
+            cardTimeline.from(
+              caption,
               {
                 y: 14,
                 autoAlpha: 0,
                 duration: 0.58,
-                stagger: 0.14,
                 ease: EASE,
                 clearProps: "transform,opacity,visibility",
               },
               0.12,
             );
           }
-        }
+        });
       }
 
       /* Pointer parallax, written straight to the layers with quickTo: no
