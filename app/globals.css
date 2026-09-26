@@ -1787,6 +1787,17 @@ ol {
 .tenet-word {
   padding-inline: var(--gutter);
 }
+.tenet-description {
+  position: relative;
+  z-index: 2;
+  max-inline-size: 44ch;
+  margin: 0.65rem var(--gutter) 0;
+  color: rgba(241, 238, 232, 0.9);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
 .tenet-mask {
   display: block;
   overflow: hidden;

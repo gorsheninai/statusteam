@@ -58,10 +58,30 @@ const srcset = (a: { name: string; widths: number[] }) =>
 /* The four beats of the pinned chapter. Campaign imagery only — the archive
    belongs to the previous show and lives in the STATUS TEAM scene. */
 const TENETS = [
-  { word: "Ритм", img: "Status_1", alt: "Ритм — кадр фотосерии STATUS TEAM" },
-  { word: "Движение", img: "Status_2", alt: "Движение — кадр фотосерии STATUS TEAM" },
-  { word: "Сила", img: "Status_3", alt: "Сила — кадр фотосерии STATUS TEAM" },
-  { word: "Свобода", img: "Status_4", alt: "Свобода — кадр фотосерии STATUS TEAM" },
+  {
+    word: "Земля",
+    description: "Пробуждение природы и женственности.",
+    img: "Status_1",
+    alt: "Образ стихии Земля из шоу «Пульс континента»",
+  },
+  {
+    word: "Огонь",
+    description: "Напряжение, динамика и адреналин. Женщина-воин защищает свои границы.",
+    img: "Status_2",
+    alt: "Образ стихии Огонь из шоу «Пульс континента»",
+  },
+  {
+    word: "Тень",
+    description: "Мистика и тайна. Она манит опасностью.",
+    img: "Status_3",
+    alt: "Образ стихии Тень из шоу «Пульс континента»",
+  },
+  {
+    word: "Ритм",
+    description: "Катарсис — объединение всех стихий, взрыв чистой энергии и жизни.",
+    img: "Status_4",
+    alt: "Образ стихии Ритм из шоу «Пульс континента»",
+  },
 ];
 
 export default function Home() {
@@ -219,6 +239,7 @@ export default function Home() {
                   <figcaption className="pulse-editorial-caption">
                     <span className="pulse-editorial-number">0{index + 1}</span>
                     <span className="pulse-editorial-word">{tenet.word}</span>
+                    <span className="pulse-editorial-description">{tenet.description}</span>
                   </figcaption>
                 </figure>
               ))}
@@ -256,6 +277,7 @@ export default function Home() {
                     <span className="tenet-in struct">{t.word}</span>
                   </span>
                 </p>
+                <p className="tenet-description">{t.description}</p>
               </div>
             ))}
 
