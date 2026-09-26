@@ -455,7 +455,12 @@ export default function StatusTeamScene() {
 
       <section className="st2-first-show st2-shell" aria-labelledby="st2-first-show-title">
         <header className="st2-first-show-head">
-          <h2 id="st2-first-show-title" className="st2-first-show-kicker">ПЕРВЫЙ ПОКАЗ</h2>
+          <h2 id="st2-first-show-title" className="st2-vanguard-tag st2-first-show-title">
+            <span className="st2-vanguard-tag-line">Ход королевы</span>
+          </h2>
+          <p className="st2-first-show-copy st2-vanguard-lead">
+            История о женской силе, свободе самовыражения и уверенности быть собой.
+          </p>
         </header>
         <GuestCarousel
           guests={FIRST_SHOW_PHOTOS}
