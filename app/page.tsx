@@ -3,6 +3,7 @@ import Motion from "@/components/Motion";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import MobileScreenSwipe from "@/components/MobileScreenSwipe";
+import TenetStepLock from "@/components/TenetStepLock";
 import StatusTeamScene from "@/components/StatusTeamScene";
 import Experience from "@/components/Experience";
 import Tickets from "@/components/Tickets";
@@ -92,6 +93,7 @@ export default function Home() {
       <Cursor />
       <Nav />
       <MobileScreenSwipe />
+      <TenetStepLock />
 
       {/* The single ground the whole page sits on. Sections go transparent
           once GSAP is driving and this field interpolates between their
@@ -281,9 +283,17 @@ export default function Home() {
               </div>
             ))}
 
-            <ol className="tenet-dots" aria-hidden="true">
-              {TENETS.map((t) => (
-                <li className="tenet-dot" key={t.word} />
+            <ol className="tenet-dots" aria-label="Перейти к образу">
+              {TENETS.map((t, i) => (
+                <li key={t.word}>
+                  <button
+                    className="tenet-dot"
+                    type="button"
+                    data-tenet-go={i}
+                    aria-label={`Перейти к образу «${t.word}»`}
+                    aria-current={i === 0 ? "step" : undefined}
+                  />
+                </li>
               ))}
             </ol>
           </div>

@@ -1820,6 +1820,8 @@ ol {
 }
 .tenet-dots {
   display: none;
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
@@ -1872,11 +1874,35 @@ ol {
   display: grid;
   gap: 0.85rem;
 }
+.tenet-dots li {
+  display: grid;
+  place-items: center;
+}
 .tenet-dot {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.tenet-dot::before {
+  content: "";
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--sand);
+  transition: transform 220ms ease;
+}
+.tenet-dot[aria-current="step"]::before {
+  transform: scale(1.2);
+}
+.tenet-dot:focus-visible {
+  outline: 1px solid var(--sand);
+  outline-offset: 1px;
 }
 
 /* Set against the right edge — the one right-aligned block on the page, so
