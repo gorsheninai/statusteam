@@ -475,11 +475,14 @@ export default function Motion() {
           beats[i].querySelector<HTMLElement>(".tenet-shot")!;
         const word = (i: number) =>
           beats[i].querySelector<HTMLElement>(".tenet-in")!;
+        const description = (i: number) =>
+          beats[i].querySelector<HTMLElement>(".tenet-description")!;
 
         beats.forEach((_, i) => {
           if (i === 0) return;
           gsap.set(shot(i), { autoAlpha: 0 });
           gsap.set(word(i), { yPercent: 110 });
+          gsap.set(description(i), { autoAlpha: 0, y: 12 });
           if (dots[i]) gsap.set(dots[i], { opacity: 0.3 });
         });
 
@@ -523,6 +526,17 @@ export default function Motion() {
             i,
           )
             .to(word(i), { yPercent: 0, duration: 0.5, ease: EASE }, wordInStart)
+            .to(
+              description(i - 1),
+              { autoAlpha: 0, y: -8, duration: 0.3, ease: "power2.in" },
+              i,
+            )
+            .fromTo(
+              description(i),
+              { autoAlpha: 0, y: 12 },
+              { autoAlpha: 1, y: 0, duration: 0.38, ease: EASE },
+              wordInStart + 0.08,
+            )
             .to(shot(i - 1), { autoAlpha: 0, duration: 0.5, ease: "none" }, i)
             .fromTo(
               shot(i),
