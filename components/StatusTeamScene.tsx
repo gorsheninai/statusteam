@@ -440,11 +440,9 @@ export default function StatusTeamScene() {
             <h2 id="st2-vanguard-title" className="st2-vanguard-tag">
               <span className="st2-vanguard-tag-line">Славянский взгляд</span>
             </h2>
-            <div className="st2-vanguard-intro">
+            <div className="st2-vanguard-intro st2-first-show-copy">
               <p className="st2-vanguard-lead">
-                <span className="st2-vanguard-line">30 моделей и знаковые бренды —</span>{" "}
-                <span className="st2-vanguard-line">fashion-шоу о сильной, чувственной</span>{" "}
-                <span className="st2-vanguard-line">и самобытной женственности.</span>
+                30 моделей и знаковые бренды — fashion-шоу о сильной, чувственной и самобытной женственности.
               </p>
             </div>
           </header>
