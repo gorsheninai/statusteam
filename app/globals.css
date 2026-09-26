@@ -1792,7 +1792,9 @@ ol {
   z-index: 2;
   max-inline-size: 44ch;
   margin: 0.65rem 0 0;
-  padding-inline: var(--gutter);
+  /* Compensate for the display face's left side-bearing so the caption's
+     visible first letter aligns optically with the large element title. */
+  padding-inline: calc(var(--gutter) + clamp(2px, 0.35vw, 5px)) var(--gutter);
   color: rgba(241, 238, 232, 0.9);
   font-family: var(--font-body);
   font-size: 1rem;
