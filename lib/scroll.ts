@@ -55,27 +55,37 @@ export function scrollToAnchor(hash: string) {
   const target = id === "top" ? 0 : document.getElementById(id);
   if (target === null) return false;
 
-  const nav = document.querySelector<HTMLElement>(".nav");
-  const offset = target === 0 ? 0 : -((nav?.offsetHeight ?? 0) + 8);
+  /*
+   * The phone menu locks the page while open. Wait one frame so React can
+   * close it and release that lock before reading the destination geometry.
+   * The first STATUS TEAM scene hides the header on phones, so it must begin
+   * at the actual viewport top rather than leaving a stale header-sized gap.
+   */
+  requestAnimationFrame(() => {
+    const nav = document.querySelector<HTMLElement>(".nav");
+    const immersiveMobileStart =
+      id === "statusteam" &&
+      window.matchMedia("(max-width: 767px)").matches;
+    const offset =
+      target === 0 || immersiveMobileStart
+        ? 0
+        : -((nav?.offsetHeight ?? 0) + 8);
 
-  if (lenis) {
-    /* One frame of daylight: a link inside the mobile menu closes it, and
-       that unlock lands in React's commit *after* this handler. Starting the
-       travel before the page is unlocked would scroll nowhere. `force` covers
-       the same race from the other side. */
-    requestAnimationFrame(() =>
-      lenis?.scrollTo(target, { offset, duration: 1.35, force: true }),
-    );
-    return true;
-  }
+    if (lenis) {
+      lenis.scrollTo(target, { offset, duration: 1.35, force: true });
+      return;
+    }
 
-  /* No Lenis: the platform still owns the scroll. */
-  const y =
-    target === 0
-      ? 0
-      : (target as HTMLElement).getBoundingClientRect().top +
-        window.scrollY +
-        offset;
-  window.scrollTo({ top: y, behavior: "auto" });
+    const y =
+      target === 0
+        ? 0
+        : (target as HTMLElement).getBoundingClientRect().top +
+          window.scrollY +
+          offset;
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth";
+    window.scrollTo({ top: y, behavior });
+  });
   return true;
 }

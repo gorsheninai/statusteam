@@ -281,17 +281,9 @@ export default function Home() {
               </div>
             ))}
 
-            <ol className="tenet-dots" aria-label="Перейти к образу">
-              {TENETS.map((t, i) => (
-                <li key={t.word}>
-                  <button
-                    className="tenet-dot"
-                    type="button"
-                    data-tenet-go={i}
-                    aria-label={`Перейти к образу «${t.word}»`}
-                    aria-current={i === 0 ? "step" : undefined}
-                  />
-                </li>
+            <ol className="tenet-dots" aria-hidden="true">
+              {TENETS.map((t) => (
+                <li className="tenet-dot" key={t.word} />
               ))}
             </ol>
           </div>

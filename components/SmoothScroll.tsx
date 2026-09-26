@@ -24,11 +24,24 @@ import { registerLenis, scrollToAnchor } from "@/lib/scroll";
  */
 export default function SmoothScroll() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    /* iOS/Android already provide high-quality inertial touch scrolling.
-       Keeping Lenis' ticker and ScrollTrigger bridge alive there adds work to
-       every frame even though syncTouch is disabled. */
-    if (window.matchMedia("(pointer: coarse)").matches) return;
+    /* Anchor navigation belongs to every input type. On touch devices the
+       page scrolls natively, but menu links still need to wait for the menu's
+       scroll lock to be released before they move to their destination. */
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
+      const link = (e.target as HTMLElement | null)?.closest?.("a");
+      const href = link?.getAttribute("href");
+      if (!href || !href.startsWith("#") || href === "#") return;
+      if (scrollToAnchor(href)) e.preventDefault();
+    };
+    document.addEventListener("click", onClick);
+
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      window.matchMedia("(pointer: coarse)").matches
+    ) {
+      return () => document.removeEventListener("click", onClick);
+    }
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -52,18 +65,6 @@ export default function SmoothScroll() {
     /* Lag smoothing pauses the ticker after a long frame, which strands the
        scroll mid-travel. */
     gsap.ticker.lagSmoothing(0);
-
-    /* Anchors: Lenis does not intercept them, and native smooth scrolling
-       would fight the loop. One delegated listener covers nav, menu, footer
-       and every in-page link added later. */
-    const onClick = (e: MouseEvent) => {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
-      const link = (e.target as HTMLElement | null)?.closest?.("a");
-      const href = link?.getAttribute("href");
-      if (!href || !href.startsWith("#") || href === "#") return;
-      if (scrollToAnchor(href)) e.preventDefault();
-    };
-    document.addEventListener("click", onClick);
 
     return () => {
       document.removeEventListener("click", onClick);

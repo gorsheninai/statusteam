@@ -550,51 +550,6 @@ export default function Motion() {
               .to(dots[i], { opacity: 1, duration: 0.3 }, i);
           }
         }
-        const stepStops =
-          beats.length === 4
-            ? [0, 0.39, 0.63, 0.86]
-            : beats.map((_, index) => index / Math.max(1, beats.length - 1));
-        const setCurrentDot = (active: number) => {
-          dots.forEach((dot, index) => {
-            if (index === active) dot.setAttribute("aria-current", "step");
-            else dot.removeAttribute("aria-current");
-          });
-        };
-        let dotScroll: gsap.core.Tween | null = null;
-        const onDotClick = (event: MouseEvent) => {
-          const button = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>(
-            "button[data-tenet-go]",
-          );
-          if (!button) return;
-          const index = Number(button.dataset.tenetGo);
-          if (!Number.isInteger(index) || index < 0 || index >= beats.length) return;
-          event.preventDefault();
-
-          const trigger = tl.scrollTrigger;
-          if (!trigger) return;
-          const targetY =
-            trigger.start + (trigger.end - trigger.start) * stepStops[index];
-          const scrollState = { y: window.scrollY };
-          dotScroll?.kill();
-          dotScroll = gsap.to(scrollState, {
-            y: targetY,
-            duration: 0.48,
-            ease: "power2.out",
-            overwrite: true,
-            onUpdate: () => window.scrollTo({ top: scrollState.y, behavior: "auto" }),
-            onComplete: () => {
-              window.scrollTo({ top: targetY, behavior: "auto" });
-              ScrollTrigger.update();
-              setCurrentDot(index);
-            },
-          });
-        };
-        tenets.addEventListener("click", onDotClick);
-        teardown.push(() => {
-          dotScroll?.kill();
-          tenets.removeEventListener("click", onDotClick);
-        });
-
         /* Hold the last beat for a beat before the pin releases. */
         tl.to({}, { duration: 0.6 });
       }
