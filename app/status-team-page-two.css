@@ -1052,14 +1052,11 @@
 
 .st-page-two .st2-first-show-head { text-align: start; }
 
-.st-page-two .st2-first-show-kicker {
-  margin: 0;
-  color: var(--st2-white);
-  font-family: var(--font-body);
-  font-size: clamp(0.95rem, 0.86rem + 0.44vw, 1.24rem);
-  font-weight: 400;
-  line-height: 1.44;
-  letter-spacing: 0.005em;
+/* The title reuses the «Славянский взгляд» display treatment.
+   Its description reuses the same body-copy style as that show's lead. */
+.st-page-two .st2-first-show-copy {
+  max-inline-size: 56ch;
+  margin-block-start: clamp(1rem, 2.4vw, 1.75rem);
 }
 
 .st-page-two .st2-first-show .st2-guest-stage {
@@ -1087,9 +1084,8 @@
     padding-block-start: 1.5rem;
   }
 
-  .st-page-two .st2-first-show-kicker {
-    font-size: 0.9375rem;
-    line-height: 1.4;
-    letter-spacing: -0.01em;
+  .st-page-two .st2-first-show-copy {
+    max-inline-size: none;
+    margin-block-start: 1rem;
   }
 }
