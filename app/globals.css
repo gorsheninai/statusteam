@@ -2368,6 +2368,14 @@ ol {
 .zone-title {
   font-size: clamp(1.4rem, 5vw, 2.4rem);
 }
+.zone-title-brand {
+  white-space: nowrap;
+}
+@media (max-width: 639px) {
+  .zone-title-brand {
+    font-size: clamp(1rem, 6.5vw, 1.4rem);
+  }
+}
 .zone-sub {
   grid-column: 1;
   font-size: var(--fs-small);
