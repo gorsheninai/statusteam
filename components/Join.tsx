@@ -98,7 +98,7 @@ export default function Join() {
               aria-expanded={isOpen}
               aria-controls={`zone-${z.id}`}
             >
-              <span className="zone-title struct" id={`zone-${z.id}-t`}>
+              <span className={`zone-title struct ${z.id === "brand" ? "zone-title-brand" : ""}`} id={`zone-${z.id}-t`}>
                 {z.title}
               </span>
               <span className="zone-sub">{z.sub}</span>
