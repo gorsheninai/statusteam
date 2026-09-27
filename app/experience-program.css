@@ -119,6 +119,7 @@
   max-width: 58ch;
   margin: 0;
   padding: 0 84px clamp(28px, 3vw, 42px) 0;
+  text-align: left;
   color: rgba(18, 17, 16, 0.66);
   font-family: var(--font-body);
   font-size: clamp(0.96rem, 1vw, 1.1rem);
