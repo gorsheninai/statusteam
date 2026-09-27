@@ -439,6 +439,12 @@
   display: block;
 }
 
+/* Tenor Sans has a visible left side-bearing at large sizes. Nudge the
+   previous-show title back to the kicker's visual left edge. */
+.st-page-two #st2-vanguard-title .st2-vanguard-tag-line {
+  transform: translateX(-0.04em);
+}
+
 /* What the previous show was, in two beats: the statement, then the scale.
    Measure is capped in ch so the lines stay readable as the column grows —
    a full-width paragraph under a centred title reads as a CMS block. */
