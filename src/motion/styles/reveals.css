@@ -1,0 +1,73 @@
+/* ============================================================
+   SIGNATURE — the breathing title.
+   The campaign lock-up recurs three times. Its tracking expands and
+   contracts with scroll: compression and release. That is the pulse.
+   --pulse is written by GSAP (0 = compressed, 1 = open).
+   ============================================================ */
+
+.pulse-line {
+  display: block;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 0.92;
+  white-space: nowrap;
+  /* the breath is narrower on small screens so the longest word
+     ("КОНТИНЕНТА") never runs under the reveal mask */
+  --pulse-spread: 0.05em;
+  letter-spacing: calc(-0.015em + var(--pulse, 0) * var(--pulse-spread));
+  will-change: letter-spacing;
+}
+/* Second word rides the inverse of the first: as one opens the other
+   closes, so the pair reads as a single breath. */
+.pulse-line + .pulse-line {
+  letter-spacing: calc(
+    var(--pulse-spread) * 0.9 - var(--pulse, 0) * var(--pulse-spread)
+  );
+}
+.pulse-mask {
+  display: block;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-line,
+  .pulse-line + .pulse-line {
+    letter-spacing: 0.05em;
+  }
+}
+
+/* ============================================================
+   Reveal primitive — used by the motion pass.
+   Elements start hidden only when JS is driving them.
+   ============================================================ */
+
+[data-reveal] {
+  will-change: transform, opacity;
+}
+
+/* Line masks, written by the splitter. They exist only while a heading is
+   arriving — it is reverted to plain text once the reveal has played. */
+.ln {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+}
+.ln-in {
+  display: block;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

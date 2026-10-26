@@ -10,3 +10,8 @@ test-results/
 shots/
 cap.mjs
 flow.mjs
+
+# Local configuration and generated review artifacts
+.env*
+!.env.example
+output/

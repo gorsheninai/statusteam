@@ -1,0 +1,46 @@
+/* Both responsive placements use EventLocation and the same fixed text gap.
+   Mobile stays at the hero's safe-area edge; desktop follows the CTA stack. */
+.hero-location-mobile { display: none; }
+
+@media (max-width: 899px) {
+  .hero {
+    /* The date moves up by the safe-area inset. Give the CTA the same lift
+       so Instagram's in-app browser keeps a gap between the two. */
+    padding-bottom: calc(2.5rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .hero-action > .hero-where {
+    display: none !important;
+  }
+
+  .hero::after { content: none; }
+
+  .hero-location-mobile {
+    position: absolute;
+    inset-inline-start: max(var(--gutter), env(safe-area-inset-left));
+    inset-inline-end: max(var(--gutter), env(safe-area-inset-right));
+    /* Sit on the visual edge of screen one. On notched devices the system
+       safe area remains the only extra lift. */
+    inset-block-end: max(env(safe-area-inset-bottom), 0.375rem);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-ui);
+    font-size: clamp(0.72rem, 3.45vw, 0.9rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+}
+
+/* No generated separators or distributed space between the two text labels. */
+.hero-location-mobile .hero-city::after { content: none !important; }
+.hero-location-mobile > span { flex: 0 0 auto; }

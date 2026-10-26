@@ -1,0 +1,279 @@
+/* ============================================================
+   04 — БИЛЕТЫ. The payoff.
+   ============================================================ */
+
+.tickets {
+  position: relative;
+  padding-block: var(--chapter-pad);
+  color: var(--paper);
+  overflow: hidden;
+  isolation: isolate;
+}
+.tickets-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.tickets-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+/* Heavy enough that every category card, price and label on top of it
+   clears AA against the ink underneath. */
+.tickets-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(16, 13, 12, 0.97) 0%,
+    rgba(16, 13, 12, 0.93) 45%,
+    rgba(16, 13, 12, 0.82) 100%
+  );
+}
+.tickets-title {
+  margin: clamp(1.75rem, 4vw, 3rem) 0 clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+}
+.tickets-title .pulse-line {
+  font-size: clamp(1.9rem, 8.4vw, 3.4rem);
+}
+.tickets-title .pulse-line + .pulse-line {
+  color: var(--red-bright);
+}
+.tickets-bar {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  padding-block: 1.5rem;
+  border-block: 1px solid var(--hairline-light);
+}
+.tickets-bar div {
+  display: grid;
+  gap: 0.4rem;
+}
+.tickets-bar b {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* --- categories --------------------------------------------- */
+
+.tiers {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+  perspective: 800px;
+}
+.tier {
+  position: relative;
+  transform-style: preserve-3d;
+  background: rgba(16, 13, 12, 0.62);
+  border: 1px solid var(--hairline-light);
+}
+/* The sand highlight rides the pointer along the card's hairline. It is the
+   border lighting up, not a fill — the one gradient this palette allows. */
+.tier::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: radial-gradient(
+    220px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(198, 168, 124, 0.9),
+    rgba(198, 168, 124, 0) 62%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.tier:hover::after,
+.tier:focus-within::after {
+  opacity: 1;
+}
+.tier-inner {
+  display: grid;
+  gap: 0.85rem;
+  padding: clamp(1.5rem, 3.5vw, 2.25rem);
+}
+.tier-name {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  color: var(--sand);
+}
+.tier-price {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  line-height: 1;
+}
+.tier-list {
+  display: grid;
+  gap: 0.4rem;
+  font-size: var(--fs-small);
+  opacity: 0.78;
+}
+.tier-list li {
+  padding-left: 1rem;
+  position: relative;
+}
+.tier-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 1px;
+  background: var(--sand);
+}
+
+/* --- price waves -------------------------------------------- */
+
+.waves {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: clamp(2rem, 5vw, 3rem);
+  padding-block: clamp(1.5rem, 4vw, 2.25rem);
+  border-block: 1px solid var(--hairline-light);
+}
+.wave-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-family: var(--font-ui);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+/* 0.58 is the floor, not a taste call: paper on ink drops under AA for
+   small text below it. The active wave carries the sand, and the spent ones
+   are told apart by the strike, not by going dimmer still. */
+.wave {
+  position: relative;
+  padding: 0.35rem 0;
+  opacity: 0.58;
+}
+.wave + .wave::before {
+  content: "→";
+  position: absolute;
+  left: -0.85rem;
+  opacity: 0.5;
+}
+.wave.is-active {
+  opacity: 1;
+  color: var(--sand);
+}
+.wave.is-past {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.wave-clock {
+  display: grid;
+  gap: 0.75rem;
+}
+.wave-timer {
+  display: flex;
+  gap: clamp(0.9rem, 3vw, 2rem);
+}
+.tick {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: start;
+}
+.tick-win {
+  display: block;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 5.5vw, 3rem);
+  line-height: 1.05;
+}
+.tick-win b {
+  display: block;
+  font-weight: 400;
+  animation: tick-in 320ms var(--ease-out);
+}
+.tick i {
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+@keyframes tick-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* --- the one control ---------------------------------------- */
+
+.tickets-cta {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: clamp(2rem, 5vw, 3rem);
+  justify-items: start;
+}
+.btn-buy {
+  font-size: var(--fs-body);
+  padding: 1.15rem 2rem;
+}
+.tickets-cta .panel {
+  width: 100%;
+  max-width: 46rem;
+}
+.tickets-cta .panel-inner > .tickets-note {
+  padding-top: 1.5rem;
+}
+.tickets-note {
+  max-width: 48ch;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  opacity: 0.78;
+}
+.tickets-sub {
+  width: 100%;
+  max-width: 34rem;
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline-light);
+}
+.inline-link {
+  border-bottom: 1px solid currentColor;
+}
+
+.posters {
+  margin-top: clamp(3rem, 7vw, 5rem);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 74%;
+  gap: 0.9rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+}
+.posters::-webkit-scrollbar {
+  display: none;
+}
+.posters figure {
+  margin: 0;
+  scroll-snap-align: center;
+}
+.posters img {
+  width: 100%;
+  height: auto;
+}

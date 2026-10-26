@@ -20,6 +20,7 @@ npm start          # serve ./out on :4311  (next start does NOT work with output
 npm run verify     # drive the rendered page in a browser (88 checks)
 npm run lint
 npm run typecheck
+npm run verify:media # validate the catalog and exported media links
 npm run deploy         # build + wrangler deploy to Cloudflare (production)
 npm run deploy:preview # build + upload a version, production keeps serving main
 ```
@@ -87,11 +88,17 @@ turns out to have been silent, that is exactly what belongs in a skill.
 
 - All work lives in **`gorsheninai/statusteam`**. `gorsheninai/statusteam-website` is
   the client-approved visual baseline and is **read-only reference**.
-- Original media (`1–9.png`, `style1–7.png`, `pre1–4.PNG`, `header_16_9.png`,
-  `header_9_16.png`, `video.mp4`) stays in the repo root, untouched. Everything served
-  to the browser is a derivative in `public/media/`. The two `header_*` originals are
-  6.5 and 7.1 MB — dropping either into `public/media/` ships it to the edge and puts
-  it in front of the LCP.
+- Source code lives under `src/`; `@/` resolves to that directory. Seven page sections
+  own their components and CSS under `src/sections/`. `src/app/page.tsx` only assembles them.
+- Original media stays byte-for-byte intact under **`assets/originals/`**, grouped by show
+  and purpose. Do not put originals in the repository root or `public/`.
+- Only browser-ready derivatives belong in `public/media/`, grouped by show and purpose.
+  Resolve filenames through `src/content/media.ts` and `media-files.json`, including srcsets.
+- `docs/structure.md`, `docs/styles.md` and `docs/file-moves.json` describe current ownership
+  and historical paths. Old path references in `.claude/skills/` use this migration map;
+  the root-originals convention in older skill text is superseded by these repository rules.
+- Global CSS is imported once through `src/styles/index.css`. Keep its cascade order;
+  edit the responsible section file instead of creating another `final` or `fixes` layer.
 
 ## Visual identity
 
@@ -122,7 +129,7 @@ photography supplies the secondary colour.
 `--font-ui` and `--font-body` resolve to the same family on purpose. They stay
 separate roles so UI tracking and weight can move without touching running copy.
 
-Both faces are **self-hosted** in `app/fonts/` (woff2, SIL OFL, licences beside
+Both faces are **self-hosted** in `src/assets/fonts/` (woff2, SIL OFL, licences beside
 them) and loaded with `next/font/local`. No Google Fonts `<link>`, no CDN — the
 production site must not depend on one. Onest is one variable file (100–900);
 Tenor Sans is a single static weight. Both are subset to Latin + Cyrillic + the
@@ -173,7 +180,7 @@ casting steps. `npm run verify` fails if numbering creeps back into a heading, a
 door or the menu.
 
 **A block either carries real content or it does not exist.** `CONTENT` in
-`lib/config.ts` gates the guest wall, both logo marquees, the price waves with their
+`src/content/event.ts` gates the guest wall, both logo marquees, the price waves with their
 countdown, and the per-tier prices. All of them are written and waiting; none of them
 render while the real material is missing, because a wall of «Имя Фамилия» and a
 countdown of em dashes say *unfinished* louder than a shorter page says anything.
@@ -216,7 +223,7 @@ or partner forms; the verify suite fails if those mistakes come back.
 
 ### Config, not code
 
-`lib/config.ts` holds everything the client changes without touching a component:
+`src/content/event.ts` holds everything the client changes without touching a component:
 the confirmed city, `SALES_OPEN` and `TICKETS_URL`. Flipping `SALES_OPEN` swaps the
 preorder form for a real purchase link. Categories, prices, date and venue do not
 exist in production content until they are confirmed.
@@ -231,7 +238,7 @@ Everything animates through `transform` and `opacity`. The two places that break
 rule do it on purpose and are named in the brief: the disclosure panels
 (`grid-template-rows`) and the participation doors (`flex-grow`).
 
-`components/Motion.tsx` is the whole scroll pass. It returns before building a single
+`src/motion/Motion.tsx` is the whole scroll pass. It returns before building a single
 tween when `prefers-reduced-motion: reduce` is set, so the reduced-motion page is not
 a degraded version — it is the plain document.
 
@@ -260,11 +267,11 @@ four word + frame blocks; `Motion` adds `.is-pinned`, which stacks them absolute
 the pin. No JS, or reduced motion, means four readable blocks rather than three
 invisible ones.
 
-Line reveals use `lib/split-lines.ts` (not GSAP's SplitText — 7 KB the budget cannot
+Line reveals use `src/lib/split-lines.ts` (not GSAP's SplitText — 7 KB the budget cannot
 spare). It measures rendered line boxes, so it must run after `document.fonts.ready`,
 and it reverts to plain text once the reveal has played so headings re-wrap normally.
 
-Scroll is owned by Lenis, and only by Lenis: anchors go through `lib/scroll.ts`, and
+Scroll is owned by Lenis, and only by Lenis: anchors go through `src/lib/scroll.ts`, and
 so does the menu's scroll lock (`lenis.stop()`, not a fixed body). Touch keeps the
 platform's own scrolling — `syncTouch: false` is a decision, not a default to tidy up.
 
@@ -287,7 +294,7 @@ rising as the gap widens. Change one and change the other.
 
 ## Media policy
 
-`public/media/MEDIA_INDEX.md` is the source of truth: what each asset shows, its crop
+`docs/media-index.md` is the source of truth: what each asset shows, its crop
 tolerance, whether type may sit on it, and where it belongs. **Read it before placing
 any image.**
 
@@ -328,7 +335,7 @@ here blocks first paint: every script is deferred and LCP is the hero image.
 
 - **Ticket sales** — `SALES_OPEN` is false and `TICKETS_URL` is empty by design. The
   CTA collects a no-payment preorder instead, and says so.
-- **Form delivery** — set `NEXT_PUBLIC_FORM_ENDPOINT` and all five forms (casting,
+- **Form delivery** — set `NEXT_PUBLIC_FORM_ENDPOINT` and all five forms (`src/features/forms/`, casting,
   partner, press, ticket access, newsletter) POST JSON to it, tagged by `form`.
   Without it they say so plainly. Never fake a successful submission.
 - **Guest names, press and brand logos** — grey placeholders; the marquee items are
