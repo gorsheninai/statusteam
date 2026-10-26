@@ -32,6 +32,11 @@ export default function Nav() {
       const impact = document.querySelector<HTMLElement>(".st2-impact");
       const navHeight =
         document.querySelector<HTMLElement>(".nav")?.offsetHeight ?? 72;
+      const root = document.documentElement;
+      const heightValue = `${navHeight}px`;
+      if (root.style.getPropertyValue("--nav-height") !== heightValue) {
+        root.style.setProperty("--nav-height", heightValue);
+      }
       const isPastFirstScreen = pageTwo
         ? pageTwo.getBoundingClientRect().top <= navHeight
         : window.scrollY >= window.innerHeight;
@@ -55,6 +60,9 @@ export default function Nav() {
       );
     };
     onScroll();
+    const header = document.querySelector<HTMLElement>(".nav");
+    const observer = new ResizeObserver(onScroll);
+    if (header) observer.observe(header);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
     /* In-app browsers can move their toolbar without a window resize. Keep
@@ -62,6 +70,8 @@ export default function Nav() {
     window.visualViewport?.addEventListener("resize", onScroll, { passive: true });
     window.visualViewport?.addEventListener("scroll", onScroll, { passive: true });
     return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--nav-height");
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       window.visualViewport?.removeEventListener("resize", onScroll);

@@ -12,7 +12,7 @@
 }
 
 html {
-  scroll-padding-top: calc(72px + env(safe-area-inset-top));
+  scroll-padding-top: var(--nav-height, calc(72px + env(safe-area-inset-top, 0px)));
 }
 
 /* The root scroll padding already clears the sticky nav for native anchors.
@@ -325,17 +325,7 @@ select:focus-visible {
   .nav {
     gap: 0.55rem;
     padding-bottom: 0.65rem;
-    /* iOS Safari can drop a fixed element from the compositor while a
-       backdrop-filter is repainting during downward momentum scroll. */
     isolation: isolate;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-  }
-
-  .nav.is-solid {
-    background: rgba(9, 7, 6, 0.97);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 
   .nav-brand {
@@ -682,4 +672,23 @@ select:focus-visible {
 .join .field-check label:has(input:focus-visible) span {
   text-decoration: underline;
   text-underline-offset: 0.2em;
+}
+
+/* Mobile browsers may draw their own translucent controls over the viewport.
+   Keep the site's header opaque and its geometry identical before/after scroll.
+   No toolbar-height guesses or visualViewport transform compensation. */
+@media (max-width: 899px) {
+  .nav,
+  .nav.is-solid {
+    background: #100d0c;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
+    padding-bottom: 0.65rem;
+    transition: border-color var(--t-base) var(--ease-out);
+  }
+
+  .nav::before {
+    content: none;
+  }
 }
