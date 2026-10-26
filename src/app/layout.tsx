@@ -31,6 +31,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ru" className={fontVariables}>
       <body>
+        {/* Paint on the sticky box itself: fixed layers are clipped by iOS WebViews. */}
+        <div className="browser-top-cover" aria-hidden="true" />
         <Preloader />
         <a className="skip-link" href="#statusteam">К содержанию</a>
         {children}

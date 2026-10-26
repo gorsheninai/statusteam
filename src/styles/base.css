@@ -124,3 +124,25 @@ ol {
   left: 12px;
   top: 12px;
 }
+
+/* Telegram iOS may paint scrolled document content above its WebView frame.
+   A sticky box can paint into that strip where a fixed cover cannot.
+   Keep this as the first body child, outside transformed/overflow containers.
+   Reported workaround: Telegram-iOS#2347, issuecomment-6112406737.
+   It occupies no layout space and remains above the ordinary viewport. */
+.browser-top-cover {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .browser-top-cover {
+    display: block;
+    position: sticky;
+    top: -200px;
+    height: 200px;
+    margin-top: -200px;
+    z-index: 89;
+    background: #100d0c;
+    pointer-events: none;
+  }
+}
