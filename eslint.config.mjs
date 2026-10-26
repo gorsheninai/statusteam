@@ -12,7 +12,7 @@ const config = [
        * This site ships hand-authored <img> with explicit srcset/sizes.
        *
        * Every photograph is art-directed: the crop, object-position and the
-       * exact widths are design decisions recorded in public/media/MEDIA_INDEX.md,
+       * exact widths are design decisions recorded in docs/media-index.md,
        * and the WebP derivatives are generated ahead of time from the originals.
        * next/image would re-decide sizing at runtime and pull in `sharp`, which
        * this project deliberately avoids (images.unoptimized is set).
@@ -20,7 +20,7 @@ const config = [
       "@next/next/no-img-element": "off",
     },
   },
-  { ignores: [".next/**", "node_modules/**", "out/**", "tests/**", "next-env.d.ts"] },
+  { ignores: [".next/**", "node_modules/**", "out/**", "tests/**", "scripts/**", ".claude/**", "next-env.d.ts"] },
 ];
 
 export default config;

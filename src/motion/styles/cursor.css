@@ -1,0 +1,80 @@
+/* ============================================================
+   CURSOR — mounted only on a fine pointer at desktop width.
+   ============================================================ */
+
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 900;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+.cursor-dot,
+.cursor-ring,
+.cursor-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--sand);
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 1px solid var(--sand);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity var(--t-base) var(--ease-out),
+    transform var(--t-base) var(--ease-out);
+}
+.cursor-label {
+  margin: -6px 0 0 -40px;
+  width: 80px;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--sand);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--t-base) var(--ease-out),
+    transform var(--t-base) var(--ease-out);
+}
+.cursor.is-open .cursor-dot {
+  opacity: 0;
+}
+.cursor.is-open .cursor-ring {
+  opacity: 1;
+  transform: scale(1);
+}
+.cursor.is-labelled .cursor-ring {
+  transform: scale(1.55);
+}
+.cursor.is-labelled .cursor-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+.cursor.is-down .cursor-ring {
+  transform: scale(0.78);
+}
+
+.has-cursor,
+.has-cursor * {
+  cursor: none !important;
+}
+/* Text entry keeps its caret: a hidden cursor in a form field is a bug. */
+.has-cursor input,
+.has-cursor textarea {
+  cursor: text !important;
+}

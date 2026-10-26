@@ -1,0 +1,379 @@
+/* ============================================================
+   02 — ПУЛЬС КОНТИНЕНТА. Black, then four words.
+   ============================================================ */
+
+.pulse-scene {
+  position: relative;
+  color: var(--paper);
+  /* Was var(--chapter-pad) (~108px at 1440) — that's chapter-to-chapter
+     breathing room meant for a scene with its own content at the foot,
+     not for this one: .tenets fills this section edge-to-edge on its
+     own (a full-viewport pin), so that padding was pure dead black
+     space between the last tenet frame and the pulse-rule divider.
+     The divider carries its own padding-block already. */
+  padding-block: 0 clamp(0.5rem, 2vw, 1.5rem);
+}
+/* This section is data-bg="ink" and goes transparent under .js-motion
+   (via ".js-motion [data-bg]", specificity 0-2-0) so the shared ground
+   field can crossfade under it — but the field's boundary table is
+   keyed off measured section tops, and .tenets pins for several
+   viewport-heights of scroll. The paper (#experience) boundary was
+   measuring as "passed" while still visually inside this section's own
+   tail — tenets' last frame and this section's own bottom padding — so
+   the field's cream leaked through a good ~120px before the actual
+   light section began. Painting this section's own ink explicitly
+   (like .pulse-rule already does) closes that gap without touching the
+   field logic itself. Needs the [data-bg] in the selector to actually
+   win — a plain ".pulse-scene" rule loses the specificity tie against
+   the transparency rule above regardless of source order. */
+/* Pure #000 from its very first pixel — the client wants this chapter's
+   ground flat black, no exceptions, including directly behind "НОВОЕ ШОУ
+   STATUS TEAM" at the top. A fade tried here once (blending .pulse-scene's
+   own top into black over ~220px) put that text on a background that
+   hadn't reached #000 yet — wrong trade. The seam with the previous
+   chapter is smoothed from the OTHER side instead: .st2-scale's own tail
+   gradient (status-team-page-two.css) now ends at #000 itself, so the fade
+   finishes before the boundary and this section can just be flat black
+   throughout. */
+.js-motion .pulse-scene[data-bg] {
+  background-color: #000;
+}
+.pulse-intro {
+  --sand-mask: 100%;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: center;
+  padding: 2.25rem 1.5rem 2.5rem;
+  overflow: hidden;
+  background: #000;
+}
+.pulse-intro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.72'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+.pulse-title {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  /* Without this, the nowrap child's min-content width forces this flex
+     box (and its grid parent) wider than 100%, breaking centering and
+     silently pushing the title off-axis at exactly the widths where the
+     scaleX fallback below is supposed to be catching the overflow. */
+  min-inline-size: 0;
+  margin: 0;
+  color: #fff;
+  /* Was a system Bodoni/Didot stack — a serif nobody outside macOS even
+     has installed, and never the hero's face. This lock-up recurs on
+     screen with the hero's, so it uses the same self-hosted display
+     face rather than a second, uncontrolled one. */
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: clamp(0.05em, 1vw, 0.18em);
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    #000 70%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    #000 70%,
+    #000 100%
+  );
+  -webkit-mask-size: 250% 100%;
+  mask-size: 250% 100%;
+  -webkit-mask-position: var(--sand-mask) 50%;
+  mask-position: var(--sand-mask) 50%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  will-change: transform, opacity, filter, mask-position;
+}
+.pulse-title-fit {
+  display: block;
+  inline-size: max-content;
+  white-space: nowrap;
+  transform-origin: center center;
+  will-change: filter;
+}
+
+/* The lock-up's heartbeat. Same path as the chapter dividers, set under the
+   title at roughly the title's own measure, so it reads as the mark of this
+   lock-up rather than as another rule. One copy rests; a bright copy shows
+   only through a narrow window that travels the line and then holds dark —
+   which is what makes it a beat and not the divider's endless crawl.
+   No JS: it is decoration, and a decoration that needs a bundle to appear
+   is a decoration that sometimes does not. */
+.pulse-beat {
+  position: relative;
+  z-index: 1;
+  /* ~0.62 of the lock-up's own width at every step: the title is nowrap at
+     5vw until its 4.5rem cap, so a vw-based measure tracks it without
+     measuring it in JS. Checked at 390 / 768 / 1024 / 1440 / 1920. */
+  inline-size: min(88%, clamp(13rem, 45vw, 41rem));
+  margin: clamp(1.1rem, 2.6vh, 2.1rem) auto 0;
+}
+.pulse-beat-line {
+  display: block;
+  inline-size: 100%;
+  /* preserveAspectRatio is none, so height is a free variable: the line is
+     flat everywhere but the spike, and at the width of a title rather than
+     of the page the spike needs the extra height or it shrinks to a nick. */
+  block-size: clamp(20px, 2.4vw, 34px);
+}
+.pulse-beat-line path {
+  fill: none;
+  stroke: var(--sand);
+  stroke-width: 1;
+  /* The viewBox is squashed to fit the title's measure; without this the
+     hairline squashes with it and the spike's diagonals go thin. */
+  vector-effect: non-scaling-stroke;
+}
+.pulse-beat-rest {
+  opacity: 0.3;
+  animation: pulse-beat-lift var(--beat-cycle) ease-in-out infinite;
+}
+/* WINDOW_W below and the two keyframe sets are one mechanism: the window is
+   16% of the mark, the copy inside is 100/16 = 625% of the window (so, the
+   mark's own width), and every travel distance is expressed in each box's
+   own width. Change the 16% and all four numbers move together. */
+.pulse-beat {
+  --beat-cycle: 4.6s;
+}
+.pulse-beat-window {
+  position: absolute;
+  inset: 0;
+  inline-size: 16%;
+  overflow: hidden;
+  opacity: 0;
+  animation: pulse-beat-window var(--beat-cycle) linear infinite;
+}
+.pulse-beat-live {
+  inline-size: 625%;
+  animation: pulse-beat-hold var(--beat-cycle) linear infinite;
+}
+.pulse-beat-live path {
+  stroke: var(--paper);
+}
+@keyframes pulse-beat-window {
+  0% {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+  7% {
+    opacity: 0.95;
+  }
+  56% {
+    opacity: 0.95;
+  }
+  62% {
+    opacity: 0;
+    transform: translate3d(625%, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(625%, 0, 0);
+  }
+}
+/* The counter-slide: the same distances, scaled by 16/100, so the bright
+   copy stays registered on the resting line while its window moves. */
+@keyframes pulse-beat-hold {
+  0% {
+    transform: translate3d(16%, 0, 0);
+  }
+  62%,
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+/* The window crosses the spike (x 492–546 of 1200) about a quarter of the
+   way through; the resting line lifts as it passes, so the two copies read
+   as one mark catching light rather than two stacked lines. */
+@keyframes pulse-beat-lift {
+  0%,
+  22% {
+    opacity: 0.3;
+  }
+  29% {
+    opacity: 0.5;
+  }
+  38%,
+  100% {
+    opacity: 0.3;
+  }
+}
+/* Reduced motion gets the mark, not a moving one — the same deal the rest of
+   the page makes: the plain document, nothing faded out or half-drawn. */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-beat-rest {
+    opacity: 0.38;
+    animation: none;
+  }
+  .pulse-beat-window {
+    display: none;
+  }
+}
+
+/* Tenor Sans sets wide: below this the lock-up is wider than the phone and
+   slides under .pulse-title's mask, which clips it silently — the document
+   never scrolls sideways, so no overflow check catches it. */
+@media (max-width: 519px) {
+  .pulse-title-fit {
+    transform: scaleX(0.78);
+  }
+}
+
+@media (min-width: 768px) {
+  .pulse-intro {
+    padding: 3.5rem 1.5rem 3.75rem;
+  }
+}
+
+/* The four beats. Without .is-pinned — no JS, or reduced motion — this is
+   an ordinary vertical sequence and every word and frame is on the page. */
+.tenets {
+  position: relative;
+  display: grid;
+  gap: clamp(3rem, 9vw, 6rem);
+}
+.tenet {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+}
+.tenet-shot {
+  margin: 0;
+}
+.tenet-shot .media {
+  aspect-ratio: 4 / 5;
+}
+.tenet-shot picture,
+.tenet-shot picture > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.tenet-shot picture > img {
+  object-fit: cover;
+}
+.tenets:not(.is-pinned) .tenet-shot .media {
+  aspect-ratio: 3 / 4;
+}
+.tenet-word {
+  padding-inline: var(--gutter);
+}
+.tenet-description {
+  position: relative;
+  z-index: 2;
+  max-inline-size: 44ch;
+  margin: 0.65rem 0 0;
+  /* Compensate for the display face's left side-bearing so the caption's
+     visible first letter aligns optically with the large element title. */
+  padding-inline: calc(var(--gutter) + clamp(2px, 0.35vw, 5px)) var(--gutter);
+  color: rgba(241, 238, 232, 0.9);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+@media (max-width: 767px) {
+  .tenet-description {
+    max-inline-size: none;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+}
+.tenet-mask {
+  display: block;
+  overflow: hidden;
+}
+.tenet-in {
+  display: block;
+  font-size: clamp(2.4rem, 13vw, 9rem);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--paper);
+}
+.tenet-dots {
+  display: none;
+  list-style: none;
+}
+
+/* Pinned: the four beats become one screen that changes under you. */
+.tenets.is-pinned {
+  display: block;
+  height: 100svh;
+  overflow: hidden;
+}
+.tenets.is-pinned .tenet {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-block: 0 clamp(3rem, 10vh, 7rem);
+  gap: 0;
+}
+.tenets.is-pinned .tenet-shot {
+  position: absolute;
+  inset: 0;
+}
+.tenets.is-pinned .tenet-shot .media {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+}
+.tenets.is-pinned .tenet-shot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(16, 13, 12, 0.92) 0%,
+    rgba(16, 13, 12, 0.6) 38%,
+    rgba(16, 13, 12, 0.2) 72%,
+    rgba(16, 13, 12, 0.35) 100%
+  );
+}
+.tenets.is-pinned .tenet-word {
+  position: relative;
+  z-index: 2;
+}
+.tenets.is-pinned .tenet-dots {
+  position: absolute;
+  right: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  display: grid;
+  gap: 0.85rem;
+}
+.tenet-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sand);
+}
+
+/* Set against the right edge — the one right-aligned block on the page, so
+   the eye is handed across before the next ground arrives. */

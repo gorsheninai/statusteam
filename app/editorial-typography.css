@@ -1,8 +1,0 @@
-/* STATUS TEAM — couture editorial typography pass.
-   The .st2-impact-accent / .st2-impact-accent-word rules that used to live
-   here were superseded by the tier2a/tier2b subgroup restructure in
-   status-team-page-two.css — that markup no longer exists, so the rules
-   targeting it were dead weight (and were silently overriding
-   .st2-impact-copy's own max-inline-size via load order, since this file
-   is pulled in last through faq-editorial.css's @import). Kept as an empty
-   file rather than removing the @import, since nothing else references it. */

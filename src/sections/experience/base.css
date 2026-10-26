@@ -1,0 +1,66 @@
+/* ============================================================
+   03 — ЧТО ВАС ЖДЁТ. Quiet paper chapter.
+   ============================================================ */
+
+.exp-scene {
+  color: var(--ink);
+  padding-block: var(--chapter-pad-quiet) 0;
+}
+.exp-h {
+  margin: 0 0 clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(2.6rem, 11vw, 9rem);
+  line-height: 0.94;
+}
+
+.exp-list {
+  border-top: 1px solid var(--hairline-dark);
+}
+.exp-row {
+  position: relative;
+  border-bottom: 1px solid var(--hairline-dark);
+}
+.exp-line {
+  display: grid;
+  gap: 0.4rem 1rem;
+  padding: clamp(1.1rem, 3vw, 2rem) 0;
+}
+.exp-title {
+  font-size: clamp(1.6rem, 5.6vw, 3.4rem);
+}
+.exp-sub {
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  opacity: 0.7;
+}
+.exp-media {
+  margin: 0 0 clamp(1.25rem, 3vw, 2rem);
+}
+/* Phone: the frame is the row, so it runs edge to edge. Escaping the shell
+   with a negative margin, never width: 100vw — that counts the scrollbar. */
+@media (max-width: 1023px) {
+  .exp-media {
+    margin-inline: calc(var(--gutter) * -1);
+  }
+}
+.exp-media .media {
+  aspect-ratio: 4 / 3;
+}
+
+.venue {
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+  padding: clamp(1.75rem, 4.5vw, 3rem) var(--gutter) var(--chapter-pad);
+  border-top: 1px solid var(--hairline-dark);
+  text-align: center;
+}
+.venue-name {
+  margin: 0.4em 0 0.25em;
+  font-size: clamp(3.5rem, 16vw, 14rem);
+  line-height: 0.86;
+}
+.venue-where {
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}

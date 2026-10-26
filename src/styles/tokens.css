@@ -1,0 +1,88 @@
+/* ============================================================
+   STATUS TEAM — ПУЛЬС КОНТИНЕНТА
+   Design tokens
+   ============================================================ */
+
+:root {
+  /* Brand — carried over from the approved STATUS TEAM identity.
+     Burgundy leads. It lives in type, rules and flat fields — never
+     tinted onto the photography. */
+  --burgundy: #761028;
+  --wine: #4b0718;
+  --red: #b51f2e;
+  /* large type on ink needs a lighter red to clear WCAG AA */
+  --red-bright: #d8394a;
+
+  /* Ink is shifted a touch warm (#100d0c vs #101010) so it sits under
+     savanna imagery without going blue. */
+  --ink: #100d0c;
+  --ink-soft: #1b1614;
+  --paper: #f1eee8;
+  --white: #fffefa;
+
+  /* Sand is pulled from the campaign photography. Hairlines, small caps
+     and rules only — never a gradient, never a "gold" fill. The single
+     exception is the pointer highlight on a ticket card's 1px border,
+     where the gradient IS the hairline. */
+  --sand: #c6a87c;
+  --sand-dim: rgba(198, 168, 124, 0.42);
+
+  --hairline-dark: rgba(16, 13, 12, 0.18);
+  --hairline-light: rgba(255, 254, 250, 0.22);
+
+  /* Type roles — two faces, three roles.
+       DISPLAY  = Tenor Sans  (large only: the lock-up, chapter titles,
+                  statements, composed numerals)
+       BODY/UI  = Onest       (everything else: copy, nav, buttons, labels,
+                  numbers-as-data, forms, footer)
+     --font-body and --font-ui resolve to the same family on purpose: they
+     stay separate roles so small uppercase UI can be retuned (tracking,
+     weight) without touching running copy. */
+  --font-body: var(--ff-onest), system-ui, sans-serif;
+  --font-ui: var(--ff-onest), system-ui, sans-serif;
+  --font-display: var(--ff-tenor), Georgia, serif;
+  --font-hero-anchor: var(--ff-droid-1997), "Arial Narrow", Arial, sans-serif;
+  --font-hero-script: var(--ff-marck-script), cursive;
+
+  /* Fluid scale */
+  --fs-mega: clamp(4.2rem, 15vw, 15rem);
+  --fs-display: clamp(2.6rem, 6.2vw, 6rem);
+  --fs-statement: clamp(2rem, 4.3vw, 4rem);
+  --fs-h2: clamp(2.1rem, 5.2vw, 5rem);
+  --fs-h3: clamp(1.5rem, 2.6vw, 2.5rem);
+  --fs-lead: clamp(1.05rem, 1.5vw, 1.5rem);
+  --fs-body: clamp(0.95rem, 1.05vw, 1.0625rem);
+  --fs-small: 0.8125rem;
+  --fs-micro: 0.6875rem;
+
+  /* Vertical rhythm — chapters breathe differently by intensity */
+  /* Cut ~30% from both: the change of ground is what separates chapters
+     here, so the air between them was doing nothing but adding scroll. */
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+  --chapter-pad: clamp(3.5rem, 7.5vw, 7.5rem);
+  --chapter-pad-quiet: clamp(4.5rem, 10vw, 10.5rem);
+
+  /* One wide editorial grid, plus two deliberate narrower measures. */
+  --page-gutter: clamp(1.25rem, 4.2vw, 5rem);
+  --gutter: var(--page-gutter);
+  --container-wide: 92rem;
+  --container-form: 84rem;
+  --container-editorial: 72rem;
+  --editorial-rail-min: 17.5rem;
+  --editorial-rail: 30%;
+  --editorial-gap: clamp(4.5rem, 9vw, 10.625rem);
+  --control-min: 2.75rem;
+
+  /* Motion system — one cohesive set of durations/eases used everywhere. */
+  --t-fast: 220ms;
+  --t-base: 420ms;
+  --t-slow: 900ms;
+  --t-cinematic: 1400ms;
+  --ease-out: cubic-bezier(0.22, 0.8, 0.28, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+}

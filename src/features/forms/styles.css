@@ -1,0 +1,108 @@
+/* ============================================================
+   Forms
+   ============================================================ */
+
+.form-grid {
+  display: grid;
+  gap: 1.15rem;
+}
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+.field label {
+  font-family: var(--font-ui);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.field label i {
+  color: var(--sand);
+  font-style: normal;
+}
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 0.85rem 0;
+  min-height: 48px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  border-radius: 0;
+  font-size: 1rem;
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+.field textarea {
+  resize: vertical;
+}
+.field input::placeholder,
+.field textarea::placeholder {
+  color: currentColor;
+  opacity: 0.4;
+}
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-bottom-width: 2px;
+}
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: 2px solid var(--sand);
+  outline-offset: 4px;
+}
+.field small {
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+  opacity: 0.75;
+}
+.field-check {
+  margin-top: 1.25rem;
+}
+.field-check label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-height: var(--control-min);
+  width: fit-content;
+  cursor: pointer;
+}
+.field-check input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--sand);
+}
+.field-check label span {
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  opacity: 0.85;
+}
+.form-foot {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+.form-note {
+  max-width: 46ch;
+  font-size: var(--fs-micro);
+  line-height: 1.55;
+  opacity: 0.75;
+}
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* The one-line newsletter row. */
+.form-inline .form-grid {
+  gap: 0.75rem;
+}
+.form-inline .form-foot {
+  margin-top: 1rem;
+}
+.form-inline .btn {
+  padding: 0.85rem 1.3rem;
+}

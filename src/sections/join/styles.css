@@ -1,0 +1,217 @@
+/* ============================================================
+   05 — МОДЕЛЯМ, БРЕНДАМ, ПАРТНЁРАМ И СМИ
+   ============================================================ */
+
+.join {
+  padding-block: 3rem var(--chapter-pad);
+  color: var(--paper);
+}
+.join-head {
+  margin-bottom: 2rem;
+  overflow: clip;
+  text-align: start;
+}
+/* Two hard lines — "Моделям, брендам" / "партнёрам и СМИ" — sharing
+   .st2-scale-title's exact face, size and tracking (status-team-page-two.css:
+   «Масштаб в цифрах») and its left alignment, rather than the centred
+   "single invitation" treatment .preorder-heading used before.
+   Because the split is hard-coded in JSX, this heading uses
+   data-reveal="up" (whole-block) rather than "lines": splitLines() in
+   lib/split-lines.ts flattens an element's children to plain text and
+   rebuilds them from its own natural-wrap measurement, which would throw
+   away the fixed line break. */
+.join-h {
+  margin: 0;
+  color: #fff;
+  /* .st2-scale-title's own clamp (status-team-page-two.css: 7.7vw) overflows
+     its own shell at 320px by ~10px — untested there because that title
+     carries no .struct/.pulse-line/.campaign class for the clipped-text
+     check to catch it. Left alone (out of scope, and .st2-vanguard-tag's
+     own size is calibrated against it), but copying the exact coefficient
+     here made the same overflow show up on an element the check does
+     cover. 7.5vw is the widest coefficient with real margin left at 320px
+     for the longer of this heading's two lines (checked against
+     .preorder-heading's text too, which shares this clamp) — about 1px
+     smaller than 7.7vw would give at any width, imperceptible. */
+  font-size: clamp(1.5rem, 7.5vw, 2.35rem);
+  letter-spacing: -0.025em;
+}
+.join-h-line {
+  display: block;
+  white-space: nowrap;
+}
+.join-h-line + .join-h-line {
+  margin-top: 0.2em;
+}
+/* The second line is naturally narrower (fewer/thinner glyphs at the same
+   size), which reads as uneven under a heading this short. 1.085em was
+   solved empirically — it makes this line's rendered width match the
+   first line's within ~1px at every size from 360px to 1440px, since the
+   ratio between the two strings' widths holds constant across the whole
+   fluid clamp (both scale with the same font-size). */
+.join-h-line-big {
+  font-size: 1.085em;
+}
+
+/* Keep the mobile display type uncompressed, with the same tracking as
+   «В программе». The two strings have different natural widths, so the base
+   size and the existing 1.085em second-line ratio establish one shared
+   visual measure without distorting Tenor Sans letterforms. */
+@media (max-width: 640px) {
+  .join-head {
+    text-align: center;
+  }
+
+  .join-h {
+    font-size: clamp(1.525rem, 7.6vw, 3.1rem);
+    line-height: 0.94;
+    letter-spacing: -0.045em;
+  }
+
+  .join-h-line {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .join {
+    padding-block-start: 4rem;
+  }
+
+  /* Same reasoning as .preorder-heading in tickets-preorder.css: phones
+     keep the settled size, but from here up there's room to read as a
+     scene title rather than a sub-label. Same clamp as .preorder-heading
+     so the two stay matched. */
+  .join-h {
+    font-size: clamp(2.75rem, 5vw, 4.25rem);
+  }
+}
+
+.zones {
+  display: grid;
+  gap: 1px;
+  background: var(--hairline-light);
+  border-block: 1px solid var(--hairline-light);
+}
+.zone {
+  position: relative;
+  overflow: hidden;
+  background: var(--wine);
+  transition: flex-grow 600ms var(--ease-out);
+}
+.zone-media {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease-out);
+  pointer-events: none;
+}
+.zone-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+}
+.zone-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 4, 12, 0.72);
+}
+.zone-head {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  padding: clamp(1.25rem, 3.2vw, 2.25rem) var(--gutter);
+  background: none;
+  border: 0;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.zone-title {
+  font-size: clamp(1.4rem, 5vw, 2.4rem);
+}
+.zone-title-brand {
+  white-space: nowrap;
+}
+@media (max-width: 639px) {
+  .zone-title-brand {
+    font-size: clamp(1rem, 6.5vw, 1.4rem);
+  }
+}
+.zone-sub {
+  grid-column: 1;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  opacity: 0.75;
+}
+.zone-sign {
+  position: relative;
+  grid-row: 1;
+  grid-column: 2;
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.zone-sign::before,
+.zone-sign::after,
+.faq-sign::before,
+.faq-sign::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1px;
+  background: currentColor;
+  transition: transform var(--t-base) var(--ease-out);
+}
+.zone-sign::after,
+.faq-sign::after {
+  transform: rotate(90deg);
+}
+.zone.is-open .zone-sign::after {
+  transform: rotate(0deg);
+}
+.zone .panel {
+  position: relative;
+  z-index: 2;
+}
+.zone .panel-inner > * {
+  padding-inline: var(--gutter);
+}
+.zone-intro {
+  max-width: 52ch;
+  padding-top: 0.5rem;
+  font-size: var(--fs-small);
+  line-height: 1.65;
+  opacity: 0.8;
+}
+.zone-steps {
+  display: grid;
+  gap: 0.75rem;
+  margin: clamp(1.5rem, 3vw, 2rem) 0;
+}
+.zone-steps li {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, auto) 1fr;
+  gap: 0.35rem 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--hairline-light);
+  font-size: var(--fs-small);
+}
+.zone-steps b {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sand);
+  padding-top: 0.2rem;
+}
+.zone .form {
+  padding-bottom: clamp(2rem, 5vw, 3rem);
+}

@@ -1,0 +1,255 @@
+/* ============================================================
+   01 — STATUS TEAM. Four beats on the burgundy ground.
+   ============================================================ */
+
+.st {
+  position: relative;
+  color: var(--paper);
+  padding-block: var(--chapter-pad) var(--chapter-pad);
+}
+.beat + .beat {
+  margin-top: clamp(3rem, 8vw, 7rem);
+}
+
+/* --- beat 1 — who ------------------------------------------- */
+
+/* Sized to the name itself. It used to carry a line of copy under it and
+   held 62svh for the pair; alone in that room it read as a gap. */
+.beat-who {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.st-name {
+  margin: 0;
+  font-size: clamp(3rem, 13vw, 11rem);
+}
+/* --- beat 2 — aftermovie ------------------------------------ */
+
+.beat-label {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+.beat-label-t {
+  font-size: clamp(1.5rem, 5.6vw, 3.2rem);
+  color: var(--sand);
+}
+.reel-zoom {
+  padding-inline: var(--gutter);
+}
+.reel {
+  transform-origin: center center;
+}
+.reel-media {
+  aspect-ratio: 16 / 9;
+}
+.reel-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  min-height: 48px;
+  color: var(--paper);
+  background: rgba(16, 13, 12, 0.5);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--hairline-light);
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--t-base) var(--ease-out);
+}
+.reel-play:hover {
+  background: rgba(118, 16, 40, 0.8);
+}
+.reel-play-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+}
+.reel-sound {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.6rem 1rem;
+  min-height: 40px;
+  color: var(--paper);
+  background: rgba(16, 13, 12, 0.55);
+  border: 1px solid var(--hairline-light);
+  font-family: var(--font-ui);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.reel-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.8rem;
+  padding-inline: var(--gutter);
+}
+
+/* --- beat 3 — social proof ---------------------------------- */
+
+.beat-h {
+  font-size: clamp(1.5rem, 5vw, 2.75rem);
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+.beat-proof .beat-h:not(:first-child) {
+  margin-top: clamp(3rem, 8vw, 6rem);
+}
+.beat-credit {
+  margin-top: clamp(2rem, 5vw, 3rem);
+}
+
+/* Guest wall — a real scroller, thrown with the pointer on desktop. */
+.guests {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 68%;
+  gap: 0.9rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding-inline: var(--gutter);
+}
+.guests::-webkit-scrollbar {
+  display: none;
+}
+.guests.is-dragging {
+  scroll-snap-type: none;
+}
+.guest {
+  margin: 0;
+  scroll-snap-align: start;
+}
+.guest .media {
+  aspect-ratio: 3 / 4;
+}
+.guest img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.guest figcaption {
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 0.75rem;
+}
+.guest figcaption b {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: var(--fs-small);
+  letter-spacing: 0.06em;
+}
+
+/* Logo bands. Two lanes, opposite directions, seamless because the row is
+   rendered twice and the track travels exactly half its width. */
+.marquee {
+  overflow: hidden;
+  padding-block: 0.5rem;
+  border-block: 1px solid var(--hairline-light);
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-l var(--marquee-speed, 42s) linear infinite;
+}
+.marquee-right .marquee-track {
+  animation-name: marquee-r;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-row {
+  display: flex;
+  flex: none;
+}
+.marquee-item {
+  padding-inline: clamp(0.6rem, 2vw, 1.4rem);
+}
+.logo-slot {
+  display: grid;
+  place-items: center;
+  min-width: clamp(120px, 18vw, 190px);
+  height: clamp(52px, 7vw, 76px);
+  padding-inline: 1rem;
+  border: 1px solid var(--hairline-light);
+  background: rgba(255, 254, 250, 0.06);
+  font-family: var(--font-ui);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 254, 250, 0.62);
+  white-space: nowrap;
+}
+@keyframes marquee-l {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes marquee-r {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* --- beat 4 — the numbers ----------------------------------- */
+
+.beat-numbers .numbers {
+  padding-block: clamp(2.5rem, 7vw, 5rem);
+  background: var(--ink);
+  border-radius: clamp(0px, 1.4vw, 18px);
+}
+.scale-list {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 2.75rem);
+}
+.scale-list li {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hairline-light);
+}
+.scale-n {
+  font-size: clamp(3rem, 11vw, 6.5rem);
+  color: var(--paper);
+  /* -0.055em suited the condensed face; Tenor Sans figures collide there. */
+  letter-spacing: -0.02em;
+}
+.scale-list li:nth-child(2) .scale-n {
+  color: var(--sand);
+}
+.scale-list li:nth-child(3) .scale-n {
+  color: var(--red-bright);
+}
+.scale-l {
+  margin-top: 0.6rem;
+  max-width: 30ch;
+  font-size: var(--fs-small);
+  letter-spacing: 0.02em;
+  opacity: 0.72;
+}

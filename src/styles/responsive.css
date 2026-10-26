@@ -1,0 +1,346 @@
+/* ============================================================
+   ≥ 640px — large phone / small tablet
+   ============================================================ */
+@media (min-width: 640px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem 1.75rem;
+  }
+  .field:not(.is-half) {
+    grid-column: 1 / -1;
+  }
+  .form-foot {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 1.75rem;
+  }
+  .form-inline .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .foot-end {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tickets-bar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .guests {
+    grid-auto-columns: 42%;
+  }
+  .posters {
+    grid-auto-columns: 46%;
+  }
+  .foot-inner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================================
+   ≥ 900px — tablet landscape. Compositions start to split.
+   ============================================================ */
+@media (min-width: 900px) {
+  /* The hero image is portrait. Full-bleed on a landscape screen would crop
+     it to a torso, so on wide viewports it becomes a tall frame on the right
+     and the title crosses its edge. */
+  .hero {
+    justify-content: center;
+    padding-block: 8rem 4rem;
+  }
+  /* The landscape crop is full-bleed: the figures already sit in its right
+     half and the left half is an empty field, so the composition is the
+     photograph's, not a box we cut around it. */
+  .hero-layer {
+    object-position: center 46%;
+  }
+  /* Deepens the field the type sits in without touching the figures. */
+  .hero-frame::after {
+    background: linear-gradient(
+      90deg,
+      rgba(16, 13, 12, 0.92) 0%,
+      rgba(16, 13, 12, 0.72) 22%,
+      rgba(16, 13, 12, 0.3) 44%,
+      rgba(16, 13, 12, 0.05) 64%,
+      transparent 100%
+    );
+  }
+  /* The type box is wider than the photograph's empty half on purpose:
+     "КОНТИНЕНТА" runs just past it and onto the seated figure. The floor is
+     set by that word at its *open* tracking, which is its resting state —
+     re-run the clipped-text check before touching either number, the mask
+     hides overrun silently. */
+  .hero-inner {
+    max-width: 68%;
+  }
+  .nav-brand img {
+    height: 21px;
+  }
+  .hero-title .pulse-line {
+    /* Delicate: the lock-up breathes, it does not stretch. */
+    --pulse-spread: 0.09em;
+    /* Sized so "КОНТИНЕНТА" at full tracking still clears the mask. */
+    font-size: clamp(2.8rem, 6.2vw, 6.6rem);
+  }
+  .hero-statement-anchor {
+    /* Sized against .hero-inner's real 68%-of-viewport box, not the
+       full viewport — confirmed with the same off-DOM ratio measurement
+       used for the mask-clipping-prone hero/pulse lock-up. */
+    font-size: clamp(2.3rem, 3.6vw, 3.9rem);
+  }
+  .hero-statement-script {
+    margin-inline-start: clamp(5.5rem, 12vw, 10rem);
+    font-size: clamp(2.2rem, 3.35vw, 3.5rem);
+  }
+  .pulse-title .pulse-line {
+    --pulse-spread: 0.1em;
+    font-size: clamp(2.6rem, 7.6vw, 7rem);
+  }
+  .tickets-title .pulse-line {
+    --pulse-spread: 0.14em;
+    font-size: clamp(3rem, 7.4vw, 7.4rem);
+  }
+
+  .numbers .scale-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+  .beat-numbers .numbers {
+    padding-inline: clamp(2rem, 5vw, 4rem);
+  }
+
+  .exp-line {
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+  }
+  .exp-sub {
+    grid-column: 2;
+    text-align: right;
+    max-width: 26ch;
+  }
+
+  .tiers {
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+  .waves {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  .wave-clock {
+    justify-items: end;
+  }
+
+  .venue .media {
+    aspect-ratio: 21 / 9;
+  }
+
+  .posters {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-columns: auto;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+    gap: clamp(1rem, 2.5vw, 2rem);
+  }
+
+}
+
+/* ============================================================
+   ≥ 1024px — desktop navigation, trailing imagery, wide doors
+   ============================================================ */
+@media (min-width: 1024px) {
+  .nav-links {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .nav-burger {
+    display: none;
+  }
+
+  .foot-inner {
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(2rem, 3vw, 3rem);
+    align-items: start;
+  }
+
+  .reel-zoom {
+    height: 100svh;
+    display: grid;
+    align-content: center;
+    padding-inline: 0;
+  }
+
+  .guests {
+    grid-auto-columns: 26%;
+    gap: 1.25rem;
+  }
+
+  /* With the trailing pass off — reduced motion, or JS still loading — the
+     frames stay in the flow, but a full-width photograph per row turns the
+     index into a contact sheet. */
+  .exp-media {
+    max-width: 20rem;
+    margin-left: auto;
+    margin-right: 0;
+  }
+  .exp-media .media {
+    aspect-ratio: 3 / 2;
+  }
+
+  /* The photograph leaves the layout and rides the pointer instead. */
+  .exp-list.is-trailing .exp-media {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 6;
+    width: min(26vw, 340px);
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .exp-list.is-trailing .exp-media .media {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* Three doors in a row; the one under the pointer takes more of it. */
+  .zones {
+    display: flex;
+    align-items: stretch;
+  }
+  .zone {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .zones:hover .zone:hover {
+    flex-grow: 1.5;
+  }
+  .zone .zone-head {
+    grid-template-columns: 1fr;
+    align-content: start;
+    min-height: 22rem;
+    /* The page gutter is 5rem at this width. Inside a column that can be
+       squeezed to a fifth of the row it would leave the title nothing. */
+    padding-inline: clamp(1.5rem, 2.4vw, 2.5rem);
+  }
+  .zone .panel-inner > * {
+    padding-inline: clamp(1.5rem, 2.4vw, 2.5rem);
+  }
+  .zone-sign {
+    grid-row: auto;
+    grid-column: 1;
+    margin-top: 0.5rem;
+  }
+  .zone-sub {
+    grid-column: 1;
+    max-width: 24ch;
+  }
+  /* A trace of the photograph at rest so a closed door is not a blank panel;
+     hover brings it all the way up. */
+  .zone-media {
+    opacity: 0.16;
+  }
+  .zone:not(.is-open):hover .zone-media {
+    opacity: 1;
+  }
+  /* Open, the door takes the room a real form needs — and the two it
+     squeezes have to stay legible at a fifth of the row, so their titles
+     step down and are allowed to break anywhere rather than run under the
+     column's overflow. */
+  .zones.has-open .zone {
+    flex-grow: 1;
+  }
+  .zones.has-open .zone.is-open {
+    flex-grow: 2.8;
+  }
+  .zones.has-open .zone:not(.is-open) .zone-title {
+    font-size: clamp(1rem, 1.5vw, 1.4rem);
+    overflow-wrap: anywhere;
+  }
+  .zones.has-open .zone:not(.is-open) .zone-sub {
+    font-size: var(--fs-micro);
+    opacity: 0.6;
+  }
+  /* Open, the photograph stops being the point: a form has to be readable
+     over it, so it drops back to a ground. */
+  .zone.is-open .zone-media {
+    opacity: 0.3;
+  }
+  .zone.is-open .zone-head {
+    min-height: 0;
+  }
+}
+
+/* ============================================================
+   ≥ 1280px — full editorial composition
+   ============================================================ */
+@media (min-width: 1280px) {
+  .hero {
+    padding-bottom: 4.5rem;
+  }
+  .hero-layer {
+    object-position: center 50%;
+  }
+  .hero-statement-script {
+    font-size: 3.5rem;
+  }
+}
+
+/* ============================================================
+   Coarse pointers: hover-only affordances get a resting state.
+   ============================================================ */
+@media (hover: none) {
+  .nav-links a::after {
+    transform: scaleX(1);
+    opacity: 0.35;
+  }
+  .btn::before {
+    display: none;
+  }
+  /* No hover means no reveal: the zone photographs are simply present. */
+  .zone-media {
+    opacity: 0.45;
+  }
+  .tier::after {
+    opacity: 0.35;
+  }
+}
+
+/* ============================================================
+   ASYMMETRY — the scenes stop sharing one centred column.
+   Each block is anchored to a different edge, and the offsets are
+   fractions of the measure rather than round numbers, so the rhythm
+   reads as composed rather than as a grid setting.
+   ============================================================ */
+@media (min-width: 900px) {
+  .beat-who {
+    padding-right: 22%;
+  }
+  .beat-label {
+    padding-left: 8%;
+  }
+  .exp-scene .shell:first-child {
+    padding-right: 26%;
+  }
+  .exp-sub {
+    padding-right: 2%;
+  }
+  .faq-h {
+    padding-right: 30%;
+  }
+  .faq {
+    margin-left: auto;
+    width: min(60rem, 82%);
+  }
+  .venue {
+    text-align: left;
+    padding-left: 8%;
+  }
+}

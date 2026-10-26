@@ -1,0 +1,187 @@
+/* ============================================================
+   Primitives
+   ============================================================ */
+
+.shell {
+  padding-inline: var(--gutter);
+}
+
+/* Media wrapper — every photograph on the page sits in one of these. */
+.media {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink-soft);
+}
+.media > img,
+.media > video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Eyebrow / small caps label */
+.label {
+  font-family: var(--font-ui);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* DISPLAY, uppercase — chapter titles and composed numerals.
+   Tenor Sans is wide and light where the previous face was condensed and
+   heavy, so the weight is gone and the tracking is only just negative: pull
+   it further and the caps start to collide at display sizes. */
+.struct {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+}
+
+/* DISPLAY, sentence case — the long fashion statements. Set tight enough
+   that a three-line statement reads as one block. */
+.campaign {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.008em;
+}
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.45;
+}
+
+.body-text {
+  max-width: 46ch;
+  opacity: 0.82;
+}
+
+/* Buttons ---------------------------------------------------- */
+
+.btn {
+  --btn-fg: var(--paper);
+  --btn-bd: currentColor;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.05rem 1.6rem;
+  min-height: 48px;
+  color: var(--btn-fg);
+  border: 1px solid var(--btn-bd);
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  /* Onest sets wider than the condensed face this replaced. 0.12em keeps the
+     editorial spacing while leaving the longest Cyrillic label room inside
+     the 360px grid — the button clips silently (overflow: hidden) otherwise. */
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color var(--t-base) var(--ease-out);
+}
+/* wipe fill — one interaction idiom, reused everywhere */
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--btn-fill, var(--paper));
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform var(--t-base) var(--ease-out);
+}
+.btn:hover::before,
+.btn:focus-visible::before {
+  transform: scaleY(1);
+}
+.btn:hover,
+.btn:focus-visible {
+  color: var(--btn-hover-fg, var(--ink));
+}
+.btn .arrow {
+  /* Some buttons (the hero's dual CTA) set the label's own font-family to
+     Tenor Sans, which has no arrow glyphs at all (see design-tokens) — the
+     span inherits that and the browser falls through Tenor's fallback
+     chain to nothing, landing on the OS emoji font. iOS Safari renders
+     that as a boxed colour glyph; desktop happens to find a plain system
+     glyph first, which is why this was invisible there. Pin the glyph to
+     Onest explicitly so it never depends on which button it sits in. */
+  font-family: var(--font-ui);
+  transition: transform var(--t-base) var(--ease-out);
+}
+.btn:hover .arrow {
+  transform: translate(3px, -3px);
+}
+
+.btn-solid {
+  --btn-fg: var(--paper);
+  background: var(--burgundy);
+  border-color: var(--burgundy);
+  --btn-fill: var(--paper);
+  --btn-hover-fg: var(--burgundy);
+}
+.btn-ink {
+  --btn-fg: var(--ink);
+  --btn-fill: var(--ink);
+  --btn-hover-fg: var(--paper);
+}
+/* On the burgundy ground a burgundy button disappears. */
+.st .btn-solid,
+.join .btn-solid {
+  background: var(--ink);
+  border-color: var(--ink);
+  --btn-hover-fg: var(--ink);
+}
+
+/* Text link with rule */
+.link-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 4px;
+  border-bottom: 1px solid currentColor;
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.link-rule .arrow {
+  transition: transform var(--t-base) var(--ease-out);
+}
+.link-rule:hover .arrow {
+  transform: translate(3px, -3px);
+}
+
+/* Photo credit */
+.credit {
+  font-family: var(--font-ui);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.68;
+}
+
+/* Disclosure primitive — every accordion on the page.
+   0fr → 1fr is the only way to transition to an unknown height without
+   measuring it in JS, and it degrades to "simply open" if the transition
+   never runs. */
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--t-slow) var(--ease-out);
+}
+.panel.is-open {
+  grid-template-rows: 1fr;
+}
+.panel > .panel-inner {
+  overflow: hidden;
+  min-height: 0;
+}

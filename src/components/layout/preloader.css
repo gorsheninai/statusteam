@@ -1,0 +1,114 @@
+/* ============================================================
+   THE CURTAIN — the pulse writes itself across the seam, then the
+   two wings part and the show is behind them.
+
+   Pure CSS by necessity: it covers the whole page, so it has to open
+   even if the JavaScript bundle never arrives. Shown once per session
+   (an inline script adds .no-preload on repeat visits).
+
+   Motion.tsx's OPEN delay is tuned against this schedule:
+     0.10 – 1.05s   the line draws
+     0.95 – 1.25s   the line fades
+     1.05 – 2.00s   the wings part
+     2.00s          the whole thing stops existing
+   ============================================================ */
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  /* No ground of its own: the wings *are* the ground, and the page has to
+     show through the widening gap between them. */
+  animation: pre-clear 1ms linear 2000ms forwards;
+}
+/* `from` carries the value too. `visibility` interpolates discretely and a
+   lone `to` leaves the element visible for the whole active period — which,
+   at a 1ms duration, is the entire animation. */
+@keyframes pre-clear {
+  from,
+  to {
+    visibility: hidden;
+  }
+}
+
+/* Each wing is a hair over half the screen, so no daylight shows at the
+   seam before they move. The folds are wine on wine — cloth, not a
+   gradient — and the inner edge carries the sand hairline. */
+.curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.4%;
+  background-color: var(--wine);
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.34) 0 2px,
+    rgba(0, 0, 0, 0) 2px 22px,
+    rgba(255, 254, 250, 0.05) 22px 25px,
+    rgba(0, 0, 0, 0) 25px 52px
+  );
+  will-change: transform;
+}
+/* The right wing overlaps the left, so the seam is a single hairline on its
+   edge — two borders would show as a double line. The shadow is what sells
+   the part: as the wings draw back they throw it onto the stage. */
+.curtain-l {
+  left: 0;
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
+  animation: part-l 950ms cubic-bezier(0.76, 0, 0.24, 1) 1050ms forwards;
+}
+.curtain-r {
+  right: 0;
+  border-left: 1px solid var(--sand-dim);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+  animation: part-r 950ms cubic-bezier(0.76, 0, 0.24, 1) 1050ms forwards;
+}
+@keyframes part-l {
+  to {
+    transform: translate3d(-101%, 0, 0);
+  }
+}
+@keyframes part-r {
+  to {
+    transform: translate3d(101%, 0, 0);
+  }
+}
+
+.preloader-line {
+  position: relative;
+  z-index: 2;
+  width: min(64vw, 520px);
+  height: 44px;
+  overflow: visible;
+  animation: pre-line-out 300ms var(--ease-out) 950ms forwards;
+}
+@keyframes pre-line-out {
+  to {
+    opacity: 0;
+  }
+}
+.preloader-line path {
+  fill: none;
+  stroke: var(--sand);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pre-draw 950ms var(--ease-out) 100ms forwards;
+}
+@keyframes pre-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.no-preload .preloader {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .preloader {
+    display: none;
+  }
+}
