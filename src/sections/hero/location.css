@@ -1,7 +1,6 @@
-/* Final mobile location line. Keep the CTA completely untouched.
-   The original city/date node stays in the markup for desktop, but is hidden
-   on phones because it lives inside .hero-action. A visual mobile copy is
-   anchored to the full .hero viewport instead. */
+/* Both responsive placements use EventLocation and the same fixed text gap.
+   Mobile stays at the hero's safe-area edge; desktop follows the CTA stack. */
+.hero-location-mobile { display: none; }
 
 @media (max-width: 899px) {
   .hero {
@@ -14,8 +13,9 @@
     display: none !important;
   }
 
-  .hero::after {
-    content: "МОСКВА · НОЯБРЬ 2026";
+  .hero::after { content: none; }
+
+  .hero-location-mobile {
     position: absolute;
     inset-inline-start: max(var(--gutter), env(safe-area-inset-left));
     inset-inline-end: max(var(--gutter), env(safe-area-inset-right));
@@ -23,7 +23,10 @@
        safe area remains the only extra lift. */
     inset-block-end: max(env(safe-area-inset-bottom), 0.375rem);
     z-index: 20;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
     margin: 0;
     color: #fff;
     font-family: var(--font-ui);
@@ -37,3 +40,7 @@
     pointer-events: none;
   }
 }
+
+/* No generated separators or distributed space between the two text labels. */
+.hero-location-mobile .hero-city::after { content: none !important; }
+.hero-location-mobile > span { flex: 0 0 auto; }

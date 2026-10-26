@@ -1,4 +1,4 @@
-import { SHOW } from "@/content/event";
+import EventLocation from "./EventLocation";
 import { HERO_ART } from "@/content/hero";
 import { mediaFile, mediaSrcSet } from "@/content/media";
 
@@ -14,6 +14,7 @@ export default function Hero() {
   return (
     <div className="hero-stage" data-bg="ink">
       <section className="hero on-dark" id="hero">
+        <EventLocation mobile />
         {/* The stage curtain that opens this is the preloader; here the
             frame only settles out of a slow push-in. */}
         <div className="hero-frame">
@@ -86,10 +87,7 @@ export default function Hero() {
             </p>
 
             <div className="hero-action">
-              <p className="hero-where" data-hero="where">
-                <span className="hero-city">{SHOW.city}</span>
-                <span className="hero-when">{SHOW.period}</span>
-              </p>
+              <EventLocation />
 
               {/* Two equal paths: preorder and participation. The exact
                   date still lives in the ticket scene. */}

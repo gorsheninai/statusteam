@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOW } from "@/content/event";
 import { MEDIA } from "@/content/media";
 
 import { useEffect, useRef, useState } from "react";
@@ -206,7 +207,7 @@ export default function Nav() {
             <a className="menu-tickets" href="#tickets" onClick={() => setOpen(false)}>
               Билеты
             </a>
-            <span>Москва · Ноябрь 2026</span>
+            <span>{SHOW.city} · {SHOW.period}</span>
           </div>
         </div>
       </div>

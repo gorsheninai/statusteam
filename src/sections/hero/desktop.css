@@ -349,8 +349,8 @@
     position: relative !important;
     order: 2;
     display: flex !important;
-    justify-content: space-between !important;
-    gap: 0 !important;
+    justify-content: center !important;
+    gap: 24px !important;
     width: 100% !important;
     margin: clamp(2.8rem, 5.48vh, 3.55rem) 0 0 !important;
     color: var(--sand) !important;
