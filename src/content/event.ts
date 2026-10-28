@@ -36,10 +36,10 @@ export const CONTENT: {
 
 /* --- sales ----------------------------------------------------------- */
 
-/** Flip to true the day the ticket operator goes live. */
+/** Enable only after the direct checkout, inventory and fiscal receipts are verified. */
 export const SALES_OPEN = false;
 
-/** TODO: set-ticket-url — the operator link. Only read when SALES_OPEN. */
+/** TODO: set-ticket-url — HTTPS origin of our direct checkout. Only read when SALES_OPEN. */
 export const TICKETS_URL = "";
 
 /** Public project contact links. */

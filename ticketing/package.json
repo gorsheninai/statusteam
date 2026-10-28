@@ -1,0 +1,8 @@
+{
+  "name": "statusteam-ticketing",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": { "start": "node --env-file-if-exists=.env server.mjs", "test": "node --test test/*.test.mjs" },
+  "dependencies": { "nodemailer": "^7.0.0", "qrcode": "^1.5.4" }
+}
