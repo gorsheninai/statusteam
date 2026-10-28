@@ -48,14 +48,14 @@
   /* With the placeholder rows removed, copy and sound share the film's
      lower baseline. The right inset reserves room for the sound control. */
   .st-page-two .st2-impact-copy {
-    inset-block-end: max(clamp(3rem, 7svh, 5rem), env(safe-area-inset-bottom)) !important;
+    inset-block-end: max(1.5rem, env(safe-area-inset-bottom)) !important;
     inset-inline-end: calc(var(--st2-gutter) + 4.5rem) !important;
     max-inline-size: min(76rem, calc(100% - var(--st2-gutter) * 2 - 4.5rem)) !important;
   }
 
   .st-page-two .st2-watch {
     inset-block-start: auto !important;
-    inset-block-end: max(clamp(3rem, 7svh, 5rem), env(safe-area-inset-bottom)) !important;
+    inset-block-end: max(1.5rem, env(safe-area-inset-bottom)) !important;
   }
 
   .st-page-two .st2-impact-subgroup {
