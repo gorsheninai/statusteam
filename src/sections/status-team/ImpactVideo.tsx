@@ -272,10 +272,10 @@ export default function ImpactVideo() {
         @media (max-width: 899px) {
           .st-page-two .st2-watch.st2-watch-icon-only {
             inset-block-start: calc(env(safe-area-inset-top) + 3.25rem);
-            inline-size: 2.75rem !important;
-            block-size: 2.75rem !important;
-            min-inline-size: 2.75rem !important;
-            min-block-size: 2.75rem !important;
+            inline-size: 3rem !important;
+            block-size: 3rem !important;
+            min-inline-size: 3rem !important;
+            min-block-size: 3rem !important;
           }
 
           .st-page-two .st2-watch.st2-watch-icon-only svg {

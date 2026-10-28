@@ -90,10 +90,10 @@
 }
 
 @media (max-width: 899px) {
-  /* Mobile hierarchy: small editorial eyebrow + large two-line statement. */
+  /* Keep the two-line mobile lock-up above a separate bottom sound row. */
   .st-page-two .st2-impact-copy {
-    inset-block-start: clamp(1.9rem, 3.85svh, 2.5rem) !important;
-    inset-block-end: auto !important;
+    inset-block-start: auto !important;
+    inset-block-end: calc(max(1.5rem, env(safe-area-inset-bottom)) + 4.5rem) !important;
     inset-inline-start: 50% !important;
     inset-inline-end: auto !important;
     inline-size: calc(100% - 2rem) !important;
@@ -183,11 +183,9 @@
   /* Keep the icon-only sound control in the lower-right film position. */
   .st-page-two .st2-watch {
     inset-block-start: auto !important;
-    /* About 32–36px lower on current iPhones: visually joins the proof copy
-       without touching either its first line or the browser safe area. */
-    inset-block-end: clamp(8.25rem, 16.5svh, 9.75rem) !important;
+    inset-block-end: max(1.5rem, env(safe-area-inset-bottom)) !important;
     inset-inline-start: auto !important;
-    inset-inline-end: 1.25rem !important;
+    inset-inline-end: max(1.25rem, env(safe-area-inset-right)) !important;
     transform: none !important;
     z-index: 6 !important;
   }

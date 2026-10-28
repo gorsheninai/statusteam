@@ -45,17 +45,17 @@
     scroll-margin-top: 0;
   }
 
-  /* The proof marquees are part of the approved desktop composition. Keep
-     them visible and reserve a clean band above them for the impact line. */
-  .st-page-two .st2-proof-groups {
-    display: grid !important;
+  /* With the placeholder rows removed, copy and sound share the film's
+     lower baseline. The right inset reserves room for the sound control. */
+  .st-page-two .st2-impact-copy {
+    inset-block-end: max(clamp(3rem, 7svh, 5rem), env(safe-area-inset-bottom)) !important;
+    inset-inline-end: calc(var(--st2-gutter) + 4.5rem) !important;
+    max-inline-size: min(76rem, calc(100% - var(--st2-gutter) * 2 - 4.5rem)) !important;
   }
 
-  /* Desktop uses one long red statement. The higher inset prevents it from
-     colliding with the two restored proof marquees at the bottom of the film. */
-  .st-page-two .st2-impact-copy {
-    inset-block-end: clamp(10.5rem, 20svh, 13.5rem) !important;
-    max-inline-size: min(76rem, calc(100% - var(--st2-gutter) * 2)) !important;
+  .st-page-two .st2-watch {
+    inset-block-start: auto !important;
+    inset-block-end: max(clamp(3rem, 7svh, 5rem), env(safe-area-inset-bottom)) !important;
   }
 
   .st-page-two .st2-impact-subgroup {
