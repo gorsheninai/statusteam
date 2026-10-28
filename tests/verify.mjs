@@ -488,8 +488,8 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
   check(await page.locator(".st2-video video").evaluate((video) =>
     video.autoplay && video.loop && video.muted && video.playsInline),
     "the reel autoplays muted, loops and stays inline");
-  check((await page.locator(".st2-marquee").count()) === 2,
-    "press and brand proof use two opposing marquees");
+  check((await page.locator(".st2-proof-groups, .st2-marquee").count()) === 0,
+    "placeholder press and partner block is absent");
   check((await page.locator(".st2-watch").textContent()).replace(/\s+/g, " ").includes("Смотреть видео"),
     "the reel offers the requested watch control");
   await page.locator(".st2-watch").focus();

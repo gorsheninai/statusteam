@@ -1,38 +1,9 @@
 "use client";
-import { PRESS_LOGOS, BRAND_LOGOS, FIRST_SHOW_PHOTOS, GUESTS, STATS } from "@/content/archive";
+import { FIRST_SHOW_PHOTOS, GUESTS, STATS } from "@/content/archive";
 
 import ImpactVideo from "./ImpactVideo";
 import { CONTENT } from "@/content/event";
 import GuestCarousel from "@/sections/status-team/GuestCarousel";
-
-function LogoMarquee({
-  items,
-  label,
-  reverse = false,
-}: {
-  items: string[];
-  label: string;
-  reverse?: boolean;
-}) {
-  return (
-    <div
-      className={`st2-marquee${reverse ? " is-reverse" : ""}`}
-      role="group"
-      aria-label={label}
-      data-st2-marquee
-    >
-      <div className="st2-marquee-track">
-        {[0, 1].map((copy) => (
-          <ul className="st2-marquee-set" aria-hidden={copy === 1} key={copy}>
-            {items.map((item) => (
-              <li key={`${copy}-${item}`}>{item}</li>
-            ))}
-          </ul>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function StatusTeamScene() {
   return (
@@ -53,26 +24,6 @@ export default function StatusTeamScene() {
               <span className="st2-impact-tier2b">подиума</span>
             </span>
           </h2>
-        </div>
-
-        <div className="st2-proof-groups" data-st2-proof>
-          {CONTENT.pressLogos && (
-            <div className="st2-proof-group">
-              <h3>О нас говорили</h3>
-              <LogoMarquee items={PRESS_LOGOS} label="СМИ о STATUS TEAM" />
-            </div>
-          )}
-
-          {CONTENT.brandLogos && (
-            <div className="st2-proof-group">
-              <h3>Вместе с нами</h3>
-              <LogoMarquee
-                items={BRAND_LOGOS}
-                label="Бренды, работавшие со STATUS TEAM"
-                reverse
-              />
-            </div>
-          )}
         </div>
       </section>
 
