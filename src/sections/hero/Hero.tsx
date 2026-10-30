@@ -14,6 +14,25 @@ export default function Hero() {
   return (
     <div className="hero-stage" data-bg="ink">
       <section className="hero on-dark" id="hero">
+        {/* Temporary marker for the Beget automatic deployment check. */}
+        <div
+          data-deploy-test="1"
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: "110px",
+            right: "24px",
+            zIndex: 50,
+            fontSize: "clamp(120px, 20vw, 280px)",
+            fontWeight: 500,
+            lineHeight: 1,
+            color: "#fff",
+            textShadow: "0 4px 24px #000",
+            pointerEvents: "none",
+          }}
+        >
+          1
+        </div>
         <EventLocation mobile />
         {/* The stage curtain that opens this is the preloader; here the
             frame only settles out of a slow push-in. */}
