@@ -1,0 +1,110 @@
+name: Deploy to Beget
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Только проверка без загрузки файлов"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: beget-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      NEXT_PUBLIC_FORM_ENDPOINT: ${{ vars.NEXT_PUBLIC_FORM_ENDPOINT }}
+      SSH_HOST: ${{ secrets.BEGET_SSH_HOST }}
+      SSH_USER: ${{ secrets.BEGET_SSH_USER }}
+      SSH_PORT: ${{ secrets.BEGET_SSH_PORT }}
+      TARGET_DIR: ${{ secrets.BEGET_TARGET_DIR }}
+
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check TypeScript
+        run: npm run typecheck
+
+      - name: Build website
+        run: npm run build
+
+      - name: Check media
+        run: npm run verify:media
+
+      - name: Configure SSH
+        env:
+          PRIVATE_KEY: ${{ secrets.BEGET_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.BEGET_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$PRIVATE_KEY"
+          test -n "$KNOWN_HOSTS"
+          test -n "$SSH_HOST"
+          test -n "$SSH_USER"
+          test -n "$SSH_PORT"
+          test -n "$TARGET_DIR"
+
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$PRIVATE_KEY" > ~/.ssh/beget
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/beget ~/.ssh/known_hosts
+
+          ssh-keygen -y -f ~/.ssh/beget > /dev/null
+
+      - name: Upload website
+        env:
+          DRY_RUN: ${{ github.event_name == 'push' || inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          test -f out/index.html
+
+          if [[ "$TARGET_DIR" != "/home/s/statusez/statusez.beget.tech/public_html" ]]; then
+            echo "Unexpected destination directory"
+            exit 1
+          fi
+
+          export RSYNC_RSH="ssh -i $HOME/.ssh/beget -p $SSH_PORT -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20"
+
+          options=(-rz --checksum --delay-updates --omit-dir-times
+            --no-perms --no-owner --no-group
+            --rsync-path=/usr/bin/rsync
+            --exclude='/.htaccess'
+            --exclude='/index.php'
+            --exclude='/cgi-bin/'
+            --exclude='/api/'
+            --exclude='/.well-known/')
+
+          if [[ "$DRY_RUN" == "true" ]]; then
+            options+=(--dry-run --itemize-changes)
+          fi
+
+          destination="$SSH_USER@$SSH_HOST:$TARGET_DIR/"
+
+          rsync "${options[@]}" --exclude='*.html' --exclude='*.txt' out/ "$destination"
+          rsync "${options[@]}" --include='*/' --include='*.html' --include='*.txt' --exclude='*' out/ "$destination"
+
+      - name: Remove temporary SSH key
+        if: always()
+        run: rm -f ~/.ssh/beget
