@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload website
         env:
-          DRY_RUN: ${{ github.event_name == 'push' || inputs.dry_run }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
         run: |
           set -euo pipefail
           test -f out/index.html
