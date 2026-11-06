@@ -1,0 +1,25 @@
+# Replace tickets.example.ru, configure DNS, then issue the TLS certificate.
+# This HTTP block is for certificate issuance only. Do not expose staff login over HTTP.
+server {
+    listen 80;
+    server_name tickets.example.ru;
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name tickets.example.ru;
+    ssl_certificate /etc/letsencrypt/live/tickets.example.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/tickets.example.ru/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    # Order/ticket URLs contain bearer tokens. Do not record them in access logs.
+    access_log off;
+    client_max_body_size 8k;
+    location / {
+        proxy_pass http://127.0.0.1:4320;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+    }
+}

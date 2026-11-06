@@ -88,3 +88,7 @@ npm run verify
 - [Карта перемещений файлов](docs/file-moves.json)
 - [Проверки](docs/validation.md)
 - [Правила для работы с кодом](CLAUDE.md)
+# Direct ticket checkout
+
+Test implementation and Beget deployment instructions: [docs/direct-ticket-sales.md](docs/direct-ticket-sales.md).
+The checkout runs separately from the static site. Real sales remain disabled.

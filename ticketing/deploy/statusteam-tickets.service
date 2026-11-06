@@ -1,0 +1,23 @@
+[Unit]
+Description=STATUS TEAM ticketing sandbox
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=statusteam
+Group=statusteam
+WorkingDirectory=/srv/statusteam/ticketing
+EnvironmentFile=/etc/statusteam-tickets.env
+ExecStart=/usr/bin/node /srv/statusteam/ticketing/server.mjs
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/statusteam-tickets
+
+[Install]
+WantedBy=multi-user.target

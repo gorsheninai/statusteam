@@ -15,3 +15,4 @@ flow.mjs
 .env*
 !.env.example
 output/
+ticketing/data/

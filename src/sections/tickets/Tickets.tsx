@@ -14,12 +14,12 @@ export default function Tickets() {
   return (
     <div className={`preorder-card ${askOpen ? "is-open" : ""}`}>
       <div className="preorder-summary">
-        <h2 className="preorder-heading struct">Предзаказ открыт</h2>
+        <h2 className="preorder-heading struct">{SALES_OPEN ? "Билеты на показ" : "Предзаказ открыт"}</h2>
       </div>
 
       <div className="preorder-action">
         <p className="preorder-copy">
-          Оставьте контакт — получите доступ к билетам первым.
+          {SALES_OPEN ? "Выберите билет и оплатите заказ онлайн." : "Оставьте контакт — получите доступ к билетам первым."}
         </p>
 
         {SALES_OPEN && TICKETS_URL ? (
