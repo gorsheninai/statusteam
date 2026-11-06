@@ -14,12 +14,6 @@ export default function Hero() {
   return (
     <div className="hero-stage" data-bg="ink">
       <section className="hero on-dark" id="hero">
-        <span
-          aria-hidden="true"
-          style={{ position: "absolute", right: "24px", bottom: "24px", zIndex: 5, color: "var(--paper)", fontFamily: "var(--font-ui)", fontSize: "24px", lineHeight: 1, pointerEvents: "none" }}
-        >
-          1
-        </span>
         <EventLocation mobile />
         {/* The stage curtain that opens this is the preloader; here the
             frame only settles out of a slow push-in. */}
