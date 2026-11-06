@@ -1,4 +1,4 @@
-name: Deploy to Beget
+name: Deploy to Sprinthost
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Только проверка без загрузки файлов"
+        description: "Проверить сборку и FTPS без загрузки файлов"
         type: boolean
         default: true
 
@@ -14,21 +14,15 @@ permissions:
   contents: read
 
 concurrency:
-  group: beget-production
+  group: sprinthost-production
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
+    timeout-minutes: 25
     env:
       NEXT_PUBLIC_FORM_ENDPOINT: ${{ vars.NEXT_PUBLIC_FORM_ENDPOINT }}
-      SSH_HOST: ${{ secrets.BEGET_SSH_HOST }}
-      SSH_USER: ${{ secrets.BEGET_SSH_USER }}
-      SSH_PORT: ${{ secrets.BEGET_SSH_PORT }}
-      TARGET_DIR: ${{ secrets.BEGET_TARGET_DIR }}
-
     steps:
       - name: Get source code
         uses: actions/checkout@v4
@@ -53,58 +47,84 @@ jobs:
       - name: Check media
         run: npm run verify:media
 
-      - name: Configure SSH
+      - name: Upload website over verified FTPS
         env:
-          PRIVATE_KEY: ${{ secrets.BEGET_SSH_PRIVATE_KEY }}
-          KNOWN_HOSTS: ${{ secrets.BEGET_SSH_KNOWN_HOSTS }}
-        run: |
-          set -euo pipefail
-          test -n "$PRIVATE_KEY"
-          test -n "$KNOWN_HOSTS"
-          test -n "$SSH_HOST"
-          test -n "$SSH_USER"
-          test -n "$SSH_PORT"
-          test -n "$TARGET_DIR"
-
-          install -m 700 -d ~/.ssh
-          printf '%s\n' "$PRIVATE_KEY" > ~/.ssh/beget
-          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/beget ~/.ssh/known_hosts
-
-          ssh-keygen -y -f ~/.ssh/beget > /dev/null
-
-      - name: Upload website
-        env:
+          FTP_HOST: ${{ secrets.SPRINTHOST_FTP_HOST }}
+          FTP_USER: ${{ secrets.SPRINTHOST_FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.SPRINTHOST_FTP_PASSWORD }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        shell: python
         run: |
-          set -euo pipefail
-          test -f out/index.html
+          import ftplib
+          import os
+          import ssl
+          from pathlib import Path
 
-          if [[ "$TARGET_DIR" != "/home/s/statusez/statusez.beget.tech/public_html" ]]; then
-            echo "Unexpected destination directory"
-            exit 1
-          fi
+          host = os.environ.get("FTP_HOST", "")
+          user = os.environ.get("FTP_USER", "")
+          password = os.environ.get("FTP_PASSWORD", "")
+          if not all((host, user, password)):
+              raise SystemExit("Missing SPRINTHOST_FTP_HOST, SPRINTHOST_FTP_USER or SPRINTHOST_FTP_PASSWORD.")
+          if host != "141.8.192.192" or user != "statusez@a1325854":
+              raise SystemExit("Unexpected deployment account or server; no files uploaded.")
+          root = Path("out")
+          if not (root / "index.html").is_file():
+              raise SystemExit("Missing out/index.html; no files uploaded.")
 
-          export RSYNC_RSH="ssh -i $HOME/.ssh/beget -p $SSH_PORT -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20"
+          # The extra FTP account is restricted to domains/statusteam-official.ru.
+          target = "/public_html"
+          tls_name = "myndarr.sprinthost.ru"
+          ftp = ftplib.FTP_TLS(context=ssl.create_default_context(), timeout=45)
+          ftp.connect(host, 21)
+          # Connect to the account IP but verify the hosting server certificate.
+          ftp.host = tls_name
+          try:
+              ftp.auth()
+          except ssl.SSLCertVerificationError:
+              raise SystemExit("FTPS certificate verification failed for myndarr.sprinthost.ru. No credentials sent; confirm the FTPS hostname with hosting support.")
+          ftp.login(user, password)
+          ftp.prot_p()
+          ftp.set_pasv(True)
+          ftp.cwd(target)
+          print("Verified FTPS login and /public_html destination.")
 
-          options=(-rz --checksum --delay-updates --omit-dir-times
-            --no-perms --no-owner --no-group
-            --rsync-path=/usr/bin/rsync
-            --exclude='/.htaccess'
-            --exclude='/index.php'
-            --exclude='/cgi-bin/'
-            --exclude='/api/'
-            --exclude='/.well-known/')
+          if os.environ.get("DRY_RUN") == "true":
+              print("Dry run successful; no files uploaded.")
+              ftp.quit()
+              raise SystemExit(0)
 
-          if [[ "$DRY_RUN" == "true" ]]; then
-            options+=(--dry-run --itemize-changes)
-          fi
+          protected = {".htaccess", "index.php", "api", "cgi-bin", ".well-known"}
+          files = [
+              p for p in root.rglob("*")
+              if p.is_file() and not any(part in protected for part in p.relative_to(root).parts)
+          ]
+          # Upload assets before HTML so pages reference available assets.
+          files.sort(key=lambda p: (p.suffix in {".html", ".txt"}, p.as_posix()))
+          directories = {target}
 
-          destination="$SSH_USER@$SSH_HOST:$TARGET_DIR/"
+          def ensure_directory(path):
+              current = target
+              for part in path.parts:
+                  current += "/" + part
+                  if current in directories:
+                      continue
+                  try:
+                      ftp.mkd(current)
+                  except ftplib.error_perm:
+                      ftp.cwd(current)
+                  directories.add(current)
 
-          rsync "${options[@]}" --exclude='*.html' --exclude='*.txt' out/ "$destination"
-          rsync "${options[@]}" --include='*/' --include='*.html' --include='*.txt' --exclude='*' out/ "$destination"
+          for path in files:
+              relative = path.relative_to(root)
+              ensure_directory(relative.parent)
+              destination = target + "/" + relative.as_posix()
+              temporary = destination + ".deploy-tmp"
+              with path.open("rb") as stream:
+                  ftp.storbinary("STOR " + temporary, stream, blocksize=65536)
+              ftp.rename(temporary, destination)
+          ftp.quit()
+          print(f"Uploaded {len(files)} files. Existing server-only files were preserved.")
 
-      - name: Remove temporary SSH key
-        if: always()
-        run: rm -f ~/.ssh/beget
+      - name: Check public HTTPS
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+        run: curl --fail --silent --show-error --retry 3 --output /dev/null https://statusteam-official.ru/
