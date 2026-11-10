@@ -26,7 +26,9 @@ export default async function DocumentPage({ params }: {
     <main id="statusteam" className="shell legal-page">
       <p className="legal-back"><Link href="/">STATUS TEAM — на главную</Link></p>
       <h1>{doc.title}</h1>
-      {published && draft ? (
+      {published && doc.href.replace(/\/$/, "") !== `/documents/${id}` ? (
+        <p><a href={doc.href}>Открыть утверждённый документ · редакция {doc.version}</a></p>
+      ) : published && draft ? (
         <>
           <p className="legal-version">Редакция: {doc.version}</p>
           {id === "terms" && section7 >= 0 && <p><a href="#section-7">Покупка и возврат билетов — раздел 7</a></p>}

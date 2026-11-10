@@ -88,3 +88,10 @@ npm run verify
 - [Карта перемещений файлов](docs/file-moves.json)
 - [Проверки](docs/validation.md)
 - [Правила для работы с кодом](CLAUDE.md)
+
+## PHP backend для Sprinthost
+
+В `backend/` подготовлена серверная часть заявок и QR-билетов. Боевая оплата
+остаётся выключенной. [Установка, аудит и незавершённые внешние настройки](docs/backend-sprinthost.md).
+Не копируйте приватный backend в `public_html`; существующий workflow публикует
+только `out/` и не устанавливает PHP автоматически.

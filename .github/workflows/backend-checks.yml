@@ -1,0 +1,57 @@
+name: PHP backend checks
+on:
+  push:
+    branches: ['feat/sprinthost-ticket-backend']
+  pull_request:
+    paths: ['backend/**', 'src/features/forms/**', 'package*.json']
+permissions:
+  contents: read
+jobs:
+  mysql:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: fixture-only-ci
+          MYSQL_DATABASE: statusteam_test
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping -h localhost -pfixture-only-ci" --health-interval=10s --health-timeout=5s --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql, curl, mbstring, sodium, simplexml
+          tools: composer:v2
+      - run: composer install --no-interaction --prefer-dist --working-dir=backend
+      - run: composer audit --working-dir=backend
+      - run: find backend -name '*.php' -not -path '*/vendor/*' -print0 | xargs -0 -n1 php -l
+      - run: php backend/tests/run.php
+        env:
+          TEST_ALLOW_RESET: 'yes'
+          TEST_MYSQL_DSN: mysql:host=127.0.0.1;port=3306;dbname=statusteam_test;charset=utf8mb4
+          TEST_MYSQL_USER: root
+          TEST_MYSQL_PASSWORD: fixture-only-ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci && npm run backend:assets
+      - run: npx playwright install --with-deps chromium
+      - name: Mobile controller and HTTP access checks
+        env:
+          TEST_MYSQL_DSN: mysql:host=127.0.0.1;port=3306;dbname=statusteam_test;charset=utf8mb4
+          TEST_MYSQL_USER: root
+          TEST_MYSQL_PASSWORD: fixture-only-ci
+          HTTP_FIXTURE_CONFIG: ${{ runner.temp }}/status-config.php
+          HTTP_FIXTURE_JSON: ${{ runner.temp }}/status-fixture.json
+        run: |
+          php backend/tests/http-fixture.php
+          mkdir -p "$RUNNER_TEMP/status-domain/public_html/api"
+          cp backend/public/* "$RUNNER_TEMP/status-domain/public_html/api/"
+          ln -s "$GITHUB_WORKSPACE/backend" "$RUNNER_TEMP/status-domain/status-backend"
+          STATUS_CONFIG="$HTTP_FIXTURE_CONFIG" php -S localhost:34311 -t "$RUNNER_TEMP/status-domain/public_html" > "$RUNNER_TEMP/status-http.log" 2>&1 &
+          HTTP_CHECK_PID=$!
+          trap 'kill "$HTTP_CHECK_PID" 2>/dev/null || true' EXIT
+          node backend/tests/http.mjs

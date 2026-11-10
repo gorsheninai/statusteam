@@ -1,0 +1,15 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
+<h1>STATUS TEAM</h1><p id="message" role="status" aria-live="polite"></p>
+<?php if($route==='ticket'): ?>
+<article id="ticket" hidden><h2>Пульс Континента</h2><p id="number"></p><p>30 ноября 2026 · 18+</p><p>Организатор: ООО «СТАТУС»</p><p>Сбор гостей 18:30 · начало 20:00 (Москва)</p><p>LOTTE HOTEL MOSCOW<br>Москва, Новинский бульвар, д. 8, стр. 2</p><img id="qr" alt="QR-код билета" width="320" height="320"><p id="ticket-status"></p><p>Один гость · один проход · без выбора мест</p><p id="support"></p><button id="print">Распечатать</button></article>
+<?php elseif($route==='return'): ?>
+<h2>Ваш заказ</h2><p>Статус проверяется на сервере. Возвращение со страницы оплаты само по себе не подтверждает оплату.</p><button id="refresh">Проверить статус</button><p><a id="new-order" href="/#tickets" hidden>Оформить ещё один билет</a></p><p><a id="open-ticket" hidden>Открыть билет</a></p><p><a id="pay" hidden>Продолжить оплату</a></p>
+<?php else: ?>
+<form id="login"><h2>Вход сотрудника</h2><label>Логин<input name="username" autocomplete="username" required maxlength="80"></label><label>Пароль<input name="password" type="password" autocomplete="current-password" required maxlength="512"></label><button>Войти</button></form>
+<section id="staff" hidden><button id="logout">Выйти</button><h2>Проверка билета</h2><button id="camera">Включить камеру</button><video id="video" playsinline muted></video><form id="check"><label>Код из QR или номер ST-...<input name="token" id="token" autocomplete="off" required maxlength="64" pattern="([a-f0-9]{64}|[Ss][Tt]-[A-Fa-f0-9]{16})"></label><button>Проверить</button></form><button id="admit" disabled>Подтвердить проход</button><p id="check-result" role="status"></p>
+<section id="admin" hidden><h2>Кабинет администратора</h2><button id="dashboard">Обновить списки</button><div id="lists"></div>
+<form id="application-detail"><label>Номер заявки<input name="id" required maxlength="32"></label><button>Открыть заявку</button></form><pre id="application-data"></pre>
+<form id="resend"><label>Номер заказа<input name="orderId" required maxlength="32"></label><button>Отправить тот же билет повторно</button></form>
+<form id="refund"><h3>Возврат</h3><label>Номер заказа<input name="orderId" required maxlength="32"></label><label>Сумма в рублях<input name="amount" type="number" min="1" max="10000" step="0.01" required></label><label>Повторите сумму в рублях<input name="confirm" type="number" min="1" max="10000" step="0.01" required></label><button>Подтвердить возврат указанной суммы</button></form>
+<form id="mail-retry"><label>Номер неудавшегося письма<input name="id" type="number" min="1" required></label><button>Повторить отправку</button></form></section></section>
+<?php endif; ?></main></body></html>

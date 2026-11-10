@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { FIELDS, SUBMIT, DONE, type FormKind } from "./fields";
-import { FORM_ENDPOINT, submitForm } from "./submit";
+import { submitForm } from "./submit";
 import { documentsPublished } from "@/content/legal";
 import { consentDocuments, isMinorAge, requiredConsentsAccepted, validCastingAge } from "./consents";
 import LegalLink from "./LegalLink";
+import { apiEndpoint } from "./api";
 
 export default function ApplyForm({
   kind,
@@ -34,9 +35,9 @@ export default function ApplyForm({
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    if (locked || !published || !accepted || !e.currentTarget.reportValidity()
+    if (kind === "subscribe" || locked || !published || !accepted || !e.currentTarget.reportValidity()
       || !requiredConsentsAccepted(kind, data)) return;
-    if (!FORM_ENDPOINT) {
+    if (!apiEndpoint("forms")) {
       setState("unwired");
       return;
     }
@@ -61,16 +62,18 @@ export default function ApplyForm({
   return (
     <form className={`form form-${variant}`} onSubmit={onSubmit} data-form={kind}
       onReset={() => { setAge(""); setTerms(false); setPersonalData(false); setAdvertising(false); setState("idle"); }}>
+      <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" hidden />
       <div className="form-grid">
         {fields.map((f) => (
           <p key={f.name} className={`field ${f.half ? "is-half" : ""}`}>
             <label htmlFor={fid(f.name)}>{f.label}{f.required && <i aria-hidden="true"> *</i>}</label>
             {f.type === "textarea" ? (
               <textarea id={fid(f.name)} name={f.name} rows={4} required={f.required}
-                placeholder={f.placeholder} disabled={locked} />
+                placeholder={f.placeholder} maxLength={3000} disabled={locked} />
             ) : (
               <input id={fid(f.name)} name={f.name} type={f.type ?? "text"}
                 required={f.required} placeholder={f.placeholder} autoComplete={f.autoComplete}
+                maxLength={f.type === "url" ? 1000 : 254}
                 inputMode={f.type === "number" ? "numeric" : undefined} disabled={locked}
                 min={f.name === "age" ? 1 : undefined}
                 step={f.name === "age" ? 1 : undefined}
@@ -83,6 +86,23 @@ export default function ApplyForm({
           </p>
         ))}
       </div>
+
+      {minor && <fieldset disabled={locked}>
+        <legend>Законный представитель</legend>
+        <p className="field"><label htmlFor={fid("guardianName")}>Фамилия, имя, отчество представителя *</label>
+          <input id={fid("guardianName")} name="guardianName" autoComplete="name" required maxLength={200} /></p>
+        <p className="field"><label htmlFor={fid("guardianRole")}>Статус представителя *</label>
+          <select id={fid("guardianRole")} name="guardianRole" required defaultValue="">
+            <option value="" disabled>Выберите</option><option value="parent">Родитель</option>
+            <option value="adoptive_parent">Усыновитель</option><option value="guardian">Опекун</option><option value="custodian">Попечитель</option>
+          </select></p>
+        <p className="field"><label htmlFor={fid("guardianPhone")}>Телефон представителя *</label>
+          <input id={fid("guardianPhone")} name="guardianPhone" type="tel" autoComplete="tel" required maxLength={32} /></p>
+        <p className="field"><label htmlFor={fid("guardianEmail")}>Почта представителя *</label>
+          <input id={fid("guardianEmail")} name="guardianEmail" type="email" autoComplete="email" required maxLength={254} /></p>
+        <p className="field-check"><label><input type="checkbox" name="guardianAuthority" value="yes" required />
+          <span>Подтверждаю полномочия законного представителя кандидата</span></label></p>
+      </fieldset>}
 
       <div className="form-consents" role="group" aria-label="Обязательные согласия">
         <p className="field-check">
@@ -113,8 +133,9 @@ export default function ApplyForm({
       </div>
 
       <div className="form-foot">
+        {kind === "subscribe" && <p className="form-note">Подписка на рассылку временно отключена.</p>}
         {!published && <p className="form-note" id={fid("documents-note")}>Документы готовятся к публикации. Отправка формы станет доступна после их размещения.</p>}
-        <button className="btn btn-solid" type="submit" disabled={locked || !accepted || !published}
+        <button className="btn btn-solid" type="submit" disabled={kind === "subscribe" || locked || !accepted || !published}
           aria-describedby={!published ? fid("documents-note") : undefined}>
           {state === "sending" ? "Отправляем…" : state === "sent" ? "Отправлено" : submitLabel ?? SUBMIT[kind]}
           <span className="arrow" aria-hidden="true">↗</span>

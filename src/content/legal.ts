@@ -1,6 +1,7 @@
 /** Set href and version only after the approved document has been published. */
 export const LEGAL_DOCUMENTS = {
   terms: { title: "Пользовательское соглашение", href: "", version: "" },
+  offer: { title: "Оферта продажи билетов", href: "", version: "" },
   privacy: { title: "Политика обработки персональных данных", href: "", version: "" },
   casting: { title: "Согласие на обработку персональных данных для рассмотрения заявки модели", href: "", version: "" },
   guardian: { title: "Согласие законного представителя на обработку данных несовершеннолетнего и своих данных", href: "", version: "" },

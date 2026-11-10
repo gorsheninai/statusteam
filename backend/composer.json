@@ -1,0 +1,29 @@
+{
+  "name": "statusteam/ticket-backend",
+  "description": "Private Sprinthost application; only public/ is web-accessible",
+  "type": "project",
+  "require": {
+    "php": ">=8.4 <8.6",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-curl": "*",
+    "ext-mbstring": "*",
+    "ext-sodium": "*",
+    "phpmailer/phpmailer": "~7.2.0",
+    "endroid/qr-code": "~6.0.9",
+    "ext-simplexml": "*",
+    "ext-openssl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "StatusTeam\\": "src/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "8.4.0"
+    }
+  },
+  "license": "proprietary"
+}

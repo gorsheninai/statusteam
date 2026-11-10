@@ -15,3 +15,11 @@ flow.mjs
 .env*
 !.env.example
 output/
+
+# PHP private runtime
+backend/vendor/
+backend/config.php
+backend/.env*
+backend/var/
+backend/public/scanner.min.js
+backend/public/scanner-LICENSE

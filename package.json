@@ -16,7 +16,8 @@
     "preview": "npx serve out -l 4311",
     "deploy": "npm run build && npx wrangler@4 deploy",
     "deploy:preview": "npm run build && npx wrangler@4 versions upload",
-    "verify:media": "node scripts/check-media.mjs"
+    "verify:media": "node scripts/check-media.mjs",
+    "backend:assets": "node backend/scripts/assets.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -32,6 +33,7 @@
     "@types/node": "22.15.3",
     "@types/react": "19.1.9",
     "@types/react-dom": "19.1.7",
+    "@zxing/browser": "0.1.5",
     "eslint": "9.34.0",
     "eslint-config-next": "^15.5.23",
     "playwright": "^1.56.1",

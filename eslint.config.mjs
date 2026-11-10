@@ -20,7 +20,7 @@ const config = [
       "@next/next/no-img-element": "off",
     },
   },
-  { ignores: [".next/**", "node_modules/**", "out/**", "tests/**", "scripts/**", ".claude/**", "next-env.d.ts"] },
+  { ignores: [".next/**", "node_modules/**", "out/**", "tests/**", "scripts/**", ".claude/**", "next-env.d.ts", "backend/vendor/**", "backend/public/scanner.min.js"] },
 ];
 
 export default config;

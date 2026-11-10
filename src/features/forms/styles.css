@@ -139,3 +139,6 @@
 .form-inline .btn {
   padding: 0.85rem 1.3rem;
 }
+
+.form select { width:100%; min-height:48px; padding:12px; font:inherit; color:inherit; background:transparent; border:1px solid currentColor; }
+.form fieldset { border:1px solid currentColor; padding:16px; margin:16px 0; }
