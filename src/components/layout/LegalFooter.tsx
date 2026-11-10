@@ -1,3 +1,4 @@
+import Link from "next/link";
 import LegalLink from "@/features/forms/LegalLink";
 import CookieConsent from "@/features/privacy/CookieConsent";
 
@@ -8,6 +9,7 @@ export default function LegalFooter() {
       <div className="shell legal-footer-inner">
         <LegalLink document="privacy">Политика обработки персональных данных</LegalLink>
         <LegalLink document="terms" />
+        <Link href="/contacts/">Контакты и реквизиты</Link>
         <CookieConsent />
       </div>
     </footer>

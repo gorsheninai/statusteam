@@ -53,7 +53,6 @@ export default function ApplyForm({
     casting: "для рассмотрения заявки модели",
     partner: "для рассмотрения предложения",
     press: "для аккредитации",
-    access: "для предзаписи на билеты",
     subscribe: "для рассылки",
   }[kind];
   const dataDocument = kind === "casting" ? (minor ? "guardian" : "casting")

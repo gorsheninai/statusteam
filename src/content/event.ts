@@ -1,10 +1,4 @@
-/**
- * Everything the client changes without touching a component.
- *
- * The show is not on sale yet, so the ticket scene has two faces. Flip
- * SALES_OPEN and the CTA becomes a real purchase link; leave it false and the
- * scene collects intent instead. Nothing here fakes a state it is not in.
- */
+/** Public event details and confirmed content. */
 
 /* --- the event ------------------------------------------------------- */
 
@@ -33,14 +27,6 @@ export const CONTENT: {
   pressLogos: true,
   brandLogos: true,
 };
-
-/* --- sales ----------------------------------------------------------- */
-
-/** Flip to true the day the ticket operator goes live. */
-export const SALES_OPEN = false;
-
-/** TODO: set-ticket-url — the operator link. Only read when SALES_OPEN. */
-export const TICKETS_URL = "";
 
 /** Public project contact links. */
 export const CONTACTS = { telegram: "https://t.me/statusteamru" };

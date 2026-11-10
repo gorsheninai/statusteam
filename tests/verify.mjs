@@ -351,11 +351,11 @@ for (const [name, width, height] of SIZES) {
     return { n: links.length, hrefs: links.map((link) => link.getAttribute("href")) };
   });
   check(heroCta.n === 2 && heroCta.hrefs.join(" ") === "#tickets #join",
-    "hero offers preorder and participation controls", `${heroCta.n} → ${heroCta.hrefs.join(" ")}`);
+    "hero offers purchase and participation controls", `${heroCta.n} → ${heroCta.hrefs.join(" ")}`);
 
   check(await page.locator(".faq-row").count() === 5, "FAQ has five questions");
   check(await page.locator(".tier").count() === 0, "unconfirmed ticket categories stay hidden");
-  check(await page.locator(".preorder-card").count() === 1, "the ticket scene has one preorder path");
+  check(await page.locator(".ticket-shop").count() === 1, "the ticket scene has one purchase path");
   check(await page.locator(".zone").count() === 3, "three ways in, including press");
   check(await page.locator(".zone [data-form='press']").count() === 1, "press accreditation form present");
   check(await page.locator("#tickets form").count() === 1,
@@ -518,16 +518,16 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
   await page.waitForTimeout(400);
   check((await faq.getAttribute("class")).includes("is-open"), "FAQ row opens");
 
-  /* Ticket access. While SALES_OPEN is false there is no .btn-buy to click:
-     the scene *is* the access form, standing open. Assert whichever of the
-     two shapes the config produces, so the suite runs either way. */
-  const buy = page.locator(".btn-buy");
-  if (await buy.count()) {
-    await buy.click();
-    await page.waitForTimeout(500);
-  }
-  check(await page.locator("#access-name").isVisible(), "the ticket scene reaches the access form");
-  check(await page.locator("#access-consent").count() === 1, "access form asks for data consent");
+  /* Checkout for moderation: one ticket product, no preorder or extra data consent. */
+  check(await page.locator("#purchase-name").isVisible(), "buyer details are visible");
+  check(await page.locator("[data-form='purchase'] input[type='checkbox']").count() === 1,
+    "purchase requires only the ticket terms checkbox");
+  check(await page.locator("[data-form='purchase'] button[type=submit]").isDisabled(),
+    "checkout stays disabled until payment and documents are ready");
+  await page.fill("#purchase-quantity", "2");
+  check(/20\s?000/.test(await page.locator(".ticket-total output").innerText()),
+    "two tickets total 20000 rubles");
+  await page.fill("#purchase-quantity", "1");
 
   /* Forms never fake a send */
   await page.fill("#casting-name", "Тест");
@@ -535,9 +535,9 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
   await page.fill("#casting-city", "Москва");
   await page.fill("#casting-height", "175");
   await page.fill("#casting-contact", "@test");
-  await page.locator("[data-form='casting'] button[type=submit]").click();
-  await page.waitForTimeout(400);
-  const note = await page.locator("[data-form='casting'] .form-note").innerText();
+  const castingSubmit = page.locator("[data-form='casting'] button[type=submit]");
+  if (await castingSubmit.isEnabled()) await castingSubmit.click();
+  const note = (await page.locator("[data-form='casting'] .form-note").allTextContents()).join(" ");
   const wired = Boolean(process.env.NEXT_PUBLIC_FORM_ENDPOINT);
   check(wired || !/отправлена/i.test(note), "no fake success while the form is unwired", note.slice(0, 50));
 

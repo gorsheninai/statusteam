@@ -5,7 +5,7 @@ import { LEGAL_DOCUMENTS, documentsPublished } from '../src/content/legal.ts';
 
 const agreed = { termsAccepted: 'yes', consent: 'yes' };
 test('all application forms require two separate explicit consents', () => {
-  for (const kind of ['partner', 'press', 'access']) {
+  for (const kind of ['partner', 'press']) {
     for (const data of [{}, { consent: 'yes' }, { termsAccepted: 'yes' }, { ...agreed, consent: 'no' }]) {
       assert.equal(requiredConsentsAccepted(kind, data), false);
     }

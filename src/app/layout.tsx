@@ -10,11 +10,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://statusteam.show"),
   title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
   description:
-    "Крупнейший показ нижнего белья в России. ПУЛЬС КОНТИНЕНТА — новое fashion-шоу STATUS TEAM в Москве. Предзаказ билетов, кастинг моделей, партнёрство и аккредитация СМИ.",
+    "Крупнейший показ нижнего белья в России. ПУЛЬС КОНТИНЕНТА — новое fashion-шоу STATUS TEAM в Москве. Билеты на показ, кастинг моделей, партнёрство и аккредитация СМИ.",
   openGraph: {
     title: "ПУЛЬС КОНТИНЕНТА — fashion show by STATUS TEAM",
     description:
-      "Крупнейший показ нижнего белья в России. Москва. Предзаказ билетов уже открыт.",
+      "Крупнейший показ нижнего белья в России. 30 ноября 2026, LOTTE HOTEL MOSCOW, Москва. Билеты на показ.",
     locale: "ru_RU",
     type: "website",
     images: [MEDIA.socialPreview],

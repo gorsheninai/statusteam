@@ -39,3 +39,5 @@
 @import "../sections/hero/desktop.css";
 @import "./rhythm.css";
 @import "../sections/pulse/editorial.css";
+
+@import "../sections/tickets/purchase.css";

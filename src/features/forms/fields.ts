@@ -9,7 +9,7 @@ export type Field = {
   hint?: string;
 };
 
-export type FormKind = "casting" | "partner" | "press" | "access" | "subscribe";
+export type FormKind = "casting" | "partner" | "press" | "subscribe";
 
 const CASTING: Field[] = [
   { name: "name", label: "Имя и фамилия", required: true, autoComplete: "name", half: true },
@@ -43,18 +43,6 @@ const PRESS: Field[] = [
   { name: "contact", label: "Почта или Telegram", required: true, autoComplete: "email" },
 ];
 
-const ACCESS: Field[] = [
-  { name: "name", label: "Имя", required: true, autoComplete: "name", half: true },
-  {
-    name: "contact",
-    label: "Почта или телефон",
-    required: true,
-    autoComplete: "email",
-    half: true,
-    placeholder: "you@mail.ru",
-  },
-];
-
 const SUBSCRIBE: Field[] = [
   {
     name: "contact",
@@ -70,7 +58,6 @@ export const FIELDS: Record<FormKind, Field[]> = {
   casting: CASTING,
   partner: PARTNER,
   press: PRESS,
-  access: ACCESS,
   subscribe: SUBSCRIBE,
 };
 
@@ -78,7 +65,6 @@ export const SUBMIT: Record<FormKind, string> = {
   casting: "Отправить заявку",
   partner: "Отправить запрос",
   press: "Запросить аккредитацию",
-  access: "Получить доступ первым",
   subscribe: "Подписаться",
 };
 
@@ -86,6 +72,5 @@ export const DONE: Record<FormKind, string> = {
   casting: "Заявка отправлена. Мы ответим на указанный контакт.",
   partner: "Запрос отправлен. Мы свяжемся с вами по указанному контакту.",
   press: "Заявка на аккредитацию отправлена. Ответим до показа.",
-  access: "Готово. Вы получите ссылку на билеты первыми.",
   subscribe: "Готово. Новости показа придут на указанную почту.",
 };

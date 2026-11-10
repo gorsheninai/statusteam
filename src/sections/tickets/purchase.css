@@ -1,0 +1,50 @@
+.ticket-shop {
+  min-width: 0;
+  padding-bottom: var(--pad-chapter);
+}
+.ticket-shop-heading { margin-bottom: var(--space-5); }
+.ticket-shop-heading h2 { font-size: var(--fs-h2); line-height: 1.15; }
+.ticket-shop-heading p { margin-top: var(--space-3); font-size: var(--fs-lead); }
+.ticket-shop-grid { display: grid; gap: var(--space-6); min-width: 0; }
+.ticket-product,
+.ticket-purchase { min-width: 0; }
+.ticket-product > p { max-width: 65ch; font-size: var(--fs-body); line-height: 1.6; }
+.ticket-product .ticket-price {
+  font-size: var(--fs-h3);
+  font-family: var(--font-body);
+  line-height: 1.3;
+  margin-bottom: var(--space-3);
+}
+.ticket-price span { display: block; font-size: var(--fs-small); opacity: 0.8; }
+.ticket-facts,
+.company-details { display: grid; gap: var(--space-3); margin-block: var(--space-5); }
+.ticket-facts > div,
+.company-details > div { display: grid; gap: var(--space-1); padding-bottom: var(--space-3); border-bottom: 1px solid var(--hairline-light); }
+.ticket-facts dt,
+.company-details dt { font-size: var(--fs-small); opacity: 0.8; }
+.ticket-facts dd,
+.company-details dd { font-size: var(--fs-body); line-height: 1.6; overflow-wrap: anywhere; }
+.ticket-fulfillment { font-size: var(--fs-small); line-height: 1.7; }
+.ticket-fulfillment h3 { margin-top: var(--space-4); margin-bottom: var(--space-2); font-size: var(--fs-body); }
+.ticket-fulfillment p + p { margin-top: var(--space-2); }
+.ticket-fulfillment a { text-decoration: underline; text-underline-offset: 0.2em; }
+.ticket-purchase {
+  padding-block: var(--space-4);
+  border-block: 1px solid var(--hairline-light);
+  align-self: start;
+}
+.ticket-order-title { font-size: var(--fs-lead); margin-bottom: var(--space-4); }
+.ticket-purchase .form-grid { grid-template-columns: minmax(0, 1fr); }
+.ticket-total { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-2); margin-top: var(--space-4); font-size: var(--fs-body); }
+.ticket-total output { font-size: var(--fs-lead); }
+.ticket-purchase .form-note { max-width: none; }
+.ticket-purchase .btn-buy { width: 100%; min-width: 0; min-height: 48px; white-space: normal; }
+.ticket-purchase .form-grid .field { min-width: 0; }
+.company-page > p { max-width: 75ch; font-size: var(--fs-body); line-height: 1.7; }
+.company-page h2 { margin-block: var(--space-5) var(--space-3); font-size: var(--fs-lead); }
+.company-details dd a { display: block; width: fit-content; min-height: 48px; }
+@media (min-width: 900px) {
+  .ticket-shop-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: var(--space-6); }
+  .ticket-facts > div,
+  .company-details > div { grid-template-columns: minmax(8rem, 0.45fr) minmax(0, 1fr); gap: var(--space-3); }
+}

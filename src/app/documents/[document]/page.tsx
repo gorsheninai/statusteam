@@ -43,7 +43,7 @@ export default async function DocumentPage({ params }: {
         </div>
       )}
       <nav className="legal-doc-nav" aria-label="Документы сайта">
-        {Object.entries(LEGAL_DOCUMENTS).filter(([key]) => key !== "guardian" && key !== "access").map(([key, item]) => (
+        {Object.entries(LEGAL_DOCUMENTS).filter(([key]) => key !== "guardian").map(([key, item]) => (
           <Link key={key} href={`/documents/${key}/`} aria-current={key === id ? "page" : undefined}>{item.title}</Link>
         ))}
       </nav>

@@ -89,11 +89,11 @@ export default function Hero() {
             <div className="hero-action">
               <EventLocation />
 
-              {/* Two equal paths: preorder and participation. The exact
+              {/* Two equal paths: purchase and participation. The exact
                   date still lives in the ticket scene. */}
               <div className="hero-cta" data-hero="cta">
                 <a className="btn btn-solid" href="#tickets">
-                  <span className="hero-btn-label">Предзаказать билет</span>
+                  <span className="hero-btn-label">Купить билет</span>
                   <Arrow />
                 </a>
                 <a className="btn btn-pulse" href="#join">
