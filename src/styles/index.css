@@ -17,6 +17,7 @@
 @import "../sections/join/styles.css";
 @import "../sections/faq/base.css";
 @import "../features/forms/styles.css";
+@import "../features/privacy/styles.css";
 @import "../components/layout/footer.css";
 @import "./responsive.css";
 @import "../sections/hero/art.css";

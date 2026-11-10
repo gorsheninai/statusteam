@@ -9,6 +9,7 @@ export const LEGAL_DOCUMENTS = {
   access: { title: "Согласие на обработку персональных данных для предзаписи на билеты", href: "", version: "" },
   newsletter: { title: "Согласие на обработку персональных данных для рассылки", href: "", version: "" },
   advertising: { title: "Условия рассылки", href: "", version: "" },
+  cookies: { title: "Согласие на обработку файлов cookie и данных веб-аналитики", href: "", version: "" },
   buyers: { title: "Сведения об обработке персональных данных покупателей", href: "", version: "" },
 };
 

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { fontVariables } from "./fonts";
+import LegalFooter from "@/components/layout/LegalFooter";
 import Preloader from "@/components/layout/Preloader";
 import TenetStepLock from "@/motion/TenetStepLock";
 import { MEDIA } from "@/content/media";
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Preloader />
         <a className="skip-link" href="#statusteam">К содержанию</a>
         {children}
+        <LegalFooter />
         <TenetStepLock />
       </body>
     </html>

@@ -1,5 +1,4 @@
 import ApplyForm from "@/features/forms/ApplyForm";
-import LegalLink from "@/features/forms/LegalLink";
 import { CONTACTS } from "@/content/event";
 import { MEDIA } from "@/content/media";
 
@@ -23,10 +22,7 @@ export default function Footer() {
             </picture>
           </a>
 
-          <div className="foot-legal">
-            <LegalLink document="privacy">Политика обработки персональных данных</LegalLink>
-            <LegalLink document="terms" />
-          </div>
+
         </div>
 
         <nav className="foot-col foot-nav" aria-label="Навигация в подвале">
