@@ -1,6 +1,7 @@
 "use client";
 
 import ApplyForm from "@/features/forms/ApplyForm";
+import TicketPurchase from "@/features/forms/TicketPurchase";
 import { SALES_OPEN, TICKETS_URL } from "@/content/event";
 
 /**
@@ -19,20 +20,11 @@ export default function Tickets() {
 
       <div className="preorder-action">
         <p className="preorder-copy">
-          Оставьте контакт — получите доступ к билетам первым.
+          {SALES_OPEN ? "Приобретите билет на показ «Пульс Континента»." : "Оставьте контакт — получите доступ к билетам первым."}
         </p>
 
         {SALES_OPEN && TICKETS_URL ? (
-          <a
-            className="btn btn-solid btn-buy"
-            href={TICKETS_URL}
-            rel="noopener"
-          >
-            Купить билет
-            <span className="arrow" aria-hidden="true">
-              ↗
-            </span>
-          </a>
+          <TicketPurchase href={TICKETS_URL} />
         ) : null}
 
       </div>
@@ -45,7 +37,7 @@ export default function Tickets() {
         >
           <div className="panel-inner">
             <div className="preorder-form">
-              <ApplyForm kind="access" consent submitLabel="Отправить" />
+              <ApplyForm kind="access" submitLabel="Отправить" />
             </div>
           </div>
         </div>

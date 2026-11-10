@@ -34,17 +34,18 @@
   width: 100%;
   height: auto;
 }
-/* Plain text, not links — the two pages don't exist yet, and this site
-   does not ship a link to nowhere. Wrap in <a> once they're real. */
 .foot-legal {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-top: clamp(2rem, 4vw, 3rem);
 }
-.foot-legal span {
+.foot-legal a {
+  display: flex;
+  align-items: center;
+  min-height: var(--control-min);
   width: fit-content;
-  color: rgba(241, 238, 232, 0.5);
+  color: rgba(241, 238, 232, 0.75);
   font-family: var(--font-ui);
   font-size: var(--fs-micro);
   text-decoration: underline;
@@ -126,6 +127,9 @@
 .foot-sub .form-inline .form-grid {
   flex: 1 1 11rem;
   gap: 0;
+}
+.foot-sub .form-inline .form-consents {
+  flex-basis: 100%;
 }
 .foot-sub .form-inline .field {
   gap: 0;

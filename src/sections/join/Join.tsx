@@ -68,7 +68,7 @@ export default function Join() {
                   ))}
                 </ol>
 
-                <ApplyForm kind={z.form} consent={z.form === "press"} />
+                <ApplyForm kind={z.form} />
               </div>
             </div>
           </section>
