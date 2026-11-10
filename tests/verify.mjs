@@ -524,10 +524,12 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
     "purchase requires only the ticket terms checkbox");
   check(await page.locator("[data-form='purchase'] button[type=submit]").isDisabled(),
     "checkout stays disabled until payment and documents are ready");
-  await page.fill("#purchase-quantity", "2");
-  check(/20\s?000/.test(await page.locator(".ticket-total output").innerText()),
-    "two tickets total 20000 rubles");
-  await page.fill("#purchase-quantity", "1");
+  check(await page.locator("#purchase-quantity").count() === 0,
+    "quantity selector is omitted for a single-ticket order");
+  check(await page.locator("[data-form='purchase'] input[name='quantity']").inputValue() === "1",
+    "purchase is fixed to one ticket");
+  check(/10\s?000/.test(await page.locator(".ticket-total output").innerText()),
+    "single ticket total is 10000 rubles");
 
   /* Forms never fake a send */
   await page.fill("#casting-name", "Тест");
