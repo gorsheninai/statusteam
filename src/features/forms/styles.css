@@ -93,7 +93,40 @@
 }
 .btn[disabled] {
   opacity: 0.6;
-  cursor: progress;
+  cursor: not-allowed;
+}
+
+.form-consents {
+  min-width: 0;
+}
+.field-check a,
+.form-note a,
+.legal-page a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+.field-check a:focus-visible,
+.form-note a:focus-visible,
+.legal-page a:focus-visible,
+.field-check input:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+.ticket-purchase > .form-note {
+  margin-top: var(--space-2);
+}
+.legal-page {
+  padding-block: var(--chapter-pad);
+  font-family: var(--font-body);
+  overflow-wrap: anywhere;
+}
+.legal-page h1 {
+  font-size: var(--fs-body);
+  margin-bottom: var(--space-4);
+}
+.legal-page p + p {
+  margin-top: var(--space-4);
 }
 
 /* The one-line newsletter row. */

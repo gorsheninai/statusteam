@@ -1,4 +1,5 @@
 import ApplyForm from "@/features/forms/ApplyForm";
+import LegalLink from "@/features/forms/LegalLink";
 import { CONTACTS } from "@/content/event";
 import { MEDIA } from "@/content/media";
 
@@ -22,13 +23,9 @@ export default function Footer() {
             </picture>
           </a>
 
-          {/* Политика конфиденциальности и пользовательское соглашение
-              ещё не написаны — ссылок в никуда быть не должно, поэтому
-              это пока текст, а не <a>. Как только страницы появятся,
-              достаточно обернуть их в ссылки. */}
           <div className="foot-legal">
-            <span>Политика конфиденциальности</span>
-            <span>Пользовательское соглашение</span>
+            <LegalLink document="privacy">Политика обработки персональных данных</LegalLink>
+            <LegalLink document="terms" />
           </div>
         </div>
 
