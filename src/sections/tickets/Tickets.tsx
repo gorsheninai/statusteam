@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { TICKET } from "@/content/ticket";
 import TicketPurchase from "@/features/forms/TicketPurchase";
-import LegalLink from "@/features/forms/LegalLink";
 
 export default function Tickets() {
   return (
@@ -20,15 +19,8 @@ export default function Tickets() {
             <div><dt>Возраст</dt><dd>{TICKET.age}</dd></div>
           </dl>
           <div className="ticket-fulfillment">
-            <h3>Получение билета</h3>
-            <p>{TICKET.delivery}</p>
-            <p>Покажите QR-код с экрана телефона или распечатайте билет. Сохраните письмо до дня мероприятия.</p>
-            <h3>Оплата и чек</h3>
-            <p>Онлайн-оплата через ЮKassa. Доступные способы оплаты будут указаны на защищённой платёжной странице. Данные банковской карты на сайте STATUS TEAM не запрашиваются.</p>
-            <p>{TICKET.receipt}</p>
-            <h3>Возврат и изменения мероприятия</h3>
-            <p>Условия покупки, возврата, отмены и переноса — в разделе 7 <LegalLink document="terms">Пользовательского соглашения</LegalLink>.</p>
-            <p>Не получили билет или нужен возврат? <Link href="/contacts/">Контакты и реквизиты организатора</Link>.</p>
+            <p>{TICKET.delivery} Оплата через ЮKassa.</p>
+            <p><Link href="/contacts/">Контакты и вопросы о билетах</Link></p>
           </div>
         </div>
         <TicketPurchase />

@@ -16,7 +16,6 @@
 .ticket-facts dd,
 .company-details dd { font-size: var(--fs-body); line-height: 1.6; overflow-wrap: anywhere; }
 .ticket-fulfillment { font-size: var(--fs-small); line-height: 1.7; }
-.ticket-fulfillment h3 { margin-top: var(--space-4); margin-bottom: var(--space-2); font-size: var(--fs-body); }
 .ticket-fulfillment p + p { margin-top: var(--space-2); }
 .ticket-fulfillment a { text-decoration: underline; text-underline-offset: 0.2em; }
 .ticket-purchase {

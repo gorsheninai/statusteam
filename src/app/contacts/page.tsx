@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { COMPANY } from "@/content/company";
+import { TICKET } from "@/content/ticket";
 import LegalLink from "@/features/forms/LegalLink";
 
 export const metadata: Metadata = { title: "Контакты и реквизиты — STATUS TEAM" };
@@ -22,6 +23,8 @@ export default function ContactsPage() {
         <div><dt>Телефоны</dt><dd>{COMPANY.phones.map((phone) => <a key={phone} href={`tel:${phone.replace(/[^+\d]/g, "")}`}>{phone}</a>)}</dd></div>
       </dl>
       <h2>Вопросы о билетах и возвратах</h2>
+      <p>На входе покажите QR-код с экрана телефона или распечатайте билет.</p>
+      <p>Оплата проходит на защищённой странице ЮKassa. {TICKET.receipt}</p>
       <p>Если билет не пришёл, проверьте папку «Спам», затем свяжитесь с нами по электронной почте или телефону выше. В обращении укажите номер заказа и e-mail, использованный при покупке.</p>
       <p>Условия покупки, возврата, отмены и переноса мероприятия — в разделе 7 <LegalLink document="terms">Пользовательского соглашения</LegalLink>.</p>
       <p><Link href="/#tickets">Купить билет на «Пульс Континента»</Link></p>
