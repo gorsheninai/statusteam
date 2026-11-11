@@ -9,8 +9,10 @@
 .ticket-purchase { min-width: 0; }
 .ticket-facts,
 .company-details { display: grid; gap: var(--space-3); margin-block: var(--space-5); }
+.ticket-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ticket-facts > div,
 .company-details > div { display: grid; gap: var(--space-1); padding-bottom: var(--space-3); border-bottom: 1px solid var(--hairline-light); }
+.ticket-facts > div { min-width: 0; align-content: start; }
 .ticket-facts dt,
 .company-details dt { font-size: var(--fs-small); opacity: 0.8; }
 .ticket-facts dd,
@@ -29,7 +31,7 @@
 .ticket-total output { font-size: var(--fs-lead); }
 .ticket-purchase .form-note { max-width: none; }
 .ticket-purchase .btn-buy { width: 100%; min-width: 0; min-height: 48px; white-space: normal; }
-.ticket-purchase .form-grid .field { min-width: 0; }
+.ticket-purchase .form-grid .field { min-width: 0; align-content: start; }
 .ticket-purchase .form-grid .field input:focus {
   outline: none !important;
   border-bottom-color: var(--champagne);
@@ -37,8 +39,17 @@
 .company-page > p { max-width: 75ch; font-size: var(--fs-body); line-height: 1.7; }
 .company-page h2 { margin-block: var(--space-5) var(--space-3); font-size: var(--fs-lead); }
 .company-details dd a { display: block; width: fit-content; min-height: 48px; }
+@media (min-width: 640px) {
+  .ticket-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 768px) {
+  .ticket-purchase .form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 960px) {
+  .ticket-facts {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) minmax(0, 1.8fr) minmax(0, 0.75fr) minmax(0, 1.15fr) minmax(0, 0.55fr);
+  }
+}
 @media (min-width: 900px) {
-  .ticket-shop-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: var(--space-6); }
-  .ticket-facts > div,
   .company-details > div { grid-template-columns: minmax(8rem, 0.45fr) minmax(0, 1fr); gap: var(--space-3); }
 }
