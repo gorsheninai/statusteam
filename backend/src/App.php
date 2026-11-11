@@ -79,14 +79,23 @@ final class App {
         if(count(preg_split('/\s+/u',$buyer['name']))<2) throw new Problem(422,'name_and_surname_required');
         $hash=$this->fingerprint($d);$access=$this->crypto->capability($key);
         $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access) {
+            $this->expireReservations();
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
             $old=$this->db->one('SELECT id,request_hash FROM orders WHERE request_key=?',[$key]);
             if($old) {if($old['request_hash']!==$hash) throw new Problem(409,'retry_payload_changed');return $old['id'];}
             $docs=$this->documents($d,['terms','buyers','privacy']);
             if($inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
             $id=Crypto::id();$paymentKey=Crypto::id();
-            $body=['amount'=>['value'=>sprintf('%d.%02d',intdiv(self::PRICE,100),self::PRICE%100),'currency'=>'RUB'],'capture'=>true,'confirmation'=>['type'=>'redirect','return_url'=>$this->c['origin'].'/api/index.php?r=return#'.$access],'metadata'=>['order_id'=>$id],'description'=>'STATUS TEAM '.$id,'receipt'=>$this->receipt($buyer,self::PRICE)];
-            $this->db->run('INSERT INTO orders(id,request_key,request_hash,buyer,amount,access_hash) VALUES(?,?,?,?,?,?)',[$id,$key,$hash,$this->crypto->seal(self::json($buyer)),self::PRICE,Crypto::hash($access)]);
+            $body=[
+                'amount'=>['value'=>sprintf('%d.%02d',intdiv(self::PRICE,100),self::PRICE%100),'currency'=>'RUB'],
+                'capture'=>false,
+                'payment_method_data'=>['type'=>'bank_card'],
+                'confirmation'=>['type'=>'redirect','return_url'=>$this->c['origin'].'/api/index.php?r=return#'.$access],
+                'metadata'=>['order_id'=>$id],
+                'description'=>'STATUS TEAM '.$id,
+                'receipt'=>$this->receipt($buyer,self::PRICE),
+            ];
+            $this->db->run('INSERT INTO orders(id,request_key,request_hash,buyer,amount,access_hash,reserve_until) VALUES(?,?,?,?,?,?,UTC_TIMESTAMP(6) + INTERVAL 15 MINUTE)',[$id,$key,$hash,$this->crypto->seal(self::json($buyer)),self::PRICE,Crypto::hash($access)]);
             $this->db->run('UPDATE inventory SET held=held+1 WHERE id=1');
             $this->consent('purchase',$docs,$d,$ip,null,$id);
             $this->db->run('INSERT INTO payments(order_id,idempotence_key,request_body) VALUES(?,?,?)',[$id,$paymentKey,$this->crypto->seal(self::json($body))]);
@@ -94,6 +103,16 @@ final class App {
         });
         try {$this->ensurePayment($id);} catch(Problem $e) {if($e->status!==503) throw $e;}
         return $this->orderStatus($access)+['accessToken'=>$access];
+    }
+    // Called inside a transaction. Every change to inventory takes this lock first.
+    private function expireReservations(): void {
+        $this->db->one('SELECT id FROM inventory WHERE id=1 FOR UPDATE');
+        $expired=$this->db->run(
+            "UPDATE orders o JOIN payments p ON p.order_id=o.id
+             SET o.status='expired',o.updated_at=UTC_TIMESTAMP()
+             WHERE o.status='reserved' AND o.reserve_until<=UTC_TIMESTAMP(6) AND p.capture_requested_at IS NULL"
+        )->rowCount();
+        if($expired) $this->db->run('UPDATE inventory SET held=held-? WHERE id=1',[$expired]);
     }
     public function ensurePayment(string $id): void {
         $p=$this->db->one('SELECT * FROM payments WHERE order_id=?',[$id]);
@@ -117,17 +136,24 @@ final class App {
         if(($v['id']??null)!==$providerId) throw new Problem(409,'payment_verification_failed');
         $this->applyPayment($v,$p['order_id']);return $v;
     }
-    public function applyPayment(array $v,string $id): void {
-        $this->db->tx(function() use($v,$id) {
+    private function applyPayment(array $v,string $id,bool $settle=true): void {
+        $operation=$this->db->tx(function() use($v,$id,$settle) {
             // Always inventory -> order -> payment -> ticket; refunds/admissions never request inventory lock.
-            $this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
+            $this->expireReservations();
             $o=$this->db->one('SELECT * FROM orders WHERE id=? FOR UPDATE',[$id]);
             $p=$this->db->one('SELECT * FROM payments WHERE order_id=? FOR UPDATE',[$id]);
             if(!$o || !$p) throw new Problem(404,'unknown_order');
             $this->verifyPayment($v,$id,$p['provider_id'],(int)$o['amount']);
-            if(in_array($p['status'],['succeeded','canceled'],true) && $p['status']!==$v['status']) throw new Problem(409,'payment_terminal_conflict');
+            if(in_array($p['status'],['succeeded','canceled'],true) && $p['status']!==$v['status']) {
+                if(in_array($v['status'],['pending','waiting_for_capture'],true)) return null;
+                throw new Problem(409,'payment_terminal_conflict');
+            }
+            if($p['status']==='waiting_for_capture' && $v['status']==='pending') return null;
+            if($o['reserve_until']!==null && $v['status']==='succeeded' && $p['capture_requested_at']===null) {
+                throw new Problem(409,'unexpected_payment_capture');
+            }
             $url=$v['confirmation']['confirmation_url']??null;
-            if($url!==null && (!is_string($url) || parse_url($url,PHP_URL_SCHEME)!=='https' || !preg_match('/(^|\.)yookassa\.ru$/D',parse_url($url,PHP_URL_HOST)??''))) throw new Problem(409,'invalid_confirmation_url');
+            if($url!==null && (!is_string($url) || parse_url($url,PHP_URL_SCHEME)!=='https' || !preg_match('/(^|\.)(yookassa|yoomoney)\.ru$/D',parse_url($url,PHP_URL_HOST)??''))) throw new Problem(409,'invalid_confirmation_url');
             $this->db->run('UPDATE payments SET provider_id=?,status=?,confirmation_url=COALESCE(?,confirmation_url),receipt_status=?,checked_at=UTC_TIMESTAMP() WHERE order_id=?',[$v['id'],$v['status'],$url,$v['receipt_registration']??null,$id]);
             if($v['status']==='succeeded' && $o['status']==='reserved') {
                 $token=bin2hex(random_bytes(32));$ticket=Crypto::id();
@@ -145,12 +171,42 @@ final class App {
                 $this->db->run("UPDATE orders SET status='canceled',updated_at=UTC_TIMESTAMP() WHERE id=?",[$id]);
                 $this->db->run('UPDATE inventory SET held=held-1 WHERE id=1');
             }
+            if(!$settle || $o['reserve_until']===null || $v['status']!=='waiting_for_capture') return null;
+            if($o['status']==='expired') return ['cancel',$p['idempotence_key']];
+            if($o['status']!=='reserved') return null;
+            // Persist the decision before sending capture. A timeout can hide a successful charge.
+            if($p['capture_requested_at']===null) {
+                $claimed=$this->db->run(
+                    'UPDATE payments p JOIN orders o ON o.id=p.order_id
+                     SET p.capture_requested_at=UTC_TIMESTAMP(6)
+                     WHERE p.order_id=? AND o.reserve_until>UTC_TIMESTAMP(6)',
+                    [$id]
+                )->rowCount();
+                if(!$claimed) {
+                    $this->expireReservations();
+                    return ['cancel',$p['idempotence_key']];
+                }
+            } elseif(strtotime($p['capture_requested_at'])<time()-23*3600) {
+                return ['review',$p['idempotence_key']];
+            }
+            return ['capture',$p['idempotence_key']];
         });
+        if(!$operation) return;
+        [$action,$originalKey]=$operation;
+        if($action==='review') throw new Problem(503,'capture_manual_review');
+        $key=substr(Crypto::hash($action.':'.$originalKey),0,32);
+        $updated=$this->gateway->call('POST','/payments/'.$v['id'].'/'.$action,null,$key);
+        $this->applyPayment($updated,$id,false);
     }
     public function orderStatus(string $token): array {
-        $o=$this->db->one('SELECT o.id,o.status,p.confirmation_url,p.status payment_status FROM orders o JOIN payments p ON p.order_id=o.id WHERE access_hash=?',[Crypto::hash($token)]);
+        $o=$this->db->one('SELECT o.id,o.status,p.confirmation_url,p.status payment_status,
+            p.capture_requested_at,
+            (o.reserve_until<=UTC_TIMESTAMP(6) AND p.capture_requested_at IS NULL) AS overdue
+            FROM orders o JOIN payments p ON p.order_id=o.id WHERE access_hash=?',[Crypto::hash($token)]);
         if(!$o) throw new Problem(404,'order_not_found');
-        $result=['orderId'=>$o['id'],'status'=>$o['status'],'paymentStatus'=>$o['payment_status'],'confirmationUrl'=>$o['status']==='reserved'?$o['confirmation_url']:null];
+        $status=$o['status']==='reserved' && $o['overdue']?'expired':$o['status'];
+        $canPay=$status==='reserved' && $o['capture_requested_at']===null && $o['payment_status']==='pending';
+        $result=['orderId'=>$o['id'],'status'=>$status,'paymentStatus'=>$o['payment_status'],'confirmationUrl'=>$canPay?$o['confirmation_url']:null];
         if($o['status']==='paid') {
             $t=$this->db->one('SELECT token_cipher FROM tickets WHERE order_id=?',[$o['id']]);
             if($t) $result['ticketUrl']=$this->ticketUrl($this->crypto->open($t['token_cipher']));
@@ -270,6 +326,7 @@ final class App {
         $this->applyRefund($v,$id);
     }
     public function reconcile(): array {
+        $this->db->tx(fn()=>$this->expireReservations());
         $count=0;$errors=0;
         foreach($this->db->run("SELECT order_id FROM payments WHERE status<>'canceled' ORDER BY COALESCE(checked_at,created_at) LIMIT 100")->fetchAll() as $p) {
             try {$this->ensurePayment($p['order_id']);$count++;} catch(\Throwable) {$errors++;}

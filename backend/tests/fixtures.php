@@ -6,12 +6,21 @@ final class FakeGateway implements Gateway {
     public array $overrides=[];
     public bool $timeout=false;
     public array $keys=[];
+    public array $paymentOperations=[];
+    public ?string $timeoutOperation=null;
     public array $refunds=[];
     public string $refundStatus='succeeded';
     public function call(string $method,string $path,?array $body=null,?string $key=null): array {
         if($key) $this->keys[]=$key;
         if($this->timeout) throw new StatusTeam\Problem(503,'fixture_timeout');
         if($path==='/payments') return $this->payment($body['metadata']['order_id']);
+        if($method==='POST' && preg_match('~^/payments/test-([a-f0-9]{32})/(capture|cancel)$~D',$path,$matches)) {
+            [, $order, $operation]=$matches;
+            $this->paymentOperations[]=[$operation,$key];
+            if($operation===$this->timeoutOperation) throw new StatusTeam\Problem(503,'fixture_timeout');
+            $this->overrides[$order]=['status'=>$operation==='capture'?'succeeded':'canceled','paid'=>$operation==='capture'];
+            return $this->payment($order);
+        }
         if(str_starts_with($path,'/payments/')) return $this->payment(substr($path,strlen('/payments/test-')));
         if($path==='/refunds') { $id='refund-'.$key;return $this->refunds[$id]=['id'=>$id,'payment_id'=>$body['payment_id'],'amount'=>$body['amount'],'status'=>$this->refundStatus,'receipt_registration'=>'succeeded']; }
         if(str_starts_with($path,'/refunds/')) return array_replace($this->refunds[substr($path,9)],['status'=>$this->refundStatus]);

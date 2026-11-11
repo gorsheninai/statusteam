@@ -61,6 +61,7 @@ export default function TicketPurchase() {
       <p className="form-note">Как мы обрабатываем данные покупателей — в <LegalLink document="buyers">Сведениях об обработке персональных данных</LegalLink>.</p>
       <p className="form-note" role="status" aria-live="polite">{state}</p>
       <div className="form-foot">
+        {available && <p className="form-note">Билет резервируется на 15 минут. Оплата банковской картой.</p>}
         {!available && <p className="form-note" id="purchase-availability">Онлайн-оплата пока недоступна. Сейчас оформить и оплатить заказ нельзя.</p>}
         <button className="btn btn-solid btn-buy" type="submit" disabled={!accepted || !available || sending}
           aria-describedby={!available ? "purchase-availability" : undefined}>

@@ -7,7 +7,7 @@ $app=testApp();$db=$app->db;$gateway=$app->gateway;$count=0;
 function check(bool $ok,string $description): void {global $count;if(!$ok) throw new RuntimeException('FAILED: '.$description);echo 'PASS '.$description.PHP_EOL;$count++;}
 function reject(callable $fn,int $status,string $description): void {try{$fn();}catch(Problem $e){check($e->status===$status,$description);return;}throw new RuntimeException('Expected rejection: '.$description);}
 function n(string $table): int {global $db;return (int)$db->one('SELECT COUNT(*) n FROM '.$table)['n'];}
-function paid(array $order): string {global $app,$gateway;$id=$order['orderId'];$gateway->overrides[$id]=['status'=>'succeeded','paid'=>true];$app->syncPayment('test-'.$id);return $app->crypto->open($app->db->one('SELECT token_cipher FROM tickets WHERE order_id=?',[$id])['token_cipher']);}
+function paid(array $order): string {global $app,$gateway;$id=$order['orderId'];$gateway->overrides[$id]=['status'=>'waiting_for_capture','paid'=>true];$app->syncPayment('test-'.$id);return $app->crypto->open($app->db->one('SELECT token_cipher FROM tickets WHERE order_id=?',[$id])['token_cipher']);}
 function concurrent(string $kind,int $number,string $token=''): array {
     $ps=[];
     for($i=0;$i<$number;$i++) {$cmd=[PHP_BINARY,'-c',php_ini_loaded_file(),__DIR__.'/worker.php',$kind,$token];$p=proc_open($cmd,[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);fclose($pipes[0]);$ps[]=[$p,$pipes];}
@@ -22,7 +22,7 @@ $migrate=function() use($migrationConfig) {
  $process=proc_open([PHP_BINARY,'-c',php_ini_loaded_file(),dirname(__DIR__).'/bin/console.php','migrate'],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes,null,array_merge(getenv(),['STATUS_CONFIG'=>$migrationConfig]));
  fclose($pipes[0]);stream_get_contents($pipes[1]);fclose($pipes[1]);stream_get_contents($pipes[2]);fclose($pipes[2]);return proc_close($process);
 };
-try {check($migrate()===0,'CLI applies versioned migrations');check($migrate()===0 && n('schema_migrations')===2,'CLI migration rerun is idempotent');} finally {unlink($migrationConfig);}
+try {check($migrate()===0,'CLI applies versioned migrations');check($migrate()===0 && n('schema_migrations')===3,'CLI migration rerun is idempotent');} finally {unlink($migrationConfig);}
 
 echo 'DATABASE '.$db->one('SELECT VERSION() version')['version'].PHP_EOL;
 $fixtureDocs = array_map(
@@ -57,12 +57,49 @@ check($app->ticket($token)['status']==='valid','valid ticket retrievable without
 $number=$app->ticket($token)['number'];check($app->ticketFromCode($number)['id']===$app->ticket($token)['id'],'staff manual ticket number resolves same ticket');
 reject(fn()=>$app->ticket($number),404,'public ticket cannot be opened using printed number');
 $before=n('tickets');$o=$app->order(purchase(),'127.0.0.1');$gateway->overrides[$o['orderId']]=['status'=>'canceled'];$held=(int)$db->one('SELECT held FROM inventory WHERE id=1')['held'];$app->syncPayment('test-'.$o['orderId']);check(n('tickets')===$before && (int)$db->one('SELECT held FROM inventory WHERE id=1')['held']===$held-1,'failed payment releases reserve only after final cancellation');
-$o=$app->order(purchase(),'127.0.0.1');$db->run('UPDATE orders SET created_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 30 MINUTE) WHERE id=?',[$o['orderId']]);$late=paid($o);check($app->ticket($late)['status']==='valid','late success after 30 minutes retains reserved place');
+$o=$app->order(purchase(),'127.0.0.1');
+$id=$o['orderId'];
+$body=$app->decode($db->one('SELECT request_body FROM payments WHERE order_id=?',[$id])['request_body']);
+check($body['capture']===false && $body['payment_method_data']['type']==='bank_card','new orders request two-stage card payment');
+check($db->one('SELECT TIMESTAMPDIFF(SECOND,UTC_TIMESTAMP(6),reserve_until) AS seconds_left FROM orders WHERE id=?',[$id])['seconds_left']>=899,'new reservation lasts 15 minutes');
+$gateway->overrides[$id]=['status'=>'succeeded','paid'=>true];
+reject(fn()=>$app->syncPayment('test-'.$id),409,'new order cannot issue a ticket without a capture decision');
+$db->run('UPDATE inventory SET capacity=held WHERE id=1');
+$db->run('UPDATE orders SET reserve_until=UTC_TIMESTAMP(6) WHERE id=?',[$id]);
+$expired=$app->orderStatus($o['accessToken']);
+check($expired['status']==='expired' && $expired['confirmationUrl']===null,'at the deadline old checkout is hidden');
+$replacement=$app->order(purchase(),'127.0.0.1');
+check($replacement['status']==='reserved','next buyer can reserve the last ticket after expiry');
+$gateway->overrides[$id]=['status'=>'waiting_for_capture','paid'=>true];
+$app->webhook(['event'=>'payment.waiting_for_capture','object'=>['id'=>'test-'.$id]]);
+$app->webhook(['event'=>'payment.waiting_for_capture','object'=>['id'=>'test-'.$id]]);
+check(end($gateway->paymentOperations)[0]==='cancel' &&
+    $db->one('SELECT status FROM payments WHERE order_id=?',[$id])['status']==='canceled' &&
+    !$db->one('SELECT id FROM tickets WHERE order_id=?',[$id]) &&
+    $db->one('SELECT held=capacity AS full FROM inventory WHERE id=1')['full']==1,
+    'late authorization is canceled without charging or releasing the replacement reservation');
+$db->run('UPDATE inventory SET capacity=100 WHERE id=1');
+$o=$app->order(purchase(),'127.0.0.1');
+$id=$o['orderId'];
+$gateway->overrides[$id]=['status'=>'waiting_for_capture','paid'=>true];
+$gateway->timeoutOperation='capture';
+reject(fn()=>$app->syncPayment('test-'.$id),503,'capture timeout leaves a durable decision');
+$capture=end($gateway->paymentOperations);
+$db->run('UPDATE orders SET reserve_until=UTC_TIMESTAMP(6) WHERE id=?',[$id]);
+$gateway->timeoutOperation=null;
+$app->reconcile();
+check(end($gateway->paymentOperations)===$capture && $app->orderStatus($o['accessToken'])['status']==='paid',
+    'reconciliation retries a capture claimed before expiry with the same key');
+$o=$app->order(purchase(),'127.0.0.1');
+$db->run('UPDATE orders SET reserve_until=NULL,created_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 30 MINUTE) WHERE id=?',[$o['orderId']]);
+$gateway->overrides[$o['orderId']]=['status'=>'succeeded','paid'=>true];
+$app->syncPayment('test-'.$o['orderId']);
+check($app->orderStatus($o['accessToken'])['status']==='paid','existing one-stage orders keep their original behavior');
 // Lost create response: replay exact persisted body/key, never create a fresh key.
 $gateway->timeout=true;$d=purchase();$o=$app->order($d,'127.0.0.1');$key=$db->one('SELECT idempotence_key FROM payments WHERE order_id=?',[$o['orderId']])['idempotence_key'];$gateway->timeout=false;$app->order($d,'127.0.0.1');check(end($gateway->keys)===$key,'API timeout retries same persisted payment key');
 $gateway->timeout=true;$o=$app->order(purchase(),'127.0.0.1');$gateway->timeout=false;$db->run('UPDATE payments SET created_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 25 HOUR) WHERE order_id=?',[$o['orderId']]);$keys=count($gateway->keys);reject(fn()=>$app->ensurePayment($o['orderId']),503,'unknown payment beyond idempotence window quarantined');check(count($gateway->keys)===$keys,'expired key never sent as a new payment');
 // Kill-point equivalent: DB rejects queue insert, proving the ticket and paid state roll back together.
-$o=$app->order(purchase(),'127.0.0.1');$gateway->overrides[$o['orderId']]=['status'=>'succeeded','paid'=>true];
+$o=$app->order(purchase(),'127.0.0.1');$gateway->overrides[$o['orderId']]=['status'=>'waiting_for_capture','paid'=>true];
 $db->pdo->exec("CREATE TRIGGER fixture_fail_queue BEFORE INSERT ON mail_queue FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='fixture failure'");
 try {$app->syncPayment('test-'.$o['orderId']);throw new RuntimeException('Expected DB failure');} catch(PDOException) {}
 check(!$db->one('SELECT id FROM tickets WHERE order_id=?',[$o['orderId']]) && $db->one('SELECT status FROM orders WHERE id=?',[$o['orderId']])['status']==='reserved','failure between payment and mail rolls back ticket and paid status');
