@@ -23,7 +23,7 @@ try {
  await page.locator('#login button').click();await page.locator('#staff').waitFor({state:'visible'});
  check(await page.locator('#admin').isHidden(),'controller has no admin interface');
  const csrf=await page.evaluate(()=>csrf); // lexical binding used by the staff page
- check((await post('refund',{csrf,orderId:fixture.orderId,amountKopecks:1000000,confirmAmountKopecks:1000000,requestKey:'a'.repeat(64)})).status()===403,'controller cannot request refund via API');
+ check((await post('refund',{csrf,orderId:fixture.orderId,amountKopecks:2500000,confirmAmountKopecks:2500000,requestKey:'a'.repeat(64)})).status()===403,'controller cannot request refund via API');
  const publicTicket=await (await post('ticket-data',{token:fixture.token})).json();
  await page.locator('#token').fill(publicTicket.number);await page.locator('#check button').click();await page.waitForFunction(()=>!document.getElementById('admit').disabled);
  check((await page.locator('#check-result').textContent()).includes('Действителен'),'GET ticket display did not consume ticket');

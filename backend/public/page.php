@@ -10,6 +10,6 @@
 <section id="admin" hidden><h2>Кабинет администратора</h2><button id="dashboard">Обновить списки</button><div id="lists"></div>
 <form id="application-detail"><label>Номер заявки<input name="id" required maxlength="32"></label><button>Открыть заявку</button></form><pre id="application-data"></pre>
 <form id="resend"><label>Номер заказа<input name="orderId" required maxlength="32"></label><button>Отправить тот же билет повторно</button></form>
-<form id="refund"><h3>Возврат</h3><label>Номер заказа<input name="orderId" required maxlength="32"></label><label>Сумма в рублях<input name="amount" type="number" min="1" max="10000" step="0.01" required></label><label>Повторите сумму в рублях<input name="confirm" type="number" min="1" max="10000" step="0.01" required></label><button>Подтвердить возврат указанной суммы</button></form>
+<form id="refund"><h3>Возврат</h3><label>Номер заказа<input name="orderId" required maxlength="32"></label><label>Сумма в рублях<input name="amount" type="number" min="1" step="0.01" required></label><label>Повторите сумму в рублях<input name="confirm" type="number" min="1" step="0.01" required></label><button>Подтвердить возврат указанной суммы</button></form>
 <form id="mail-retry"><label>Номер неудавшегося письма<input name="id" type="number" min="1" required></label><button>Повторить отправку</button></form></section></section>
 <?php endif; ?></main></body></html>

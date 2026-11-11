@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace StatusTeam;
 final class App {
-    public const PRICE=1000000;
+    public const PRICE=2500000;
     public function __construct(public Db $db,public array $c,public Crypto $crypto,public Gateway $gateway) {}
     public static function json(mixed $v): string {return json_encode($v,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);}
     public function decode(string $v): array {return json_decode($this->crypto->open($v),true,512,JSON_THROW_ON_ERROR);}
@@ -85,7 +85,7 @@ final class App {
             $docs=$this->documents($d,['terms','offer','buyers','privacy']);
             if($inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
             $id=Crypto::id();$paymentKey=Crypto::id();
-            $body=['amount'=>['value'=>'10000.00','currency'=>'RUB'],'capture'=>true,'confirmation'=>['type'=>'redirect','return_url'=>$this->c['origin'].'/api/index.php?r=return#'.$access],'metadata'=>['order_id'=>$id],'description'=>'STATUS TEAM '.$id,'receipt'=>$this->receipt($buyer,self::PRICE)];
+            $body=['amount'=>['value'=>sprintf('%d.%02d',intdiv(self::PRICE,100),self::PRICE%100),'currency'=>'RUB'],'capture'=>true,'confirmation'=>['type'=>'redirect','return_url'=>$this->c['origin'].'/api/index.php?r=return#'.$access],'metadata'=>['order_id'=>$id],'description'=>'STATUS TEAM '.$id,'receipt'=>$this->receipt($buyer,self::PRICE)];
             $this->db->run('INSERT INTO orders(id,request_key,request_hash,buyer,amount,access_hash) VALUES(?,?,?,?,?,?)',[$id,$key,$hash,$this->crypto->seal(self::json($buyer)),self::PRICE,Crypto::hash($access)]);
             $this->db->run('UPDATE inventory SET held=held+1 WHERE id=1');
             $this->consent('purchase',$docs,$d,$ip,null,$id);
@@ -107,8 +107,8 @@ final class App {
         $v=$this->gateway->call('POST','/payments',$this->decode($p['request_body']),$p['idempotence_key']);
         $this->applyPayment($v,$id);
     }
-    private function verifyPayment(array $v,string $id,?string $providerId): void {
-        if(!is_string($v['id']??null) || !preg_match('/^[a-zA-Z0-9-]{1,64}$/D',$v['id']) || ($providerId && $v['id']!==$providerId) || ($v['metadata']['order_id']??null)!==$id || ($v['recipient']['account_id']??null)!==(string)$this->c['yookassa']['shop_id'] || ($v['test']??null)!==$this->c['yookassa']['test'] || Validation::amount($v['amount']??[])!==self::PRICE || !in_array($v['status']??'', ['pending','waiting_for_capture','succeeded','canceled'],true) || ($v['status']==='succeeded' && ($v['paid']??false)!==true)) throw new Problem(409,'payment_verification_failed');
+    private function verifyPayment(array $v,string $id,?string $providerId,int $orderAmount): void {
+        if(!is_string($v['id']??null) || !preg_match('/^[a-zA-Z0-9-]{1,64}$/D',$v['id']) || ($providerId && $v['id']!==$providerId) || ($v['metadata']['order_id']??null)!==$id || ($v['recipient']['account_id']??null)!==(string)$this->c['yookassa']['shop_id'] || ($v['test']??null)!==$this->c['yookassa']['test'] || Validation::amount($v['amount']??[])!==$orderAmount || !in_array($v['status']??'', ['pending','waiting_for_capture','succeeded','canceled'],true) || ($v['status']==='succeeded' && ($v['paid']??false)!==true)) throw new Problem(409,'payment_verification_failed');
     }
     public function syncPayment(string $providerId): array {
         $p=$this->db->one('SELECT order_id FROM payments WHERE provider_id=?',[$providerId]);
@@ -124,7 +124,7 @@ final class App {
             $o=$this->db->one('SELECT * FROM orders WHERE id=? FOR UPDATE',[$id]);
             $p=$this->db->one('SELECT * FROM payments WHERE order_id=? FOR UPDATE',[$id]);
             if(!$o || !$p) throw new Problem(404,'unknown_order');
-            $this->verifyPayment($v,$id,$p['provider_id']);
+            $this->verifyPayment($v,$id,$p['provider_id'],(int)$o['amount']);
             if(in_array($p['status'],['succeeded','canceled'],true) && $p['status']!==$v['status']) throw new Problem(409,'payment_terminal_conflict');
             $url=$v['confirmation']['confirmation_url']??null;
             if($url!==null && (!is_string($url) || parse_url($url,PHP_URL_SCHEME)!=='https' || !preg_match('/(^|\.)yookassa\.ru$/D',parse_url($url,PHP_URL_HOST)??''))) throw new Problem(409,'invalid_confirmation_url');

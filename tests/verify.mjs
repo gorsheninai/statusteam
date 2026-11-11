@@ -537,8 +537,8 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
     "quantity selector is omitted for a single-ticket order");
   check(await page.locator("[data-form='purchase'] input[name='quantity']").inputValue() === "1",
     "purchase is fixed to one ticket");
-  check(/10\s?000/.test(await page.locator(".ticket-total output").innerText()),
-    "single ticket total is 10000 rubles");
+  check(/25\s?000/.test(await page.locator(".ticket-total output").innerText()),
+    "single ticket total is 25000 rubles");
 
   /* Forms never fake a send */
   await page.fill("#casting-name", "Тест");

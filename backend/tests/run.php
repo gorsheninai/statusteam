@@ -67,13 +67,13 @@ reject(fn()=>$app->admit($token,1),409,'second admission rejected');
 $db->run('UPDATE inventory SET capacity=100 WHERE id=1');
 $o=$app->order(purchase(),'127.0.0.1');$tokenRefund=paid($o);
 reject(fn()=>$app->refund($o['orderId'],100,Crypto::id().Crypto::id(),1),409,'partial refund blocked until approved policy');
-$key=bin2hex(random_bytes(32));$r=$app->refund($o['orderId'],1000000,$key,1);check($r['status']==='succeeded' && $app->ticket($tokenRefund)['status']==='refunded','full refund invalidates ticket');
-$r2=$app->refund($o['orderId'],1000000,$key,1); // Fake GET refund not provided; terminal should not call provider again (see ensureRefund).
+$key=bin2hex(random_bytes(32));$r=$app->refund($o['orderId'],2500000,$key,1);check($r['status']==='succeeded' && $app->ticket($tokenRefund)['status']==='refunded','full refund invalidates ticket');
+$r2=$app->refund($o['orderId'],2500000,$key,1); // Fake GET refund not provided; terminal should not call provider again (see ensureRefund).
 check($r2['id']===$r['id'] && n('refunds')===1,'refund request idempotent');
 reject(fn()=>$app->admit($tokenRefund,1),409,'refunded ticket cannot enter');
 // Indeterminate and canceled refunds keep access safe and recover using their original key.
 $o=$app->order(purchase(),'127.0.0.1');$pendingToken=paid($o);$gateway->timeout=true;$k=bin2hex(random_bytes(32));
-$r=$app->refund($o['orderId'],1000000,$k,1);reject(fn()=>$app->admit($pendingToken,1),409,'uncertain refund blocks admission');
+$r=$app->refund($o['orderId'],2500000,$k,1);reject(fn()=>$app->admit($pendingToken,1),409,'uncertain refund blocks admission');
 $gateway->timeout=false;$gateway->refundStatus='canceled';$app->ensureRefund($r['id']);check($app->ticket($pendingToken)['order_status']==='paid','canceled refund restores order access');
 $gateway->refundStatus='succeeded';
 foreach(['keep','void'] as $policy) {
@@ -82,11 +82,11 @@ foreach(['keep','void'] as $policy) {
  check($app->ticket($partial)['status']===($policy==='keep'?'valid':'refunded'),'approved partial refund policy '.$policy.' enforced');
 }
 $app->c['partial_refund_policy']='disabled';
-$o=$app->order(purchase(),'127.0.0.1');$external=paid($o);$gateway->refunds['external-fixture']=['id'=>'external-fixture','payment_id'=>'test-'.$o['orderId'],'amount'=>['value'=>'10000.00','currency'=>'RUB'],'status'=>'succeeded'];
+$o=$app->order(purchase(),'127.0.0.1');$external=paid($o);$gateway->refunds['external-fixture']=['id'=>'external-fixture','payment_id'=>'test-'.$o['orderId'],'amount'=>['value'=>'25000.00','currency'=>'RUB'],'status'=>'succeeded'];
 $app->webhook(['event'=>'refund.succeeded','object'=>['id'=>'external-fixture']]);check($app->ticket($external)['status']==='refunded','verified merchant-panel refund imported and invalidates ticket');
-$o=$app->order(purchase(),'127.0.0.1');$missingWebhook=paid($o);$gateway->overrides[$o['orderId']]['refunded_amount']=['value'=>'10000.00','currency'=>'RUB'];$app->syncPayment('test-'.$o['orderId']);reject(fn()=>$app->admit($missingWebhook,1),409,'provider refunded total blocks entry even without refund webhook');
+$o=$app->order(purchase(),'127.0.0.1');$missingWebhook=paid($o);$gateway->overrides[$o['orderId']]['refunded_amount']=['value'=>'25000.00','currency'=>'RUB'];$app->syncPayment('test-'.$o['orderId']);reject(fn()=>$app->admit($missingWebhook,1),409,'provider refunded total blocks entry even without refund webhook');
 $o=$app->order(purchase(),'127.0.0.1');$unresolved=paid($o);$app->c['partial_refund_policy']='keep';
-$gateway->overrides[$o['orderId']]['refunded_amount']=['value'=>'10000.00','currency'=>'RUB'];
+$gateway->overrides[$o['orderId']]['refunded_amount']=['value'=>'25000.00','currency'=>'RUB'];
 $gateway->refunds['external-partial']=['id'=>'external-partial','payment_id'=>'test-'.$o['orderId'],'amount'=>['value'=>'1.00','currency'=>'RUB'],'status'=>'succeeded'];
 $app->syncRefund('external-partial');reject(fn()=>$app->admit($unresolved,1),409,'partial refund sync cannot reopen entry while provider total remains unresolved');$app->c['partial_refund_policy']='disabled';
 $form=['requestKey'=>bin2hex(random_bytes(32)),'form'=>'partner','company'=>'Fixture','name'=>'Test Partner','contact'=>'partner@example.invalid','termsAccepted'=>'yes','consent'=>'yes','consentDocuments'=>documents(['terms','privacy','partner'])];

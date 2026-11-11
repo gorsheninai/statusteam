@@ -3,7 +3,7 @@ export const TICKET = {
   id: "pulse-continent-2026",
   title: "Билет на шоу «Пульс Континента»",
   description: "Посещение fashion-шоу STATUS TEAM. Один билет — один гость, один проход на мероприятие. Без выбора мест.",
-  priceKopecks: 1_000_000,
+  priceKopecks: 2_500_000,
   currency: "RUB",
   capacity: 100,
   date: "30 ноября 2026",
