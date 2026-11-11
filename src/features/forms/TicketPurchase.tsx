@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { LEGAL_DOCUMENTS, documentsPublished } from "@/content/legal";
+import { LEGAL_DOCUMENTS, PURCHASE_DOCUMENTS, documentsPublished } from "@/content/legal";
 import { TICKET, CHECKOUT_ENABLED } from "@/content/ticket";
 import { formatRubles } from "./ticket-order";
 import LegalLink from "./LegalLink";
@@ -13,7 +13,7 @@ export default function TicketPurchase() {
   const [state, setState] = useState("");
   const [sending, setSending] = useState(false);
   const [accepted, setAccepted] = useState(false);
-  const published = documentsPublished(["terms", "offer", "buyers", "privacy"]);
+  const published = documentsPublished(PURCHASE_DOCUMENTS);
   const total = TICKET.priceKopecks;
   const available = CHECKOUT_ENABLED && published;
   async function checkout(e: React.FormEvent<HTMLFormElement>) {
@@ -22,7 +22,7 @@ export default function TicketPurchase() {
     if (busy.current || !available || !accepted || !endpoint || !e.currentTarget.reportValidity()) return;
     busy.current = true; setSending(true); setState("Создаём заказ…");
     const fields = Object.fromEntries(new FormData(e.currentTarget));
-    const payload = { ...fields, consentDocuments: (["terms", "offer", "buyers", "privacy"] as const)
+    const payload = { ...fields, consentDocuments: PURCHASE_DOCUMENTS
       .map(id => ({ id, version: LEGAL_DOCUMENTS[id].version })) };
     try {
       const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
@@ -55,7 +55,7 @@ export default function TicketPurchase() {
         <label htmlFor="purchase-terms">
           <input id="purchase-terms" name="termsAccepted" type="checkbox" required value="yes"
             checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-          <span>Принимаю <LegalLink document="terms">Пользовательское соглашение</LegalLink> и условия покупки и возврата билетов в <LegalLink document="offer">Оферте</LegalLink></span>
+          <span>Принимаю условия покупки и возврата билетов в <LegalLink document="terms" section="section-7">Пользовательском соглашении</LegalLink></span>
         </label>
       </p>
       <p className="form-note">Как мы обрабатываем данные покупателей — в <LegalLink document="buyers">Сведениях об обработке персональных данных</LegalLink>.</p>

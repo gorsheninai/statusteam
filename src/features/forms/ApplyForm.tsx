@@ -26,7 +26,7 @@ export default function ApplyForm({
   const [personalData, setPersonalData] = useState(false);
   const [advertising, setAdvertising] = useState(false);
   const minor = kind === "casting" && isMinorAge(age);
-  const published = documentsPublished(consentDocuments(kind, age));
+  const published = documentsPublished(consentDocuments(kind));
   const accepted = terms && personalData && (kind !== "subscribe" || advertising)
     && (kind !== "casting" || validCastingAge(age));
   const locked = state === "sending" || state === "sent";
@@ -56,8 +56,7 @@ export default function ApplyForm({
     press: "для аккредитации",
     subscribe: "для рассылки",
   }[kind];
-  const dataDocument = kind === "casting" ? (minor ? "guardian" : "casting")
-    : kind === "subscribe" ? "newsletter" : kind;
+  const dataDocument = kind === "subscribe" ? "newsletter" : kind;
 
   return (
     <form className={`form form-${variant}`} onSubmit={onSubmit} data-form={kind}
@@ -116,7 +115,7 @@ export default function ApplyForm({
           <label htmlFor={fid("consent")}>
             <input id={fid("consent")} name="consent" type="checkbox" required value="yes"
               checked={personalData} onChange={(e) => setPersonalData(e.target.checked)} disabled={locked} />
-            <span>{minor ? <>Я законный представитель кандидата и даю <LegalLink document="guardian">согласие на обработку персональных данных</LegalLink> несовершеннолетнего и своих данных</>
+            <span>{minor ? <>Я законный представитель кандидата и даю <LegalLink document="casting">согласие на обработку персональных данных</LegalLink> несовершеннолетнего и своих данных</>
               : <>Даю <LegalLink document={dataDocument}>согласие на обработку персональных данных</LegalLink> {purpose}</>}</span>
           </label>
         </p>

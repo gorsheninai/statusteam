@@ -82,7 +82,7 @@ final class App {
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
             $old=$this->db->one('SELECT id,request_hash FROM orders WHERE request_key=?',[$key]);
             if($old) {if($old['request_hash']!==$hash) throw new Problem(409,'retry_payload_changed');return $old['id'];}
-            $docs=$this->documents($d,['terms','offer','buyers','privacy']);
+            $docs=$this->documents($d,['terms','buyers','privacy']);
             if($inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
             $id=Crypto::id();$paymentKey=Crypto::id();
             $body=['amount'=>['value'=>sprintf('%d.%02d',intdiv(self::PRICE,100),self::PRICE%100),'currency'=>'RUB'],'capture'=>true,'confirmation'=>['type'=>'redirect','return_url'=>$this->c['origin'].'/api/index.php?r=return#'.$access],'metadata'=>['order_id'=>$id],'description'=>'STATUS TEAM '.$id,'receipt'=>$this->receipt($buyer,self::PRICE)];

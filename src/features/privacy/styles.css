@@ -4,6 +4,11 @@
   border-top: 1px solid var(--hairline-light);
   padding-block: var(--space-4);
 }
+.legal-footer-company {
+  font: normal var(--fs-small)/1.6 var(--font-body);
+  overflow-wrap: anywhere;
+}
+.legal-footer-contacts { display: flex; flex-wrap: wrap; gap: 0 var(--space-3); }
 .legal-footer-inner {
   display: flex;
   flex-wrap: wrap;
@@ -63,7 +68,7 @@
 .cookie-banner a { text-decoration: underline; }
 .cookie-note { opacity: 0.8; }
 .cookie-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.cookie-actions .btn { min-height: 48px; white-space: normal; }
+.cookie-actions .btn { flex: 1 1 10rem; min-height: 48px; white-space: normal; }
 .legal-page { max-width: var(--container-editorial); }
 .legal-page h1 { font-size: var(--fs-h3); line-height: 1.3; }
 .legal-back,
@@ -89,5 +94,5 @@
 .legal-doc-nav [aria-current="page"] { text-decoration-thickness: 2px; }
 @media (max-width: 639px) {
   .cookie-actions { flex-direction: column; }
-  .cookie-actions .btn { width: 100%; }
+  .cookie-actions .btn { flex: 0 0 auto; width: 100%; }
 }

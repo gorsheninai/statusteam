@@ -37,12 +37,12 @@ export default function CookieConsent() {
       {open && (
         <section className="cookie-banner" id="cookie-banner" aria-labelledby="cookie-title">
           <h2 id="cookie-title">Настройки cookie</h2>
-          <p>Необходимое хранилище запоминает ваш выбор. Аналитика разрешается только с вашего согласия. Сейчас сервисы аналитики не подключены.</p>
+          <p>Мы используем необходимые cookie. Аналитику включим только с вашего согласия.</p>
           <p><LegalLink document="cookies">Согласие на cookie и аналитику</LegalLink> · <LegalLink document="privacy">Политика</LegalLink></p>
           {!published && <p className="cookie-note">Документы готовятся к публикации. Сейчас доступен только выбор необходимых cookie.</p>}
           <div className="cookie-actions">
-            <button type="button" className="btn" onClick={() => choose(false)}>Только необходимые</button>
-            <button type="button" className="btn btn-solid" disabled={!published} onClick={() => choose(true)}>Разрешить аналитику</button>
+            <button type="button" className="btn" onClick={() => choose(false)}>Отказаться</button>
+            <button type="button" className="btn" disabled={!published} onClick={() => choose(true)}>Принять</button>
           </div>
         </section>
       )}

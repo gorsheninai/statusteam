@@ -9,10 +9,8 @@ export function validCastingAge(age: string) {
   return age.trim() !== "" && Number.isInteger(Number(age)) && Number(age) > 0;
 }
 
-export function consentDocuments(kind: FormKind, age = ""): LegalDocumentId[] {
-  const dataDocument: LegalDocumentId = kind === "casting"
-    ? (isMinorAge(age) ? "guardian" : "casting")
-    : kind === "subscribe" ? "newsletter" : kind;
+export function consentDocuments(kind: FormKind): LegalDocumentId[] {
+  const dataDocument: LegalDocumentId = kind === "subscribe" ? "newsletter" : kind;
   return ["terms", "privacy", dataDocument, ...(kind === "subscribe" ? ["advertising" as const] : [])];
 }
 

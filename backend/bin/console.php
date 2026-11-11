@@ -2,7 +2,7 @@
 declare(strict_types=1);
 // CLI only. No public installer exists.
 if(PHP_SAPI!=='cli') {http_response_code(404);exit;}
-use StatusTeam\{Crypto,App,Mailer};
+use StatusTeam\{Crypto,App,DocumentImport,Mailer};
 require dirname(__DIR__).'/vendor/autoload.php';
 $command=$argv[1]??'help';
 if($command==='preflight') {
@@ -30,15 +30,18 @@ try {
             break;
         case 'document-import':
             [$id,$version,$href,$file]=array_slice($argv,2)+['','','',''];
-            if(!preg_match('/^[a-z_]{2,40}$/D',$id) || !$version || strlen($version)>100 || !$href || strlen($href)>500 || !is_file($file)) throw new RuntimeException('Usage: document-import ID VERSION HREF /private/approved.txt');
-            $body=file_get_contents($file);if(!$body || strlen($body)>1000000) throw new RuntimeException('Invalid document');
-            $db->tx(function() use($db,$id,$version,$href,$body) {
-                $db->one('SELECT id FROM inventory WHERE id=1 FOR UPDATE');
-                $old=$db->one('SELECT * FROM documents WHERE id=? AND version=?',[$id,$version]);
-                if($old && ($old['sha256']!==hash('sha256',$body) || $old['href']!==$href)) throw new RuntimeException('Document version immutable; assign a new version');
-                if(!$old) $db->run('INSERT INTO documents(id,version,body,sha256,href) VALUES(?,?,?,?,?)',[$id,$version,$body,hash('sha256',$body),$href]);
-                $db->run('UPDATE documents SET active=0 WHERE id=?',[$id]);$db->run('UPDATE documents SET active=1 WHERE id=? AND version=?',[$id,$version]);
-            });echo "Approved document snapshot stored. Set the SAME href/version in src/content/legal.ts and rebuild.\n";break;
+            if (!is_file($file)) throw new RuntimeException('Usage: document-import ID VERSION HREF /private/approved.txt');
+            $body=file_get_contents($file, false, null, 0, 1_000_001);
+            (new DocumentImport($db))->store([compact('id', 'version', 'href', 'body')]);
+            echo "Approved document snapshot stored. Match the site publication to this href and version.\n";
+            break;
+        case 'documents-import':
+            $file=$argv[2]??'';
+            if (!is_file($file) || filesize($file)>16_000_000) throw new RuntimeException('Usage: documents-import /private/legal-documents.json');
+            $documents=json_decode(file_get_contents($file), true, 16, JSON_THROW_ON_ERROR);
+            (new DocumentImport($db))->store($documents);
+            echo count($documents)." approved document snapshots activated.\n";
+            break;
         case 'staff-add':
             $username=$argv[2]??'';$role=$argv[3]??'';
             if(!preg_match('/^[a-zA-Z0-9_.-]{3,80}$/D',$username) || !in_array($role,['admin','controller'],true)) throw new RuntimeException('Usage: staff-add USER admin|controller (password entered privately)');
@@ -69,7 +72,7 @@ try {
                 'manualRefunds'=>$db->one("SELECT COUNT(*) n FROM refunds WHERE status='manual_review'")['n'],
                 'receiptIssues'=>$db->one("SELECT COUNT(*) n FROM payments WHERE status='succeeded' AND (receipt_status IS NULL OR receipt_status<>'succeeded')")['n'],
             ]; echo App::json($result).PHP_EOL;break;
-        default:echo "Commands: preflight, migrate, document-import, staff-add, staff-disable, mail, reconcile, smtp-test, health\n";
+        default:echo "Commands: preflight, migrate, documents-import, document-import, staff-add, staff-disable, mail, reconcile, smtp-test, health\n";
     }
 } catch(Throwable $e) {
     // Commands never echo provider/SMTP/SQL exception data (may contain PII).

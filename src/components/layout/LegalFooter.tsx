@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { COMPANY } from "@/content/company";
 import LegalLink from "@/features/forms/LegalLink";
 import CookieConsent from "@/features/privacy/CookieConsent";
 
@@ -6,6 +7,14 @@ import CookieConsent from "@/features/privacy/CookieConsent";
 export default function LegalFooter() {
   return (
     <footer className="legal-footer" aria-label="Правовая информация">
+      <address className="shell legal-footer-company">
+        <p>{COMPANY.name} · ИНН {COMPANY.inn} · ОГРН {COMPANY.ogrn}</p>
+        <p>{COMPANY.address}</p>
+        <p className="legal-footer-contacts">
+          <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+          {COMPANY.phones.map(phone => <a key={phone} href={`tel:${phone.replace(/[^+\d]/g, "")}`}>{phone}</a>)}
+        </p>
+      </address>
       <div className="shell legal-footer-inner">
         <LegalLink document="privacy">Политика обработки персональных данных</LegalLink>
         <LegalLink document="terms" />

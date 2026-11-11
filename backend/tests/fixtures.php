@@ -35,4 +35,4 @@ function testApp(): App {
     return new App(new Db($c['db']),$c,new Crypto($c['key']),new FakeGateway());
 }
 function documents(array $ids): array {return array_map(fn($id)=>['id'=>$id,'version'=>'fixture-1'],$ids);}
-function purchase(): array {return ['requestKey'=>bin2hex(random_bytes(32)),'name'=>'Test Buyer','email'=>'buyer@example.invalid','phone'=>'+70000000000','termsAccepted'=>'yes','consentDocuments'=>documents(['terms','offer','buyers','privacy'])];}
+function purchase(): array {return ['requestKey'=>bin2hex(random_bytes(32)),'name'=>'Test Buyer','email'=>'buyer@example.invalid','phone'=>'+70000000000','termsAccepted'=>'yes','consentDocuments'=>documents(['terms','buyers','privacy'])];}

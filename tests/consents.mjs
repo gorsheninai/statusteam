@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { consentDocuments, isMinorAge, requiredConsentsAccepted, validCastingAge } from '../src/features/forms/consents.ts';
-import { LEGAL_DOCUMENTS, documentsPublished } from '../src/content/legal.ts';
+import { LEGAL_DOCUMENTS, PURCHASE_DOCUMENTS, documentsPublished } from '../src/content/legal.ts';
 
 const agreed = { termsAccepted: 'yes', consent: 'yes' };
 test('all application forms require two separate explicit consents', () => {
@@ -12,6 +12,9 @@ test('all application forms require two separate explicit consents', () => {
     assert.equal(requiredConsentsAccepted(kind, agreed), true);
   }
 });
+test('ticket checkout only requires the terms, buyer notice and privacy policy', () => {
+  assert.deepEqual(PURCHASE_DOCUMENTS, ['terms', 'buyers', 'privacy']);
+});
 test('newsletter also requires advertising permission', () => {
   assert.equal(requiredConsentsAccepted('subscribe', agreed), false);
   assert.equal(requiredConsentsAccepted('subscribe', { ...agreed, advertisingConsent: 'yes' }), true);
@@ -21,12 +24,11 @@ test('minor candidate uses guardian consent; adult uses candidate consent', () =
     assert.equal(isMinorAge(age), true);
     assert.equal(requiredConsentsAccepted('casting', { ...agreed, age, consentSubject: 'candidate' }), false);
     assert.equal(requiredConsentsAccepted('casting', { ...agreed, age, consentSubject: 'guardian' }), true);
-    assert.ok(consentDocuments('casting', age).includes('guardian'));
+    assert.deepEqual(consentDocuments('casting'), ['terms', 'privacy', 'casting']);
   }
   assert.equal(isMinorAge('18'), false);
   assert.equal(requiredConsentsAccepted('casting', { ...agreed, age: '18', consentSubject: 'guardian' }), false);
   assert.equal(requiredConsentsAccepted('casting', { ...agreed, age: '18', consentSubject: 'candidate' }), true);
-  assert.ok(consentDocuments('casting', '18').includes('casting'));
 });
 test('missing, nonnumeric, negative and fractional ages cannot submit', () => {
   for (const age of ['', ' ', 'NaN', 'Infinity', '0', '-1', '17.5']) {

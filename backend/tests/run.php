@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/fixtures.php';
-use StatusTeam\{Problem,Crypto,Mailer,Http};
+use StatusTeam\{Problem,Crypto,DocumentImport,Mailer,Http};
 if(getenv('TEST_ALLOW_RESET')!=='yes') throw new RuntimeException('TEST_ALLOW_RESET=yes required for disposable fixture DB');
 $app=testApp();$db=$app->db;$gateway=$app->gateway;$count=0;
 function check(bool $ok,string $description): void {global $count;if(!$ok) throw new RuntimeException('FAILED: '.$description);echo 'PASS '.$description.PHP_EOL;$count++;}
@@ -25,7 +25,22 @@ $migrate=function() use($migrationConfig) {
 try {check($migrate()===0,'CLI applies versioned migrations');check($migrate()===0 && n('schema_migrations')===2,'CLI migration rerun is idempotent');} finally {unlink($migrationConfig);}
 
 echo 'DATABASE '.$db->one('SELECT VERSION() version')['version'].PHP_EOL;
-foreach(['terms','offer','buyers','privacy','casting','guardian','partner','press'] as $id) $db->run('INSERT INTO documents(id,version,body,sha256,href,active) VALUES(?,?,?,?,?,1)',[$id,'fixture-1','Fixture only — not a legal document',hash('sha256','fixture'),'/fixture/'.$id]);
+$fixtureDocs = array_map(
+    fn($id) => ['id' => $id, 'version' => 'fixture-1', 'body' => 'Fixture only', 'href' => '/fixture/'.$id],
+    ['terms', 'buyers', 'privacy', 'casting', 'partner', 'press'],
+);
+$import = new DocumentImport($db);
+$import->store($fixtureDocs);
+$import->store($fixtureDocs);
+check(n('documents') === count($fixtureDocs), 'document bundle can be imported twice');
+$conflict = [array_replace($fixtureDocs[0], ['version' => 'fixture-2']), array_replace($fixtureDocs[2], ['body' => 'Changed fixture'])];
+try {
+    $import->store($conflict);
+    throw new LogicException('Expected document version conflict');
+} catch (RuntimeException $error) {
+    check($error->getMessage() === 'Document version immutable; assign a new version', 'document bundle rejects changed content for an existing version');
+}
+check(n('documents') === count($fixtureDocs) && $db->one("SELECT version FROM documents WHERE id='terms' AND active=1")['version'] === 'fixture-1', 'document bundle conflict rolls back all version changes');
 $db->run('INSERT INTO staff(id,username,password_hash,role) VALUES(1,?,?,?)',['fixture-controller',password_hash(Crypto::id(),PASSWORD_DEFAULT),'admin']);
 $d=purchase();unset($d['termsAccepted']);reject(fn()=>$app->order($d,'127.0.0.1'),422,'missing consent rejected');
 $d=purchase();$d['consentDocuments'][0]['version']='stale';reject(fn()=>$app->order($d,'127.0.0.1'),409,'stale document rejected');check(n('orders')===0,'invalid checkout leaves no order or reserve');
@@ -92,11 +107,11 @@ $app->syncRefund('external-partial');reject(fn()=>$app->admit($unresolved,1),409
 $form=['requestKey'=>bin2hex(random_bytes(32)),'form'=>'partner','company'=>'Fixture','name'=>'Test Partner','contact'=>'partner@example.invalid','termsAccepted'=>'yes','consent'=>'yes','consentDocuments'=>documents(['terms','privacy','partner'])];
 $a=$app->application($form,'127.0.0.1');$app->application($form,'127.0.0.1');check(n('applications')===1,'application and consents persist once with mail retry key');
 check(n('consent_documents')>=3,'consent records reference immutable document snapshots');
-$minor=['requestKey'=>bin2hex(random_bytes(32)),'form'=>'casting','name'=>'Test Model','age'=>'17','city'=>'Fixture','height'=>'170','contact'=>'@fixture_model','termsAccepted'=>'yes','consent'=>'yes','consentSubject'=>'guardian','consentDocuments'=>documents(['terms','privacy','guardian'])];
+$minor=['requestKey'=>bin2hex(random_bytes(32)),'form'=>'casting','name'=>'Test Model','age'=>'17','city'=>'Fixture','height'=>'170','contact'=>'@fixture_model','termsAccepted'=>'yes','consent'=>'yes','consentSubject'=>'guardian','consentDocuments'=>documents(['terms','privacy','casting'])];
 reject(fn()=>$app->application($minor,'127.0.0.1'),503,'minor form blocked pending approval');
 $app->c['minor_forms_enabled']=true;reject(fn()=>$app->application($minor,'127.0.0.1'),422,'guardian identity and authority fields required');
 $minor+=['guardianName'=>'Test Guardian Person','guardianRole'=>'parent','guardianPhone'=>'+70000000000','guardianEmail'=>'guardian@example.invalid','guardianAuthority'=>'yes'];
-$app->application($minor,'127.0.0.1');check(n('applications')===2,'approved guardian form stored with separate consent snapshot');
+$app->application($minor,'127.0.0.1');check(n('applications')===2,'approved guardian form stored with casting consent snapshot');
 $form['form']='subscribe';reject(fn()=>$app->application($form,'127.0.0.1'),422,'newsletter is disabled server-side');
 $_SERVER=['REMOTE_ADDR'=>'127.0.0.1','HTTP_X_FORWARDED_FOR'=>'1.2.3.4'];check(Http::ip($app->c)==='127.0.0.1','untrusted forwarded IP ignored');
 $qr=(new Endroid\QrCode\Writer\SvgWriter())->write(new Endroid\QrCode\QrCode(data:$tokenRefund,size:320));check(str_contains($qr->getString(),'<svg'),'locked QR dependency produces local SVG');

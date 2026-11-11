@@ -8,7 +8,7 @@ return [
     'checkout_enabled' => false,
     'live_approved' => false, // only after acceptance checklist; not an alternative to fiscal checks
     'documents_approved' => false,
-    'minor_forms_enabled' => false, // awaiting approved guardian document
+    'minor_forms_enabled' => false, // enable after confirming representative procedure and approved document 03
     'support' => '', // organizer-confirmed support email/phone
     'application_recipient' => '', // approved Russian-hosted mailbox; no applicant data in notification
     'key' => '', // php -r 'echo base64_encode(random_bytes(32)), PHP_EOL;'

@@ -5,7 +5,7 @@ export async function necessaryCookies(page) {
     catch { return false; }
   });
   if (stored) return;
-  const button = page.getByRole('button', { name: 'Только необходимые', exact: true });
+  const button = page.getByRole('button', { name: 'Отказаться', exact: true });
   await button.waitFor({ state: 'visible' });
   await button.click();
 }

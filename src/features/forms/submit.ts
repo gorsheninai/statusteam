@@ -7,7 +7,7 @@ import { consentDocuments, requiredConsentsAccepted } from "./consents";
 export const FORM_ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? "";
 
 export async function submitForm(kind: FormKind, data: Record<string, FormDataEntryValue>) {
-  const documents = consentDocuments(kind, String(data.age ?? ""));
+  const documents = consentDocuments(kind);
   if (!requiredConsentsAccepted(kind, data) || !documentsPublished(documents)) {
     throw new Error("Required consents or published documents are missing.");
   }

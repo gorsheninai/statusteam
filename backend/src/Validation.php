@@ -41,7 +41,7 @@ final class Validation {
             }
         }
         if(($d['termsAccepted']??'')!=='yes' || ($d['consent']??'')!=='yes') throw new Problem(422,'consent_required');
-        return [$kind,$v,['terms','privacy',$kind==='casting'?($minor?'guardian':'casting'):$kind]];
+        return [$kind,$v,['terms','privacy',$kind]];
     }
     public static function amount(array $a): int {
         if(($a['currency']??'')!=='RUB' || !is_string($a['value']??null) || !preg_match('/^(0|[1-9][0-9]{0,7})\.[0-9]{2}$/D',$a['value'])) throw new Problem(409,'provider_amount_invalid');
