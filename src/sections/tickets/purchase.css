@@ -25,6 +25,7 @@
 .ticket-fulfillment p + p { margin-top: var(--space-2); }
 .ticket-fulfillment a { text-decoration: underline; text-underline-offset: 0.2em; }
 .ticket-purchase {
+  margin-block-start: calc(var(--space-4) * 0.1);
   padding-block-end: var(--space-4);
   border-block-end: 1px solid var(--hairline-light);
   align-self: start;

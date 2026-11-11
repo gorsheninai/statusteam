@@ -97,7 +97,7 @@
    top padding below. Giving .tickets a matching bottom padding here would
    stack to a 128px gap instead of the intended 64px one. */
 .tickets {
-  padding-block: var(--pad-chapter) 0 !important;
+  padding-block: calc(var(--pad-chapter) * 0.7) 0 !important;
 }
 
 .join {
