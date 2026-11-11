@@ -36,10 +36,9 @@ export default function TicketPurchase() {
     finally { busy.current = false; setSending(false); }
   }
   return (
-    <form className="form ticket-purchase" data-form="purchase"
+    <form className="form ticket-purchase" data-form="purchase" aria-label="Оформление билета"
       onSubmit={checkout}
       onReset={() => setAccepted(false)}>
-      <h3 className="ticket-order-title">Оформление билета</h3>
       <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" hidden />
       <input name="quantity" type="hidden" value="1" />
       <div className="form-grid">

@@ -18,12 +18,12 @@ export default function Tickets() {
             <div><dt>Начало шоу</dt><dd>{TICKET.start} · {TICKET.timezone}</dd></div>
             <div><dt>Возраст</dt><dd>{TICKET.age}</dd></div>
           </dl>
-          <div className="ticket-fulfillment">
-            <p>{TICKET.delivery} Оплата через ЮKassa.</p>
-            <p><Link href="/contacts/">Контакты и вопросы о билетах</Link></p>
-          </div>
         </div>
         <TicketPurchase />
+        <div className="ticket-fulfillment">
+          <p>{TICKET.delivery} Оплата через ЮKassa.</p>
+          <p><Link href="/contacts/">Контакты и вопросы о билетах</Link></p>
+        </div>
       </div>
     </div>
   );

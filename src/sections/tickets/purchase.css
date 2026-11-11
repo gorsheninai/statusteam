@@ -17,7 +17,9 @@
 .company-details dt { font-size: var(--fs-small); opacity: 0.8; }
 .ticket-facts dd,
 .company-details dd { font-size: var(--fs-body); line-height: 1.6; overflow-wrap: anywhere; }
-.ticket-fulfillment { font-size: var(--fs-small); line-height: 1.7; }
+.ticket-purchase,
+.ticket-fulfillment { width: min(100%, 54rem); justify-self: center; }
+.ticket-fulfillment { font-size: var(--fs-small); line-height: 1.7; text-align: center; }
 .ticket-fulfillment p + p { margin-top: var(--space-2); }
 .ticket-fulfillment a { text-decoration: underline; text-underline-offset: 0.2em; }
 .ticket-purchase {
@@ -25,7 +27,6 @@
   border-block: 1px solid var(--hairline-light);
   align-self: start;
 }
-.ticket-order-title { font-size: var(--fs-lead); margin-bottom: var(--space-4); }
 .ticket-purchase .form-grid { grid-template-columns: minmax(0, 1fr); }
 .ticket-total { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-2); margin-top: var(--space-4); font-size: var(--fs-body); }
 .ticket-total output { font-size: var(--fs-lead); }
