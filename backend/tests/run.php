@@ -10,7 +10,7 @@ function n(string $table): int {global $db;return (int)$db->one('SELECT COUNT(*)
 function paid(array $order): string {global $app,$gateway;$id=$order['orderId'];$gateway->overrides[$id]=['status'=>'waiting_for_capture','paid'=>true];$app->syncPayment('test-'.$id);return $app->crypto->open($app->db->one('SELECT token_cipher FROM tickets WHERE order_id=?',[$id])['token_cipher']);}
 function concurrent(string $kind,int $number,string $token=''): array {
     $ps=[];
-    for($i=0;$i<$number;$i++) {$cmd=[PHP_BINARY,'-c',php_ini_loaded_file(),__DIR__.'/worker.php',$kind,$token];$p=proc_open($cmd,[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);fclose($pipes[0]);$ps[]=[$p,$pipes];}
+    for($i=0;$i<$number;$i++) {$worker=$kind==='mixed-purchase'?($i%2?'purchase-sbp':'purchase'):$kind;$cmd=[PHP_BINARY,'-c',php_ini_loaded_file(),__DIR__.'/worker.php',$worker,$token];$p=proc_open($cmd,[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);fclose($pipes[0]);$ps[]=[$p,$pipes];}
     $results=[];foreach($ps as [$p,$pipes]) {foreach([1,2] as $i){$text=stream_get_contents($pipes[$i]);fclose($pipes[$i]);if($text) throw new RuntimeException('Worker emitted unexpected output');}$results[]=proc_close($p);}return $results;
 }
 $db->run('SET FOREIGN_KEY_CHECKS=0');
@@ -95,6 +95,41 @@ $db->run('UPDATE orders SET reserve_until=NULL,created_at=DATE_SUB(UTC_TIMESTAMP
 $gateway->overrides[$o['orderId']]=['status'=>'succeeded','paid'=>true];
 $app->syncPayment('test-'.$o['orderId']);
 check($app->orderStatus($o['accessToken'])['status']==='paid','existing one-stage orders keep their original behavior');
+reject(fn()=>$app->order(purchase()+['paymentMethod'=>'other'],'127.0.0.1'),422,'unsupported payment method rejected');
+$d=purchase()+['paymentMethod'=>'sbp'];
+$o=$app->order($d,'127.0.0.1');
+$id=$o['orderId'];
+$payment=$db->one('SELECT p.request_body,o.reserve_until FROM payments p JOIN orders o ON o.id=p.order_id WHERE p.order_id=?',[$id]);
+$body=$app->decode($payment['request_body']);
+check($body['capture']===true && $body['payment_method_data']['type']==='sbp' && $payment['reserve_until']===null,'SBP is one-stage and has no local expiry');
+$d['paymentMethod']='bank_card';
+reject(fn()=>$app->order($d,'127.0.0.1'),409,'active SBP order cannot switch to card');
+check($app->resumeOrder($d['requestKey'])['orderId']===$id,'checkout can recover the original order after a method change');
+$db->run('UPDATE orders SET created_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 2 HOUR) WHERE id=?',[$id]);
+$db->run('UPDATE inventory SET capacity=held WHERE id=1');
+$app->reconcile();
+check($app->orderStatus($o['accessToken'])['status']==='reserved','pending SBP keeps its reservation even after an hour');
+reject(fn()=>$app->order(purchase(),'127.0.0.1'),409,'card cannot take the last ticket held by a pending SBP order');
+$gateway->overrides[$id]=['status'=>'succeeded','paid'=>true,'payment_method'=>['type'=>'bank_card']];
+reject(fn()=>$app->syncPayment('test-'.$id),409,'payment method mismatch rejected');
+$gateway->overrides[$id]['payment_method']['type']='sbp';
+$operations=count($gateway->paymentOperations);
+$app->webhook(['event'=>'payment.succeeded','object'=>['id'=>'test-'.$id]]);
+$app->webhook(['event'=>'payment.succeeded','object'=>['id'=>'test-'.$id]]);
+check($app->orderStatus($o['accessToken'])['status']==='paid' &&
+    (int)$db->one('SELECT COUNT(*) AS total FROM tickets WHERE order_id=?',[$id])['total']===1 &&
+    count($gateway->paymentOperations)===$operations,'verified SBP success issues one ticket without capture');
+$db->run('UPDATE inventory SET capacity=100 WHERE id=1');
+$o=$app->order(purchase()+['paymentMethod'=>'sbp'],'127.0.0.1');
+$id=$o['orderId'];
+$db->run('UPDATE inventory SET capacity=held WHERE id=1');
+$gateway->overrides[$id]=['status'=>'canceled','payment_method'=>['type'=>'sbp']];
+$app->webhook(['event'=>'payment.canceled','object'=>['id'=>'test-'.$id]]);
+$app->webhook(['event'=>'payment.canceled','object'=>['id'=>'test-'.$id]]);
+check($app->orderStatus($o['accessToken'])['status']==='canceled' &&
+    $db->one('SELECT capacity-held AS available FROM inventory WHERE id=1')['available']==1,
+    'confirmed SBP cancellation returns one place to shared inventory');
+$db->run('UPDATE inventory SET capacity=100 WHERE id=1');
 // Lost create response: replay exact persisted body/key, never create a fresh key.
 $gateway->timeout=true;$d=purchase();$o=$app->order($d,'127.0.0.1');$key=$db->one('SELECT idempotence_key FROM payments WHERE order_id=?',[$o['orderId']])['idempotence_key'];$gateway->timeout=false;$app->order($d,'127.0.0.1');check(end($gateway->keys)===$key,'API timeout retries same persisted payment key');
 $gateway->timeout=true;$o=$app->order(purchase(),'127.0.0.1');$gateway->timeout=false;$db->run('UPDATE payments SET created_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 25 HOUR) WHERE order_id=?',[$o['orderId']]);$keys=count($gateway->keys);reject(fn()=>$app->ensurePayment($o['orderId']),503,'unknown payment beyond idempotence window quarantined');check(count($gateway->keys)===$keys,'expired key never sent as a new payment');
@@ -110,8 +145,8 @@ $app->resend($order['orderId'],1);$m->work(function(...$args)use(&$sent){$sent[]
 // Real MySQL multi-process lock contention.
 $app=null;$db=null;$gateway=null;
 $app=testApp();$db=$app->db;$db->run('UPDATE inventory SET capacity=held+1 WHERE id=1');
-$app=null;$db=null;$results=concurrent('purchase',8);$app=testApp();$db=$app->db;$gateway=$app->gateway;
-check(count(array_filter($results,fn($x)=>$x===0))===1 && count(array_filter($results,fn($x)=>$x===2))===7,'eight simultaneous buyers compete for one place on MySQL');
+$app=null;$db=null;$results=concurrent('mixed-purchase',8);$app=testApp();$db=$app->db;$gateway=$app->gateway;
+check(count(array_filter($results,fn($x)=>$x===0))===1 && count(array_filter($results,fn($x)=>$x===2))===7,'simultaneous card and SBP buyers compete for one place on MySQL');
 check($db->one('SELECT held=capacity ok FROM inventory WHERE id=1')['ok']==1,'inventory never exceeds capacity');
 $app=null;$db=null;$gateway=null;$results=concurrent('admit',6,$token);$app=testApp();$db=$app->db;$gateway=$app->gateway;
 check(count(array_filter($results,fn($x)=>$x===0))===1 && n('admissions')===1,'six simultaneous scans allow exactly one admission on MySQL');

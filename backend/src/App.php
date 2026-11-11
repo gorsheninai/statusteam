@@ -75,10 +75,12 @@ final class App {
     public function order(array $d,string $ip): array {
         $this->checkoutReady();$key=Validation::key($d);
         if(($d['termsAccepted']??'')!=='yes' || !empty($d['website'])) throw new Problem(422,'consent_required');
+        $method=array_key_exists('paymentMethod',$d)?$d['paymentMethod']:'bank_card';
+        if(!in_array($method,['bank_card','sbp'],true)) throw new Problem(422,'invalid_payment_method');
         $buyer=['name'=>Validation::text($d,'name'),'email'=>Validation::email(Validation::text($d,'email',254)),'phone'=>Validation::phone(Validation::text($d,'phone',32))];
         if(count(preg_split('/\s+/u',$buyer['name']))<2) throw new Problem(422,'name_and_surname_required');
         $hash=$this->fingerprint($d);$access=$this->crypto->capability($key);
-        $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access) {
+        $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access,$method) {
             $this->expireReservations();
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
             $old=$this->db->one('SELECT id,request_hash FROM orders WHERE request_key=?',[$key]);
@@ -88,14 +90,19 @@ final class App {
             $id=Crypto::id();$paymentKey=Crypto::id();
             $body=[
                 'amount'=>['value'=>sprintf('%d.%02d',intdiv(self::PRICE,100),self::PRICE%100),'currency'=>'RUB'],
-                'capture'=>false,
-                'payment_method_data'=>['type'=>'bank_card'],
+                'capture'=>$method==='sbp',
+                'payment_method_data'=>['type'=>$method],
                 'confirmation'=>['type'=>'redirect','return_url'=>$this->c['origin'].'/api/index.php?r=return#'.$access],
                 'metadata'=>['order_id'=>$id],
                 'description'=>'STATUS TEAM '.$id,
                 'receipt'=>$this->receipt($buyer,self::PRICE),
             ];
-            $this->db->run('INSERT INTO orders(id,request_key,request_hash,buyer,amount,access_hash,reserve_until) VALUES(?,?,?,?,?,?,UTC_TIMESTAMP(6) + INTERVAL 15 MINUTE)',[$id,$key,$hash,$this->crypto->seal(self::json($buyer)),self::PRICE,Crypto::hash($access)]);
+            // An SBP payment can debit the buyer until YooKassa reports a final status.
+            $this->db->run(
+                'INSERT INTO orders(id,request_key,request_hash,buyer,amount,access_hash,reserve_until)
+                 VALUES(?,?,?,?,?,?,CASE WHEN ? = \'bank_card\' THEN UTC_TIMESTAMP(6) + INTERVAL 15 MINUTE END)',
+                [$id,$key,$hash,$this->crypto->seal(self::json($buyer)),self::PRICE,Crypto::hash($access),$method]
+            );
             $this->db->run('UPDATE inventory SET held=held+1 WHERE id=1');
             $this->consent('purchase',$docs,$d,$ip,null,$id);
             $this->db->run('INSERT INTO payments(order_id,idempotence_key,request_body) VALUES(?,?,?)',[$id,$paymentKey,$this->crypto->seal(self::json($body))]);
@@ -144,6 +151,13 @@ final class App {
             $p=$this->db->one('SELECT * FROM payments WHERE order_id=? FOR UPDATE',[$id]);
             if(!$o || !$p) throw new Problem(404,'unknown_order');
             $this->verifyPayment($v,$id,$p['provider_id'],(int)$o['amount']);
+            $expectedMethod=$this->decode($p['request_body'])['payment_method_data']['type']??null;
+            if($expectedMethod!==null && isset($v['payment_method']['type']) && $v['payment_method']['type']!==$expectedMethod) {
+                throw new Problem(409,'payment_method_mismatch');
+            }
+            if($expectedMethod==='sbp' && $v['status']==='waiting_for_capture') {
+                throw new Problem(409,'unexpected_sbp_hold');
+            }
             if(in_array($p['status'],['succeeded','canceled'],true) && $p['status']!==$v['status']) {
                 if(in_array($v['status'],['pending','waiting_for_capture'],true)) return null;
                 throw new Problem(409,'payment_terminal_conflict');
@@ -212,6 +226,10 @@ final class App {
             if($t) $result['ticketUrl']=$this->ticketUrl($this->crypto->open($t['token_cipher']));
         }
         return $result;
+    }
+    public function resumeOrder(string $requestKey): array {
+        $token=$this->crypto->capability($requestKey);
+        return $this->orderStatus($token)+['accessToken'=>$token];
     }
     public function ticketUrl(string $token): string {return $this->c['base_url'].'/index.php?r=ticket#'.$token;}
     public function ticket(string $token): array {

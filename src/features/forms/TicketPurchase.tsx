@@ -20,14 +20,22 @@ export default function TicketPurchase() {
     e.preventDefault();
     const endpoint = apiEndpoint("orders");
     if (busy.current || !available || !accepted || !endpoint || !e.currentTarget.reportValidity()) return;
-    busy.current = true; setSending(true); setState("Создаём заказ…");
     const fields = Object.fromEntries(new FormData(e.currentTarget));
+    busy.current = true; setSending(true); setState("Создаём заказ…");
     const payload = { ...fields, consentDocuments: PURCHASE_DOCUMENTS
       .map(id => ({ id, version: LEGAL_DOCUMENTS[id].version })) };
     try {
-      const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...payload, requestKey: await retryKey("purchase", payload) }) });
-      const result = await res.json();
+      const requestKey = await retryKey("purchase", payload, true);
+      const headers = { "Content-Type": "application/json" };
+      const res = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify({ ...payload, requestKey }) });
+      let result = await res.json();
+      if (res.status === 409 && result.error === "retry_payload_changed") {
+        const resumed = await fetch(apiEndpoint("order-status"), { method: "POST", headers, body: JSON.stringify({ requestKey }) });
+        if (!resumed.ok) throw new Error("checkout_failed");
+        result = await resumed.json();
+        window.location.assign(`${apiEndpoint("return")}#${result.accessToken}`);
+        return;
+      }
       if (!res.ok) throw new Error("checkout_failed");
       if (result.confirmationUrl) window.location.assign(result.confirmationUrl);
       else if (result.accessToken) window.location.assign(`${apiEndpoint("return")}#${result.accessToken}`);
@@ -50,6 +58,14 @@ export default function TicketPurchase() {
         <p className="field"><label htmlFor="purchase-phone">Телефон *</label>
           <input id="purchase-phone" name="phone" type="tel" autoComplete="tel" required maxLength={32} /></p>
       </div>
+      {available && (
+        <fieldset className="ticket-payment-method" disabled={sending}>
+          <legend>Способ оплаты</legend>
+          <label><input type="radio" name="paymentMethod" value="bank_card" defaultChecked /> Картой · бронь 15 минут</label>
+          <label><input type="radio" name="paymentMethod" value="sbp" /> СБП · на оплату 1 час</label>
+          <p className="form-note">При оплате через СБП билет остаётся в брони до подтверждения оплаты или отмены платежа.</p>
+        </fieldset>
+      )}
       <p className="ticket-total" aria-live="polite" aria-atomic="true">Итого <output>{formatRubles(total)}</output></p>
       <p className="field-check">
         <label htmlFor="purchase-terms">
@@ -61,7 +77,6 @@ export default function TicketPurchase() {
       <p className="form-note">Как мы обрабатываем данные покупателей — в <LegalLink document="buyers">Сведениях об обработке персональных данных</LegalLink>.</p>
       <p className="form-note" role="status" aria-live="polite">{state}</p>
       <div className="form-foot">
-        {available && <p className="form-note">Билет резервируется на 15 минут. Оплата банковской картой.</p>}
         {!available && <p className="form-note" id="purchase-availability">Онлайн-оплата пока недоступна. Сейчас оформить и оплатить заказ нельзя.</p>}
         <button className="btn btn-solid btn-buy" type="submit" disabled={!accepted || !available || sending}
           aria-describedby={!available ? "purchase-availability" : undefined}>

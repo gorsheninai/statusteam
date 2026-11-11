@@ -34,6 +34,10 @@
 .ticket-total { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-2); margin-top: var(--space-4); font-size: var(--fs-body); }
 .ticket-total output { font-size: var(--fs-lead); }
 .ticket-purchase .form-note { max-width: none; }
+.ticket-payment-method { display: grid; gap: var(--space-1); min-width: 0; margin-block: var(--space-3); border: 0; padding: 0; }
+.ticket-payment-method legend { margin-bottom: var(--space-1); }
+.ticket-payment-method label { display: flex; align-items: center; gap: 0.6em; min-height: 44px; cursor: pointer; }
+.ticket-payment-method input { accent-color: var(--champagne); }
 .ticket-purchase .btn-buy { width: 100%; min-width: 0; min-height: 48px; white-space: normal; }
 .ticket-purchase .form-grid .field { min-width: 0; align-content: start; }
 .ticket-purchase .form-grid .field input:focus {

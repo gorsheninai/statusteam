@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { TICKET, CHECKOUT_ENABLED } from '../src/content/ticket.ts';
 import { ticketTotalKopecks, formatRubles } from '../src/features/forms/ticket-order.ts';
+import { retryKey } from '../src/features/forms/api.ts';
 
 test('confirmed price and integer order total are in kopecks', () => {
   assert.equal(TICKET.priceKopecks, 2_500_000);
@@ -18,4 +19,20 @@ test('zero, fractions, overselling and unsafe amounts are rejected', () => {
 });
 test('moderation storefront cannot accept real money', () => {
   assert.equal(CHECKOUT_ENABLED, false);
+});
+test('changing payment method keeps the order key until the buyer starts a new order', async () => {
+  const entries = new Map();
+  Object.defineProperty(globalThis, 'sessionStorage', {
+    configurable: true,
+    value: {
+      getItem: key => entries.get(key) ?? null,
+      setItem: (key, value) => entries.set(key, value),
+    },
+  });
+  const card = { paymentMethod: 'bank_card' };
+  const sbp = { paymentMethod: 'sbp' };
+  const first = await retryKey('purchase', card, true);
+  assert.equal(await retryKey('purchase', sbp, true), first);
+  entries.delete('status-request-purchase');
+  assert.notEqual(await retryKey('purchase', sbp, true), first);
 });

@@ -27,7 +27,10 @@ try {
         $app->rate('submission:'.$ip,15);
         Http::output($route==='forms'?$app->application($d,$ip):$app->order($d,$ip));
     }
-    if($route==='order-status') Http::output($app->orderStatus(Validation::text($d,'token',64)));
+    if($route==='order-status') {
+        if(array_key_exists('requestKey',$d)) Http::output($app->resumeOrder(Validation::key($d)));
+        Http::output($app->orderStatus(Validation::text($d,'token',64)));
+    }
     if($route==='ticket-data') {
         $token=Validation::text($d,'token',64);$t=$app->ticket($token);
         $qr=new Endroid\QrCode\QrCode(data:$token,size:320,margin:16);
