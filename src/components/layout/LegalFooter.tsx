@@ -12,7 +12,6 @@ export default function LegalFooter() {
         <p>{COMPANY.address}</p>
         <p className="legal-footer-contacts">
           <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
-          {COMPANY.phones.map(phone => <a key={phone} href={`tel:${phone.replace(/[^+\d]/g, "")}`}>{phone}</a>)}
         </p>
       </address>
       <div className="shell legal-footer-inner">
