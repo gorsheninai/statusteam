@@ -1,4 +1,3 @@
-import { necessaryCookies } from "./necessary-cookies.mjs";
 /**
  * Rendered-page verification for ПУЛЬС КОНТИНЕНТА.
  *
@@ -70,7 +69,6 @@ for (const [name, width, height] of SIZES) {
   page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
 
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   await page.waitForTimeout(350);
 
   check(errors.length === 0, `[${name}] no console errors`, errors.join(" | ").slice(0, 90));
@@ -331,7 +329,6 @@ for (const [name, width, height] of SIZES) {
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
 
   const order = await page.evaluate((ids) =>
     ids.map((id) => {
@@ -409,7 +406,6 @@ for (const [label, width, height] of [["desktop", 1440, 900], ["phone", 360, 780
   const ctx = await browser.newContext({ viewport: { width, height } });
   const page = await ctx.newPage();
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
 
   const closed = await page.evaluate(() => {
     const wings = [...document.querySelectorAll(".curtain")];
@@ -438,7 +434,6 @@ for (const [label, width, height] of [["desktop", 1440, 900], ["phone", 360, 780
 
   /* Second visit in the same session: no curtain at all. */
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   await page.waitForTimeout(250);
   check(await page.evaluate(() =>
     getComputedStyle(document.querySelector(".preloader")).display === "none"),
@@ -450,7 +445,6 @@ for (const [label, width, height] of [["desktop", 1440, 900], ["phone", 360, 780
 for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844]]) {
   const page = await browser.newPage({ viewport: { width, height } });
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   await settle(page);
 
   check(await page.locator(".nav-tickets").isVisible(), `[${label}] ticket button visible over the hero`);
@@ -470,7 +464,6 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   await settle(page);
 
   await page.click(".nav-burger");
@@ -488,7 +481,6 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
   }), "menu link scrolled to the section");
 
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   await page.locator(".st2-video").scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
   check((await page.locator(".st2-video video").count()) === 1,
@@ -509,7 +501,6 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: "reduce" });
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
 
   /* Doors */
   const model = page.locator(".zone").first();
@@ -537,8 +528,8 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
     "quantity selector is omitted for a single-ticket order");
   check(await page.locator("[data-form='purchase'] input[name='quantity']").inputValue() === "1",
     "purchase is fixed to one ticket");
-  check(/25\s?000/.test(await page.locator(".ticket-total output").innerText()),
-    "single ticket total is 25000 rubles");
+  check(/30\s?000/.test(await page.locator(".ticket-total output").innerText()),
+    "single ticket total is 30000 rubles");
 
   /* Forms never fake a send */
   await page.fill("#casting-name", "Тест");
@@ -554,7 +545,6 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 
   /* Keyboard */
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   await page.keyboard.press("Tab");
   check(String(await page.evaluate(() => document.activeElement?.className)).includes("skip-link"),
     "skip link is the first tab stop");
@@ -580,7 +570,6 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844]]) {
   const page = await browser.newPage({ viewport: { width, height } });
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   await settle(page);
 
   check(await page.evaluate(() =>
@@ -614,7 +603,6 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   const bad = await page.evaluate(() => {
     const parse = (c) => { const m = c.match(/[\d.]+/g).map(Number); return { r: m[0], g: m[1], b: m[2], a: m[3] ?? 1 }; };
     const over = (f, b) => ({ r: f.r * f.a + b.r * (1 - f.a), g: f.g * f.a + b.g * (1 - f.a), b: f.b * f.a + b.b * (1 - f.a) });
@@ -652,7 +640,6 @@ for (const [label, width, height] of [["desktop", 1280, 800], ["phone", 390, 844
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: "reduce" });
   await page.goto(URL, { waitUntil: "domcontentloaded" });
-  await necessaryCookies(page);
   const hidden = await page.evaluate(() =>
     Array.from(document.querySelectorAll("[data-reveal],[data-hero]")).filter((el) => {
       const cs = getComputedStyle(el);

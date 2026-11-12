@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { COMPANY } from "@/content/company";
 import LegalLink from "@/features/forms/LegalLink";
-import CookieConsent from "@/features/privacy/CookieConsent";
 
 /** Shared by the homepage, document pages and the error page. */
 export default function LegalFooter() {
@@ -18,7 +17,6 @@ export default function LegalFooter() {
         <LegalLink document="privacy">Политика обработки персональных данных</LegalLink>
         <LegalLink document="terms" />
         <Link href="/contacts/">Контакты и реквизиты</Link>
-        <CookieConsent />
       </div>
     </footer>
   );

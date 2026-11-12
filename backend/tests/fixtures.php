@@ -27,7 +27,7 @@ final class FakeGateway implements Gateway {
         throw new RuntimeException('Unexpected fake call');
     }
     public function payment(string $order,string $status='pending'): array {
-        $base=['id'=>'test-'.$order,'metadata'=>['order_id'=>$order],'recipient'=>['account_id'=>'fixture-shop'],'test'=>true,'amount'=>['value'=>'25000.00','currency'=>'RUB'],'status'=>$status,'paid'=>$status==='succeeded','receipt_registration'=>'succeeded','confirmation'=>['confirmation_url'=>'https://yookassa.ru/checkout/fixture']];
+        $base=['id'=>'test-'.$order,'metadata'=>['order_id'=>$order],'recipient'=>['account_id'=>'fixture-shop'],'test'=>true,'amount'=>['value'=>'30000.00','currency'=>'RUB'],'status'=>$status,'paid'=>$status==='succeeded','receipt_registration'=>'succeeded','confirmation'=>['confirmation_url'=>'https://yookassa.ru/checkout/fixture']];
         return array_replace_recursive($base,$this->overrides[$order]??[]);
     }
 }

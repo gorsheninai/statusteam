@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace StatusTeam;
 final class App {
-    public const PRICE=2500000;
+    public const PRICE=3000000;
     public function __construct(public Db $db,public array $c,public Crypto $crypto,public Gateway $gateway) {}
     public static function json(mixed $v): string {return json_encode($v,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);}
     public function decode(string $v): array {return json_decode($this->crypto->open($v),true,512,JSON_THROW_ON_ERROR);}
