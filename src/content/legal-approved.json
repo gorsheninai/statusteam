@@ -1,4 +1,24 @@
 {
+  "buyers": {
+    "href": "/documents/files/buyers-d0a1c4ee9fcfbb8b783386ab2107e220354a815a9180937ffa9ca9830da81e01.pdf",
+    "version": "d0a1c4ee9fcfbb8b783386ab2107e220354a815a9180937ffa9ca9830da81e01"
+  },
+  "casting": {
+    "href": "/documents/files/casting-950409adff2c18af082d405fb3f8940c494fe999c263879b636af136c03367ee.pdf",
+    "version": "950409adff2c18af082d405fb3f8940c494fe999c263879b636af136c03367ee"
+  },
+  "partner": {
+    "href": "/documents/files/partner-c5a0bfd71a5542e93a8b634f68871f5a04c2c33c7a40ec773233e88291e817be.pdf",
+    "version": "c5a0bfd71a5542e93a8b634f68871f5a04c2c33c7a40ec773233e88291e817be"
+  },
+  "press": {
+    "href": "/documents/files/press-1b7be7aa0f0f83ae8ec35a77a5586eba87a468069627e63930a1a3a047e4ce45.pdf",
+    "version": "1b7be7aa0f0f83ae8ec35a77a5586eba87a468069627e63930a1a3a047e4ce45"
+  },
+  "privacy": {
+    "href": "/documents/files/privacy-b444924cc97989091a15b59ca804cc24e814c9f594ac1ab5e862e9fd5887d70d.pdf",
+    "version": "b444924cc97989091a15b59ca804cc24e814c9f594ac1ab5e862e9fd5887d70d"
+  },
   "terms": {
     "href": "/documents/files/terms-f2059f91b6f91fd88c1dc11939a1d917ef4723cd66f28e84f2dff49e69ed4dde.pdf",
     "section7Page": 2,
