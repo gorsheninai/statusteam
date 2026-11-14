@@ -24,7 +24,10 @@
 <form id="login" method="post"><h2>Вход сотрудника</h2><label>Логин<input name="username" autocomplete="username" required maxlength="80"></label><label>Пароль<input name="password" type="password" autocomplete="current-password" required maxlength="512"></label><button>Войти</button></form>
 <section id="staff" hidden><button id="logout">Выйти</button><h2>Проверка билета</h2><button id="camera">Включить камеру</button><video id="video" playsinline muted></video><form id="check"><label>Код из QR или номер ST-...<input name="token" id="token" autocomplete="off" required maxlength="64" pattern="([a-f0-9]{64}|[Ss][Tt]-[A-Fa-f0-9]{16})"></label><button>Проверить</button></form><button id="admit" disabled>Подтвердить проход</button><p id="check-result" role="status"></p>
 <section id="admin" hidden><h2>Кабинет администратора</h2><button id="dashboard">Обновить списки</button><div id="lists"></div>
-<?php if($testCheckout || $controlCheckout): ?>
+<?php if($controlCheckout): ?>
+<p><a href="index.php?r=control-purchase">Открыть форму сайта · контрольная оплата 1 ₽</a></p>
+<?php endif; ?>
+<?php if($testCheckout): ?>
 <section><h3><?=$controlCheckout ? 'Контрольная оплата 1 ₽' : 'Тестовая покупка'?></h3><?php if($testCheckout): ?><p><a href="index.php?r=purchase">Обычная форма покупки в тестовом режиме</a></p><?php endif; ?>
 <p><?=$controlCheckout ? 'С карты спишется 1 ₽. Укажите email для доставки билета и чека.' : 'Введите вымышленные имя и телефон, а также email для тестового билета.'?></p>
 <button id="prepare-checkout" type="button">Открыть форму</button>

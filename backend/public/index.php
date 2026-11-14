@@ -24,7 +24,8 @@ try {
     $route=$_GET['r']??''; $method=$_SERVER['REQUEST_METHOD'];
     if(!is_string($route)) throw new Problem(404,'not_found');
     if($method==='GET') {
-        if ($testCheckout && $route==='purchase') {
+        if (($testCheckout && $route==='purchase') || ($controlCheckout && $route==='control-purchase')) {
+            header('X-Robots-Tag: noindex, nofollow');
             Http::session($sessionPath);
             try {
                 Http::staff($app,true);
@@ -34,7 +35,7 @@ try {
                 exit;
             }
             session_write_close();
-            $checkoutPage=dirname(__DIR__,2).'/status-backend-test/test-purchase.html';
+            $checkoutPage=dirname(__DIR__,2).($route==='control-purchase' ? '/status-backend/control-purchase.html' : '/status-backend-test/test-purchase.html');
             if (!is_file($checkoutPage)) throw new Problem(503,'test_purchase_page_unavailable');
             // The static Next build includes inline bootstrap scripts. This policy applies only to the test purchase page.
             header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");

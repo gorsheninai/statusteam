@@ -8,22 +8,24 @@ import LegalLink from "./LegalLink";
 import { apiEndpoint, retryKey } from "./api";
 
 /** Server enforces price, capacity and release gates independently. */
-export default function TicketPurchase({ test = false }: { test?: boolean }) {
+export default function TicketPurchase({ test = false, control = false }: { test?: boolean; control?: boolean }) {
   const busy = useRef(false);
   const [state, setState] = useState("");
   const [sending, setSending] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [testSession, setTestSession] = useState<{ csrf: string; amountKopecks: number; documents: { id: string; version: string }[] } | null>(null);
   const [testSessionError, setTestSessionError] = useState(false);
+  const restricted = test || control;
+  const restrictedPath = control ? "/api/index.php" : "/api-test/index.php";
   useEffect(() => {
-    if (!test) return;
+    if (!restricted) return;
     const controller = new AbortController();
     const loadSession = async () => {
       const headers = { "Content-Type": "application/json" };
-      const session = await fetch("/api-test/index.php?r=session", { method: "POST", headers, body: "{}", signal: controller.signal });
+      const session = await fetch(`${restrictedPath}?r=session`, { method: "POST", headers, body: "{}", signal: controller.signal });
       if (!session.ok) throw new Error("session");
       const { csrf } = await session.json();
-      const response = await fetch("/api-test/index.php?r=checkout-documents", {
+      const response = await fetch(`${restrictedPath}?r=${control ? "control-documents" : "checkout-documents"}`, {
         method: "POST", headers, body: JSON.stringify({ csrf }), signal: controller.signal,
       });
       if (!response.ok) throw new Error("checkout");
@@ -32,13 +34,13 @@ export default function TicketPurchase({ test = false }: { test?: boolean }) {
     };
     loadSession().catch(() => { if (!controller.signal.aborted) setTestSessionError(true); });
     return () => controller.abort();
-  }, [test]);
-  const endpointFor = (route: string) => test
-    ? `/api-test/index.php?r=${route}`
+  }, [control, restricted, restrictedPath]);
+  const endpointFor = (route: string) => restricted
+    ? `${restrictedPath}?r=${control && route === "orders" ? "control-order" : route}`
     : apiEndpoint(route);
   const published = documentsPublished(PURCHASE_DOCUMENTS);
-  const total = testSession?.amountKopecks ?? TICKET.priceKopecks;
-  const available = published && (test ? testSession !== null : CHECKOUT_ENABLED);
+  const total = testSession?.amountKopecks ?? (control ? 100 : TICKET.priceKopecks);
+  const available = published && (restricted ? testSession !== null && (!control || testSession.amountKopecks === 100) : CHECKOUT_ENABLED);
   async function checkout(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const endpoint = endpointFor("orders");
@@ -48,7 +50,7 @@ export default function TicketPurchase({ test = false }: { test?: boolean }) {
     const payload = { ...fields, consentDocuments: testSession?.documents ?? PURCHASE_DOCUMENTS
       .map(id => ({ id, version: LEGAL_DOCUMENTS[id].version })) };
     try {
-      const requestKey = await retryKey(test ? "test-purchase" : "purchase", payload, true);
+      const requestKey = await retryKey(control ? "control-purchase" : test ? "test-purchase" : "purchase", payload, true);
       const headers = { "Content-Type": "application/json" };
       const res = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify({ ...payload, requestKey, ...(testSession ? { csrf: testSession.csrf } : {}) }) });
       let result = await res.json();
@@ -60,8 +62,12 @@ export default function TicketPurchase({ test = false }: { test?: boolean }) {
         return;
       }
       if (!res.ok) {
-        if (test && ["csrf_required", "login_required"].includes(result.error)) {
-          setState("Сессия истекла. Войдите в тестовый кабинет и заново откройте форму.");
+        if (control && result.error === "control_order_exists") {
+          setState("Контрольный заказ уже создан. Его статус можно посмотреть в кабинете.");
+          return;
+        }
+        if (restricted && ["csrf_required", "login_required"].includes(result.error)) {
+          setState("Сессия истекла. Войдите в кабинет и заново откройте форму.");
           return;
         }
         throw new Error("checkout_failed");
@@ -90,8 +96,8 @@ export default function TicketPurchase({ test = false }: { test?: boolean }) {
       {available && (
         <fieldset className="ticket-payment-method" disabled={sending}>
           <legend>Способ оплаты</legend>
-          <label><input type="radio" name="paymentMethod" value="bank_card" defaultChecked /> Картой · бронь 15 минут</label>
-          {!test && <>
+          <label><input type="radio" name="paymentMethod" value="bank_card" defaultChecked /> {control ? "Банковской картой" : "Картой · бронь 15 минут"}</label>
+          {!restricted && <>
             <label><input type="radio" name="paymentMethod" value="sbp" /> СБП · на оплату 1 час</label>
             <p className="form-note">При оплате через СБП билет остаётся в брони до подтверждения оплаты или отмены платежа.</p>
           </>}
@@ -108,10 +114,10 @@ export default function TicketPurchase({ test = false }: { test?: boolean }) {
       <p className="form-note">Как мы обрабатываем данные покупателей — в <LegalLink document="buyers">Сведениях об обработке персональных данных</LegalLink>.</p>
       <p className="form-note" role="status" aria-live="polite">{state}</p>
       <div className="form-foot">
-        {!available && <p className="form-note" id="purchase-availability">{test ? (testSessionError ? "Обновите вход в тестовом кабинете и снова откройте форму." : "Проверяем доступ к тестовой оплате…") : "Онлайн-оплата пока недоступна. Сейчас оформить и оплатить заказ нельзя."}</p>}
+        {restricted && !available && <p className="form-note" id="purchase-availability">{testSessionError ? "Войдите в кабинет и снова откройте форму." : "Проверяем доступ к оплате…"}</p>}
         <button className="btn btn-solid btn-buy" type="submit" disabled={!accepted || !available || sending}
-          aria-describedby={!available ? "purchase-availability" : undefined}>
-          {`Оплатить ${formatRubles(total)}`}
+          aria-describedby={restricted && !available ? "purchase-availability" : undefined}>
+          Оплатить
           <span className="arrow" aria-hidden="true">↗</span>
         </button>
         <p className="form-note">Как мы обрабатываем данные — в <LegalLink document="privacy">Политике</LegalLink>.</p>

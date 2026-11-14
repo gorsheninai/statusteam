@@ -1,22 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 umask 077
-ref="${1:?Pass the checked source commit}"
-[[ "$ref" =~ ^[a-f0-9]{40}$ ]]
+archive=$(realpath "${1:?Pass the verified control checkout archive}")
 cd "$HOME/domains/statusteam-official.ru"
 private=status-backend
 public=public_html/api
 php_bin=$(php -r 'echo PHP_BINARY;')
-repo="https://raw.githubusercontent.com/gorsheninai/statusteam/$ref/backend"
 work=$(mktemp -d "$private/.control.XXXXXX")
 trap 'rm -rf "$work"' EXIT
-mkdir "$work/src" "$work/public"
-for file in App.php Http.php Mailer.php TicketPdf.php TicketDetails.php TicketFont.json TicketFont-LICENSE.txt; do
-  curl -fsSL --max-time 30 "$repo/src/$file" -o "$work/src/$file"
-done
-for file in index.php page.php app.css app.js; do
-  curl -fsSL --max-time 30 "$repo/public/$file" -o "$work/public/$file"
-done
+tar -xzf "$archive" -C "$work"
+test -s "$work/control-purchase.html"
+test -d "$work/_next/static"
 
 env -u STATUS_CONFIG "$php_bin" /dev/stdin "$work" <<'PHP'
 <?php
@@ -75,6 +69,7 @@ done
 backup=$(mktemp -d "$private/backup-control.XXXXXX")
 mkdir "$backup/src" "$backup/public"
 cp -p "$private/config.php" "$backup/"
+if [ -f "$private/control-purchase.html" ]; then cp -p "$private/control-purchase.html" "$backup/"; fi
 for f in "$work"/src/*; do
     name=$(basename "$f")
     if [ -f "$private/src/$name" ]; then cp -p "$private/src/$name" "$backup/src/"; fi
@@ -84,6 +79,11 @@ for f in "$work"/public/*; do
     if [ -f "$public/$name" ]; then cp -p "$public/$name" "$backup/public/"; fi
 done
 for f in "$work"/src/* "$work"/public/*; do chmod 644 "$f"; done
+mkdir -p -m 755 "$public/control-assets/_next/static"
+find "$work/_next/static" -type d -exec chmod 755 {} +
+find "$work/_next/static" -type f -exec chmod 644 {} +
+cp -R "$work/_next/static/." "$public/control-assets/_next/static/"
+install -m 644 "$work/control-purchase.html" "$private/control-purchase.html"
 mv -f "$work"/src/* "$private/src/"
 mv -f "$work"/public/{app.css,app.js,page.php,index.php} "$public/"
 mv -f "$work/config.php" "$private/config.php"
