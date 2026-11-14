@@ -26,7 +26,7 @@ test -s "$staging/src/App.php"
 test -s "$staging/index.html"
 test -d "$staging/_next/static"
 grep -Fq "'checkout'=>'smart-v1'" "$staging/src/App.php"
-grep -Fq 'Способ оплаты выберете на защищённой странице ЮKassa' "$staging/index.html"
+grep -RFq 'Способ оплаты выберете на защищённой странице ЮKassa' "$staging/_next/static"
 php -l "$staging/src/App.php"
 
 backup=$(mktemp -d "$private/backup-smart.XXXXXX")
