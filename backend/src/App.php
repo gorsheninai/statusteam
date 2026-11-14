@@ -92,7 +92,7 @@ final class App {
                 'amount'=>['value'=>sprintf('%d.%02d',intdiv(self::PRICE,100),self::PRICE%100),'currency'=>'RUB'],
                 'capture'=>$method==='sbp',
                 'payment_method_data'=>['type'=>$method],
-                'confirmation'=>['type'=>'redirect','return_url'=>$this->c['origin'].'/api/index.php?r=return#'.$access],
+                'confirmation'=>['type'=>'redirect','return_url'=>$this->c['base_url'].'/index.php?r=return#'.$access],
                 'metadata'=>['order_id'=>$id],
                 'description'=>'STATUS TEAM '.$id,
                 'receipt'=>$this->receipt($buyer,self::PRICE),

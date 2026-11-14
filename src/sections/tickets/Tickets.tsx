@@ -2,7 +2,7 @@ import Link from "next/link";
 import { TICKET } from "@/content/ticket";
 import TicketPurchase from "@/features/forms/TicketPurchase";
 
-export default function Tickets() {
+export default function Tickets({ test = false }: { test?: boolean }) {
   return (
     <div className="ticket-shop">
       <header className="ticket-shop-heading">
@@ -19,7 +19,7 @@ export default function Tickets() {
             <div><dt>Возраст</dt><dd>{TICKET.age}</dd></div>
           </dl>
         </div>
-        <TicketPurchase />
+        <TicketPurchase test={test} />
         <div className="ticket-fulfillment">
           <p>{TICKET.delivery} Оплата через ЮKassa.</p>
           <p><Link href="/contacts/">Контакты и вопросы о билетах</Link></p>

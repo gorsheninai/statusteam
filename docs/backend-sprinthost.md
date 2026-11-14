@@ -168,12 +168,30 @@ CREATE TABLE. Остановиться, восстановить тестову�
 ## 5. Тестовый магазин и фискальные настройки
 
 Внести **тестовые** shop_id/secret, `environment=test`, `yookassa.test=true`.
-На тестовом сервере разрешить checkout только для проверяющего; реальный домен
-пока не публикуется из этой ветки. В текущем браузерном клиенте разрешён только
-основной домен: для отдельного российского staging нужен явно проверенный домен
-в `api.ts`, соответствующие origin/base_url и тестовая сборка. Не включать Workers.
-`CHECKOUT_ENABLED=false` остаётся в репозитории; для закрытой проверки подготовить
-отдельную локальную сборку и конфиг после публикации тестовых редакций документов.
+В публичной сборке сохраняется `CHECKOUT_ENABLED=false`. На основном домене для
+проверяющего предусмотрен отдельный вход в тестовый checkout.
+
+### Закрытый checkout на основном домене
+
+Для проверки на Sprinthost используйте отдельную папку `public_html/api-test`
+и приватный `status-backend-test`. Из собранного `backend/public` скопируйте
+в неё `.htaccess`, `page.php`, `app.js`, `app.css`, `scanner.min.js` и
+`scanner-LICENSE`. Скопируйте `backend/public/index.php` как `api-test/router.php`,
+а `backend/scripts/test-api-index.php` — как `api-test/index.php`. Обновите
+`src/App.php` и `src/Http.php` только в `status-backend-test`.
+
+В приватном тестовом конфиге укажите `base_url=https://statusteam-official.ru/api-test`
+и `origin=https://statusteam-official.ru`. Включите `test_checkout_enabled`
+и `checkout_enabled`. Тестовый вход требует ключ с префиксом `test_` и БД
+с именем, оканчивающимся на `_test`. Для checkout нужны контакты поддержки, активные версии 01, 02, 06
+в тестовой БД, флаг `documents_approved` и заполненные тестовые фискальные параметры.
+Создайте тестового администратора через CLI `staff-add test-admin admin`. Форма
+открывается после входа на `/api-test/index.php?r=staff`.
+
+В тестовом магазине задайте HTTPS-уведомления на
+`https://statusteam-official.ru/api-test/index.php?r=webhook`: `payment.waiting_for_capture`,
+`payment.succeeded`, `payment.canceled` и `refund.succeeded`. Для теста доставки
+запустите `console.php mail` из `status-backend-test` после подтверждения оплаты.
 
 Фискальные настройки не выдуманы. У бухгалтера/ЮKassa уточнить:
 

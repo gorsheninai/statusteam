@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LEGAL_DOCUMENTS, PURCHASE_DOCUMENTS, documentsPublished } from "@/content/legal";
 import { TICKET, CHECKOUT_ENABLED } from "@/content/ticket";
 import { formatRubles } from "./ticket-order";
@@ -8,44 +8,73 @@ import LegalLink from "./LegalLink";
 import { apiEndpoint, retryKey } from "./api";
 
 /** Server enforces price, capacity and release gates independently. */
-export default function TicketPurchase() {
+export default function TicketPurchase({ test = false }: { test?: boolean }) {
   const busy = useRef(false);
   const [state, setState] = useState("");
   const [sending, setSending] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [testSession, setTestSession] = useState<{ csrf: string; amountKopecks: number; documents: { id: string; version: string }[] } | null>(null);
+  const [testSessionError, setTestSessionError] = useState(false);
+  useEffect(() => {
+    if (!test) return;
+    const controller = new AbortController();
+    const loadSession = async () => {
+      const headers = { "Content-Type": "application/json" };
+      const session = await fetch("/api-test/index.php?r=session", { method: "POST", headers, body: "{}", signal: controller.signal });
+      if (!session.ok) throw new Error("session");
+      const { csrf } = await session.json();
+      const response = await fetch("/api-test/index.php?r=checkout-documents", {
+        method: "POST", headers, body: JSON.stringify({ csrf }), signal: controller.signal,
+      });
+      if (!response.ok) throw new Error("checkout");
+      const { amountKopecks, documents } = await response.json();
+      setTestSession({ csrf, amountKopecks, documents: documents.map(({ id, version }: { id: string; version: string }) => ({ id, version })) });
+    };
+    loadSession().catch(() => { if (!controller.signal.aborted) setTestSessionError(true); });
+    return () => controller.abort();
+  }, [test]);
+  const endpointFor = (route: string) => test
+    ? `/api-test/index.php?r=${route}`
+    : apiEndpoint(route);
   const published = documentsPublished(PURCHASE_DOCUMENTS);
-  const total = TICKET.priceKopecks;
-  const available = CHECKOUT_ENABLED && published;
+  const total = testSession?.amountKopecks ?? TICKET.priceKopecks;
+  const available = published && (test ? testSession !== null : CHECKOUT_ENABLED);
   async function checkout(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const endpoint = apiEndpoint("orders");
+    const endpoint = endpointFor("orders");
     if (busy.current || !available || !accepted || !endpoint || !e.currentTarget.reportValidity()) return;
     const fields = Object.fromEntries(new FormData(e.currentTarget));
     busy.current = true; setSending(true); setState("Создаём заказ…");
-    const payload = { ...fields, consentDocuments: PURCHASE_DOCUMENTS
+    const payload = { ...fields, consentDocuments: testSession?.documents ?? PURCHASE_DOCUMENTS
       .map(id => ({ id, version: LEGAL_DOCUMENTS[id].version })) };
     try {
-      const requestKey = await retryKey("purchase", payload, true);
+      const requestKey = await retryKey(test ? "test-purchase" : "purchase", payload, true);
       const headers = { "Content-Type": "application/json" };
-      const res = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify({ ...payload, requestKey }) });
+      const res = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify({ ...payload, requestKey, ...(testSession ? { csrf: testSession.csrf } : {}) }) });
       let result = await res.json();
       if (res.status === 409 && result.error === "retry_payload_changed") {
-        const resumed = await fetch(apiEndpoint("order-status"), { method: "POST", headers, body: JSON.stringify({ requestKey }) });
+        const resumed = await fetch(endpointFor("order-status"), { method: "POST", headers, body: JSON.stringify({ requestKey }) });
         if (!resumed.ok) throw new Error("checkout_failed");
         result = await resumed.json();
-        window.location.assign(`${apiEndpoint("return")}#${result.accessToken}`);
+        window.location.assign(`${endpointFor("return")}#${result.accessToken}`);
         return;
       }
-      if (!res.ok) throw new Error("checkout_failed");
+      if (!res.ok) {
+        if (test && ["csrf_required", "login_required"].includes(result.error)) {
+          setState("Сессия истекла. Войдите в тестовый кабинет и заново откройте форму.");
+          return;
+        }
+        throw new Error("checkout_failed");
+      }
       if (result.confirmationUrl) window.location.assign(result.confirmationUrl);
-      else if (result.accessToken) window.location.assign(`${apiEndpoint("return")}#${result.accessToken}`);
+      else if (result.accessToken) window.location.assign(`${endpointFor("return")}#${result.accessToken}`);
       else throw new Error("checkout_failed");
     } catch { setState("Не удалось получить ответ. Повторите отправку с теми же данными — сервер проверит существующий заказ."); }
     finally { busy.current = false; setSending(false); }
   }
   return (
     <form className="form ticket-purchase" data-form="purchase" aria-label="Оформление билета"
-      onSubmit={checkout}
+      method="post" onSubmit={checkout}
       onReset={() => setAccepted(false)}>
       <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" hidden />
       <input name="quantity" type="hidden" value="1" />
@@ -54,7 +83,7 @@ export default function TicketPurchase() {
           <input id="purchase-name" name="name" autoComplete="name" required maxLength={200} /></p>
         <p className="field"><label htmlFor="purchase-email">Электронная почта *</label>
           <input id="purchase-email" name="email" type="email" autoComplete="email" required maxLength={254} aria-describedby="purchase-email-note" />
-          <small id="purchase-email-note">На этот адрес придут билет и кассовый чек. Проверьте правильность написания.</small></p>
+          <small id="purchase-email-note">{test ? "На этот адрес придёт тестовый билет." : "На этот адрес придут билет и кассовый чек. Проверьте правильность написания."}</small></p>
         <p className="field"><label htmlFor="purchase-phone">Телефон *</label>
           <input id="purchase-phone" name="phone" type="tel" autoComplete="tel" required maxLength={32} /></p>
       </div>
@@ -62,8 +91,10 @@ export default function TicketPurchase() {
         <fieldset className="ticket-payment-method" disabled={sending}>
           <legend>Способ оплаты</legend>
           <label><input type="radio" name="paymentMethod" value="bank_card" defaultChecked /> Картой · бронь 15 минут</label>
-          <label><input type="radio" name="paymentMethod" value="sbp" /> СБП · на оплату 1 час</label>
-          <p className="form-note">При оплате через СБП билет остаётся в брони до подтверждения оплаты или отмены платежа.</p>
+          {!test && <>
+            <label><input type="radio" name="paymentMethod" value="sbp" /> СБП · на оплату 1 час</label>
+            <p className="form-note">При оплате через СБП билет остаётся в брони до подтверждения оплаты или отмены платежа.</p>
+          </>}
         </fieldset>
       )}
       <p className="ticket-total" aria-live="polite" aria-atomic="true">Итого <output>{formatRubles(total)}</output></p>
@@ -77,7 +108,7 @@ export default function TicketPurchase() {
       <p className="form-note">Как мы обрабатываем данные покупателей — в <LegalLink document="buyers">Сведениях об обработке персональных данных</LegalLink>.</p>
       <p className="form-note" role="status" aria-live="polite">{state}</p>
       <div className="form-foot">
-        {!available && <p className="form-note" id="purchase-availability">Онлайн-оплата пока недоступна. Сейчас оформить и оплатить заказ нельзя.</p>}
+        {!available && <p className="form-note" id="purchase-availability">{test ? (testSessionError ? "Обновите вход в тестовом кабинете и снова откройте форму." : "Проверяем доступ к тестовой оплате…") : "Онлайн-оплата пока недоступна. Сейчас оформить и оплатить заказ нельзя."}</p>}
         <button className="btn btn-solid btn-buy" type="submit" disabled={!accepted || !available || sending}
           aria-describedby={!available ? "purchase-availability" : undefined}>
           {`Оплатить ${formatRubles(total)}`}
