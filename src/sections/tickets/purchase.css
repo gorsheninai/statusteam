@@ -2,7 +2,7 @@
   min-width: 0;
   padding-bottom: var(--pad-chapter);
 }
-.ticket-shop-heading { margin-bottom: var(--space-5); text-align: center; }
+.ticket-shop-heading { margin-bottom: clamp(2.75rem, 5vw, 6rem); text-align: center; }
 .ticket-shop-heading h2 { font-size: var(--fs-h2); line-height: 1.15; }
 .ticket-shop-grid { display: grid; gap: var(--space-4); min-width: 0; }
 .ticket-pulse-divider {

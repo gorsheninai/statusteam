@@ -38,6 +38,10 @@ jobs:
               if (!await button.isDisabled() || await form.getByText('Онлайн-оплата пока недоступна', {exact: false}).count()) throw Error('Checkout state or notice is incorrect');
               if (await form.locator('.ticket-total output').count() !== 1) throw Error('Expected exactly one total');
               const details = await page.locator('.ticket-facts').boundingBox();
+              const heading = await page.locator('.ticket-shop-heading h2').boundingBox();
+              const gap = details && heading ? details.y - heading.y - heading.height : 0;
+              const expectedGap = Math.min(96, Math.max(44, width * 0.05));
+              if (Math.abs(gap - expectedGap) > 3) throw Error(`Unexpected space after ticket heading at ${width}px: ${gap}px`);
               const divider = await page.locator('.ticket-pulse-divider .pulse-beat').boundingBox();
               const firstField = await form.locator('.form-grid .field').first().boundingBox();
               if (!details || !divider || !firstField || divider.y <= details.y + details.height ||
