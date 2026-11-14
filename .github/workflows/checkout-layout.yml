@@ -1,0 +1,99 @@
+name: Build checkout layout
+on:
+  push:
+    branches: [codex/checkout-layout]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      NEXT_PUBLIC_FORM_ENDPOINT: /api/index.php?r=forms
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify checkout on desktop and mobile
+        run: |
+          python3 -m http.server 4311 --directory out >/tmp/checkout-http.log 2>&1 &
+          node --input-type=module <<'JS'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch();
+          try {
+            for (const width of [320, 390, 640, 641, 1440, 1920]) {
+              const page = await browser.newPage({viewport: {width, height: 900}});
+              await page.goto('http://localhost:4311/#tickets');
+              const form = page.locator('.ticket-purchase');
+              const button = form.getByRole('button', {name: 'Оплатить', exact: true});
+              const footer = form.locator('.form-foot');
+              const a = await button.boundingBox();
+              const b = await footer.boundingBox();
+              if (!a || !b || Math.abs(a.width - b.width) > 1) throw Error('Button does not fill the form footer');
+              if (!await button.isDisabled() || await form.getByText('Онлайн-оплата пока недоступна', {exact: false}).count()) throw Error('Checkout state or notice is incorrect');
+              if (await form.locator('.ticket-total output').count() !== 1) throw Error('Expected exactly one total');
+              const details = await page.locator(width <= 640 ? '.ticket-facts-mobile' : '.ticket-facts-desktop').boundingBox();
+              const heading = await page.locator('.ticket-shop-heading h2').boundingBox();
+              await page.evaluate(() => document.fonts.ready);
+              if (width <= 640) {
+                const sizes = await page.locator('.ticket-shop-heading h2').evaluate(el => {
+                  const range = document.createRange();
+                  range.selectNodeContents(el);
+                  const content = range.getBoundingClientRect();
+                  const box = el.getBoundingClientRect();
+                  return {
+                    title: parseFloat(getComputedStyle(el).fontSize),
+                    program: parseFloat(getComputedStyle(document.querySelector('.exp-h')).fontSize),
+                    fits: content.left >= box.left - 1 && content.right <= box.right + 1 && range.getClientRects().length === 1,
+                  };
+                });
+                if ((width === 390 && Math.abs(sizes.title - sizes.program) > 0.1) || !sizes.fits)
+                  throw Error(`Mobile title does not fit at ${width}px: ${JSON.stringify(sizes)}`);
+                const times = await page.locator('.ticket-mobile-times dd').all();
+                const rows = await Promise.all(times.map(time => time.boundingBox()));
+                if (rows.length !== 2 || !rows[0] || !rows[1] || Math.abs(rows[0].y - rows[1].y) > 1)
+                  throw Error('Mobile times must share a row');
+              }
+              const gap = details && heading ? details.y - heading.y - heading.height : 0;
+              const expectedGap = Math.min(96, Math.max(44, width * 0.05));
+              if (Math.abs(gap - expectedGap) > 3) throw Error(`Unexpected space after ticket heading at ${width}px: ${gap}px`);
+              const divider = await page.locator('.ticket-pulse-divider .pulse-beat').boundingBox();
+              const firstField = await form.locator('.form-grid .field').first().boundingBox();
+              if (!details || !divider || !firstField || divider.y <= details.y + details.height ||
+                  firstField.y <= divider.y + divider.height || firstField.y - (details.y + details.height) < 60) {
+                throw Error('Expected the pulse line and at least 60px between event details and the form');
+              }
+              if (Math.abs(divider.x + divider.width / 2 - (await page.evaluate(() => document.documentElement.clientWidth)) / 2) > 2) throw Error('Pulse divider is off center');
+              const viewport = await page.evaluate(() => document.documentElement.clientWidth);
+              if (divider.x > 1 || divider.x + divider.width < viewport - 1 ||
+                  await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)) {
+                throw Error('Pulse must reach both viewport edges without horizontal scrolling');
+              }
+              const pulse = page.locator('.ticket-pulse-divider .pulse-beat-window');
+              const animation = await pulse.evaluate(el => getComputedStyle(el).animationName);
+              if (animation !== 'pulse-beat-window') throw Error('Expected the shared animated pulse');
+              await page.emulateMedia({ reducedMotion: 'reduce' });
+              if (await pulse.isVisible()) throw Error('Pulse should respect reduced motion');
+              await page.close();
+            }
+          } finally {
+            await browser.close();
+          }
+          JS
+      - name: Package frontend
+        run: |
+          mkdir -p stage/_next
+          cp -R out/_next/static stage/_next/
+          cp out/index.html stage/
+          if [ -f out/index.txt ]; then cp out/index.txt stage/; fi
+          cp scripts/install-checkout-layout.sh stage/
+          tar -czf checkout-layout.tar.gz -C stage .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checkout-layout
+          path: checkout-layout.tar.gz
