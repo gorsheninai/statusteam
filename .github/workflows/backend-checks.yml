@@ -72,11 +72,12 @@ jobs:
       - name: Package isolated checkout
         run: |
           test -s out/test-purchase/index.html
-          rg -q 'Оформление билета' out/test-purchase/index.html
-          rg -q '/api-test/purchase-assets/_next/' out/test-purchase/index.html
+          grep -Fq 'Оформление билета' out/test-purchase/index.html
+          grep -Fq '/api-test/purchase-assets/_next/' out/test-purchase/index.html
           mkdir stage
           cp out/test-purchase/index.html stage/test-purchase.html
-          cp -R out/_next stage/
+          mkdir stage/_next
+          cp -R out/_next/static stage/_next/
           cp backend/public/index.php stage/router.php
           cp backend/public/page.php backend/public/app.js stage/
           cp backend/scripts/install-test-purchase.sh stage/
