@@ -131,8 +131,8 @@ jobs:
             if (!/^1\s*₽$/.test(await page.locator('.ticket-total output').innerText())) throw Error('Expected one ruble');
             await page.getByRole('button', {name:'Оплатить', exact:true}).click();
             await page.waitForURL('https://yookassa.ru/checkout/fixture');
-            if (!sent || sent.csrf !== 'fixture' || sent.paymentMethod !== 'bank_card' ||
-                !/^[a-f0-9]{64}$/.test(sent.requestKey) || sent.consentDocuments.length !== 3) throw Error('Unexpected request');
+            if (!sent || sent.csrf !== 'fixture' || ('paymentMethod' in sent) ||
+                !/^[a-f0-9]{64}$/.test(sent.requestKey) || sent.consentDocuments.length !== 3) throw Error('Unexpected smart payment request');
           } finally { await browser.close(); }
           JS
       - name: Package the protected checkout
