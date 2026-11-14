@@ -227,12 +227,17 @@ check($renewed['orderId']===$controlOrder['orderId'] && $renewed['status']==='re
     && $renewed['confirmationUrl']==='https://yookassa.ru/payment/fixture',
     'an expired local control hold is renewed only after YooKassa still reports pending');
 $other=purchase();$other['email']='another-buyer@example.invalid';
-reject(fn()=>$controlApp->order($other,'127.0.0.1',true),409,
-    'control payment cannot be resumed using another buyer email');
+$otherControl=$controlApp->order($other,'127.0.0.1',true);
+check($otherControl['orderId']!==$controlOrder['orderId'] && $otherControl['confirmationUrl']==='https://yookassa.ru/payment/fixture',
+    'different buyer gets their own control payment and receipt');
 check((int)$db->one('SELECT held FROM inventory')['held']===$held,'resuming control does not consume public capacity');
 $db->run("UPDATE orders SET status='paid' WHERE id=?",[$controlOrder['orderId']]);
-reject(fn()=>$controlApp->order(purchase(),'127.0.0.1',true),409,
-    'already paid control order blocks another paid control order');
+$previous=$controlApp->order($input,'127.0.0.1',true);
+check($previous['orderId']===$controlOrder['orderId'] && $previous['status']==='paid' && !$previous['confirmationUrl'],
+    'old idempotency key preserves a completed purchase without a second charge');
+$fresh=$controlApp->order(purchase(),'127.0.0.1',true);
+check($fresh['orderId']!==$controlOrder['orderId'] && $fresh['confirmationUrl']==='https://yookassa.ru/payment/fixture',
+    'explicit new control attempt after successful charge opens a new YooKassa checkout');
 $pdf=\StatusTeam\TicketPdf::render('ST-0123456789ABCDEF', str_repeat('a',64), true, 3000050, str_repeat('b',32));
 check(str_starts_with($pdf,'%PDF-1.4') && str_contains($pdf,'/ToUnicode') && str_contains($pdf,\StatusTeam\TicketDetails::TERMS_URL),'test ticket PDF includes a Unicode text map and link to terms');
 check(preg_match('/startxref\n(\d+)\n/', $pdf, $offset) && substr($pdf,(int)$offset[1],4)==='xref','ticket PDF cross-reference offset is valid');
