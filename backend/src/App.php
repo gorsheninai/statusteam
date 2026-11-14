@@ -85,6 +85,55 @@ final class App {
         if($amount===self::CONTROL_PRICE) $receipt['items'][0]['description']='Контрольный заказ: билет на шоу «Пульс Континента»';
         return $receipt;
     }
+    /**
+     * A real ₽1 control payment may already exist when the browser loses its
+     * original idempotency key. Reuse that payment instead of creating a second
+     * charge. This method is only called from the admin-only control route.
+     */
+    private function recoverControlOrder(array $buyer,string $key,string $hash): ?array {
+        $existing=$this->db->one(
+            "SELECT o.id,o.request_key,o.request_hash,o.buyer FROM orders o
+             JOIN payments p ON p.order_id=o.id
+             WHERE o.amount=? AND p.status<>'canceled'
+             ORDER BY o.created_at DESC LIMIT 1",
+            [self::CONTROL_PRICE]
+        );
+        if(!$existing) return null;
+        if($existing['request_key']===$key && $existing['request_hash']!==$hash)
+            throw new Problem(409,'retry_payload_changed');
+        $previousBuyer=$this->decode($existing['buyer']);
+        // Otherwise the receipt and ticket could be delivered to another buyer.
+        if(!hash_equals((string)($previousBuyer['email']??''),$buyer['email']))
+            throw new Problem(409,'control_order_exists');
+
+        // Refresh from YooKassa: a remotely canceled payment permits a new order.
+        // Never revive a paid payment or one that is waiting for capture.
+        $this->ensurePayment($existing['id']);
+        $active=$this->db->tx(function() use($existing) {
+            $this->db->one('SELECT id FROM inventory WHERE id=1 FOR UPDATE');
+            $o=$this->db->one('SELECT status FROM orders WHERE id=? FOR UPDATE',[$existing['id']]);
+            $p=$this->db->one('SELECT status,confirmation_url,capture_requested_at FROM payments WHERE order_id=? FOR UPDATE',[$existing['id']]);
+            if($p && $p['status']==='canceled') return false;
+            if(!$o || !$p || !in_array($o['status'],['reserved','expired'],true)
+                || $p['status']!=='pending' || $p['capture_requested_at']!==null
+                || !$p['confirmation_url']) throw new Problem(409,'control_order_exists');
+            // The local 15-minute hold might have expired while YooKassa still
+            // reports the redirect payment as pending. Renew only that hold.
+            if($o['status']==='expired') {
+                $this->db->run(
+                    "UPDATE orders SET status='reserved',reserve_until=DATE_ADD(UTC_TIMESTAMP(6),INTERVAL 15 MINUTE),
+                     updated_at=UTC_TIMESTAMP() WHERE id=?",
+                    [$existing['id']]
+                );
+            }
+            return true;
+        });
+        if(!$active) return null;
+        $result=$this->resumeOrder($existing['request_key']);
+        if(!$result['confirmationUrl']) throw new Problem(409,'control_order_exists');
+        return $result;
+    }
+
     public function order(array $d,string $ip,bool $control=false): array {
         $this->checkoutReady($control);
         $amount=$control?self::CONTROL_PRICE:self::PRICE;
@@ -95,6 +144,7 @@ final class App {
         $buyer=['name'=>Validation::text($d,'name'),'email'=>Validation::email(Validation::text($d,'email',254)),'phone'=>Validation::phone(Validation::text($d,'phone',32))];
         if(count(preg_split('/\s+/u',$buyer['name']))<2) throw new Problem(422,'name_and_surname_required');
         $hash=$this->fingerprint($control?['control'=>true]+$d:$d);$access=$this->crypto->capability($key);
+        if($control && ($existing=$this->recoverControlOrder($buyer,$key,$hash))!==null) return $existing;
         $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access,$method,$amount,$control) {
             $this->expireReservations();
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
