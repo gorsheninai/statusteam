@@ -23,7 +23,41 @@ async function status(){
 }
 async function check(){checked='';$('admit').disabled=true;const v=await api('check',{token:$('token').value.trim()});$('check-result').textContent=v.number+' · '+(labels[v.status]||v.status);if(v.status==='valid'){checked=$('token').value.trim();$('admit').disabled=false;}}
 async function staff(){const s=await api('me');$('login').hidden=true;$('staff').hidden=false;$('admin').hidden=s.role!=='admin';}
-async function dashboard(){const d=await api('dashboard');$('lists').replaceChildren();for(const [name,rows] of Object.entries(d)){const title=document.createElement('h3');title.textContent=name;const table=document.createElement('table');if(rows.length){const tr=document.createElement('tr');for(const k of Object.keys(rows[0])){const th=document.createElement('th');th.textContent=k;tr.append(th);}table.append(tr);}for(const row of rows){const tr=document.createElement('tr');for(const v of Object.values(row)){const td=document.createElement('td');td.textContent=v??'';tr.append(td);}table.append(tr);}$('lists').append(title,table);}}
+async function dashboard() {
+ const data=await api('dashboard');
+ const sections={orders:'Заказы',applications:'Заявки',mail:'Письма',refunds:'Возвраты'};
+ const columns={
+  buyer_name:'Покупатель',buyer_email:'Email',buyer_phone:'Телефон',ticket_number:'Билет',
+  ticket_status:'Статус билета',status:'Статус',payment_status:'Оплата',receipt_status:'Чек',
+  created_at:'Создан (UTC)',sent_at:'Отправлено (UTC)',id:'ID',order_id:'Заказ',
+  reference_id:'ID записи',attempts:'Попытки',last_error:'Последняя ошибка',kind:'Тип',amount:'Сумма (коп.)',
+ };
+ const statuses={paid:'Оплачен',reserved:'Забронирован',valid:'Действителен',used:'Использован',refunded:'Возвращён',refund_pending:'Возврат в обработке',canceled:'Отменён',expired:'Просрочен',succeeded:'Успешно',pending:'В ожидании',sent:'Отправлено',sending:'Отправляется',failed:'Ошибка',waiting_for_capture:'Ожидает подтверждения'};
+ const list=$('lists');
+ list.replaceChildren();
+ for(const [name,rows] of Object.entries(data)){
+  const title=document.createElement('h3');
+  title.textContent=sections[name]??name;
+  const table=document.createElement('table');
+  if(rows.length){
+   const header=table.insertRow();
+   for(const column of Object.keys(rows[0])){
+    const th=document.createElement('th');
+    th.scope='col';
+    th.textContent=columns[column]??column;
+    header.append(th);
+   }
+   for(const row of rows){
+    const tr=table.insertRow();
+    for(const [column,value] of Object.entries(row)){
+     tr.insertCell().textContent=column==='status'||column.endsWith('_status')
+      ? (statuses[value]??value??'—') : (value??'—');
+    }
+   }
+  }
+  list.append(title,table);
+ }
+}
 function setupTestCheckout() {
  const checkout=$('test-checkout');
  if (!checkout) return;

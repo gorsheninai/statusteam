@@ -89,8 +89,21 @@ try {
             Http::output($app->refund(Validation::text($d,'orderId',32),$d['amountKopecks'],Validation::key($d),(int)$s['id']));
         case 'resend':$app->resend(Validation::text($d,'orderId',32),(int)$s['id']);Http::output(['ok'=>true]);
         case 'dashboard':
+            $orders=$app->db->run('SELECT o.id,o.buyer,o.status,o.created_at,p.status payment_status,p.receipt_status,t.number AS ticket_number,t.status AS ticket_status FROM orders o JOIN payments p ON p.order_id=o.id LEFT JOIN tickets t ON t.order_id=o.id ORDER BY o.created_at DESC LIMIT 100')->fetchAll();
+            foreach ($orders as &$order) {
+                $buyer=$app->decode($order['buyer']);
+                unset($order['buyer']);
+                $order=[
+                    'buyer_name'=>$buyer['name']??'',
+                    'buyer_email'=>$buyer['email']??'',
+                    'buyer_phone'=>$buyer['phone']??'',
+                    'ticket_number'=>$order['ticket_number'],
+                    'ticket_status'=>$order['ticket_status'],
+                ]+$order;
+            }
+            unset($order);
             Http::output([
-                'orders'=>$app->db->run('SELECT o.id,o.status,o.created_at,p.status payment_status,p.receipt_status FROM orders o JOIN payments p ON p.order_id=o.id ORDER BY o.created_at DESC LIMIT 100')->fetchAll(),
+                'orders'=>$orders,
                 'applications'=>$app->db->run('SELECT id,kind,created_at FROM applications ORDER BY created_at DESC LIMIT 100')->fetchAll(),
                 'mail'=>$app->db->run('SELECT id,kind,reference_id,status,attempts,last_error,created_at,sent_at FROM mail_queue ORDER BY id DESC LIMIT 100')->fetchAll(),
                 'refunds'=>$app->db->run('SELECT id,order_id,amount,status,receipt_status FROM refunds ORDER BY created_at DESC LIMIT 100')->fetchAll(),
