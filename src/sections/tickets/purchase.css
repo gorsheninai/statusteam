@@ -5,6 +5,17 @@
 .ticket-shop-heading { margin-bottom: var(--space-5); text-align: center; }
 .ticket-shop-heading h2 { font-size: var(--fs-h2); line-height: 1.15; }
 .ticket-shop-grid { display: grid; gap: var(--space-4); min-width: 0; }
+.ticket-pulse-divider {
+  display: block;
+  justify-self: center;
+  width: min(60%, 21.25rem);
+  height: auto;
+  margin-block: clamp(0.5rem, 1.4vw, 1.25rem);
+  fill: none;
+  stroke: var(--champagne);
+  stroke-width: 1;
+  opacity: 0.4;
+}
 .ticket-product,
 .ticket-purchase { min-width: 0; }
 .ticket-facts,

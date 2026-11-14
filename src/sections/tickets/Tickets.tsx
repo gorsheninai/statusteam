@@ -19,6 +19,9 @@ export default function Tickets() {
             <div><dt>Возраст</dt><dd>{TICKET.age}</dd></div>
           </dl>
         </div>
+        <svg className="ticket-pulse-divider" viewBox="0 0 340 10" aria-hidden="true" focusable="false">
+          <path d="M0 7 H40 L60 3 L80 7 H340" vectorEffect="non-scaling-stroke" />
+        </svg>
         <TicketPurchase />
         <div className="ticket-fulfillment">
           <p>{TICKET.delivery} Оплата через ЮKassa.</p>
