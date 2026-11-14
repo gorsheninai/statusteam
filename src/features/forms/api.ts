@@ -23,3 +23,8 @@ export async function retryKey(purpose: string, payload: unknown, reuseAcrossCha
   try { sessionStorage.setItem(storageKey, JSON.stringify({ digest, key })); } catch { /* current request still works */ }
   return key;
 }
+
+export function clearRetryKey(purpose: string) {
+  memoryKeys.delete(purpose);
+  try { sessionStorage.removeItem(`status-request-${purpose}`); } catch { /* storage may be unavailable */ }
+}

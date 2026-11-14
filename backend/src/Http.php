@@ -5,7 +5,7 @@ final class Http {
     public static function ip(array $c): string {
         $remote=$_SERVER['REMOTE_ADDR']??'';
         // Only explicitly configured exact proxy addresses may supply X-Forwarded-For.
-        if(in_array($remote,$c['trusted_proxies'],true)) {
+        if(in_array($remote,($c['trusted_proxies']??[]),true)) {
             $chain=explode(',',$_SERVER['HTTP_X_FORWARDED_FOR']??'');
             foreach(array_reverse($chain) as $candidate) {
                 $candidate=trim($candidate);
@@ -23,9 +23,9 @@ final class Http {
         try {$d=json_decode($raw,true,32,JSON_THROW_ON_ERROR);} catch(\Throwable) {throw new Problem(400,'invalid_json');}
         if(!is_array($d) || !str_starts_with(ltrim($raw),'{')) throw new Problem(400,'invalid_json');return $d;
     }
-    public static function session(): void {
+    public static function session(string $path='/api/'): void {
         ini_set('session.use_strict_mode','1');ini_set('session.use_only_cookies','1');
-        session_name('status_staff');session_set_cookie_params(['lifetime'=>0,'path'=>'/api/','secure'=>true,'httponly'=>true,'samesite'=>'Strict']);session_start();
+        session_name($path==='/api/'?'status_staff':'status_staff_test');session_set_cookie_params(['lifetime'=>0,'path'=>$path,'secure'=>true,'httponly'=>true,'samesite'=>'Strict']);session_start();
         $_SESSION['csrf']??=bin2hex(random_bytes(32));
     }
     public static function csrf(array $d): void {if(!is_string($d['csrf']??null) || !hash_equals($_SESSION['csrf']??'', $d['csrf'])) throw new Problem(403,'csrf_required');}
