@@ -24,6 +24,37 @@ async function status(){
 async function check(){checked='';$('admit').disabled=true;const v=await api('check',{token:$('token').value.trim()});$('check-result').textContent=v.number+' · '+(labels[v.status]||v.status);if(v.status==='valid'){checked=$('token').value.trim();$('admit').disabled=false;}}
 async function staff(){const s=await api('me');$('login').hidden=true;$('staff').hidden=false;$('admin').hidden=s.role!=='admin';}
 async function dashboard(){const d=await api('dashboard');$('lists').replaceChildren();for(const [name,rows] of Object.entries(d)){const title=document.createElement('h3');title.textContent=name;const table=document.createElement('table');if(rows.length){const tr=document.createElement('tr');for(const k of Object.keys(rows[0])){const th=document.createElement('th');th.textContent=k;tr.append(th);}table.append(tr);}for(const row of rows){const tr=document.createElement('tr');for(const v of Object.values(row)){const td=document.createElement('td');td.textContent=v??'';tr.append(td);}table.append(tr);}$('lists').append(title,table);}}
+function setupTestCheckout() {
+ const checkout=$('test-checkout');
+ if (!checkout) return;
+ let documents=[],pending;
+ bind('prepare-checkout',async()=>{
+  const result=await api('checkout-documents');
+  documents=result.documents.map(({id,version})=>({id,version}));
+  const names={buyers:'Оферта покупки билета',privacy:'Политика обработки персональных данных',terms:'Пользовательское соглашение'};
+  const links=result.documents.map(({id,href})=>{
+   const item=document.createElement('li');
+   const url=new URL(href,location.origin);
+   if(url.origin!==location.origin) throw Error('Проверьте адрес документа в тестовой базе');
+   const link=document.createElement('a');
+   link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=names[id];
+   item.append(link);return item;
+  });
+  $('test-documents').replaceChildren(...links);
+  $('test-price').textContent=new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB'}).format(result.amountKopecks/100);
+  checkout.hidden=false;
+  $('prepare-checkout').hidden=true;
+  message('');
+ });
+ form('test-checkout',async data=>{
+  const payload={...data,paymentMethod:'bank_card',consentDocuments:documents};
+  const signature=JSON.stringify(payload);
+  if(!pending || pending.signature!==signature) pending={signature,key:key()};
+  const order=await api('orders',{...payload,requestKey:pending.key});
+  if(order.confirmationUrl) location.assign(order.confirmationUrl);
+  else location.assign('index.php?r=return#'+order.accessToken);
+ });
+}
 async function init(){
  if(page==='ticket'){const v=await api('ticket-data',{token:token()});$('number').textContent=v.number;$('qr').src=v.qr;$('ticket-status').textContent=labels[v.status]||v.status;$('support').textContent='Поддержка: '+v.support;$('ticket').hidden=false;bind('print',()=>window.print());return;}
  if(page==='return'){bind('refresh',status);await status();return;}
@@ -36,6 +67,7 @@ async function init(){
  bind('camera',async()=>{cameraControl?.stop();if(!window.ZXingBrowser)throw Error('Сканер не установлен; используйте ручной ввод кода');const reader=new ZXingBrowser.BrowserQRCodeReader();cameraControl=await reader.decodeFromVideoDevice(undefined,$('video'),async(result)=>{if(result){$('token').value=result.getText();cameraControl?.stop();try{await check();}catch(e){message(e.message);}}});});
  bind('logout',async()=>{cameraControl?.stop();await api('logout');location.reload();});
  bind('dashboard',dashboard);
+ setupTestCheckout();
  form('application-detail',async d=>{const v=await api('application-detail',d);$('application-data').textContent=JSON.stringify(v,null,2);});
  form('resend',async d=>{await api('resend',d);message('Повторная отправка поставлена в очередь');});
  form('mail-retry',async d=>{await api('mail-retry',{id:Number(d.id)});message('Повторная попытка поставлена в очередь');});

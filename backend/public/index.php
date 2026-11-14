@@ -8,7 +8,18 @@ header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer'
 header('X-Content-Type-Options: nosniff');header('X-Frame-Options: DENY');
 header("Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
 try {
-    $app=require dirname(__DIR__,2).'/status-backend/bootstrap.php';
+    $testEntry=defined('STATUS_TEST_ENTRY');
+    if (!$testEntry && basename(__FILE__)!=='index.php') {http_response_code(404);exit;}
+    $backend=$testEntry ? '/status-backend-test' : '/status-backend';
+    $app=require dirname(__DIR__,2).$backend.'/bootstrap.php';
+    $testCheckout=$testEntry && ($app->c['test_checkout_enabled']??false)===true
+        && $app->c['environment']==='test' && $app->c['yookassa']['test']===true
+        && str_starts_with($app->c['yookassa']['secret'],'test_')
+        && preg_match('/(?:^|;)dbname=[a-zA-Z0-9_]+_test(?:;|$)/',$app->c['db']['dsn'])===1
+        && $app->c['base_url']===$app->c['origin'].'/api-test';
+    if ($testEntry && !$testCheckout) throw new Problem(503,'test_checkout_disabled');
+    if ($testCheckout) header('X-Robots-Tag: noindex, nofollow');
+    $sessionPath=$testCheckout ? '/api-test/' : '/api/';
     $route=$_GET['r']??''; $method=$_SERVER['REQUEST_METHOD'];
     if(!is_string($route)) throw new Problem(404,'not_found');
     if($method==='GET') {
@@ -23,6 +34,20 @@ try {
     if(($_SERVER['HTTP_ORIGIN']??'')!==$app->c['origin']) throw new Problem(403,'origin_denied');
     $app->rate('request:'.$ip,120,60);
     $d=Http::input();
+    if ($testCheckout && in_array($route,['orders','checkout-documents'],true)) {
+        Http::session($sessionPath);
+        Http::csrf($d);
+        Http::staff($app,true);
+        session_write_close();
+        $app->checkoutReady();
+        if ($route==='checkout-documents') {
+            $docs=$app->db->run("SELECT id,version,href FROM documents WHERE active=1 AND id IN ('terms','buyers','privacy') ORDER BY id")->fetchAll();
+            if (count($docs)!==3 || count(array_unique(array_column($docs,'id')))!==3) throw new Problem(503,'documents_pending');
+            Http::output(['documents'=>$docs,'amountKopecks'=>\StatusTeam\App::PRICE]);
+        }
+        $app->rate('submission:'.$ip,15);
+        Http::output($app->order($d,$ip));
+    }
     if($route==='forms' || $route==='orders') {
         $app->rate('submission:'.$ip,15);
         Http::output($route==='forms'?$app->application($d,$ip):$app->order($d,$ip));
@@ -37,7 +62,7 @@ try {
         $uri=(new Endroid\QrCode\Writer\SvgWriter())->write($qr)->getDataUri();
         Http::output(['number'=>$t['number'],'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status'],'qr'=>$uri,'support'=>$app->c['support']]);
     }
-    Http::session();
+    Http::session($sessionPath);
     if($route==='session') Http::output(['csrf'=>$_SESSION['csrf']]);
     Http::csrf($d);
     if($route==='login') {
@@ -54,7 +79,7 @@ try {
     $s=Http::staff($app,$admin);session_write_close();
     switch($route) {
         case 'me':Http::output(['role'=>$s['role'],'username'=>$s['username']]);
-        case 'logout':Http::session();$_SESSION=[];session_destroy();Http::output(['ok'=>true]);
+        case 'logout':Http::session($sessionPath);$_SESSION=[];session_destroy();Http::output(['ok'=>true]);
         case 'check':
             $t=$app->ticketFromCode(Validation::text($d,'token',64));
             Http::output(['number'=>$t['number'],'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status']]);

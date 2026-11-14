@@ -6,6 +6,7 @@ return [
     'base_url' => 'https://statusteam-official.ru/api',
     'forms_enabled' => false,
     'checkout_enabled' => false,
+    'test_checkout_enabled' => false, // Admin-only checkout on an isolated test API.
     'live_approved' => false, // only after acceptance checklist; not an alternative to fiscal checks
     'documents_approved' => false,
     'minor_forms_enabled' => false, // enable after confirming representative procedure and approved document 03
