@@ -4,12 +4,16 @@ namespace StatusTeam;
 use PHPMailer\PHPMailer\PHPMailer;
 final class Mailer {
     public function __construct(private App $app) {}
-    public function send(string $to,string $subject,string $body,string $messageId): void {
+    public function send(string $to,string $subject,string $body,string $messageId, ?array $attachment=null): void {
         $c=$this->app->c['smtp'];
         if(!$c['host'] || !in_array($c['encryption'],['tls','ssl'],true) || !$c['port'] || !$c['password']) throw new Problem(503,'smtp_configuration_pending');
         $m=new PHPMailer(true);$m->isSMTP();$m->Host=$c['host'];$m->Port=$c['port'];$m->SMTPSecure=$c['encryption'];$m->SMTPAuth=true;$m->Username=$c['user'];$m->Password=$c['password'];$m->SMTPDebug=0;$m->Timeout=30;
         $m->CharSet='UTF-8';$m->setFrom($c['from'],'STATUS TEAM');$m->addAddress($to);$m->Subject=$subject;$m->Body=$body;
-        $m->MessageID='<'.$messageId.'@statusteam-official.ru>';$m->send();
+        $m->MessageID='<'.$messageId.'@statusteam-official.ru>';
+        if ($attachment !== null) {
+            $m->addStringAttachment($attachment['pdf'], $attachment['name'], 'base64', 'application/pdf');
+        }
+        $m->send();
     }
     public function work(?callable $transport=null): array {
         $db=$this->app->db;$sent=0;$failed=0;
@@ -23,19 +27,25 @@ final class Mailer {
             });
             if(!$job) break;
             try {
+                $attachment=null;
                 if($job['kind']==='ticket') {
-                    $t=$db->one("SELECT t.token_cipher,t.number FROM tickets t JOIN orders o ON o.id=t.order_id WHERE t.order_id=? AND o.status='paid' AND t.status IN ('valid','used')",[$job['reference_id']]);
+                    $t=$db->one("SELECT t.token_cipher,t.number,o.amount FROM tickets t JOIN orders o ON o.id=t.order_id WHERE t.order_id=? AND o.status='paid' AND t.status IN ('valid','used')",[$job['reference_id']]);
                     if(!$t) {
                         $db->run("UPDATE mail_queue SET status='canceled',lock_token=NULL WHERE id=? AND lock_token=?",[$job['id'],$job['lock_token']]);continue;
                     }
                     $subject='Ваш билет на «Пульс Континента»';
-                    $body="Ваш билет ".$t['number']."\n\n".$this->app->ticketUrl($this->app->crypto->open($t['token_cipher']))."\n\n30 ноября 2026. Сбор гостей 18:30, начало 20:00 (Москва).\nLOTTE HOTEL MOSCOW, Москва, Новинский бульвар, д. 8, стр. 2.\n18+. Один билет — один проход. Без выбора мест.\nСохраните билет на телефоне или распечатайте.\nПоддержка: ".$this->app->c['support']."\nКассовый чек направляется отдельно.\n";
+                    $token=$this->app->crypto->open($t['token_cipher']);
+                    $attachment=['pdf'=>TicketPdf::render($t['number'],$token,$this->app->c['environment']==='test',(int)$t['amount'],$job['reference_id']),'name'=>$t['number'].'.pdf'];
+                    $body="Ваш билет ".$t['number']."\n\n".$this->app->ticketUrl($token)."\n\n30 ноября 2026. Сбор гостей 18:30, начало 20:00 (Москва).\nLOTTE HOTEL MOSCOW, Москва, Новинский бульвар, д. 8, стр. 2.\n18+. Один билет — один проход. Без выбора мест.\nСохраните билет на телефоне или распечатайте.\nПоддержка: ".$this->app->c['support']."\nPDF-билет приложен к письму.\n";
+                    if ((int)$t['amount']===App::CONTROL_PRICE) $body="Контрольный билет. Для прохода недействителен.\n\n".$body;
+                    if ($this->app->c['environment']!=='test') $body.="Кассовый чек направляется отдельно.\n";
                 } else {
                     $subject='Новая заявка STATUS TEAM';
                     // Applicant data stay in MySQL; authenticated admin reads them in the same Russian infrastructure.
                     $body="Сохранена новая заявка. Откройте защищённый кабинет:\n".$this->app->c['base_url'].'/index.php?r=staff';
                 }
                 $args=[$this->app->crypto->open($job['recipient']),$subject,$body,'queue-'.$job['id']];
+                $args[]=$attachment;
                 if($transport) $transport(...$args); else $this->send(...$args);
                 $db->run("UPDATE mail_queue SET status='sent',sent_at=UTC_TIMESTAMP(),lock_token=NULL,last_error=NULL WHERE id=? AND lock_token=?",[$job['id'],$job['lock_token']]);$sent++;
             } catch(\Throwable) {

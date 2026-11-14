@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   mysql:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       mysql:
         image: mysql:8.4
@@ -55,3 +55,104 @@ jobs:
           HTTP_CHECK_PID=$!
           trap 'kill "$HTTP_CHECK_PID" 2>/dev/null || true' EXIT
           node backend/tests/http.mjs
+  test-purchase:
+    if: github.head_ref == 'codex/yookassa-test-checkout'
+    runs-on: ubuntu-24.04
+    env:
+      STATUS_TEST_PURCHASE_BUILD: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Package isolated checkout
+        run: |
+          test -s out/test-purchase/index.html
+          grep -Fq 'Оформление билета' out/test-purchase/index.html
+          grep -Fq '/api-test/purchase-assets/_next/' out/test-purchase/index.html
+          mkdir stage
+          cp out/test-purchase/index.html stage/test-purchase.html
+          mkdir stage/_next
+          cp -R out/_next/static stage/_next/
+          cp backend/public/index.php stage/router.php
+          cp backend/public/page.php backend/public/app.js stage/
+          cp backend/scripts/install-test-purchase.sh stage/
+          tar -czf test-purchase.tar.gz -C stage .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: statusteam-test-purchase
+          path: test-purchase.tar.gz
+          retention-days: 14
+  control-purchase:
+    if: github.head_ref == 'codex/yookassa-live-control'
+    runs-on: ubuntu-24.04
+    env:
+      NEXT_PUBLIC_FORM_ENDPOINT: /api/index.php?r=forms
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run backend:assets
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify the control form submits to the private endpoint
+        run: |
+          python3 -m http.server 4311 --directory out >/tmp/checkout-http.log 2>&1 &
+          node --input-type=module <<'JS'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch();
+          try {
+            const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+            let sent;
+            await page.route('**/api/index.php?*', async route => {
+              const name = new URL(route.request().url()).searchParams.get('r');
+              const docs = ['terms','buyers','privacy'].map(id => ({id, version:'fixture'}));
+              if (name === 'control-order') sent = route.request().postDataJSON();
+              await route.fulfill({json: name === 'session' ? {csrf:'fixture'} :
+                name === 'control-documents' ? {amountKopecks:100, documents:docs} : {confirmationUrl:'https://yookassa.ru/checkout/fixture'}});
+            });
+            await page.route('https://yookassa.ru/checkout/fixture', route => route.fulfill({body:'YooKassa fixture'}));
+            await page.goto('http://localhost:4311/');
+            const pay = page.getByRole('button', {name:'Оплатить', exact:true});
+            if (!await pay.isDisabled()) throw Error('Public checkout must stay closed');
+            await page.goto('http://localhost:4311/?control=1#tickets');
+            await page.getByText('Контрольная оплата · реальное списание 1 ₽').waitFor();
+            await page.locator('#purchase-name').fill('Тест Покупатель');
+            await page.locator('#purchase-email').fill('test@example.invalid');
+            await page.locator('#purchase-phone').fill('+79990000000');
+            await page.locator('#purchase-terms').check();
+            if (!/^1\s*₽$/.test(await page.locator('.ticket-total output').innerText())) throw Error('Expected one ruble');
+            await page.getByRole('button', {name:'Оплатить', exact:true}).click();
+            await page.waitForURL('https://yookassa.ru/checkout/fixture');
+            if (!sent || sent.csrf !== 'fixture' || ('paymentMethod' in sent) ||
+                !/^[a-f0-9]{64}$/.test(sent.requestKey) || sent.consentDocuments.length !== 3) throw Error('Unexpected smart payment request');
+          } finally { await browser.close(); }
+          JS
+      - name: Package the protected checkout
+        run: |
+          mkdir -p stage/_next stage/src stage/public
+          cp out/index.html stage/
+          if [ -f out/index.txt ]; then cp out/index.txt stage/; fi
+          cp -R out/_next/static stage/_next/
+          cp backend/src/{App.php,Http.php,Mailer.php,TicketPdf.php,TicketDetails.php,TicketFont.json,TicketFont-LICENSE.txt} stage/src/
+          cp backend/public/{index.php,page.php,app.css,app.js,scanner.min.js,scanner-LICENSE} stage/public/
+          test -s stage/public/scanner.min.js
+          test -s stage/public/scanner-LICENSE
+          (cd stage && sha256sum public/scanner.min.js > scanner.sha256)
+          cp backend/scripts/install-live-control.sh backend/scripts/install-live-smart.sh backend/scripts/install-live-scanner.sh stage/
+          bash -n stage/install-live-control.sh
+          bash -n stage/install-live-smart.sh
+          bash -n stage/install-live-scanner.sh
+          tar -czf control-purchase.tar.gz -C stage .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: control-purchase
+          path: control-purchase.tar.gz
