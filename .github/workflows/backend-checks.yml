@@ -91,7 +91,7 @@ jobs:
     if: github.head_ref == 'codex/yookassa-live-control'
     runs-on: ubuntu-24.04
     env:
-      STATUS_CONTROL_PURCHASE_BUILD: "1"
+      NEXT_PUBLIC_FORM_ENDPOINT: /api/index.php?r=forms
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -104,8 +104,6 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Verify the control form submits to the private endpoint
         run: |
-          mkdir -p out/api/control-assets
-          ln -s ../../_next out/api/control-assets/_next
           python3 -m http.server 4311 --directory out >/tmp/checkout-http.log 2>&1 &
           node --input-type=module <<'JS'
           import { chromium } from 'playwright';
@@ -118,16 +116,21 @@ jobs:
               const docs = ['terms','buyers','privacy'].map(id => ({id, version:'fixture'}));
               if (name === 'control-order') sent = route.request().postDataJSON();
               await route.fulfill({json: name === 'session' ? {csrf:'fixture'} :
-                name === 'control-documents' ? {amountKopecks:100, documents:docs} : {accessToken:'fixture'}});
+                name === 'control-documents' ? {amountKopecks:100, documents:docs} : {confirmationUrl:'https://yookassa.ru/checkout/fixture'}});
             });
-            await page.goto('http://localhost:4311/control-purchase/');
+            await page.route('https://yookassa.ru/checkout/fixture', route => route.fulfill({body:'YooKassa fixture'}));
+            await page.goto('http://localhost:4311/');
+            const pay = page.getByRole('button', {name:'Оплатить', exact:true});
+            if (!await pay.isDisabled()) throw Error('Public checkout must stay closed');
+            await page.goto('http://localhost:4311/?control=1#tickets');
+            await page.getByText('Контрольная оплата · реальное списание 1 ₽').waitFor();
             await page.locator('#purchase-name').fill('Тест Покупатель');
             await page.locator('#purchase-email').fill('test@example.invalid');
             await page.locator('#purchase-phone').fill('+79990000000');
             await page.locator('#purchase-terms').check();
             if (!/^1\s*₽$/.test(await page.locator('.ticket-total output').innerText())) throw Error('Expected one ruble');
             await page.getByRole('button', {name:'Оплатить', exact:true}).click();
-            await page.waitForURL('**/api/index.php?r=return#fixture');
+            await page.waitForURL('https://yookassa.ru/checkout/fixture');
             if (!sent || sent.csrf !== 'fixture' || sent.paymentMethod !== 'bank_card' ||
                 !/^[a-f0-9]{64}$/.test(sent.requestKey) || sent.consentDocuments.length !== 3) throw Error('Unexpected request');
           } finally { await browser.close(); }
@@ -135,7 +138,8 @@ jobs:
       - name: Package the protected checkout
         run: |
           mkdir -p stage/_next stage/src stage/public
-          cp out/control-purchase/index.html stage/control-purchase.html
+          cp out/index.html stage/
+          if [ -f out/index.txt ]; then cp out/index.txt stage/; fi
           cp -R out/_next/static stage/_next/
           cp backend/src/{App.php,Http.php,Mailer.php,TicketPdf.php,TicketDetails.php,TicketFont.json,TicketFont-LICENSE.txt} stage/src/
           cp backend/public/{index.php,page.php,app.css,app.js} stage/public/

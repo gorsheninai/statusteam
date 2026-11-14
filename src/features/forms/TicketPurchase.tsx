@@ -8,13 +8,18 @@ import LegalLink from "./LegalLink";
 import { apiEndpoint, retryKey } from "./api";
 
 /** Server enforces price, capacity and release gates independently. */
-export default function TicketPurchase({ test = false, control = false }: { test?: boolean; control?: boolean }) {
+export default function TicketPurchase({ test = false, control: forceControl = false }: { test?: boolean; control?: boolean }) {
   const busy = useRef(false);
   const [state, setState] = useState("");
   const [sending, setSending] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [testSession, setTestSession] = useState<{ csrf: string; amountKopecks: number; documents: { id: string; version: string }[] } | null>(null);
   const [testSessionError, setTestSessionError] = useState(false);
+  const [homeControl, setHomeControl] = useState(false);
+  useEffect(() => {
+    setHomeControl(window.location.pathname === "/" && new URLSearchParams(window.location.search).get("control") === "1");
+  }, []);
+  const control = forceControl || homeControl;
   const restricted = test || control;
   const restrictedPath = control ? "/api/index.php" : "/api-test/index.php";
   useEffect(() => {
@@ -39,7 +44,7 @@ export default function TicketPurchase({ test = false, control = false }: { test
     ? `${restrictedPath}?r=${control && route === "orders" ? "control-order" : route}`
     : apiEndpoint(route);
   const published = documentsPublished(PURCHASE_DOCUMENTS);
-  const total = testSession?.amountKopecks ?? (control ? 100 : TICKET.priceKopecks);
+  const total = testSession?.amountKopecks ?? TICKET.priceKopecks;
   const available = published && (restricted ? testSession !== null && (!control || testSession.amountKopecks === 100) : CHECKOUT_ENABLED);
   async function checkout(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -82,6 +87,7 @@ export default function TicketPurchase({ test = false, control = false }: { test
     <form className="form ticket-purchase" data-form="purchase" aria-label="Оформление билета"
       method="post" onSubmit={checkout}
       onReset={() => setAccepted(false)}>
+      {control && testSession?.amountKopecks === 100 && <p className="form-note">Контрольная оплата · реальное списание 1 ₽</p>}
       <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" hidden />
       <input name="quantity" type="hidden" value="1" />
       <div className="form-grid">

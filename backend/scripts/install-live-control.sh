@@ -9,7 +9,9 @@ php_bin=$(php -r 'echo PHP_BINARY;')
 work=$(mktemp -d "$private/.control.XXXXXX")
 trap 'rm -rf "$work"' EXIT
 tar -xzf "$archive" -C "$work"
-test -s "$work/control-purchase.html"
+site=public_html
+test -s "$work/index.html"
+test -s "$site/index.html"
 test -d "$work/_next/static"
 
 env -u STATUS_CONFIG "$php_bin" /dev/stdin "$work" <<'PHP'
@@ -69,7 +71,9 @@ done
 backup=$(mktemp -d "$private/backup-control.XXXXXX")
 mkdir "$backup/src" "$backup/public"
 cp -p "$private/config.php" "$backup/"
-if [ -f "$private/control-purchase.html" ]; then cp -p "$private/control-purchase.html" "$backup/"; fi
+mkdir "$backup/homepage"
+cp -p "$site/index.html" "$backup/homepage/"
+if [ -f "$site/index.txt" ]; then cp -p "$site/index.txt" "$backup/homepage/"; fi
 for f in "$work"/src/*; do
     name=$(basename "$f")
     if [ -f "$private/src/$name" ]; then cp -p "$private/src/$name" "$backup/src/"; fi
@@ -79,14 +83,19 @@ for f in "$work"/public/*; do
     if [ -f "$public/$name" ]; then cp -p "$public/$name" "$backup/public/"; fi
 done
 for f in "$work"/src/* "$work"/public/*; do chmod 644 "$f"; done
-mkdir -p -m 755 "$public/control-assets/_next/static"
+mkdir -p -m 755 "$site/_next/static"
 find "$work/_next/static" -type d -exec chmod 755 {} +
 find "$work/_next/static" -type f -exec chmod 644 {} +
-cp -R "$work/_next/static/." "$public/control-assets/_next/static/"
-install -m 644 "$work/control-purchase.html" "$private/control-purchase.html"
+cp -R "$work/_next/static/." "$site/_next/static/"
 mv -f "$work"/src/* "$private/src/"
 mv -f "$work"/public/{app.css,app.js,page.php,index.php} "$public/"
 mv -f "$work/config.php" "$private/config.php"
+for name in index.txt index.html; do
+    if [ -f "$work/$name" ]; then
+        chmod 644 "$work/$name"
+        mv -f "$work/$name" "$site/$name"
+    fi
+done
 
 echo "Закрытая покупка на 1 ₽ готова. Резервная копия: $backup"
 echo "Кабинет: https://statusteam-official.ru/api/index.php?r=staff"
