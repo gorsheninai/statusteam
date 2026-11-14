@@ -18,7 +18,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build
-      - run: npx playwright install chromium
+      - run: npx playwright install --with-deps chromium
       - name: Verify checkout on desktop and mobile
         run: |
           python3 -m http.server 4311 --directory out >/tmp/checkout-http.log 2>&1 &
@@ -47,10 +47,9 @@ jobs:
         run: |
           mkdir -p stage/_next
           cp -R out/_next/static stage/_next/
-          cd out
-          find . -type f \( -name '*.html' -o -name '*.txt' \) -print0 |
-            tar --null -T - -cf - | tar -xf - -C ../stage
-          cd ..
+          cp out/index.html stage/
+          if [ -f out/index.txt ]; then cp out/index.txt stage/; fi
+          cp scripts/install-checkout-layout.sh stage/
           tar -czf checkout-layout.tar.gz -C stage .
       - uses: actions/upload-artifact@v4
         with:
