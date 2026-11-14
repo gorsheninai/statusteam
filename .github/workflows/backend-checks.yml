@@ -143,8 +143,9 @@ jobs:
           cp -R out/_next/static stage/_next/
           cp backend/src/{App.php,Http.php,Mailer.php,TicketPdf.php,TicketDetails.php,TicketFont.json,TicketFont-LICENSE.txt} stage/src/
           cp backend/public/{index.php,page.php,app.css,app.js} stage/public/
-          cp backend/scripts/install-live-control.sh stage/
+          cp backend/scripts/install-live-control.sh backend/scripts/install-live-smart.sh stage/
           bash -n stage/install-live-control.sh
+          bash -n stage/install-live-smart.sh
           tar -czf control-purchase.tar.gz -C stage .
       - uses: actions/upload-artifact@v4
         with:
