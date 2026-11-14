@@ -23,3 +23,9 @@ export async function retryKey(purpose: string, payload: unknown, reuseAcrossCha
   try { sessionStorage.setItem(storageKey, JSON.stringify({ digest, key })); } catch { /* current request still works */ }
   return key;
 }
+
+/** Start a new explicit checkout attempt only after the previous one is terminal. */
+export function resetRetryKey(purpose: string) {
+  memoryKeys.delete(purpose);
+  try { sessionStorage.removeItem(`status-request-${purpose}`); } catch { /* in-memory fallback */ }
+}
