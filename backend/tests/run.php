@@ -188,7 +188,7 @@ $form['form']='subscribe';reject(fn()=>$app->application($form,'127.0.0.1'),422,
 $_SERVER=['REMOTE_ADDR'=>'127.0.0.1','HTTP_X_FORWARDED_FOR'=>'1.2.3.4'];check(Http::ip($app->c)==='127.0.0.1','untrusted forwarded IP ignored');
 $qr=(new Endroid\QrCode\Writer\SvgWriter())->write(new Endroid\QrCode\QrCode(data:$tokenRefund,size:320));check(str_contains($qr->getString(),'<svg'),'locked QR dependency produces local SVG');
 $app->c['environment']='live';$app->c['yookassa']['test']=false;reject(fn()=>$app->checkoutReady(),503,'unapproved live fiscal settings block checkout');
-$pdf=\StatusTeam\TicketPdf::render('ST-0123456789ABCDEF', str_repeat('a',64), true);
-check(str_starts_with($pdf,'%PDF-1.4') && str_contains($pdf,'ST-0123456789ABCDEF') && str_contains($pdf,'TEST TICKET'),'test ticket PDF includes the number and test label');
+$pdf=\StatusTeam\TicketPdf::render('ST-0123456789ABCDEF', str_repeat('a',64), true, 3000050, str_repeat('b',32));
+check(str_starts_with($pdf,'%PDF-1.4') && str_contains($pdf,'/ToUnicode') && str_contains($pdf,\StatusTeam\TicketDetails::TERMS_URL),'test ticket PDF includes a Unicode text map and link to terms');
 check(preg_match('/startxref\n(\d+)\n/', $pdf, $offset) && substr($pdf,(int)$offset[1],4)==='xref','ticket PDF cross-reference offset is valid');
 echo 'TOTAL '.$count." passed\n";

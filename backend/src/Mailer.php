@@ -29,13 +29,13 @@ final class Mailer {
             try {
                 $attachment=null;
                 if($job['kind']==='ticket') {
-                    $t=$db->one("SELECT t.token_cipher,t.number FROM tickets t JOIN orders o ON o.id=t.order_id WHERE t.order_id=? AND o.status='paid' AND t.status IN ('valid','used')",[$job['reference_id']]);
+                    $t=$db->one("SELECT t.token_cipher,t.number,o.amount FROM tickets t JOIN orders o ON o.id=t.order_id WHERE t.order_id=? AND o.status='paid' AND t.status IN ('valid','used')",[$job['reference_id']]);
                     if(!$t) {
                         $db->run("UPDATE mail_queue SET status='canceled',lock_token=NULL WHERE id=? AND lock_token=?",[$job['id'],$job['lock_token']]);continue;
                     }
                     $subject='Ваш билет на «Пульс Континента»';
                     $token=$this->app->crypto->open($t['token_cipher']);
-                    $attachment=['pdf'=>TicketPdf::render($t['number'],$token,$this->app->c['environment']==='test'),'name'=>$t['number'].'.pdf'];
+                    $attachment=['pdf'=>TicketPdf::render($t['number'],$token,$this->app->c['environment']==='test',(int)$t['amount'],$job['reference_id']),'name'=>$t['number'].'.pdf'];
                     $body="Ваш билет ".$t['number']."\n\n".$this->app->ticketUrl($token)."\n\n30 ноября 2026. Сбор гостей 18:30, начало 20:00 (Москва).\nLOTTE HOTEL MOSCOW, Москва, Новинский бульвар, д. 8, стр. 2.\n18+. Один билет — один проход. Без выбора мест.\nСохраните билет на телефоне или распечатайте.\nПоддержка: ".$this->app->c['support']."\nPDF-билет приложен к письму.\n";
                     if ($this->app->c['environment']!=='test') $body.="Кассовый чек направляется отдельно.\n";
                 } else {

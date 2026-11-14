@@ -1,8 +1,22 @@
-<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css?v=3"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js?v=3" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
 <h1>STATUS TEAM</h1><p id="message" role="status" aria-live="polite"></p>
 <?php if($testCheckout): ?><p><strong>Тестовый режим ЮKassa</strong></p><?php endif; ?>
 <?php if($route==='ticket'): ?>
-<article id="ticket" hidden><h2>Пульс Континента</h2><p id="number"></p><p>30 ноября 2026 · 18+</p><p>Организатор: ООО «СТАТУС»</p><p>Сбор гостей 18:30 · начало 20:00 (Москва)</p><p>LOTTE HOTEL MOSCOW<br>Москва, Новинский бульвар, д. 8, стр. 2</p><img id="qr" alt="QR-код билета" width="320" height="320"><p id="ticket-status"></p><p>Один гость · один проход · без выбора мест</p><p id="support"></p><button id="print">Распечатать</button></article>
+<?php $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); $details=\StatusTeam\TicketDetails::class; ?>
+<article id="ticket" hidden>
+<div class="ticket-heading">
+<div><p><?=$testCheckout ? 'Тестовый электронный билет' : 'Электронный билет'?></p>
+<h2><?=$escape($details::EVENT)?></h2><p id="number"></p><p id="ticket-price"></p></div>
+<strong class="ticket-age" id="ticket-age"><?=$escape($details::AGE)?></strong>
+</div>
+<p><?=$escape($details::DATE)?><br><?=$escape($details::TIME)?></p>
+<p><?=$escape($details::VENUE)?><br><?=$escape($details::VENUE_ADDRESS)?></p>
+<img id="qr" alt="QR-код билета" width="320" height="320"><p id="ticket-status"></p>
+<p><?=$escape($details::ADMISSION)?></p>
+<p><span id="ticket-order"></span><br><?=$escape($details::ORGANIZER)?><br><?=$escape($details::REGISTRATION)?><br><?=$escape($details::LEGAL_ADDRESS)?></p>
+<p id="support"></p><p>Возврат: <a href="mailto:<?=$escape($details::REFUNDS_EMAIL)?>"><?=$escape($details::REFUNDS_EMAIL)?></a><br>
+<a href="<?=$escape($details::TERMS_URL)?>">Условия покупки и возврата</a></p>
+<button id="print">Распечатать</button></article>
 <?php elseif($route==='return'): ?>
 <h2>Ваш заказ</h2><p>Статус проверяется на сервере. Возвращение со страницы оплаты само по себе не подтверждает оплату.</p><button id="refresh">Проверить статус</button><p><a id="new-order" href="<?=$testCheckout ? 'index.php?r=staff' : '/#tickets'?>" hidden>Оформить ещё один билет</a></p><p><a id="open-ticket" hidden>Открыть билет</a></p><p><a id="pay" hidden>Продолжить оплату</a></p>
 <?php else: ?>

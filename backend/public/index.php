@@ -58,9 +58,10 @@ try {
     }
     if($route==='ticket-data') {
         $token=Validation::text($d,'token',64);$t=$app->ticket($token);
+        $order=$app->db->one('SELECT amount FROM orders WHERE id=?',[$t['order_id']]);
         $qr=new Endroid\QrCode\QrCode(data:$token,size:320,margin:16);
         $uri=(new Endroid\QrCode\Writer\SvgWriter())->write($qr)->getDataUri();
-        Http::output(['number'=>$t['number'],'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status'],'qr'=>$uri,'support'=>$app->c['support']]);
+        Http::output(['number'=>$t['number'],'price'=>\StatusTeam\TicketDetails::price((int)$order['amount']),'orderId'=>$t['order_id'],'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status'],'qr'=>$uri,'support'=>$app->c['support']]);
     }
     Http::session($sessionPath);
     if($route==='session') Http::output(['csrf'=>$_SESSION['csrf']]);

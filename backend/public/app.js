@@ -90,7 +90,7 @@ function setupTestCheckout() {
  });
 }
 async function init(){
- if(page==='ticket'){const v=await api('ticket-data',{token:token()});$('number').textContent=v.number;$('qr').src=v.qr;$('ticket-status').textContent=labels[v.status]||v.status;$('support').textContent='Поддержка: '+v.support;$('ticket').hidden=false;bind('print',()=>window.print());return;}
+ if(page==='ticket'){const v=await api('ticket-data',{token:token()});$('number').textContent=v.number;$('ticket-price').textContent=v.price;$('ticket-order').textContent='Заказ '+v.orderId;$('qr').src=v.qr;$('ticket-status').textContent=labels[v.status]||v.status;$('support').textContent='Поддержка: '+v.support;$('ticket').hidden=false;const fitAge=()=>{const ticket=$('ticket'),age=$('ticket-age');const {width,height}=ticket.getBoundingClientRect();const target=Math.ceil(Math.sqrt(width*height*0.052));if(Math.abs(age.offsetWidth-target)>1) age.style.setProperty('--age-size',target+'px');};new ResizeObserver(fitAge).observe($('ticket'));bind('print',()=>window.print());return;}
  if(page==='return'){bind('refresh',status);await status();return;}
  csrf=(await api('session')).csrf;
  try{await staff();}catch{ /* show login */ }
