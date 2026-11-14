@@ -94,7 +94,7 @@ final class App {
         $existing=$this->db->one(
             "SELECT o.id,o.request_key,o.request_hash,o.buyer FROM orders o
              JOIN payments p ON p.order_id=o.id
-             WHERE o.amount=? AND p.status<>'canceled'
+             WHERE o.amount=? AND p.status='pending' AND o.status IN ('reserved','expired')
              ORDER BY o.created_at DESC LIMIT 1",
             [self::CONTROL_PRICE]
         );
@@ -104,7 +104,7 @@ final class App {
         $previousBuyer=$this->decode($existing['buyer']);
         // Otherwise the receipt and ticket could be delivered to another buyer.
         if(!hash_equals((string)($previousBuyer['email']??''),$buyer['email']))
-            throw new Problem(409,'control_order_exists');
+            return null; // a different buyer must receive their own YooKassa receipt
 
         // Refresh from YooKassa: a remotely canceled payment permits a new order.
         // Never revive a paid payment or one that is waiting for capture.
@@ -150,7 +150,6 @@ final class App {
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
             $old=$this->db->one('SELECT id,request_hash FROM orders WHERE request_key=?',[$key]);
             if($old) {if($old['request_hash']!==$hash) throw new Problem(409,'retry_payload_changed');return $old['id'];}
-            if($control && $this->db->one("SELECT o.id FROM orders o JOIN payments p ON p.order_id=o.id WHERE o.amount=? AND p.status<>'canceled' LIMIT 1",[self::CONTROL_PRICE])) throw new Problem(409,'control_order_exists');
             $docs=$this->documents($d,['terms','buyers','privacy']);
             if(!$control && $inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
             $id=Crypto::id();$paymentKey=Crypto::id();
