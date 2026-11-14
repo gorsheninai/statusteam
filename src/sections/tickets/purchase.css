@@ -73,3 +73,29 @@
 @media (min-width: 900px) {
   .company-details > div { grid-template-columns: minmax(8rem, 0.45fr) minmax(0, 1fr); gap: var(--space-3); }
 }
+
+.ticket-facts-mobile { display: none; }
+
+@media (max-width: 640px) {
+  .ticket-shop-heading h2 {
+    font-size: clamp(1.85rem, 11.1vw, 4.3rem);
+    letter-spacing: -0.025em;
+  }
+  .ticket-facts-desktop { display: none; }
+  .ticket-facts-mobile { display: grid; gap: 1.25rem; }
+  .ticket-mobile-date { display: flex; align-items: baseline; gap: 0.8rem; }
+  .ticket-mobile-date time { font-size: clamp(1.25rem, 5.5vw, 1.6rem); }
+  .ticket-mobile-date span { color: var(--champagne); font-size: var(--fs-small); }
+  .ticket-mobile-venue { display: grid; gap: 0.25rem; }
+  .ticket-mobile-venue strong { font-weight: 500; }
+  .ticket-mobile-venue span,
+  .ticket-mobile-timezone { font-size: var(--fs-small); opacity: 0.8; }
+  .ticket-mobile-times {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .ticket-mobile-times dt { font-size: var(--fs-small); opacity: 0.8; }
+  .ticket-mobile-times dd { font-size: 1.25rem; margin-top: 0.25rem; }
+  .ticket-mobile-timezone { margin-top: -0.75rem; }
+}
