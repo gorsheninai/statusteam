@@ -45,6 +45,11 @@ jobs:
                 throw Error('Expected the pulse line and at least 60px between event details and the form');
               }
               if (Math.abs(divider.x + divider.width / 2 - width / 2) > 2) throw Error('Pulse divider is off center');
+              const pulse = page.locator('.ticket-pulse-divider .pulse-beat-window');
+              const animation = await pulse.evaluate(el => getComputedStyle(el).animationName);
+              if (animation !== 'pulse-beat-window') throw Error('Expected the shared animated pulse');
+              await page.emulateMedia({ reducedMotion: 'reduce' });
+              if (await pulse.isVisible()) throw Error('Pulse should respect reduced motion');
               await page.close();
             }
           } finally {
