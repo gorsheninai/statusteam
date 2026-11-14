@@ -188,6 +188,30 @@ $form['form']='subscribe';reject(fn()=>$app->application($form,'127.0.0.1'),422,
 $_SERVER=['REMOTE_ADDR'=>'127.0.0.1','HTTP_X_FORWARDED_FOR'=>'1.2.3.4'];check(Http::ip($app->c)==='127.0.0.1','untrusted forwarded IP ignored');
 $qr=(new Endroid\QrCode\Writer\SvgWriter())->write(new Endroid\QrCode\QrCode(data:$tokenRefund,size:320));check(str_contains($qr->getString(),'<svg'),'locked QR dependency produces local SVG');
 $app->c['environment']='live';$app->c['yookassa']['test']=false;reject(fn()=>$app->checkoutReady(),503,'unapproved live fiscal settings block checkout');
+$app->c['checkout_enabled']=false;
+$app->c['control_checkout_enabled']=true;
+$app->c['live_approved']=$app->c['fiscal']['approved']=true;
+$app->c['yookassa']=['shop_id'=>'1513337','secret'=>'live_fixture','test'=>false];
+$app->c['fiscal']['integration']='yoo_receipt';
+$app->c['fiscal']['tax_system_code']=null;
+reject(fn()=>$app->order(purchase(),'127.0.0.1'),503,'public checkout is closed during the control purchase');
+$input=purchase();
+$controlGateway=new class implements \StatusTeam\Gateway {
+    public array $body=[];
+    public function call(string $method,string $path,?array $body=null,?string $key=null): array {
+        $this->body=$body;
+        $order=$body['metadata']['order_id'];
+        return ['id'=>'fixture-'.$order,'metadata'=>$body['metadata'],'recipient'=>['account_id'=>'1513337'],
+            'test'=>false,'amount'=>$body['amount'],'status'=>'pending','paid'=>false];
+    }
+};
+$controlApp=new \StatusTeam\App($db,$app->c,$app->crypto,$controlGateway);
+$held=$db->one('SELECT held FROM inventory')['held'];
+$controlOrder=$controlApp->order($input,'127.0.0.1',true);
+check($controlGateway->body['amount']['value']==='1.00' && $controlGateway->body['receipt']['items'][0]['amount']['value']==='1.00'
+    && !array_key_exists('tax_system_code',$controlGateway->body['receipt']),'live control uses one ruble and the native YooKassa receipt payload');
+check($db->one('SELECT held FROM inventory')['held']===$held,'control order does not consume inventory');
+reject(fn()=>$controlApp->order(purchase(),'127.0.0.1',true),409,'only one uncanceled live control order is allowed');
 $pdf=\StatusTeam\TicketPdf::render('ST-0123456789ABCDEF', str_repeat('a',64), true, 3000050, str_repeat('b',32));
 check(str_starts_with($pdf,'%PDF-1.4') && str_contains($pdf,'/ToUnicode') && str_contains($pdf,\StatusTeam\TicketDetails::TERMS_URL),'test ticket PDF includes a Unicode text map and link to terms');
 check(preg_match('/startxref\n(\d+)\n/', $pdf, $offset) && substr($pdf,(int)$offset[1],4)==='xref','ticket PDF cross-reference offset is valid');

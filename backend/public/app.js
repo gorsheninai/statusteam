@@ -1,7 +1,7 @@
 'use strict';
 const $=id=>document.getElementById(id), page=document.body.dataset.page;
 let csrf='',checked='',cameraControl=null,refundRequest=null;
-const errorLabels={ticket_not_found:'Билет не найден',invalid_ticket:'Билет недействителен',used:'Уже использован',login_required:'Войдите в кабинет',invalid_login:'Неверный логин или пароль',csrf_required:'Сессия изменилась — обновите страницу',partial_refunds_not_approved:'Частичные возвраты пока не согласованы',rate_limited:'Слишком много запросов — повторите позже'};
+const errorLabels={control_order_exists:'Контрольный заказ уже создан. Откройте его в списке заказов.',control_ticket:'Контрольный билет недействителен для прохода.',ticket_not_found:'Билет не найден',invalid_ticket:'Билет недействителен',used:'Уже использован',login_required:'Войдите в кабинет',invalid_login:'Неверный логин или пароль',csrf_required:'Сессия изменилась — обновите страницу',partial_refunds_not_approved:'Частичные возвраты пока не согласованы',rate_limited:'Слишком много запросов — повторите позже'};
 const message=text=>{$('message').textContent=errorLabels[text]||text;};
 const labels={valid:'Действителен',used:'Уже использован',refunded:'Возвращён / недействителен',refund_pending:'Возврат обрабатывается: проход заблокирован',admitted:'Проход подтверждён',reserved:'Ожидает оплаты',paid:'Оплачен',canceled:'Платёж отменён',expired:'Срок брони истёк. Оформите новый заказ.'};
 async function api(route,data={}){const res=await fetch('index.php?r='+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,csrf}),credentials:'same-origin'});const v=await res.json();if(!res.ok)throw Error(v.error||'Ошибка сервера');return v;}
@@ -28,9 +28,9 @@ async function dashboard() {
  const sections={orders:'Заказы',applications:'Заявки',mail:'Письма',refunds:'Возвраты'};
  const columns={
   buyer_name:'Покупатель',buyer_email:'Email',buyer_phone:'Телефон',ticket_number:'Билет',
-  ticket_status:'Статус билета',status:'Статус',payment_status:'Оплата',receipt_status:'Чек',
+  amount:'Сумма (коп.)',ticket_status:'Статус билета',status:'Статус',payment_status:'Оплата',receipt_status:'Чек',
   created_at:'Создан (UTC)',sent_at:'Отправлено (UTC)',id:'ID',order_id:'Заказ',
-  reference_id:'ID записи',attempts:'Попытки',last_error:'Последняя ошибка',kind:'Тип',amount:'Сумма (коп.)',
+  reference_id:'ID записи',attempts:'Попытки',last_error:'Последняя ошибка',kind:'Тип',
  };
  const statuses={paid:'Оплачен',reserved:'Забронирован',valid:'Действителен',used:'Использован',refunded:'Возвращён',refund_pending:'Возврат в обработке',canceled:'Отменён',expired:'Просрочен',succeeded:'Успешно',pending:'В ожидании',sent:'Отправлено',sending:'Отправляется',failed:'Ошибка',waiting_for_capture:'Ожидает подтверждения'};
  const list=$('lists');
@@ -61,15 +61,16 @@ async function dashboard() {
 function setupTestCheckout() {
  const checkout=$('test-checkout');
  if (!checkout) return;
+ const control=checkout.dataset.control==='yes';
  let documents=[],pending;
  bind('prepare-checkout',async()=>{
-  const result=await api('checkout-documents');
+  const result=await api(control?'control-documents':'checkout-documents');
   documents=result.documents.map(({id,version})=>({id,version}));
-  const names={buyers:'Оферта покупки билета',privacy:'Политика обработки персональных данных',terms:'Пользовательское соглашение'};
+  const names={buyers:'Сведения об обработке данных покупателей',privacy:'Политика обработки персональных данных',terms:'Пользовательское соглашение'};
   const links=result.documents.map(({id,href})=>{
    const item=document.createElement('li');
    const url=new URL(href,location.origin);
-   if(url.origin!==location.origin) throw Error('Проверьте адрес документа в тестовой базе');
+   if(url.origin!==location.origin) throw Error('Проверьте адрес документа');
    const link=document.createElement('a');
    link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=names[id];
    item.append(link);return item;
@@ -83,14 +84,19 @@ function setupTestCheckout() {
  form('test-checkout',async data=>{
   const payload={...data,paymentMethod:'bank_card',consentDocuments:documents};
   const signature=JSON.stringify(payload);
-  if(!pending || pending.signature!==signature) pending={signature,key:key()};
-  const order=await api('orders',{...payload,requestKey:pending.key});
+  if(control){
+   const saved=sessionStorage.getItem('status-control-order');
+   if(!pending) pending={signature,key:saved??key()};
+   sessionStorage.setItem('status-control-order',pending.key);
+  } else if(!pending || pending.signature!==signature) pending={signature,key:key()};
+  const order=await api(control?'control-order':'orders',{...payload,requestKey:pending.key});
+  if(control && ['expired','canceled'].includes(order.status)) sessionStorage.removeItem('status-control-order');
   if(order.confirmationUrl) location.assign(order.confirmationUrl);
   else location.assign('index.php?r=return#'+order.accessToken);
  });
 }
 async function init(){
- if(page==='ticket'){const v=await api('ticket-data',{token:token()});$('number').textContent=v.number;$('ticket-price').textContent=v.price;$('ticket-order').textContent='Заказ '+v.orderId;$('qr').src=v.qr;$('ticket-status').textContent=labels[v.status]||v.status;$('support').textContent='Поддержка: '+v.support;$('ticket').hidden=false;const fitAge=()=>{const ticket=$('ticket'),age=$('ticket-age');const {width,height}=ticket.getBoundingClientRect();const target=Math.ceil(Math.sqrt(width*height*0.052));if(Math.abs(age.offsetWidth-target)>1) age.style.setProperty('--age-size',target+'px');};new ResizeObserver(fitAge).observe($('ticket'));bind('print',()=>window.print());return;}
+ if(page==='ticket'){const v=await api('ticket-data',{token:token()});$('number').textContent=v.number;$('ticket-price').textContent=v.price;$('control-ticket').hidden=!v.control;$('ticket-order').textContent='Заказ '+v.orderId;$('qr').src=v.qr;$('ticket-status').textContent=labels[v.status]||v.status;$('support').textContent='Поддержка: '+v.support;$('ticket').hidden=false;const fitAge=()=>{const ticket=$('ticket'),age=$('ticket-age');const {width,height}=ticket.getBoundingClientRect();const target=Math.ceil(Math.sqrt(width*height*0.052));if(Math.abs(age.offsetWidth-target)>1) age.style.setProperty('--age-size',target+'px');};new ResizeObserver(fitAge).observe($('ticket'));bind('print',()=>window.print());return;}
  if(page==='return'){bind('refresh',status);await status();return;}
  csrf=(await api('session')).csrf;
  try{await staff();}catch{ /* show login */ }

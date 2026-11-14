@@ -37,6 +37,7 @@ final class Mailer {
                     $token=$this->app->crypto->open($t['token_cipher']);
                     $attachment=['pdf'=>TicketPdf::render($t['number'],$token,$this->app->c['environment']==='test',(int)$t['amount'],$job['reference_id']),'name'=>$t['number'].'.pdf'];
                     $body="Ваш билет ".$t['number']."\n\n".$this->app->ticketUrl($token)."\n\n30 ноября 2026. Сбор гостей 18:30, начало 20:00 (Москва).\nLOTTE HOTEL MOSCOW, Москва, Новинский бульвар, д. 8, стр. 2.\n18+. Один билет — один проход. Без выбора мест.\nСохраните билет на телефоне или распечатайте.\nПоддержка: ".$this->app->c['support']."\nPDF-билет приложен к письму.\n";
+                    if ((int)$t['amount']===App::CONTROL_PRICE) $body="Контрольный билет. Для прохода недействителен.\n\n".$body;
                     if ($this->app->c['environment']!=='test') $body.="Кассовый чек направляется отдельно.\n";
                 } else {
                     $subject='Новая заявка STATUS TEAM';

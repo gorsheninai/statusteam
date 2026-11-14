@@ -19,6 +19,7 @@ try {
         && $app->c['base_url']===$app->c['origin'].'/api-test';
     if ($testEntry && !$testCheckout) throw new Problem(503,'test_checkout_disabled');
     if ($testCheckout) header('X-Robots-Tag: noindex, nofollow');
+    $controlCheckout=!$testEntry && $app->controlEnabled();
     $sessionPath=$testCheckout ? '/api-test/' : '/api/';
     $route=$_GET['r']??''; $method=$_SERVER['REQUEST_METHOD'];
     if(!is_string($route)) throw new Problem(404,'not_found');
@@ -52,19 +53,22 @@ try {
     if(($_SERVER['HTTP_ORIGIN']??'')!==$app->c['origin']) throw new Problem(403,'origin_denied');
     $app->rate('request:'.$ip,120,60);
     $d=Http::input();
-    if ($testCheckout && in_array($route,['orders','checkout-documents'],true)) {
+    $controlRoute=in_array($route,['control-order','control-documents'],true);
+    if ($controlRoute && !$controlCheckout) throw new Problem(404,'not_found');
+    if ($controlRoute || ($testCheckout && in_array($route,['orders','checkout-documents'],true))) {
         Http::session($sessionPath);
         Http::csrf($d);
         Http::staff($app,true);
         session_write_close();
-        $app->checkoutReady();
-        if ($route==='checkout-documents') {
+        unset($d['csrf']);
+        $app->checkoutReady($controlRoute);
+        if (in_array($route,['checkout-documents','control-documents'],true)) {
             $docs=$app->db->run("SELECT id,version,href FROM documents WHERE active=1 AND id IN ('terms','buyers','privacy') ORDER BY id")->fetchAll();
             if (count($docs)!==3 || count(array_unique(array_column($docs,'id')))!==3) throw new Problem(503,'documents_pending');
-            Http::output(['documents'=>$docs,'amountKopecks'=>\StatusTeam\App::PRICE]);
+            Http::output(['documents'=>$docs,'amountKopecks'=>$controlRoute?\StatusTeam\App::CONTROL_PRICE:\StatusTeam\App::PRICE]);
         }
         $app->rate('submission:'.$ip,15);
-        Http::output($app->order($d,$ip));
+        Http::output($app->order($d,$ip,$controlRoute));
     }
     if($route==='forms' || $route==='orders') {
         $app->rate('submission:'.$ip,15);
@@ -79,7 +83,7 @@ try {
         $order=$app->db->one('SELECT amount FROM orders WHERE id=?',[$t['order_id']]);
         $qr=new Endroid\QrCode\QrCode(data:$token,size:320,margin:16);
         $uri=(new Endroid\QrCode\Writer\SvgWriter())->write($qr)->getDataUri();
-        Http::output(['number'=>$t['number'],'price'=>\StatusTeam\TicketDetails::price((int)$order['amount']),'orderId'=>$t['order_id'],'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status'],'qr'=>$uri,'support'=>$app->c['support']]);
+        Http::output(['number'=>$t['number'],'price'=>\StatusTeam\TicketDetails::price((int)$order['amount']),'orderId'=>$t['order_id'],'control'=>(int)$order['amount']===\StatusTeam\App::CONTROL_PRICE,'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status'],'qr'=>$uri,'support'=>$app->c['support']]);
     }
     Http::session($sessionPath);
     if($route==='session') Http::output(['csrf'=>$_SESSION['csrf']]);
@@ -108,7 +112,7 @@ try {
             Http::output($app->refund(Validation::text($d,'orderId',32),$d['amountKopecks'],Validation::key($d),(int)$s['id']));
         case 'resend':$app->resend(Validation::text($d,'orderId',32),(int)$s['id']);Http::output(['ok'=>true]);
         case 'dashboard':
-            $orders=$app->db->run('SELECT o.id,o.buyer,o.status,o.created_at,p.status payment_status,p.receipt_status,t.number AS ticket_number,t.status AS ticket_status FROM orders o JOIN payments p ON p.order_id=o.id LEFT JOIN tickets t ON t.order_id=o.id ORDER BY o.created_at DESC LIMIT 100')->fetchAll();
+            $orders=$app->db->run('SELECT o.id,o.buyer,o.amount,o.status,o.created_at,p.status payment_status,p.receipt_status,t.number AS ticket_number,t.status AS ticket_status FROM orders o JOIN payments p ON p.order_id=o.id LEFT JOIN tickets t ON t.order_id=o.id ORDER BY o.created_at DESC LIMIT 100')->fetchAll();
             foreach ($orders as &$order) {
                 $buyer=$app->decode($order['buyer']);
                 unset($order['buyer']);

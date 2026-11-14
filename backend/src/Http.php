@@ -5,7 +5,7 @@ final class Http {
     public static function ip(array $c): string {
         $remote=$_SERVER['REMOTE_ADDR']??'';
         // Only explicitly configured exact proxy addresses may supply X-Forwarded-For.
-        if(in_array($remote,$c['trusted_proxies'],true)) {
+        if(in_array($remote,($c['trusted_proxies']??[]),true)) {
             $chain=explode(',',$_SERVER['HTTP_X_FORWARDED_FOR']??'');
             foreach(array_reverse($chain) as $candidate) {
                 $candidate=trim($candidate);
