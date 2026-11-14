@@ -86,52 +86,33 @@ final class App {
         return $receipt;
     }
     /**
-     * A real ₽1 control payment may already exist when the browser loses its
-     * original idempotency key. Reuse that payment instead of creating a second
-     * charge. This method is only called from the admin-only control route.
+     * Only recover pending one-stage Smart Payments for this same buyer.
+     * Legacy card-only control checkouts cannot be upgraded in place.
+     * Limit the scan to recent control rows; requests stay admin-only.
      */
     private function recoverControlOrder(array $buyer,string $key,string $hash): ?array {
-        $existing=$this->db->one(
-            "SELECT o.id,o.request_key,o.request_hash,o.buyer FROM orders o
-             JOIN payments p ON p.order_id=o.id
-             WHERE o.amount=? AND p.status='pending' AND o.status IN ('reserved','expired')
-             ORDER BY o.created_at DESC LIMIT 1",
+        $rows=$this->db->run(
+            "SELECT o.id,o.request_key,o.request_hash,o.buyer,p.request_body
+             FROM orders o JOIN payments p ON p.order_id=o.id
+             WHERE o.amount=? AND p.status='pending' AND o.status='reserved'
+             ORDER BY o.created_at DESC LIMIT 50",
             [self::CONTROL_PRICE]
-        );
-        if(!$existing) return null;
-        if($existing['request_key']===$key && $existing['request_hash']!==$hash)
-            throw new Problem(409,'retry_payload_changed');
-        $previousBuyer=$this->decode($existing['buyer']);
-        // Otherwise the receipt and ticket could be delivered to another buyer.
-        if(!hash_equals((string)($previousBuyer['email']??''),$buyer['email']))
-            return null; // a different buyer must receive their own YooKassa receipt
+        )->fetchAll();
+        foreach($rows as $existing) {
+            $body=$this->decode($existing['request_body']);
+            if(($body['capture']??null)!==true || isset($body['payment_method_data'])) continue;
+            $previousBuyer=$this->decode($existing['buyer']);
+            if(!hash_equals((string)($previousBuyer['email']??''),$buyer['email'])) continue;
+            if($existing['request_key']===$key && $existing['request_hash']!==$hash)
+                throw new Problem(409,'retry_payload_changed');
 
-        // Refresh from YooKassa: a remotely canceled payment permits a new order.
-        // Never revive a paid payment or one that is waiting for capture.
-        $this->ensurePayment($existing['id']);
-        $active=$this->db->tx(function() use($existing) {
-            $this->db->one('SELECT id FROM inventory WHERE id=1 FOR UPDATE');
-            $o=$this->db->one('SELECT status FROM orders WHERE id=? FOR UPDATE',[$existing['id']]);
-            $p=$this->db->one('SELECT status,confirmation_url,capture_requested_at FROM payments WHERE order_id=? FOR UPDATE',[$existing['id']]);
-            if($p && $p['status']==='canceled') return false;
-            if(!$o || !$p || !in_array($o['status'],['reserved','expired'],true)
-                || $p['status']!=='pending' || $p['capture_requested_at']!==null
-                || !$p['confirmation_url']) throw new Problem(409,'control_order_exists');
-            // The local 15-minute hold might have expired while YooKassa still
-            // reports the redirect payment as pending. Renew only that hold.
-            if($o['status']==='expired') {
-                $this->db->run(
-                    "UPDATE orders SET status='reserved',reserve_until=DATE_ADD(UTC_TIMESTAMP(6),INTERVAL 15 MINUTE),
-                     updated_at=UTC_TIMESTAMP() WHERE id=?",
-                    [$existing['id']]
-                );
-            }
-            return true;
-        });
-        if(!$active) return null;
-        $result=$this->resumeOrder($existing['request_key']);
-        if(!$result['confirmationUrl']) throw new Problem(409,'control_order_exists');
-        return $result;
+            // A remote paid/canceled payment is never offered as pending.
+            $this->ensurePayment($existing['id']);
+            $result=$this->resumeOrder($existing['request_key']);
+            if($result['status']==='reserved' && $result['paymentStatus']==='pending'
+                && $result['confirmationUrl']) return $result;
+        }
+        return null;
     }
 
     public function order(array $d,string $ip,bool $control=false): array {
@@ -139,30 +120,60 @@ final class App {
         $amount=$control?self::CONTROL_PRICE:self::PRICE;
         $key=Validation::key($d);
         if(($d['termsAccepted']??'')!=='yes' || !empty($d['website'])) throw new Problem(422,'consent_required');
-        $method=array_key_exists('paymentMethod',$d)?$d['paymentMethod']:'bank_card';
-        if(!in_array($method,['bank_card','sbp'],true) || ($control && $method!=='bank_card')) throw new Problem(422,'invalid_payment_method');
+        $requestedMethod=$d['paymentMethod']??($control?'smart':'bank_card');
+        if($control && !in_array($requestedMethod,['smart','bank_card'],true))
+            throw new Problem(422,'invalid_payment_method');
+        $method=$control?'smart':$requestedMethod;
+        if(!in_array($method,['smart','bank_card','sbp'],true) || (!$control && $method==='smart'))
+            throw new Problem(422,'invalid_payment_method');
         $buyer=['name'=>Validation::text($d,'name'),'email'=>Validation::email(Validation::text($d,'email',254)),'phone'=>Validation::phone(Validation::text($d,'phone',32))];
         if(count(preg_split('/\s+/u',$buyer['name']))<2) throw new Problem(422,'name_and_surname_required');
-        $hash=$this->fingerprint($control?['control'=>true]+$d:$d);$access=$this->crypto->capability($key);
+        $hash=$this->fingerprint($control?['control'=>true,'checkout'=>'smart-v1']+$d:$d);
+        $access=$this->crypto->capability($key);
         if($control && ($existing=$this->recoverControlOrder($buyer,$key,$hash))!==null) return $existing;
         $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access,$method,$amount,$control) {
             $this->expireReservations();
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
             $old=$this->db->one('SELECT id,request_hash FROM orders WHERE request_key=?',[$key]);
-            if($old) {if($old['request_hash']!==$hash) throw new Problem(409,'retry_payload_changed');return $old['id'];}
+            if($old) {
+                if($control) {
+                    $previous=$this->db->one('SELECT request_body FROM payments WHERE order_id=?',[$old['id']]);
+                    $previousBody=$previous?$this->decode($previous['request_body']):[];
+                    if(isset($previousBody['payment_method_data']) || ($previousBody['capture']??null)!==true)
+                        throw new Problem(409,'control_checkout_upgraded');
+                }
+                if($old['request_hash']!==$hash) throw new Problem(409,'retry_payload_changed');
+                return $old['id'];
+            }
+            if($control) {
+                // Serialize simultaneous clicks with different request keys.
+                $candidates=$this->db->run(
+                    "SELECT o.id,o.request_key,o.buyer,p.request_body
+                     FROM orders o JOIN payments p ON p.order_id=o.id
+                     WHERE o.amount=? AND o.status='reserved' AND p.status='pending'
+                     ORDER BY o.created_at DESC LIMIT 50",
+                    [self::CONTROL_PRICE]
+                )->fetchAll();
+                foreach($candidates as $candidate) {
+                    $body=$this->decode($candidate['request_body']);
+                    if(($body['capture']??null)===true && !isset($body['payment_method_data'])
+                        && hash_equals((string)($this->decode($candidate['buyer'])['email']??''),$buyer['email']))
+                        return $candidate['id'];
+                }
+            }
             $docs=$this->documents($d,['terms','buyers','privacy']);
             if(!$control && $inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
             $id=Crypto::id();$paymentKey=Crypto::id();
             $body=[
                 'amount'=>['value'=>sprintf('%d.%02d',intdiv($amount,100),$amount%100),'currency'=>'RUB'],
-                'capture'=>$method==='sbp',
-                'payment_method_data'=>['type'=>$method],
+                'capture'=>in_array($method,['sbp','smart'],true),
                 'confirmation'=>['type'=>'redirect','return_url'=>$this->c['base_url'].'/index.php?r=return#'.$access],
                 'metadata'=>['order_id'=>$id],
                 'description'=>'STATUS TEAM '.$id,
                 'receipt'=>$this->receipt($buyer,$amount),
             ];
-            // An SBP payment can debit the buyer until YooKassa reports a final status.
+            if($method!=='smart') $body['payment_method_data']=['type'=>$method];
+            // One-stage payments may complete after the buyer leaves our site.
             $this->db->run(
                 'INSERT INTO orders(id,request_key,request_hash,buyer,amount,access_hash,reserve_until)
                  VALUES(?,?,?,?,?,?,CASE WHEN ? = \'bank_card\' THEN UTC_TIMESTAMP(6) + INTERVAL 15 MINUTE END)',
@@ -173,6 +184,12 @@ final class App {
             $this->db->run('INSERT INTO payments(order_id,idempotence_key,request_body) VALUES(?,?,?)',[$id,$paymentKey,$this->crypto->seal(self::json($body))]);
             return $id;
         });
+        // A racing control request may have reused an earlier Smart Payment.
+        if($control) {
+            $saved=$this->db->one('SELECT request_key FROM orders WHERE id=?',[$id]);
+            if($saved && $saved['request_key']!==$key)
+                $access=$this->crypto->capability($saved['request_key']);
+        }
         try {$this->ensurePayment($id);} catch(Problem $e) {if($e->status!==503) throw $e;}
         return $this->orderStatus($access)+['accessToken'=>$access];
     }
@@ -224,7 +241,9 @@ final class App {
             if($expectedMethod!==null && isset($v['payment_method']['type']) && $v['payment_method']['type']!==$expectedMethod) {
                 throw new Problem(409,'payment_method_mismatch');
             }
-            if($expectedMethod==='sbp' && $v['status']==='waiting_for_capture') {
+            if((($expectedMethod==='sbp') || ($expectedMethod===null
+                && ($this->decode($p['request_body'])['capture']??false)===true))
+                && $v['status']==='waiting_for_capture') {
                 throw new Problem(409,'unexpected_sbp_hold');
             }
             if(in_array($p['status'],['succeeded','canceled'],true) && $p['status']!==$v['status']) {
