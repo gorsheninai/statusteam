@@ -7,12 +7,14 @@
 .ticket-shop-grid { display: grid; gap: var(--space-4); min-width: 0; }
 .ticket-pulse-divider {
   justify-self: center;
-  inline-size: 100vw;
+  inline-size: 100%;
   min-inline-size: 0;
   margin-block: clamp(0.5rem, 1.4vw, 1.25rem);
 }
 .ticket-pulse-divider .pulse-beat {
-  inline-size: 100%;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  inline-size: 100vw;
   margin: 0;
 }
 .ticket-product,
