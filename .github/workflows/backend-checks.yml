@@ -99,6 +99,7 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: npm run backend:assets
       - run: npm run typecheck
       - run: npm run build
       - run: npx playwright install --with-deps chromium
@@ -142,10 +143,14 @@ jobs:
           if [ -f out/index.txt ]; then cp out/index.txt stage/; fi
           cp -R out/_next/static stage/_next/
           cp backend/src/{App.php,Http.php,Mailer.php,TicketPdf.php,TicketDetails.php,TicketFont.json,TicketFont-LICENSE.txt} stage/src/
-          cp backend/public/{index.php,page.php,app.css,app.js} stage/public/
-          cp backend/scripts/install-live-control.sh backend/scripts/install-live-smart.sh stage/
+          cp backend/public/{index.php,page.php,app.css,app.js,scanner.min.js,scanner-LICENSE} stage/public/
+          test -s stage/public/scanner.min.js
+          test -s stage/public/scanner-LICENSE
+          sha256sum stage/public/scanner.min.js > stage/scanner.sha256
+          cp backend/scripts/install-live-control.sh backend/scripts/install-live-smart.sh backend/scripts/install-live-scanner.sh stage/
           bash -n stage/install-live-control.sh
           bash -n stage/install-live-smart.sh
+          bash -n stage/install-live-scanner.sh
           tar -czf control-purchase.tar.gz -C stage .
       - uses: actions/upload-artifact@v4
         with:
