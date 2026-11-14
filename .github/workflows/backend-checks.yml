@@ -146,7 +146,7 @@ jobs:
           cp backend/public/{index.php,page.php,app.css,app.js,scanner.min.js,scanner-LICENSE} stage/public/
           test -s stage/public/scanner.min.js
           test -s stage/public/scanner-LICENSE
-          sha256sum stage/public/scanner.min.js > stage/scanner.sha256
+          (cd stage && sha256sum public/scanner.min.js > scanner.sha256)
           cp backend/scripts/install-live-control.sh backend/scripts/install-live-smart.sh backend/scripts/install-live-scanner.sh stage/
           bash -n stage/install-live-control.sh
           bash -n stage/install-live-smart.sh
