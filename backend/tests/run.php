@@ -212,32 +212,48 @@ $controlGateway=new class implements \StatusTeam\Gateway {
 };
 $controlApp=new \StatusTeam\App($db,$app->c,$app->crypto,$controlGateway);
 $held=$db->one('SELECT held FROM inventory')['held'];
+$beforeControlTickets=n('tickets');$beforeControlMail=n('mail_queue');
 $controlOrder=$controlApp->order($input,'127.0.0.1',true);
-check($controlGateway->body['amount']['value']==='1.00' && $controlGateway->body['receipt']['items'][0]['amount']['value']==='1.00'
-    && !array_key_exists('tax_system_code',$controlGateway->body['receipt']),'live control uses one ruble and the native YooKassa receipt payload');
-check($db->one('SELECT held FROM inventory')['held']===$held,'control order does not consume inventory');
-check($controlOrder['confirmationUrl']==='https://yookassa.ru/payment/fixture','initial control order returns YooKassa payment URL');
+check($controlGateway->body['amount']['value']==='1.00'
+    && $controlGateway->body['receipt']['items'][0]['amount']['value']==='1.00'
+    && !array_key_exists('tax_system_code',$controlGateway->body['receipt']),
+    'live control uses one ruble and native YooKassa receipt payload');
+check($controlGateway->body['capture']===true && !isset($controlGateway->body['payment_method_data'])
+    && !isset($controlGateway->body['payment_method_id']) && !isset($controlGateway->body['payment_token'])
+    && $controlGateway->body['confirmation']['type']==='redirect',
+    'live admin uses one-stage Smart Payment without preselecting a method');
+check($db->one('SELECT reserve_until FROM orders WHERE id=?',[$controlOrder['orderId']])['reserve_until']===null,
+    'one-stage smart payment has no local card hold deadline');
+check($db->one('SELECT held FROM inventory')['held']===$held
+    && n('tickets')===$beforeControlTickets && n('mail_queue')===$beforeControlMail,
+    'pending control payment does not consume public inventory or send a ticket');
+check($controlOrder['confirmationUrl']==='https://yookassa.ru/payment/fixture',
+    'control button returns smart payment redirect');
 $again=$controlApp->order(purchase(),'127.0.0.1',true);
 check($again['orderId']===$controlOrder['orderId'] && $again['confirmationUrl']===$controlOrder['confirmationUrl']
     && (int)$db->one('SELECT COUNT(*) n FROM orders WHERE amount=100')['n']===1,
-    'new admin request resumes the live pending payment without creating another order');
-$db->run("UPDATE orders SET reserve_until=DATE_SUB(UTC_TIMESTAMP(6),INTERVAL 1 MINUTE) WHERE id=?",[$controlOrder['orderId']]);
-$renewed=$controlApp->order(purchase(),'127.0.0.1',true);
-check($renewed['orderId']===$controlOrder['orderId'] && $renewed['status']==='reserved'
-    && $renewed['confirmationUrl']==='https://yookassa.ru/payment/fixture',
-    'an expired local control hold is renewed only after YooKassa still reports pending');
+    'repeated admin click reuses pending smart payment without a second charge');
 $other=purchase();$other['email']='another-buyer@example.invalid';
 $otherControl=$controlApp->order($other,'127.0.0.1',true);
 check($otherControl['orderId']!==$controlOrder['orderId'] && $otherControl['confirmationUrl']==='https://yookassa.ru/payment/fixture',
-    'different buyer gets their own control payment and receipt');
-check((int)$db->one('SELECT held FROM inventory')['held']===$held,'resuming control does not consume public capacity');
-$db->run("UPDATE orders SET status='paid' WHERE id=?",[$controlOrder['orderId']]);
+    'another buyer receives separate receipt and payment');
+check((int)$db->one('SELECT held FROM inventory')['held']===$held,
+    'all live control payments leave public capacity unchanged');
+$controlGateway->payments['/payments/fixture-'.$controlOrder['orderId']]['status']='succeeded';
+$controlGateway->payments['/payments/fixture-'.$controlOrder['orderId']]['paid']=true;
+$controlApp->syncPayment('fixture-'.$controlOrder['orderId']);
+check($controlApp->orderStatus($controlOrder['accessToken'])['status']==='paid'
+    && n('tickets')===$beforeControlTickets+1 && n('mail_queue')===$beforeControlMail+1,
+    'verified one-stage success queues exactly one PDF ticket email');
+$controlApp->syncPayment('fixture-'.$controlOrder['orderId']);
+check(n('tickets')===$beforeControlTickets+1 && n('mail_queue')===$beforeControlMail+1,
+    'duplicate success notification cannot issue a second ticket');
 $previous=$controlApp->order($input,'127.0.0.1',true);
 check($previous['orderId']===$controlOrder['orderId'] && $previous['status']==='paid' && !$previous['confirmationUrl'],
-    'old idempotency key preserves a completed purchase without a second charge');
+    'old request key does not create a second charge after successful control payment');
 $fresh=$controlApp->order(purchase(),'127.0.0.1',true);
 check($fresh['orderId']!==$controlOrder['orderId'] && $fresh['confirmationUrl']==='https://yookassa.ru/payment/fixture',
-    'explicit new control attempt after successful charge opens a new YooKassa checkout');
+    'an explicit new attempt after paid control gets a fresh smart checkout');
 $pdf=\StatusTeam\TicketPdf::render('ST-0123456789ABCDEF', str_repeat('a',64), true, 3000050, str_repeat('b',32));
 check(str_starts_with($pdf,'%PDF-1.4') && str_contains($pdf,'/ToUnicode') && str_contains($pdf,\StatusTeam\TicketDetails::TERMS_URL),'test ticket PDF includes a Unicode text map and link to terms');
 check(preg_match('/startxref\n(\d+)\n/', $pdf, $offset) && substr($pdf,(int)$offset[1],4)==='xref','ticket PDF cross-reference offset is valid');
