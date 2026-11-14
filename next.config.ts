@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
    * straight from the edge with no Worker runtime in the request path.
    */
   output: "export",
+  assetPrefix: process.env.STATUS_TEST_PURCHASE_BUILD === "1" ? "/api-test/purchase-assets" : undefined,
   images: { unoptimized: true },
   reactStrictMode: true,
   trailingSlash: true,

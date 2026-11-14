@@ -14,7 +14,7 @@ async function status(){
  message(v.status==='reserved'&&v.paymentStatus==='waiting_for_capture'?'Подтверждаем оплату…':labels[v.status]||v.status);
  if(['paid','canceled','refunded','expired'].includes(v.status)){
   $('new-order').hidden=false;
-  $('new-order').onclick=()=>{try{sessionStorage.removeItem('status-request-purchase');}catch{}};
+  $('new-order').onclick=()=>{try{sessionStorage.removeItem('status-request-purchase');sessionStorage.removeItem('status-request-test-purchase');}catch{}};
  }
  for(const [id,url] of [['open-ticket',v.ticketUrl],['pay',v.confirmationUrl]]){
   $(id).hidden=!url;

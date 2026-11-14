@@ -55,3 +55,34 @@ jobs:
           HTTP_CHECK_PID=$!
           trap 'kill "$HTTP_CHECK_PID" 2>/dev/null || true' EXIT
           node backend/tests/http.mjs
+  test-purchase:
+    if: github.head_ref == 'codex/yookassa-test-checkout'
+    runs-on: ubuntu-24.04
+    env:
+      STATUS_TEST_PURCHASE_BUILD: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Package isolated checkout
+        run: |
+          test -s out/test-purchase/index.html
+          rg -q 'Оформление билета' out/test-purchase/index.html
+          rg -q '/api-test/purchase-assets/_next/' out/test-purchase/index.html
+          mkdir stage
+          cp out/test-purchase/index.html stage/test-purchase.html
+          cp -R out/_next stage/
+          cp backend/public/index.php stage/router.php
+          cp backend/public/page.php backend/public/app.js stage/
+          cp backend/scripts/install-test-purchase.sh stage/
+          tar -czf test-purchase.tar.gz -C stage .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: statusteam-test-purchase
+          path: test-purchase.tar.gz
+          retention-days: 14

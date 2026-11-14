@@ -1,4 +1,4 @@
-<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css?v=3"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js?v=3" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css?v=3"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js?v=4" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
 <h1>STATUS TEAM</h1><p id="message" role="status" aria-live="polite"></p>
 <?php if($testCheckout): ?><p><strong>Тестовый режим ЮKassa</strong></p><?php endif; ?>
 <?php if($route==='ticket'): ?>
@@ -18,13 +18,13 @@
 <a href="<?=$escape($details::TERMS_URL)?>">Условия покупки и возврата</a></p>
 <button id="print">Распечатать</button></article>
 <?php elseif($route==='return'): ?>
-<h2>Ваш заказ</h2><p>Статус проверяется на сервере. Возвращение со страницы оплаты само по себе не подтверждает оплату.</p><button id="refresh">Проверить статус</button><p><a id="new-order" href="<?=$testCheckout ? 'index.php?r=staff' : '/#tickets'?>" hidden>Оформить ещё один билет</a></p><p><a id="open-ticket" hidden>Открыть билет</a></p><p><a id="pay" hidden>Продолжить оплату</a></p>
+<h2>Ваш заказ</h2><p>Статус проверяется на сервере. Возвращение со страницы оплаты само по себе не подтверждает оплату.</p><button id="refresh">Проверить статус</button><p><a id="new-order" href="<?=$testCheckout ? 'index.php?r=purchase' : '/#tickets'?>" hidden>Оформить ещё один билет</a></p><p><a id="open-ticket" hidden>Открыть билет</a></p><p><a id="pay" hidden>Продолжить оплату</a></p>
 <?php else: ?>
 <form id="login"><h2>Вход сотрудника</h2><label>Логин<input name="username" autocomplete="username" required maxlength="80"></label><label>Пароль<input name="password" type="password" autocomplete="current-password" required maxlength="512"></label><button>Войти</button></form>
 <section id="staff" hidden><button id="logout">Выйти</button><h2>Проверка билета</h2><button id="camera">Включить камеру</button><video id="video" playsinline muted></video><form id="check"><label>Код из QR или номер ST-...<input name="token" id="token" autocomplete="off" required maxlength="64" pattern="([a-f0-9]{64}|[Ss][Tt]-[A-Fa-f0-9]{16})"></label><button>Проверить</button></form><button id="admit" disabled>Подтвердить проход</button><p id="check-result" role="status"></p>
 <section id="admin" hidden><h2>Кабинет администратора</h2><button id="dashboard">Обновить списки</button><div id="lists"></div>
 <?php if($testCheckout): ?>
-<section><h3>Тестовая покупка</h3>
+<section><h3>Тестовая покупка</h3><p><a href="index.php?r=purchase">Обычная форма покупки в тестовом режиме</a></p>
 <p>Введите вымышленное имя и телефон, а также email, на котором сможете проверить доставку QR-билета.</p>
 <button id="prepare-checkout" type="button">Открыть тестовую форму</button>
 <form id="test-checkout" hidden>
