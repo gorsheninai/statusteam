@@ -5,7 +5,7 @@ import { LEGAL_DOCUMENTS, PURCHASE_DOCUMENTS, documentsPublished } from "@/conte
 import { TICKET, CHECKOUT_ENABLED } from "@/content/ticket";
 import { formatRubles } from "./ticket-order";
 import LegalLink from "./LegalLink";
-import { apiEndpoint, retryKey } from "./api";
+import { apiEndpoint, resetRetryKey, retryKey } from "./api";
 
 /** Server enforces price, capacity and release gates independently. */
 export default function TicketPurchase({ test = false, control: forceControl = false }: { test?: boolean; control?: boolean }) {
@@ -55,10 +55,27 @@ export default function TicketPurchase({ test = false, control: forceControl = f
     const payload = { ...fields, consentDocuments: testSession?.documents ?? PURCHASE_DOCUMENTS
       .map(id => ({ id, version: LEGAL_DOCUMENTS[id].version })) };
     try {
-      const requestKey = await retryKey(control ? "control-purchase" : test ? "test-purchase" : "purchase", payload, true);
+      const purpose = control ? "control-purchase" : test ? "test-purchase" : "purchase";
+      let requestKey = await retryKey(purpose, payload, !control);
       const headers = { "Content-Type": "application/json" };
-      const res = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify({ ...payload, requestKey, ...(testSession ? { csrf: testSession.csrf } : {}) }) });
-      let result = await res.json();
+      const createOrder = async (key: string) => {
+        const response = await fetch(endpoint, {
+          method: "POST", headers,
+          body: JSON.stringify({ ...payload, requestKey: key, ...(testSession ? { csrf: testSession.csrf } : {}) }),
+        });
+        return { res: response, result: await response.json() };
+      };
+      let { res, result } = await createOrder(requestKey);
+      // A previous completed control purchase may have left its idempotency key
+      // in sessionStorage. Generate a fresh key only for a new explicit click.
+      if (control && (
+        (res.ok && ["paid", "canceled", "expired", "refunded", "refund_pending"].includes(result.status)) ||
+        (res.status === 409 && result.error === "retry_payload_changed")
+      )) {
+        resetRetryKey(purpose);
+        requestKey = await retryKey(purpose, payload);
+        ({ res, result } = await createOrder(requestKey));
+      }
       if (res.status === 409 && result.error === "retry_payload_changed") {
         const resumed = await fetch(endpointFor("order-status"), { method: "POST", headers, body: JSON.stringify({ requestKey }) });
         if (!resumed.ok) throw new Error("checkout_failed");
@@ -78,6 +95,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         throw new Error("checkout_failed");
       }
       if (result.confirmationUrl) window.location.assign(result.confirmationUrl);
+      else if (control) setState("ЮKassa не вернула ссылку на оплату. Проверьте статус заказа в кабинете и повторите попытку.");
       else if (result.accessToken) window.location.assign(`${endpointFor("return")}#${result.accessToken}`);
       else throw new Error("checkout_failed");
     } catch { setState("Не удалось получить ответ. Повторите отправку с теми же данными — сервер проверит существующий заказ."); }
