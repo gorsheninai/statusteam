@@ -70,7 +70,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
       // in sessionStorage. Generate a fresh key only for a new explicit click.
       if (control && (
         (res.ok && ["paid", "canceled", "expired", "refunded", "refund_pending"].includes(result.status)) ||
-        (res.status === 409 && result.error === "retry_payload_changed")
+        (res.status === 409 && ["retry_payload_changed", "control_checkout_upgraded"].includes(result.error))
       )) {
         resetRetryKey(purpose);
         requestKey = await retryKey(purpose, payload);
@@ -117,16 +117,21 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         <p className="field"><label htmlFor="purchase-phone">Телефон *</label>
           <input id="purchase-phone" name="phone" type="tel" autoComplete="tel" required maxLength={32} /></p>
       </div>
-      {available && (
+      {available && (control ? (
+        <p className="form-note ticket-payment-method">
+          Способ оплаты выберете на защищённой странице ЮKassa после нажатия «Оплатить».
+          Доступные варианты зависят от настроек магазина.
+        </p>
+      ) : (
         <fieldset className="ticket-payment-method" disabled={sending}>
           <legend>Способ оплаты</legend>
-          <label><input type="radio" name="paymentMethod" value="bank_card" defaultChecked /> {control ? "Банковской картой" : "Картой · бронь 15 минут"}</label>
+          <label><input type="radio" name="paymentMethod" value="bank_card" defaultChecked /> Картой · бронь 15 минут</label>
           {!restricted && <>
             <label><input type="radio" name="paymentMethod" value="sbp" /> СБП · на оплату 1 час</label>
             <p className="form-note">При оплате через СБП билет остаётся в брони до подтверждения оплаты или отмены платежа.</p>
           </>}
         </fieldset>
-      )}
+      ))}
       <p className="ticket-total" aria-live="polite" aria-atomic="true">Итого <output>{formatRubles(total)}</output></p>
       <p className="field-check">
         <label htmlFor="purchase-terms">
