@@ -38,24 +38,32 @@ function stagePublicPrice(string $configPath, string $target, bool $control, boo
     }
 }
 
+function installPublicPrice(bool $oneRuble): void
+{
+    umask(0077);
+    $config = realpath(getenv('STATUS_CONFIG') ?: dirname(__DIR__).'/config.php');
+    $tmp = $config ? tempnam(dirname($config), '.checkout-price.') : false;
+    if (!$tmp) throw new RuntimeException('Не удалось подготовить конфиг.');
+    try {
+        stagePublicPrice($config, $tmp, $oneRuble, false);
+        $backup = tempnam(dirname($config), 'config.price-backup.');
+        if (!$backup || !copy($config, $backup) || !rename($tmp, $config)) {
+            throw new RuntimeException('Не удалось записать конфиг.');
+        }
+    } finally {
+        if (is_file($tmp)) unlink($tmp);
+    }
+}
+
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {
     if (PHP_SAPI !== 'cli' || !in_array($argv[1] ?? '', ['1', '30000'], true)) {
         echo "Использование: php set-public-price.php 1|30000\n";
         exit(1);
     }
-    umask(0077);
-    $config = realpath(getenv('STATUS_CONFIG') ?: dirname(__DIR__).'/config.php');
-    $tmp = $config ? tempnam(dirname($config), '.checkout-price.') : false;
-    if (!$tmp) exit(1);
     try {
-        stagePublicPrice($config, $tmp, $argv[1] === '1', false);
-        $backup = tempnam(dirname($config), 'config.price-backup.');
-        if (!$backup || !copy($config, $backup) || !rename($tmp, $config)) {
-            throw new RuntimeException('Не удалось записать конфиг.');
-        }
+        installPublicPrice($argv[1] === '1');
         echo 'Настроена публичная цена: ', $argv[1], " ₽.\n";
     } catch (Throwable $error) {
-        @unlink($tmp);
         echo $error->getMessage(), PHP_EOL;
         exit(1);
     }

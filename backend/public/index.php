@@ -83,7 +83,7 @@ try {
                 throw new Problem(503,'documents_pending');
             }
         }
-        Http::output(['documents'=>$docs,'amountKopecks'=>$app->publicPrice(),'launchCheckout'=>$app->launchCheckoutEmail()!=='']);
+        Http::output(['documents'=>$docs,'amountKopecks'=>$app->publicPrice()]);
     }
     if($route==='forms' || $route==='orders') {
         $app->rate('submission:'.$ip,15);
