@@ -12,6 +12,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
   const busy = useRef(false);
   const [state, setState] = useState("");
   const [sending, setSending] = useState(false);
+  const [paymentLink, setPaymentLink] = useState<string | null>(null);
   const [accepted, setAccepted] = useState(false);
   const [testSession, setTestSession] = useState<{ csrf: string; amountKopecks: number; documents: { id: string; version: string }[] } | null>(null);
   const [testSessionError, setTestSessionError] = useState(false);
@@ -75,7 +76,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
     const endpoint = endpointFor("orders");
     if (busy.current || !available || !accepted || !endpoint || !e.currentTarget.reportValidity()) return;
     const fields = Object.fromEntries(new FormData(e.currentTarget));
-    busy.current = true; setSending(true); setState("Создаём заказ…");
+    busy.current = true; setSending(true); setState("Создаём заказ…"); setPaymentLink(null);
     const payload = { ...fields, ...(!test || control ? { paymentMethod: "smart" } : {}),
       ...(!restricted ? { expectedAmountKopecks: total } : {}), consentDocuments: testSession?.documents ?? PURCHASE_DOCUMENTS
       .map(id => ({ id, version: LEGAL_DOCUMENTS[id].version })) };
@@ -99,12 +100,19 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         requestKey = await retryKey(purpose, payload);
         ({ res, result } = await submit(requestKey));
       }
+      let resumedWithDifferentDetails = false;
       if (res.status === 409 && result.error === "retry_payload_changed") {
-        const resumed = await fetch(endpointFor("order-status"), { method: "POST", headers, body: JSON.stringify({ requestKey }) });
-        if (!resumed.ok) throw new Error("checkout_failed");
-        result = await resumed.json();
-        window.location.assign(`${endpointFor("return")}#${result.accessToken}`);
-        return;
+        res = await fetch(endpointFor("order-status"), { method: "POST", headers, body: JSON.stringify({ requestKey }) });
+        if (!res.ok) throw new Error("checkout_failed");
+        result = await res.json();
+        resumedWithDifferentDetails = true;
+      }
+      // An expired or canceled payment has ended. Only then can this click start a new order.
+      if (!control && res.ok && ["canceled", "expired"].includes(result.status)) {
+        clearRetryKey(purpose);
+        requestKey = await retryKey(purpose, payload, true);
+        ({ res, result } = await submit(requestKey));
+        resumedWithDifferentDetails = false;
       }
       if (res.status === 409 && ["document_version_changed", "checkout_price_changed"].includes(result.error) && !restricted) {
         clearRetryKey(purpose);
@@ -124,10 +132,29 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         setState(checkoutErrorMessage(res.status, result.error));
         return;
       }
-      if (result.confirmationUrl) window.location.assign(result.confirmationUrl);
-      else if (control) setState("ЮKassa не вернула ссылку на оплату. Проверьте заказ в кабинете.");
-      else if (result.accessToken) window.location.assign(`${endpointFor("return")}#${result.accessToken}`);
-      else throw new Error("checkout_failed");
+      if (result.confirmationUrl) {
+        const destination = new URL(result.confirmationUrl);
+        if (destination.protocol !== "https:" || !/(^|\.)(yookassa|yoomoney)\.ru$/.test(destination.hostname)) {
+          throw new Error("invalid_payment_link");
+        }
+        setPaymentLink(destination.href);
+        if (resumedWithDifferentDetails) {
+          setState("Есть незавершённый заказ с прежними данными. По ссылке можно продолжить его оплату.");
+        } else {
+          setState("Открываем страницу оплаты…");
+          window.location.assign(destination.href);
+        }
+      } else if (control) {
+        setState("ЮKassa не вернула ссылку на оплату. Проверьте заказ в кабинете.");
+      } else if (result.status === "reserved") {
+        setState(resumedWithDifferentDetails
+          ? "Ссылка для заказа с прежними данными пока недоступна. Повторите оплату с исходными данными."
+          : "ЮKassa пока не выдала ссылку. Нажмите «Оплатить» ещё раз с теми же данными.");
+      } else if (result.accessToken) {
+        window.location.assign(`${endpointFor("return")}#${result.accessToken}`);
+      } else {
+        throw new Error("checkout_failed");
+      }
     } catch { setState("Не удалось получить ответ. Повторите отправку с теми же данными — сервер проверит существующий заказ."); }
     finally { busy.current = false; setSending(false); }
   }
@@ -166,6 +193,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
       </p>
       <p className="form-note">Как мы обрабатываем данные покупателей — в <LegalLink document="buyers">Сведениях об обработке персональных данных</LegalLink>.</p>
       <p className="form-note" role="status" aria-live="polite">{state}</p>
+      {paymentLink && <p className="form-note"><a href={paymentLink}>Открыть страницу оплаты ЮKassa</a></p>}
       <div className="form-foot">
         {restricted && !available && <p className="form-note" id="purchase-availability">{testSessionError ? "Войдите в кабинет и снова откройте форму." : "Проверяем доступ к оплате…"}</p>}
         <button className="btn btn-solid btn-buy" type="submit" disabled={!accepted || !available || sending}
