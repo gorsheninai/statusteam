@@ -60,6 +60,7 @@ $before=n('tickets');$o=$app->order(purchase(),'127.0.0.1');$gateway->overrides[
 $o=$app->order(purchase(),'127.0.0.1');
 $id=$o['orderId'];
 $body=$app->decode($db->one('SELECT request_body FROM payments WHERE order_id=?',[$id])['request_body']);
+check($body['confirmation']['return_url']===$app->ticketUrl('order-'.$o['accessToken']),'YooKassa returns to the ticket page with the order capability');
 check($body['capture']===false && $body['payment_method_data']['type']==='bank_card','new orders request two-stage card payment');
 check($db->one('SELECT TIMESTAMPDIFF(SECOND,UTC_TIMESTAMP(6),reserve_until) AS seconds_left FROM orders WHERE id=?',[$id])['seconds_left']>=899,'new reservation lasts 15 minutes');
 $gateway->overrides[$id]=['status'=>'succeeded','paid'=>true];
@@ -93,8 +94,10 @@ check(end($gateway->paymentOperations)===$capture && $app->orderStatus($o['acces
 $o=$app->order(purchase(),'127.0.0.1');
 $db->run('UPDATE orders SET reserve_until=NULL,created_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 30 MINUTE) WHERE id=?',[$o['orderId']]);
 $gateway->overrides[$o['orderId']]=['status'=>'succeeded','paid'=>true];
-$app->syncPayment('test-'.$o['orderId']);
-check($app->orderStatus($o['accessToken'])['status']==='paid','existing one-stage orders keep their original behavior');
+check($app->orderStatus($o['accessToken'])['status']==='reserved','local status waits for provider confirmation');
+$returned=$app->orderStatus($o['accessToken'],true);
+check($returned['status']==='paid' && isset($returned['ticketUrl']),'the return verifies an existing one-stage payment and issues the ticket before a webhook');
+check($app->orderStatus($o['accessToken'],true)===$returned,'reopening a confirmed return uses the same ticket');
 reject(fn()=>$app->order(purchase()+['paymentMethod'=>'other'],'127.0.0.1'),422,'unsupported payment method rejected');
 $d=purchase()+['paymentMethod'=>'sbp'];
 $o=$app->order($d,'127.0.0.1');

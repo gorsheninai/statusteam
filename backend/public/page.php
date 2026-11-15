@@ -1,7 +1,7 @@
-<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css?v=4"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js?v=ticket-return-2" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css?v=4"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js?v=ticket-return-3" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
 <h1>STATUS TEAM</h1><p id="message" role="status" aria-live="polite"></p>
 <?php if($testCheckout): ?><p><strong>Тестовый режим ЮKassa</strong></p><?php endif; ?>
-<?php if($route==='ticket'): ?>
+<?php if(in_array($route,['ticket','return'],true)): ?>
 <?php $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); $details=\StatusTeam\TicketDetails::class; ?>
 <article id="ticket" hidden>
 <div class="ticket-heading">
@@ -20,12 +20,12 @@
 <p id="support"></p><p>Возврат: <a href="mailto:<?=$escape($details::REFUNDS_EMAIL)?>"><?=$escape($details::REFUNDS_EMAIL)?></a><br>
 <a href="<?=$escape($details::TERMS_URL)?>">Условия покупки и возврата</a></p>
 <button id="print">Распечатать</button></article>
-<?php elseif($route==='return'): ?>
-<h2>Оплата билета</h2>
+<div id="return-actions" hidden>
 <button id="refresh" type="button" hidden>Проверить ещё раз</button>
 <p><a id="new-order" href="<?=$testCheckout ? 'index.php?r=purchase' : '/#tickets'?>" hidden>Оформить новый заказ</a></p>
 <p><a id="pay" hidden>Продолжить оплату</a></p>
 <p><a href="/">На главную</a></p>
+</div>
 <?php else: ?>
 <form id="login" method="post"><h2>Вход сотрудника</h2><label>Логин<input name="username" autocomplete="username" required maxlength="80"></label><label>Пароль<input name="password" type="password" autocomplete="current-password" required maxlength="512"></label><button>Войти</button></form>
 <section id="staff" hidden><button id="logout">Выйти</button><h2>Проверка билета</h2><button id="camera">Включить камеру</button><video id="video" playsinline muted></video><form id="check"><label>Код из QR или номер ST-...<input name="token" id="token" autocomplete="off" required maxlength="64" pattern="([a-f0-9]{64}|[Ss][Tt]-[A-Fa-f0-9]{16})"></label><button>Проверить</button></form><button id="admit" disabled>Подтвердить проход</button><p id="check-result" role="status"></p>

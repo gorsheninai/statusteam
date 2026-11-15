@@ -6,6 +6,7 @@ const message=text=>{$('message').textContent=errorLabels[text]||text;};
 const labels={valid:'Действителен',used:'Уже использован',refunded:'Возвращён / недействителен',refund_pending:'Возврат обрабатывается: проход заблокирован',admitted:'Проход подтверждён',reserved:'Ожидает оплаты',paid:'Оплачен',canceled:'Платёж отменён',expired:'Срок брони истёк. Оформите новый заказ.'};
 async function api(route,data={}){const res=await fetch('index.php?r='+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,csrf}),credentials:'same-origin'});const v=await res.json();if(!res.ok)throw Error(v.error||'Ошибка сервера');return v;}
 const token=()=>location.hash.slice(1);
+const orderToken=page==='return'?token():/^order-([a-f0-9]{64})$/.exec(token())?.[1];
 const key=()=>Array.from(crypto.getRandomValues(new Uint8Array(32)),v=>v.toString(16).padStart(2,'0')).join('');
 function bind(id,fn){$(id)?.addEventListener('click',()=>Promise.resolve().then(fn).catch(e=>message(e.message)));}
 function form(id,fn){$(id)?.addEventListener('submit',e=>{e.preventDefault();const el=e.currentTarget;const data=Object.fromEntries(new FormData(el));const button=el.querySelector('button');button.disabled=true;Promise.resolve().then(()=>fn(data)).catch(e=>message(e.message)).finally(()=>{button.disabled=false;});});}
@@ -17,15 +18,18 @@ function clearPurchaseKeys() {
 
 let statusTimer;
 let checkingStatus=false;
-let checksRemaining=10;
+const maxStatusRetries=10;
+let checksRemaining=maxStatusRetries;
 async function status() {
  if (checkingStatus) return;
  clearTimeout(statusTimer);
  checkingStatus=true;
- $('refresh').hidden=true;
+ $('return-actions').hidden=true;
+ message('Открываем билет…');
  let shouldRetry=false;
  try {
-  const v=await api('order-status',{token:token()});
+  const verifyPayment=(maxStatusRetries-checksRemaining)%3===0;
+  const v=await api('order-status',{token:orderToken,verifyPayment});
   if(v.status==='paid' && v.ticketUrl) {
    const url=new URL(v.ticketUrl,location.origin);
    if(url.origin!==location.origin || !/^\/api(?:-test)?\/index\.php$/.test(url.pathname) ||
@@ -36,7 +40,7 @@ async function status() {
   }
   shouldRetry=v.status==='reserved'||v.status==='paid';
   const retrying=shouldRetry&&checksRemaining>0;
-  message(retrying?'Проверяем оплату…':(v.status==='paid'?'Готовим билет. Проверьте статус ещё раз.':labels[v.status]||'Проверьте статус заказа.'));
+  if(!retrying) message(v.status==='paid'?'Билет ещё готовится. Попробуйте открыть его ещё раз.':labels[v.status]||'Статус заказа уточняется.');
   $('pay').hidden=retrying||!v.confirmationUrl;
   if(v.confirmationUrl) $('pay').href=v.confirmationUrl;
   $('new-order').hidden=!['canceled','refunded','expired'].includes(v.status);
@@ -49,7 +53,7 @@ async function status() {
   checksRemaining--;
   statusTimer=setTimeout(status,2000);
  } else {
-  $('refresh').hidden=false;
+  $('return-actions').hidden=false;
  }
 }
 async function check(){checked='';$('admit').disabled=true;const v=await api('check',{token:$('token').value.trim()});$('check-result').textContent=v.number+' · '+(labels[v.status]||v.status);if(v.status==='valid'){checked=$('token').value.trim();$('admit').disabled=false;}}
@@ -127,13 +131,13 @@ function setupTestCheckout() {
  });
 }
 async function init(){
- if(page==='ticket'){const v=await api('ticket-data',{token:token()});$('number').textContent=v.number;$('ticket-price').textContent=v.price;$('control-ticket').hidden=!v.control;$('ticket-order').textContent='Заказ '+v.orderId;$('qr').src=v.qr;$('ticket-status').textContent=labels[v.status]||v.status;$('support').textContent='Поддержка: '+v.support;$('ticket').hidden=false;const fitAge=()=>{const ticket=$('ticket'),age=$('ticket-age');const {width,height}=ticket.getBoundingClientRect();const target=Math.ceil(Math.sqrt(width*height*0.052));if(Math.abs(age.offsetWidth-target)>1) age.style.setProperty('--age-size',target+'px');};fitAge();if(typeof ResizeObserver==='function')new ResizeObserver(fitAge).observe($('ticket'));bind('print',()=>window.print());return;}
- if(page==='return'){
-  bind('refresh',()=>{checksRemaining=10;return status();});
+ if(page==='return'||(page==='ticket'&&orderToken)){
+  bind('refresh',()=>{checksRemaining=maxStatusRetries;return status();});
   bind('new-order',clearPurchaseKeys);
   await status();
   return;
  }
+ if(page==='ticket'){const v=await api('ticket-data',{token:token()});$('number').textContent=v.number;$('ticket-price').textContent=v.price;$('control-ticket').hidden=!v.control;$('ticket-order').textContent='Заказ '+v.orderId;$('qr').src=v.qr;$('ticket-status').textContent=labels[v.status]||v.status;$('support').textContent='Поддержка: '+v.support;$('ticket').hidden=false;const fitAge=()=>{const ticket=$('ticket'),age=$('ticket-age');const {width,height}=ticket.getBoundingClientRect();const target=Math.ceil(Math.sqrt(width*height*0.052));if(Math.abs(age.offsetWidth-target)>1) age.style.setProperty('--age-size',target+'px');};fitAge();if(typeof ResizeObserver==='function')new ResizeObserver(fitAge).observe($('ticket'));bind('print',()=>window.print());return;}
  csrf=(await api('session')).csrf;
  try{await staff();}catch{ /* show login */ }
  form('login',async d=>{const v=await api('login',d);csrf=v.csrf;$('login').reset();await staff();message('Вход выполнен');});
