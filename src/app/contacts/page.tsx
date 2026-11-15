@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { COMPANY } from "@/content/company";
 import { TICKET } from "@/content/ticket";
 import LegalLink from "@/features/forms/LegalLink";
@@ -9,7 +8,7 @@ export const metadata: Metadata = { title: "Контакты и реквизит
 export default function ContactsPage() {
   return (
     <main id="statusteam" className="shell legal-page company-page">
-      <p className="legal-back"><Link href="/">STATUS TEAM — на главную</Link></p>
+      <p className="legal-back"><a href="/">STATUS TEAM — на главную</a></p>
       <h1>Контакты и реквизиты</h1>
       <p>Организатор шоу «Пульс Континента» и продавец билетов — {COMPANY.shortName}.</p>
       <dl className="company-details">
@@ -26,7 +25,7 @@ export default function ContactsPage() {
       <p>Оплата проходит на защищённой странице ЮKassa. {TICKET.receipt}</p>
       <p>Если билет не пришёл, проверьте папку «Спам», затем свяжитесь с нами по электронной почте. В обращении укажите номер заказа и e-mail, использованный при покупке.</p>
       <p>Условия покупки, возврата, отмены и переноса мероприятия — в разделе 7 <LegalLink document="terms" section="section-7">Пользовательского соглашения</LegalLink>.</p>
-      <p><Link href="/#tickets">Купить билет на «Пульс Континента»</Link></p>
+      <p><a href="/#tickets">Купить билет на «Пульс Континента»</a></p>
     </main>
   );
 }
