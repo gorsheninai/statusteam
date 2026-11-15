@@ -353,7 +353,7 @@ for (const [name, width, height] of SIZES) {
   check(heroCta.n === 2 && heroCta.hrefs.join(" ") === "#tickets #join",
     "hero offers purchase and participation controls", `${heroCta.n} → ${heroCta.hrefs.join(" ")}`);
 
-  check(await page.locator(".faq-row").count() === 5, "FAQ has five questions");
+  check(await page.locator(".faq-row").count() === 6, "FAQ has six questions");
   check(await page.locator(".tier").count() === 0, "unconfirmed ticket categories stay hidden");
   check(await page.locator(".ticket-shop").count() === 1, "the ticket scene has one purchase path");
   check(await page.locator(".zone").count() === 3, "three ways in, including press");
