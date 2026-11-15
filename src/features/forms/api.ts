@@ -9,18 +9,23 @@ export function apiEndpoint(route: string) {
   return url.toString();
 }
 export async function retryKey(purpose: string, payload: unknown, reuseAcrossChanges = false) {
-  const digest = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(JSON.stringify(payload)))), v => v.toString(16).padStart(2, "0")).join("");
+  const digest = reuseAcrossChanges ? "" :
+    Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(payload)))),
+      v => v.toString(16).padStart(2, "0")).join("");
   const storageKey = `status-request-${purpose}`;
+  let previous = memoryKeys.get(purpose);
   try {
-    const old = JSON.parse(sessionStorage.getItem(storageKey) ?? "null");
-    if (old && (reuseAcrossChanges || old.digest === digest) && /^[a-f0-9]{64}$/.test(old.key)) return old.key as string;
-  } catch {
-    const memory = memoryKeys.get(purpose);
-    if (memory && (reuseAcrossChanges || memory.digest === digest)) return memory.key;
-  }
+    const stored = JSON.parse(sessionStorage.getItem(storageKey) ?? "null");
+    if (stored && typeof stored.key === "string" && /^[a-f0-9]{64}$/.test(stored.key)) previous = stored;
+  } catch { /* Storage can be unavailable or contain invalid data. */ }
+  if (previous && (reuseAcrossChanges || previous.digest === digest)) return previous.key;
   const key = Array.from(crypto.getRandomValues(new Uint8Array(32)), v => v.toString(16).padStart(2, "0")).join("");
-  memoryKeys.set(purpose, { digest, key });
-  try { sessionStorage.setItem(storageKey, JSON.stringify({ digest, key })); } catch { /* current request still works */ }
+  try {
+    sessionStorage.setItem(storageKey, JSON.stringify({ digest, key }));
+    memoryKeys.delete(purpose);
+  } catch {
+    memoryKeys.set(purpose, { digest, key });
+  }
   return key;
 }
 

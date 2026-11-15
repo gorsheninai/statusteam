@@ -5,6 +5,7 @@ use StatusTeam\{App,Db,Crypto,Gateway};
 final class FakeGateway implements Gateway {
     public array $overrides=[];
     public bool $timeout=false;
+    public bool $publicControl=false;
     public array $keys=[];
     public array $paymentOperations=[];
     public ?string $timeoutOperation=null;
@@ -28,6 +29,10 @@ final class FakeGateway implements Gateway {
     }
     public function payment(string $order,string $status='pending'): array {
         $base=['id'=>'test-'.$order,'metadata'=>['order_id'=>$order],'recipient'=>['account_id'=>'fixture-shop'],'test'=>true,'amount'=>['value'=>'30000.00','currency'=>'RUB'],'status'=>$status,'paid'=>$status==='succeeded','receipt_registration'=>'succeeded','confirmation'=>['confirmation_url'=>'https://yookassa.ru/checkout/fixture']];
+        if($this->publicControl) {
+            $base['test']=false;
+            $base['amount']['value']='1.00';
+        }
         return array_replace_recursive($base,$this->overrides[$order]??[]);
     }
 }

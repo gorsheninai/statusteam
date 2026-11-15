@@ -23,3 +23,21 @@ export function checkoutMatchesPublication(
     actual?.id === expected.id && actual.version === expected.version && actual.href === expected.href,
   ));
 }
+
+
+const checkoutErrors: Readonly<Record<string, string>> = {
+  invalid_name: "Укажите имя и фамилию.",
+  name_and_surname_required: "Укажите имя и фамилию через пробел.",
+  invalid_email: "Проверьте адрес электронной почты.",
+  invalid_phone: "Проверьте номер телефона. Например: +7 900 123-45-67.",
+  consent_required: "Подтвердите условия покупки и проверьте поля формы.",
+  sold_out: "На данный момент все билеты куплены или забронированы.",
+  checkout_disabled: "Онлайн-оплата сейчас недоступна.",
+};
+
+export function checkoutErrorMessage(status: number, code: unknown): string {
+  if (status === 429) return "Слишком много попыток. Подождите несколько минут и повторите.";
+  if (typeof code === "string" && Object.hasOwn(checkoutErrors, code)) return checkoutErrors[code];
+  if (status >= 500) return "Сервис оплаты временно недоступен. Повторите с теми же данными.";
+  return `Не удалось оформить заказ. Код ответа: ${status}. Проверьте данные или обратитесь в поддержку.`;
+}

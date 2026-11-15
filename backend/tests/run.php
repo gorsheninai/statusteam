@@ -195,4 +195,17 @@ check($app->publicPrice()===\StatusTeam\App::CONTROL_PRICE,'live public control 
 $app->c['public_control_price']=false;
 check($app->publicPrice()===\StatusTeam\App::PRICE,'disabling public control restores standard price');
 reject(fn()=>$app->checkoutReady(),503,'unapproved live fiscal settings block checkout');
+$app->c['live_approved']=$app->c['fiscal']['approved']=true;
+$app->c['public_control_price']=$gateway->publicControl=true;
+$held=(int)$db->one('SELECT held FROM inventory WHERE id=1')['held'];
+$desktop=purchase()+['expectedAmountKopecks'=>100,'paymentMethod'=>'smart'];
+$mobile=array_replace($desktop,['requestKey'=>bin2hex(random_bytes(32)),'phone'=>"+7\u{202F}900\u{00A0}123\u{2011}45\u{2013}67"]);
+$desktopOrder=$app->order($desktop,'127.0.0.1');
+$mobileOrder=$app->order($mobile,'127.0.0.1');
+check($desktopOrder['orderId']!==$mobileOrder['orderId'] && $desktopOrder['confirmationUrl'] &&
+    $mobileOrder['confirmationUrl'], 'two devices sharing an IP and email receive independent public control orders');
+check($app->order($mobile,'127.0.0.1')['orderId']===$mobileOrder['orderId'],
+    'retrying the mobile request reuses its original payment');
+check((int)$db->one('SELECT held FROM inventory WHERE id=1')['held']===$held,
+    'public control orders do not consume ticket inventory');
 echo 'TOTAL '.$count." passed\n";

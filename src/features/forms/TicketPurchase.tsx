@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LEGAL_DOCUMENTS, PURCHASE_DOCUMENTS, documentsPublished } from "@/content/legal";
 import { TICKET } from "@/content/ticket";
-import { checkoutMatchesPublication, formatRubles } from "./ticket-order";
+import { checkoutErrorMessage, checkoutMatchesPublication, formatRubles } from "./ticket-order";
 import LegalLink from "./LegalLink";
 import { apiEndpoint, clearRetryKey, retryKey } from "./api";
 
@@ -80,13 +80,17 @@ export default function TicketPurchase({ test = false, control: forceControl = f
       ...(!restricted ? { expectedAmountKopecks: total } : {}), consentDocuments: testSession?.documents ?? PURCHASE_DOCUMENTS
       .map(id => ({ id, version: LEGAL_DOCUMENTS[id].version })) };
     try {
+      if (typeof globalThis.crypto?.getRandomValues !== "function") {
+        setState("Откройте сайт напрямую в Safari или Chrome и повторите оплату.");
+        return;
+      }
       const purpose = control ? "control-purchase" : test ? "test-purchase" : "purchase";
       let requestKey = await retryKey(purpose, payload, !control);
       const headers = { "Content-Type": "application/json" };
       const submit = async (key: string) => {
         const response = await fetch(endpoint, { method: "POST", headers,
           body: JSON.stringify({ ...payload, requestKey: key, ...(testSession ? { csrf: testSession.csrf } : {}) }) });
-        return { res: response, result: await response.json() };
+        return { res: response, result: await response.json().catch(() => ({})) };
       };
       let { res, result } = await submit(requestKey);
       if (control && ((res.ok && ["paid", "canceled", "expired", "refunded", "refund_pending"].includes(result.status)) ||
@@ -117,7 +121,8 @@ export default function TicketPurchase({ test = false, control: forceControl = f
           setState("Сессия истекла. Войдите в кабинет и заново откройте форму.");
           return;
         }
-        throw new Error("checkout_failed");
+        setState(checkoutErrorMessage(res.status, result.error));
+        return;
       }
       if (result.confirmationUrl) window.location.assign(result.confirmationUrl);
       else if (control) setState("ЮKassa не вернула ссылку на оплату. Проверьте заказ в кабинете.");
@@ -132,7 +137,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
       onReset={() => setAccepted(false)}>
       {((control && testSession?.amountKopecks === 100) || (!restricted && publicPrice === 100)) &&
         <p className="form-note">Контрольная оплата · реальное списание 1 ₽. Билет недействителен для входа.</p>}
-      <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" hidden />
+      <input name="website" type="hidden" value="" />
       <input name="quantity" type="hidden" value="1" />
       <div className="form-grid">
         <p className="field"><label htmlFor="purchase-name">Имя и фамилия покупателя *</label>
