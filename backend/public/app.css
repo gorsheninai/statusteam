@@ -3,3 +3,9 @@
 #test-checkout input[type=checkbox]{width:auto;min-height:0;margin:0 6px 0 0}
 
 .ticket-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.ticket-age{display:grid;place-items:center;background:#181818;color:#fff;flex:none;width:var(--age-size,100px);aspect-ratio:1;font-size:clamp(28px,7vw,64px)}#ticket-price{font-size:1.3rem;font-weight:700}@media print{.ticket-age{background:none;color:#000;border:2px solid;box-sizing:border-box}#ticket{font-size:12pt}}
+
+body[data-page="ticket"] #qr {display:block;width:min(260px,78vw);height:auto;background:#fff;margin:12px auto;}
+body[data-page="ticket"] #ticket-save-note {font-size:.93em;}
+body[data-page="ticket"] .ticket-home {display:inline-block;padding:.6em .9em;background:#202020;color:#fff;text-decoration:none;}
+@media(max-width:540px){body[data-page="ticket"] main{padding-top:12px}body[data-page="ticket"] #ticket p{margin:7px 0}}
+@media print{body[data-page="ticket"] .ticket-home,body[data-page="ticket"] #ticket-save-note,body[data-page="ticket"] #print{display:none}}

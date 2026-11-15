@@ -69,6 +69,10 @@ final class App {
             && ($this->c['fiscal']['payment_subject']??null)==='service'
             && ($this->c['fiscal']['vat_code']??null)===1;
     }
+    public function publicPrice(): int {
+        return ($this->c['public_control_price']??false)===true && $this->c['environment']==='live'
+            ? self::CONTROL_PRICE : self::PRICE;
+    }
     public function checkoutReady(bool $control=false): void {
         if(!($control?$this->controlEnabled():$this->c['checkout_enabled']) || !$this->c['support'] || !$this->c['documents_approved']) throw new Problem(503,'checkout_disabled');
         $y=$this->c['yookassa']; $f=$this->c['fiscal'];
@@ -117,7 +121,11 @@ final class App {
 
     public function order(array $d,string $ip,bool $control=false): array {
         $this->checkoutReady($control);
-        $amount=$control?self::CONTROL_PRICE:self::PRICE;
+        $amount=$control?self::CONTROL_PRICE:$this->publicPrice();
+        if (!$control && (isset($d['expectedAmountKopecks']) || $amount===self::CONTROL_PRICE)
+            && ($d['expectedAmountKopecks']??null)!==$amount) {
+            throw new Problem(409,'checkout_price_changed');
+        }
         $key=Validation::key($d);
         if(($d['termsAccepted']??'')!=='yes' || !empty($d['website'])) throw new Problem(422,'consent_required');
         $requestedMethod=$d['paymentMethod']??($control?'smart':'bank_card');
@@ -162,7 +170,7 @@ final class App {
                 }
             }
             $docs=$this->documents($d,['terms','buyers','privacy']);
-            if(!$control && $inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
+            if($amount!==self::CONTROL_PRICE && $inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
             $id=Crypto::id();$paymentKey=Crypto::id();
             $body=[
                 'amount'=>['value'=>sprintf('%d.%02d',intdiv($amount,100),$amount%100),'currency'=>'RUB'],
@@ -179,7 +187,7 @@ final class App {
                  VALUES(?,?,?,?,?,?,CASE WHEN ? = \'bank_card\' THEN UTC_TIMESTAMP(6) + INTERVAL 15 MINUTE END)',
                 [$id,$key,$hash,$this->crypto->seal(self::json($buyer)),$amount,Crypto::hash($access),$method]
             );
-            if(!$control) $this->db->run('UPDATE inventory SET held=held+1 WHERE id=1');
+            if($amount!==self::CONTROL_PRICE) $this->db->run('UPDATE inventory SET held=held+1 WHERE id=1');
             $this->consent('purchase',$docs,$d,$ip,null,$id);
             $this->db->run('INSERT INTO payments(order_id,idempotence_key,request_body) VALUES(?,?,?)',[$id,$paymentKey,$this->crypto->seal(self::json($body))]);
             return $id;

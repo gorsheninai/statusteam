@@ -44,7 +44,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
     ? `${restrictedPath}?r=${control && route === "orders" ? "control-order" : route}`
     : apiEndpoint(route);
   const published = documentsPublished(PURCHASE_DOCUMENTS);
-  const [publicAvailable, setPublicAvailable] = useState(false);
+  const [publicPrice, setPublicPrice] = useState<number | null>(null);
   useEffect(() => {
     const endpoint = apiEndpoint("public-checkout");
     if (restricted || !published || !endpoint) return;
@@ -59,23 +59,25 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         });
         if (!response.ok) return;
         const result = await response.json();
-        const matches = checkoutMatchesPublication(result, TICKET.priceKopecks,
-          PURCHASE_DOCUMENTS.map(id => ({ id, ...LEGAL_DOCUMENTS[id] })));
-        if (!controller.signal.aborted) setPublicAvailable(matches);
+        const amount = result?.amountKopecks;
+        const matches = (amount === TICKET.priceKopecks || amount === 100) &&
+          checkoutMatchesPublication(result, amount, PURCHASE_DOCUMENTS.map(id => ({ id, ...LEGAL_DOCUMENTS[id] })));
+        if (!controller.signal.aborted) setPublicPrice(matches ? amount : null);
       } catch { /* The server must confirm availability before enabling payment. */ }
     }
     void check();
     return () => controller.abort();
   }, [published, restricted]);
-  const total = testSession?.amountKopecks ?? TICKET.priceKopecks;
-  const available = published && (restricted ? testSession !== null && (!control || testSession.amountKopecks === 100) : publicAvailable);
+  const total = restricted ? (testSession?.amountKopecks ?? TICKET.priceKopecks) : (publicPrice ?? TICKET.priceKopecks);
+  const available = published && (restricted ? testSession !== null && (!control || testSession.amountKopecks === 100) : publicPrice !== null);
   async function checkout(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const endpoint = endpointFor("orders");
     if (busy.current || !available || !accepted || !endpoint || !e.currentTarget.reportValidity()) return;
     const fields = Object.fromEntries(new FormData(e.currentTarget));
     busy.current = true; setSending(true); setState("Создаём заказ…");
-    const payload = { ...fields, ...(!test || control ? { paymentMethod: "smart" } : {}), consentDocuments: testSession?.documents ?? PURCHASE_DOCUMENTS
+    const payload = { ...fields, ...(!test || control ? { paymentMethod: "smart" } : {}),
+      ...(!restricted ? { expectedAmountKopecks: total } : {}), consentDocuments: testSession?.documents ?? PURCHASE_DOCUMENTS
       .map(id => ({ id, version: LEGAL_DOCUMENTS[id].version })) };
     try {
       const purpose = control ? "control-purchase" : test ? "test-purchase" : "purchase";
@@ -100,9 +102,10 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         window.location.assign(`${endpointFor("return")}#${result.accessToken}`);
         return;
       }
-      if (res.status === 409 && result.error === "document_version_changed" && !restricted) {
-        setPublicAvailable(false);
-        setState("Условия покупки обновились. Перезагрузите страницу и ознакомьтесь с новой редакцией.");
+      if (res.status === 409 && ["document_version_changed", "checkout_price_changed"].includes(result.error) && !restricted) {
+        clearRetryKey(purpose);
+        setPublicPrice(null);
+        setState("Условия покупки обновились. Перезагрузите страницу и проверьте актуальную цену и документы.");
         return;
       }
       if (!res.ok) {
@@ -127,7 +130,8 @@ export default function TicketPurchase({ test = false, control: forceControl = f
     <form className="form ticket-purchase" data-form="purchase" aria-label="Оформление билета"
       method="post" onSubmit={checkout}
       onReset={() => setAccepted(false)}>
-      {control && testSession?.amountKopecks === 100 && <p className="form-note">Контрольная оплата · реальное списание 1 ₽</p>}
+      {((control && testSession?.amountKopecks === 100) || (!restricted && publicPrice === 100)) &&
+        <p className="form-note">Контрольная оплата · реальное списание 1 ₽. Билет недействителен для входа.</p>}
       <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" hidden />
       <input name="quantity" type="hidden" value="1" />
       <div className="form-grid">

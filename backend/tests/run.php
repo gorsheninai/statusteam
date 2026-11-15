@@ -187,5 +187,12 @@ $app->application($minor,'127.0.0.1');check(n('applications')===2,'approved guar
 $form['form']='subscribe';reject(fn()=>$app->application($form,'127.0.0.1'),422,'newsletter is disabled server-side');
 $_SERVER=['REMOTE_ADDR'=>'127.0.0.1','HTTP_X_FORWARDED_FOR'=>'1.2.3.4'];check(Http::ip($app->c)==='127.0.0.1','untrusted forwarded IP ignored');
 $qr=(new Endroid\QrCode\Writer\SvgWriter())->write(new Endroid\QrCode\QrCode(data:$tokenRefund,size:320));check(str_contains($qr->getString(),'<svg'),'locked QR dependency produces local SVG');
-$app->c['environment']='live';$app->c['yookassa']['test']=false;reject(fn()=>$app->checkoutReady(),503,'unapproved live fiscal settings block checkout');
+reject(fn()=>$app->order(purchase()+['expectedAmountKopecks'=>100],'127.0.0.1'),409,'stale displayed price cannot create a payment');
+$app->c['public_control_price']=true;
+check($app->publicPrice()===\StatusTeam\App::PRICE,'isolated test store keeps the standard price');
+$app->c['environment']='live';$app->c['yookassa']['test']=false;
+check($app->publicPrice()===\StatusTeam\App::CONTROL_PRICE,'live public control flag selects one ruble');
+$app->c['public_control_price']=false;
+check($app->publicPrice()===\StatusTeam\App::PRICE,'disabling public control restores standard price');
+reject(fn()=>$app->checkoutReady(),503,'unapproved live fiscal settings block checkout');
 echo 'TOTAL '.$count." passed\n";
