@@ -11,9 +11,16 @@ const post=async(r,d={},origin='http://localhost:34311')=>page.request.post(base
 try {
  await page.goto(base+'?r=ticket#'+fixture.token);
  await page.locator('#ticket').waitFor({state:'visible'});
- check((await page.locator('#ticket-status').textContent())==='Действителен','mobile ticket renders with live status');
+ check((await page.locator('#ticket-status').textContent())==='Действителен для прохода','mobile ticket renders with live admission status');
  check((await page.locator('#qr').getAttribute('src')).startsWith('data:image/svg+xml'),'QR generated locally');
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile ticket has no horizontal overflow');
+ await page.goto('about:blank');
+ await page.goto(base+'?r=ticket#order-'+fixture.orderAccess);
+ await page.waitForURL(base+'?r=ticket#'+fixture.token);
+ await page.locator('#ticket').waitFor({state:'visible'});
+ check(page.url()===base+'?r=ticket#'+fixture.token &&
+   await page.locator('#ticket-status').textContent()==='Действителен для прохода',
+   'YooKassa return renders the ticket when only the URL fragment changes');
  check((await post('admit',{token:fixture.token})).status()===403,'admit requires CSRF and authorization');
  check((await post('forms',{},'https://foreign.example')).status()===403,'foreign origin denied');
  check((await post('orders',{})).status()===503,'disabled checkout denied by server');

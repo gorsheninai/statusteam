@@ -1,9 +1,9 @@
-<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css?v=4"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js?v=ticket-return-4" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STATUS TEAM — билет</title><link rel="stylesheet" href="app.css?v=4"><?php if($route==='staff'): ?><script src="scanner.min.js" defer></script><?php endif; ?><script src="app.js?v=ticket-return-5" defer></script><body data-page="<?=htmlspecialchars($route,ENT_QUOTES,'UTF-8')?>"><main>
 <h1>STATUS TEAM</h1><p id="message" role="status" aria-live="polite"></p>
 <?php if($testCheckout): ?><p><strong>Тестовый режим ЮKassa</strong></p><?php endif; ?>
 <?php if(in_array($route,['ticket','return'],true)): ?>
 <?php $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); $details=\StatusTeam\TicketDetails::class; ?>
-<article id="ticket" hidden>
+<article id="ticket" data-test="<?=$testCheckout ? 'yes' : 'no'?>" hidden>
 <div class="ticket-heading">
 <div><p><?=$testCheckout ? 'Тестовый электронный билет' : 'Электронный билет'?></p>
 <p id="control-ticket" hidden>Контрольный билет. Для прохода недействителен.</p>
