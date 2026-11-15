@@ -89,36 +89,6 @@ final class App {
         if($amount===self::CONTROL_PRICE) $receipt['items'][0]['description']='Контрольный заказ: билет на шоу «Пульс Континента»';
         return $receipt;
     }
-    /**
-     * Only recover pending one-stage Smart Payments for this same buyer.
-     * Legacy card-only control checkouts cannot be upgraded in place.
-     * Limit the scan to recent control rows; requests stay admin-only.
-     */
-    private function recoverControlOrder(array $buyer,string $key,string $hash): ?array {
-        $rows=$this->db->run(
-            "SELECT o.id,o.request_key,o.request_hash,o.buyer,p.request_body
-             FROM orders o JOIN payments p ON p.order_id=o.id
-             WHERE o.amount=? AND p.status='pending' AND o.status='reserved'
-             ORDER BY o.created_at DESC LIMIT 50",
-            [self::CONTROL_PRICE]
-        )->fetchAll();
-        foreach($rows as $existing) {
-            $body=$this->decode($existing['request_body']);
-            if(($body['capture']??null)!==true || isset($body['payment_method_data'])) continue;
-            $previousBuyer=$this->decode($existing['buyer']);
-            if(!hash_equals((string)($previousBuyer['email']??''),$buyer['email'])) continue;
-            if($existing['request_key']===$key && $existing['request_hash']!==$hash)
-                throw new Problem(409,'retry_payload_changed');
-
-            // A remote paid/canceled payment is never offered as pending.
-            $this->ensurePayment($existing['id']);
-            $result=$this->resumeOrder($existing['request_key']);
-            if($result['status']==='reserved' && $result['paymentStatus']==='pending'
-                && $result['confirmationUrl']) return $result;
-        }
-        return null;
-    }
-
     public function order(array $d,string $ip,bool $control=false): array {
         $this->checkoutReady($control);
         $amount=$control?self::CONTROL_PRICE:$this->publicPrice();
@@ -138,7 +108,6 @@ final class App {
         if(count(preg_split('/\s+/u',$buyer['name']))<2) throw new Problem(422,'name_and_surname_required');
         $hash=$this->fingerprint($control?['control'=>true,'checkout'=>'smart-v1']+$d:$d);
         $access=$this->crypto->capability($key);
-        if($control && ($existing=$this->recoverControlOrder($buyer,$key,$hash))!==null) return $existing;
         $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access,$method,$amount,$control) {
             $this->expireReservations();
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
@@ -152,22 +121,6 @@ final class App {
                 }
                 if($old['request_hash']!==$hash) throw new Problem(409,'retry_payload_changed');
                 return $old['id'];
-            }
-            if($control) {
-                // Serialize simultaneous clicks with different request keys.
-                $candidates=$this->db->run(
-                    "SELECT o.id,o.request_key,o.buyer,p.request_body
-                     FROM orders o JOIN payments p ON p.order_id=o.id
-                     WHERE o.amount=? AND o.status='reserved' AND p.status='pending'
-                     ORDER BY o.created_at DESC LIMIT 50",
-                    [self::CONTROL_PRICE]
-                )->fetchAll();
-                foreach($candidates as $candidate) {
-                    $body=$this->decode($candidate['request_body']);
-                    if(($body['capture']??null)===true && !isset($body['payment_method_data'])
-                        && hash_equals((string)($this->decode($candidate['buyer'])['email']??''),$buyer['email']))
-                        return $candidate['id'];
-                }
             }
             $docs=$this->documents($d,['terms','buyers','privacy']);
             if($amount!==self::CONTROL_PRICE && $inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
@@ -192,12 +145,6 @@ final class App {
             $this->db->run('INSERT INTO payments(order_id,idempotence_key,request_body) VALUES(?,?,?)',[$id,$paymentKey,$this->crypto->seal(self::json($body))]);
             return $id;
         });
-        // A racing control request may have reused an earlier Smart Payment.
-        if($control) {
-            $saved=$this->db->one('SELECT request_key FROM orders WHERE id=?',[$id]);
-            if($saved && $saved['request_key']!==$key)
-                $access=$this->crypto->capability($saved['request_key']);
-        }
         try {$this->ensurePayment($id);} catch(Problem $e) {if($e->status!==503) throw $e;}
         return $this->orderStatus($access)+['accessToken'=>$access];
     }
@@ -332,10 +279,6 @@ final class App {
             if($t) $result['ticketUrl']=$this->ticketUrl($this->crypto->open($t['token_cipher']));
         }
         return $result;
-    }
-    public function resumeOrder(string $requestKey): array {
-        $token=$this->crypto->capability($requestKey);
-        return $this->orderStatus($token)+['accessToken'=>$token];
     }
     public function ticketUrl(string $token): string {return $this->c['base_url'].'/index.php?r=ticket#'.$token;}
     public function ticket(string $token): array {

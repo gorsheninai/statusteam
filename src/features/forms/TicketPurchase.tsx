@@ -12,7 +12,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
   const busy = useRef(false);
   const [state, setState] = useState("");
   const [sending, setSending] = useState(false);
-  const [paymentLink, setPaymentLink] = useState<string | null>(null);
+  const [paymentLink, setPaymentLink] = useState<{ href: string; fields: string } | null>(null);
   const [accepted, setAccepted] = useState(false);
   const [testSession, setTestSession] = useState<{ csrf: string; amountKopecks: number; documents: { id: string; version: string }[] } | null>(null);
   const [testSessionError, setTestSessionError] = useState(false);
@@ -75,7 +75,10 @@ export default function TicketPurchase({ test = false, control: forceControl = f
     e.preventDefault();
     const endpoint = endpointFor("orders");
     if (busy.current || !available || !accepted || !endpoint || !e.currentTarget.reportValidity()) return;
-    const fields = Object.fromEntries(new FormData(e.currentTarget));
+    const form = e.currentTarget;
+    const fields = Object.fromEntries(new FormData(form));
+    const submittedFields = JSON.stringify(fields);
+    const fieldsMatch = () => JSON.stringify(Object.fromEntries(new FormData(form))) === submittedFields;
     busy.current = true; setSending(true); setState("Создаём заказ…"); setPaymentLink(null);
     const payload = { ...fields, ...(!test || control ? { paymentMethod: "smart" } : {}),
       ...(!restricted ? { expectedAmountKopecks: total } : {}), consentDocuments: testSession?.documents ?? PURCHASE_DOCUMENTS
@@ -86,7 +89,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         return;
       }
       const purpose = control ? "control-purchase" : test ? "test-purchase" : "purchase";
-      let requestKey = await retryKey(purpose, payload, !control);
+      let requestKey = await retryKey(purpose, payload);
       const headers = { "Content-Type": "application/json" };
       const submit = async (key: string) => {
         const response = await fetch(endpoint, { method: "POST", headers,
@@ -94,25 +97,17 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         return { res: response, result: await response.json().catch(() => ({})) };
       };
       let { res, result } = await submit(requestKey);
-      if (control && ((res.ok && ["paid", "canceled", "expired", "refunded", "refund_pending"].includes(result.status)) ||
-        (res.status === 409 && ["retry_payload_changed", "control_checkout_upgraded"].includes(result.error)))) {
+      if (!fieldsMatch()) return;
+      const finished = res.ok && (control
+        ? ["paid", "canceled", "expired", "refunded", "refund_pending"]
+        : ["canceled", "expired"]).includes(result.status);
+      const conflictingKey = res.status === 409 && (result.error === "retry_payload_changed"
+        || (control && result.error === "control_checkout_upgraded"));
+      if (finished || conflictingKey) {
         clearRetryKey(purpose);
         requestKey = await retryKey(purpose, payload);
         ({ res, result } = await submit(requestKey));
-      }
-      let resumedWithDifferentDetails = false;
-      if (res.status === 409 && result.error === "retry_payload_changed") {
-        res = await fetch(endpointFor("order-status"), { method: "POST", headers, body: JSON.stringify({ requestKey }) });
-        if (!res.ok) throw new Error("checkout_failed");
-        result = await res.json();
-        resumedWithDifferentDetails = true;
-      }
-      // An expired or canceled payment has ended. Only then can this click start a new order.
-      if (!control && res.ok && ["canceled", "expired"].includes(result.status)) {
-        clearRetryKey(purpose);
-        requestKey = await retryKey(purpose, payload, true);
-        ({ res, result } = await submit(requestKey));
-        resumedWithDifferentDetails = false;
+        if (!fieldsMatch()) return;
       }
       if (res.status === 409 && ["document_version_changed", "checkout_price_changed"].includes(result.error) && !restricted) {
         clearRetryKey(purpose);
@@ -137,19 +132,13 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         if (destination.protocol !== "https:" || !/(^|\.)(yookassa|yoomoney)\.ru$/.test(destination.hostname)) {
           throw new Error("invalid_payment_link");
         }
-        setPaymentLink(destination.href);
-        if (resumedWithDifferentDetails) {
-          setState("Есть незавершённый заказ с прежними данными. По ссылке можно продолжить его оплату.");
-        } else {
-          setState("Открываем страницу оплаты…");
-          window.location.assign(destination.href);
-        }
+        setPaymentLink({ href: destination.href, fields: submittedFields });
+        setState("Открываем страницу оплаты…");
+        window.location.assign(destination.href);
       } else if (control) {
         setState("ЮKassa не вернула ссылку на оплату. Проверьте заказ в кабинете.");
       } else if (result.status === "reserved") {
-        setState(resumedWithDifferentDetails
-          ? "Ссылка для заказа с прежними данными пока недоступна. Повторите оплату с исходными данными."
-          : "ЮKassa пока не выдала ссылку. Нажмите «Оплатить» ещё раз с теми же данными.");
+        setState("ЮKassa пока не выдала ссылку. Нажмите «Оплатить» ещё раз с теми же данными.");
       } else if (result.accessToken) {
         window.location.assign(`${endpointFor("return")}#${result.accessToken}`);
       } else {
@@ -158,10 +147,14 @@ export default function TicketPurchase({ test = false, control: forceControl = f
     } catch { setState("Не удалось получить ответ. Повторите отправку с теми же данными — сервер проверит существующий заказ."); }
     finally { busy.current = false; setSending(false); }
   }
+  function clearPaymentLink() {
+    setPaymentLink(null);
+    setState("");
+  }
   return (
     <form className="form ticket-purchase" data-form="purchase" aria-label="Оформление билета"
-      method="post" onSubmit={checkout}
-      onReset={() => setAccepted(false)}>
+      method="post" onSubmit={checkout} onInput={clearPaymentLink}
+      onReset={() => { setAccepted(false); clearPaymentLink(); }}>
       {((control && testSession?.amountKopecks === 100) || (!restricted && publicPrice === 100)) &&
         <p className="form-note">Контрольная оплата · реальное списание 1 ₽. Билет недействителен для входа.</p>}
       <input name="website" type="hidden" value="" />
@@ -193,12 +186,19 @@ export default function TicketPurchase({ test = false, control: forceControl = f
       </p>
       <p className="form-note">Как мы обрабатываем данные покупателей — в <LegalLink document="buyers">Сведениях об обработке персональных данных</LegalLink>.</p>
       <p className="form-note" role="status" aria-live="polite">{state}</p>
-      {paymentLink && <p className="form-note"><a href={paymentLink}>Открыть страницу оплаты ЮKassa</a></p>}
+      {paymentLink && <p className="form-note"><button className="ticket-payment-link" type="button" onClick={(event) => {
+        const form = event.currentTarget.form;
+        if (!form || JSON.stringify(Object.fromEntries(new FormData(form))) !== paymentLink.fields) {
+          clearPaymentLink();
+          return;
+        }
+        window.location.assign(paymentLink.href);
+      }}>Открыть страницу оплаты ЮKassa</button></p>}
       <div className="form-foot">
         {restricted && !available && <p className="form-note" id="purchase-availability">{testSessionError ? "Войдите в кабинет и снова откройте форму." : "Проверяем доступ к оплате…"}</p>}
         <button className="btn btn-solid btn-buy" type="submit" disabled={!accepted || !available || sending}
           aria-describedby={restricted && !available ? "purchase-availability" : undefined}>
-          Оплатить
+          {sending ? "Создаём заказ…" : "Оплатить"}
           <span className="arrow" aria-hidden="true">↗</span>
         </button>
         <p className="form-note">Как мы обрабатываем данные — в <LegalLink document="privacy">Политике</LegalLink>.</p>

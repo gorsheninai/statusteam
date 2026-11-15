@@ -30,7 +30,7 @@ test('enable payment only after the server confirms the published terms and pric
     ...matching, documents: [{ ...docs[0], href: '/documents/files/terms-v1.pdf' }],
   }, TICKET.priceKopecks, docs), false);
 });
-test('changing payment method keeps the order key until the buyer starts a new order', async () => {
+test('payment retries are scoped to the submitted buyer details', async () => {
   const entries = new Map();
   Object.defineProperty(globalThis, 'sessionStorage', {
     configurable: true,
@@ -39,32 +39,35 @@ test('changing payment method keeps the order key until the buyer starts a new o
       setItem: (key, value) => entries.set(key, value),
     },
   });
-  const card = { paymentMethod: 'bank_card' };
-  const sbp = { paymentMethod: 'sbp' };
-  const first = await retryKey('purchase', card, true);
-  assert.equal(await retryKey('purchase', sbp, true), first);
-  entries.delete('status-request-purchase');
-  assert.notEqual(await retryKey('purchase', sbp, true), first);
+  const buyer = { name: 'First Buyer', email: 'first@example.invalid', phone: '+70000000000' };
+  const legacyKey = 'a'.repeat(64);
+  entries.set('status-request-purchase', JSON.stringify({ digest: '', key: legacyKey }));
+  const first = await retryKey('purchase', buyer);
+  assert.notEqual(first, legacyKey);
+  assert.equal(await retryKey('purchase', buyer), first);
+  const changedEmail = { ...buyer, email: 'second@example.invalid' };
+  const second = await retryKey('purchase', changedEmail);
+  assert.notEqual(second, first);
+  assert.equal(await retryKey('purchase', changedEmail), second);
+  const changedPhone = { ...changedEmail, phone: '+70000000001' };
+  const third = await retryKey('purchase', changedPhone);
+  assert.notEqual(third, second);
+  assert.notEqual(await retryKey('purchase', { ...changedPhone, name: 'Second Buyer' }), third);
 });
 
-test('checkout retries use the same random key when mobile storage writes fail', async () => {
+test('checkout retries preserve the request key when mobile storage fails', async () => {
   Object.defineProperty(globalThis, 'sessionStorage', {
     configurable: true,
-    value: { getItem: () => null, setItem() { throw new Error('storage unavailable'); } },
+    value: {
+      getItem: () => JSON.stringify({ digest: '', key: 'a'.repeat(64) }),
+      setItem() { throw new Error('storage unavailable'); },
+    },
   });
-  const original = globalThis.crypto;
-  Object.defineProperty(globalThis, 'crypto', {
-    configurable: true,
-    value: { getRandomValues: array => original.getRandomValues(array) },
-  });
-  try {
-    const first = await retryKey('mobile-fixture', { device: 'phone' }, true);
-    assert.equal(await retryKey('mobile-fixture', { device: 'phone' }, true), first);
-    assert.notEqual(await retryKey('other-device-fixture', { device: 'laptop' }, true), first);
-    assert.match(first, /^[a-f0-9]{64}$/);
-  } finally {
-    Object.defineProperty(globalThis, 'crypto', { configurable: true, value: original });
-  }
+  const buyer = { email: 'first@example.invalid' };
+  const first = await retryKey('mobile-fixture', buyer);
+  assert.equal(await retryKey('mobile-fixture', buyer), first);
+  assert.notEqual(await retryKey('mobile-fixture', { email: 'second@example.invalid' }), first);
+  assert.match(first, /^[a-f0-9]{64}$/);
 });
 
 test('checkout reports field errors and shared throttling', () => {

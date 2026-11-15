@@ -107,7 +107,7 @@ $body=$app->decode($payment['request_body']);
 check($body['capture']===true && $body['payment_method_data']['type']==='sbp' && $payment['reserve_until']===null,'SBP is one-stage and has no local expiry');
 $d['paymentMethod']='bank_card';
 reject(fn()=>$app->order($d,'127.0.0.1'),409,'active SBP order cannot switch to card');
-check($app->resumeOrder($d['requestKey'])['orderId']===$id,'checkout can recover the original order after a method change');
+check($app->orderStatus($o['accessToken'])['orderId']===$id,'the order access token still opens the original order');
 $db->run('UPDATE orders SET created_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 2 HOUR) WHERE id=?',[$id]);
 $db->run('UPDATE inventory SET capacity=held WHERE id=1');
 $app->reconcile();
@@ -207,6 +207,13 @@ $desktopOrder=$app->order($desktop,'127.0.0.1');
 $mobileOrder=$app->order($mobile,'127.0.0.1');
 check($desktopOrder['orderId']!==$mobileOrder['orderId'] && $desktopOrder['confirmationUrl'] &&
     $mobileOrder['confirmationUrl'], 'two devices sharing an IP and email receive independent public control orders');
+$newBuyer=array_replace($mobile,['name'=>'Second Buyer','email'=>'second@example.invalid']);
+reject(fn()=>$app->order($newBuyer,'127.0.0.1'),409,'changing the buyer cannot retrieve the previous checkout with its key');
+$newBuyer['requestKey']=bin2hex(random_bytes(32));
+$newBuyerOrder=$app->order($newBuyer,'127.0.0.1');
+check($newBuyerOrder['accessToken']!==$mobileOrder['accessToken'] &&
+    $newBuyerOrder['orderId']!==$mobileOrder['orderId'] && $newBuyerOrder['confirmationUrl'],
+    'a new buyer on the same device gets a distinct order and payment');
 check($app->order($mobile,'127.0.0.1')['orderId']===$mobileOrder['orderId'],
     'retrying the mobile request reuses its original payment');
 check((int)$db->one('SELECT held FROM inventory WHERE id=1')['held']===$held,

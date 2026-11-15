@@ -119,13 +119,11 @@ function setupTestCheckout() {
  form('test-checkout',async data=>{
   const payload={...data,paymentMethod:'bank_card',consentDocuments:documents};
   const signature=JSON.stringify(payload);
-  if(control){
-   const saved=sessionStorage.getItem('status-control-order');
-   if(!pending) pending={signature,key:saved??key()};
-   sessionStorage.setItem('status-control-order',pending.key);
-  } else if(!pending || pending.signature!==signature) pending={signature,key:key()};
+  if(!pending || pending.signature!==signature) pending={signature,key:key()};
   const order=await api(control?'control-order':'orders',{...payload,requestKey:pending.key});
-  if(control && ['expired','canceled'].includes(order.status)) sessionStorage.removeItem('status-control-order');
+  if(['expired','canceled'].includes(order.status) || (control && order.status==='paid')) pending=null;
+  const currentFields=new FormData(checkout);
+  if(Object.entries(data).some(([name,value])=>currentFields.get(name)!==value)) return;
   if(order.confirmationUrl) location.assign(order.confirmationUrl);
   else location.assign('index.php?r=return#'+order.accessToken);
  });

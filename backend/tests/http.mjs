@@ -17,6 +17,13 @@ try {
  check((await post('admit',{token:fixture.token})).status()===403,'admit requires CSRF and authorization');
  check((await post('forms',{},'https://foreign.example')).status()===403,'foreign origin denied');
  check((await post('orders',{})).status()===503,'disabled checkout denied by server');
+ const keyLookup=await post('order-status',{requestKey:fixture.requestKey});
+ const keyLookupData=await keyLookup.json();
+ check(keyLookup.status()===422 && !keyLookupData.accessToken && !keyLookupData.ticketUrl && !keyLookupData.confirmationUrl,
+   'an order request key alone cannot reveal ticket or payment links');
+ const orderLookup=await (await post('order-status',{token:fixture.orderAccess})).json();
+ check(orderLookup.orderId===fixture.orderId && orderLookup.status==='paid' && !!orderLookup.ticketUrl,
+   'the original order return capability still opens the paid ticket');
  check((await page.request.get(base+'?r=admit')).status()===404,'GET cannot admit');
  await page.goto(base+'?r=staff');
  await page.locator('[name=username]').fill('fixture-door');await page.locator('[name=password]').fill(fixture.controllerPassword);

@@ -90,7 +90,6 @@ try {
         Http::output($route==='forms'?$app->application($d,$ip):$app->order($d,$ip));
     }
     if($route==='order-status') {
-        if(array_key_exists('requestKey',$d)) Http::output($app->resumeOrder(Validation::key($d)));
         Http::output($app->orderStatus(Validation::text($d,'token',64),($d['verifyPayment']??false)===true));
     }
     if($route==='ticket-data') {
