@@ -82,11 +82,17 @@ final class App {
         if(!$y['test'] && (!$this->c['live_approved'] || !$f['approved'] || $f['payment_mode']!=='full_payment')) throw new Problem(503,'live_not_approved');
         if(!in_array($f['integration'],['payment_with_receipt','yoo_receipt'],true) || ($f['integration']==='payment_with_receipt' && (!is_int($f['tax_system_code']??null) || $f['tax_system_code']<1 || $f['tax_system_code']>6)) || !is_int($f['vat_code']) || $f['vat_code']<1 || $f['vat_code']>12 || !$f['payment_subject'] || !$f['payment_mode'] || !$f['refund_payment_mode']) throw new Problem(503,'fiscal_configuration_pending');
     }
-    private function receipt(array $buyer,int $amount,bool $refund=false): array {
+    public function launchCheckoutEmail(): string {
+        return $this->publicPrice()===self::CONTROL_PRICE ? (string)($this->c['launch_checkout_email']??'') : '';
+    }
+    public static function controlTicket(int $amount, bool $launchTicket): bool {
+        return $amount===self::CONTROL_PRICE && !$launchTicket;
+    }
+    private function receipt(array $buyer,int $amount,bool $launchTicket,bool $refund=false): array {
         $f=$this->c['fiscal'];
         $receipt=['customer'=>['email'=>$buyer['email']],'items'=>[['description'=>'Билет на шоу «Пульс Континента» 30.11.2026','quantity'=>'1.00','amount'=>['value'=>sprintf('%d.%02d',intdiv($amount,100),$amount%100),'currency'=>'RUB'],'vat_code'=>$f['vat_code'],'payment_subject'=>$f['payment_subject'],'payment_mode'=>$refund?$f['refund_payment_mode']:$f['payment_mode']]]];
         if($f['integration']==='payment_with_receipt') $receipt['tax_system_code']=$f['tax_system_code'];
-        if($amount===self::CONTROL_PRICE) $receipt['items'][0]['description']='Контрольный заказ: билет на шоу «Пульс Континента»';
+        if(self::controlTicket($amount,$launchTicket)) $receipt['items'][0]['description']='Контрольный заказ: билет на шоу «Пульс Континента»';
         return $receipt;
     }
     public function order(array $d,string $ip,bool $control=false): array {
@@ -106,9 +112,11 @@ final class App {
             throw new Problem(422,'invalid_payment_method');
         $buyer=['name'=>Validation::text($d,'name'),'email'=>Validation::email(Validation::text($d,'email',254)),'phone'=>Validation::phone(Validation::text($d,'phone',32))];
         if(count(preg_split('/\s+/u',$buyer['name']))<2) throw new Problem(422,'name_and_surname_required');
+        $launchEmail=$control?'':$this->launchCheckoutEmail();
+        if($launchEmail!=='' && strcasecmp($buyer['email'],$launchEmail)!==0) throw new Problem(403,'launch_checkout_restricted');
         $hash=$this->fingerprint($control?['control'=>true,'checkout'=>'smart-v1']+$d:$d);
         $access=$this->crypto->capability($key);
-        $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access,$method,$amount,$control) {
+        $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access,$method,$amount,$control,$launchEmail) {
             $this->expireReservations();
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
             $old=$this->db->one('SELECT id,request_hash FROM orders WHERE request_key=?',[$key]);
@@ -122,8 +130,12 @@ final class App {
                 if($old['request_hash']!==$hash) throw new Problem(409,'retry_payload_changed');
                 return $old['id'];
             }
+            $launchTicket=$launchEmail!=='';
+            if($launchTicket && $this->db->one("SELECT id FROM orders WHERE launch_ticket=1 AND status NOT IN ('canceled','expired') LIMIT 1")) {
+                throw new Problem(409,'launch_ticket_exists');
+            }
             $docs=$this->documents($d,['terms','buyers','privacy']);
-            if($amount!==self::CONTROL_PRICE && $inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
+            if(!self::controlTicket($amount,$launchTicket) && $inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');
             $id=Crypto::id();$paymentKey=Crypto::id();
             $body=[
                 'amount'=>['value'=>sprintf('%d.%02d',intdiv($amount,100),$amount%100),'currency'=>'RUB'],
@@ -131,16 +143,16 @@ final class App {
                 'confirmation'=>['type'=>'redirect','return_url'=>$this->ticketUrl('order-'.$access)],
                 'metadata'=>['order_id'=>$id],
                 'description'=>'STATUS TEAM '.$id,
-                'receipt'=>$this->receipt($buyer,$amount),
+                'receipt'=>$this->receipt($buyer,$amount,$launchTicket),
             ];
             if($method!=='smart') $body['payment_method_data']=['type'=>$method];
             // One-stage payments may complete after the buyer leaves our site.
             $this->db->run(
-                'INSERT INTO orders(id,request_key,request_hash,buyer,amount,access_hash,reserve_until)
-                 VALUES(?,?,?,?,?,?,CASE WHEN ? = \'bank_card\' THEN UTC_TIMESTAMP(6) + INTERVAL 15 MINUTE END)',
-                [$id,$key,$hash,$this->crypto->seal(self::json($buyer)),$amount,Crypto::hash($access),$method]
+                'INSERT INTO orders(id,request_key,request_hash,buyer,amount,launch_ticket,access_hash,reserve_until)
+                 VALUES(?,?,?,?,?,?,?,CASE WHEN ? = \'bank_card\' THEN UTC_TIMESTAMP(6) + INTERVAL 15 MINUTE END)',
+                [$id,$key,$hash,$this->crypto->seal(self::json($buyer)),$amount,(int)$launchTicket,Crypto::hash($access),$method]
             );
-            if($amount!==self::CONTROL_PRICE) $this->db->run('UPDATE inventory SET held=held+1 WHERE id=1');
+            if(!self::controlTicket($amount,$launchTicket)) $this->db->run('UPDATE inventory SET held=held+1 WHERE id=1');
             $this->consent('purchase',$docs,$d,$ip,null,$id);
             $this->db->run('INSERT INTO payments(order_id,idempotence_key,request_body) VALUES(?,?,?)',[$id,$paymentKey,$this->crypto->seal(self::json($body))]);
             return $id;
@@ -153,11 +165,11 @@ final class App {
         $this->db->one('SELECT id FROM inventory WHERE id=1 FOR UPDATE');
         $this->db->run("UPDATE orders o JOIN payments p ON p.order_id=o.id
              SET o.status='expired',o.updated_at=UTC_TIMESTAMP()
-             WHERE o.amount=? AND o.status='reserved' AND o.reserve_until<=UTC_TIMESTAMP(6) AND p.capture_requested_at IS NULL",[self::CONTROL_PRICE]);
+             WHERE o.amount=? AND o.launch_ticket=0 AND o.status='reserved' AND o.reserve_until<=UTC_TIMESTAMP(6) AND p.capture_requested_at IS NULL",[self::CONTROL_PRICE]);
         $expired=$this->db->run(
             "UPDATE orders o JOIN payments p ON p.order_id=o.id
              SET o.status='expired',o.updated_at=UTC_TIMESTAMP()
-             WHERE o.amount<>? AND o.status='reserved' AND o.reserve_until<=UTC_TIMESTAMP(6) AND p.capture_requested_at IS NULL",
+             WHERE (o.amount<>? OR o.launch_ticket=1) AND o.status='reserved' AND o.reserve_until<=UTC_TIMESTAMP(6) AND p.capture_requested_at IS NULL",
             [self::CONTROL_PRICE]
         )->rowCount();
         if($expired) $this->db->run('UPDATE inventory SET held=held-? WHERE id=1',[$expired]);
@@ -227,7 +239,7 @@ final class App {
             }
             if($v['status']==='canceled' && $o['status']==='reserved') {
                 $this->db->run("UPDATE orders SET status='canceled',updated_at=UTC_TIMESTAMP() WHERE id=?",[$id]);
-                if((int)$o['amount']!==self::CONTROL_PRICE) $this->db->run('UPDATE inventory SET held=held-1 WHERE id=1');
+                if(!self::controlTicket((int)$o['amount'],(bool)$o['launch_ticket'])) $this->db->run('UPDATE inventory SET held=held-1 WHERE id=1');
             }
             if(!$settle || $o['reserve_until']===null || $v['status']!=='waiting_for_capture') return null;
             if($o['status']==='expired') return ['cancel',$p['idempotence_key']];
@@ -283,7 +295,7 @@ final class App {
     public function ticketUrl(string $token): string {return $this->c['base_url'].'/index.php?r=ticket#'.$token;}
     public function ticket(string $token): array {
         if(!preg_match('/^[a-f0-9]{64}$/D',$token)) throw new Problem(404,'ticket_not_found');
-        $t=$this->db->one('SELECT t.*,o.status order_status FROM tickets t JOIN orders o ON o.id=t.order_id WHERE token_hash=?',[Crypto::hash($token)]);
+        $t=$this->db->one('SELECT t.*,o.status order_status,o.amount,o.launch_ticket FROM tickets t JOIN orders o ON o.id=t.order_id WHERE token_hash=?',[Crypto::hash($token)]);
         if(!$t) throw new Problem(404,'ticket_not_found');return $t;
     }
     // Human-readable random ticket number is searchable only behind staff authentication.
@@ -297,9 +309,9 @@ final class App {
     public function admit(string $token,int $staff): array {
         $t=$this->ticketFromCode($token);
         return $this->db->tx(function() use($t,$staff) {
-            $o=$this->db->one('SELECT status,amount FROM orders WHERE id=? FOR UPDATE',[$t['order_id']]);
+            $o=$this->db->one('SELECT status,amount,launch_ticket FROM orders WHERE id=? FOR UPDATE',[$t['order_id']]);
             $v=$this->db->one('SELECT status FROM tickets WHERE id=? FOR UPDATE',[$t['id']]);
-            if((int)$o['amount']===self::CONTROL_PRICE) throw new Problem(409,'control_ticket');
+            if(self::controlTicket((int)$o['amount'],(bool)$o['launch_ticket'])) throw new Problem(409,'control_ticket');
             if($o['status']!=='paid' || $v['status']!=='valid') throw new Problem(409,$v['status']==='used'?'used':'invalid_ticket');
             $this->db->run("UPDATE tickets SET status='used' WHERE id=?",[$t['id']]);
             $this->db->run('INSERT INTO admissions(ticket_id,staff_id) VALUES(?,?)',[$t['id'],$staff]);
@@ -308,8 +320,8 @@ final class App {
     }
     public function audit(int $staff,string $action,string $id): void {$this->db->run('INSERT INTO staff_audit(staff_id,action,reference_id) VALUES(?,?,?)',[$staff,$action,$id]);}
     public function refund(string $order,int $amount,string $key,int $staff): array {
-        $record=$this->db->one('SELECT amount FROM orders WHERE id=?',[$order]);
-        $this->checkoutReady((int)($record['amount']??0)===self::CONTROL_PRICE);
+        $record=$this->db->one('SELECT amount,launch_ticket FROM orders WHERE id=?',[$order]);
+        $this->checkoutReady(self::controlTicket((int)($record['amount']??0),(bool)($record['launch_ticket']??false)));
         if(!preg_match('/^[a-f0-9]{64}$/D',$key)) throw new Problem(422,'invalid_request_key');
         $r=$this->db->tx(function() use($order,$amount,$key,$staff) {
             $o=$this->db->one('SELECT * FROM orders WHERE id=? FOR UPDATE',[$order]);
@@ -323,7 +335,7 @@ final class App {
             if($amount<100 || $amount>$left || ($left-$amount>0 && $left-$amount<100)) throw new Problem(422,'invalid_refund_amount');
             if($amount<$left && !in_array($this->c['partial_refund_policy'],['keep','void'],true)) throw new Problem(409,'partial_refunds_not_approved');
             $p=$this->db->one('SELECT provider_id FROM payments WHERE order_id=?',[$order]);$id=Crypto::id();
-            $body=['payment_id'=>$p['provider_id'],'amount'=>['value'=>sprintf('%d.%02d',intdiv($amount,100),$amount%100),'currency'=>'RUB'],'receipt'=>$this->receipt($this->decode($o['buyer']),$amount,true)];
+            $body=['payment_id'=>$p['provider_id'],'amount'=>['value'=>sprintf('%d.%02d',intdiv($amount,100),$amount%100),'currency'=>'RUB'],'receipt'=>$this->receipt($this->decode($o['buyer']),$amount,(bool)$o['launch_ticket'],true)];
             $this->db->run('INSERT INTO refunds(id,order_id,staff_id,request_key,amount,request_body) VALUES(?,?,?,?,?,?)',[$id,$order,$staff,$key,$amount,$this->crypto->seal(self::json($body))]);
             $this->db->run("UPDATE orders SET status='refund_pending' WHERE id=?",[$order]);
             $this->audit($staff,'refund_requested',$id);

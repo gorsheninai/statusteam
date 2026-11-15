@@ -22,7 +22,7 @@ $migrate=function() use($migrationConfig) {
  $process=proc_open([PHP_BINARY,'-c',php_ini_loaded_file(),dirname(__DIR__).'/bin/console.php','migrate'],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes,null,array_merge(getenv(),['STATUS_CONFIG'=>$migrationConfig]));
  fclose($pipes[0]);stream_get_contents($pipes[1]);fclose($pipes[1]);stream_get_contents($pipes[2]);fclose($pipes[2]);return proc_close($process);
 };
-try {check($migrate()===0,'CLI applies versioned migrations');check($migrate()===0 && n('schema_migrations')===3,'CLI migration rerun is idempotent');} finally {unlink($migrationConfig);}
+try {check($migrate()===0,'CLI applies versioned migrations');check($migrate()===0 && n('schema_migrations')===4,'CLI migration rerun is idempotent');} finally {unlink($migrationConfig);}
 
 echo 'DATABASE '.$db->one('SELECT VERSION() version')['version'].PHP_EOL;
 $fixtureDocs = array_map(
@@ -218,4 +218,26 @@ check($app->order($mobile,'127.0.0.1')['orderId']===$mobileOrder['orderId'],
     'retrying the mobile request reuses its original payment');
 check((int)$db->one('SELECT held FROM inventory WHERE id=1')['held']===$held,
     'public control orders do not consume ticket inventory');
+$app->c['launch_checkout_email']='launch@example.invalid';
+reject(fn()=>$app->order(purchase()+['expectedAmountKopecks'=>100,'paymentMethod'=>'smart'],'127.0.0.1'),403,'launch checkout restricts purchases to the configured organizer');
+$purchase=array_replace(purchase(),['email'=>'launch@example.invalid','expectedAmountKopecks'=>100,'paymentMethod'=>'smart']);
+$launch=$app->order($purchase,'127.0.0.1');
+check($app->order($purchase,'127.0.0.1')['orderId']===$launch['orderId'],'retries keep the same launch order');
+reject(fn()=>$app->order(array_replace($purchase,['requestKey'=>bin2hex(random_bytes(32))]),'127.0.0.1'),409,'only one active launch order can be issued');
+$launchId=$launch['orderId'];
+$gateway->overrides[$launchId]=['status'=>'succeeded','paid'=>true];
+$launchStatus=$app->orderStatus($launch['accessToken'],true);
+check($launchStatus['status']==='paid' && isset($launchStatus['ticketUrl']),'launch payment issues a ticket');
+$launchToken=substr($launchStatus['ticketUrl'],strrpos($launchStatus['ticketUrl'],'#')+1);
+$launchBody=$app->decode($db->one('SELECT request_body FROM payments WHERE order_id=?',[$launchId])['request_body']);
+check(str_starts_with($launchBody['receipt']['items'][0]['description'],'Билет на шоу'), '1 RUB fiscal item is a regular ticket');
+$launchMail=null;
+(new Mailer($app))->work(function($recipient,$subject,$body,$messageId,$attachment) use(&$launchMail) {
+    if($recipient==='launch@example.invalid') $launchMail=[$subject,$body,$attachment['pdf']];
+});
+check($launchMail && str_starts_with($launchMail[0],'Ваш билет') && !str_contains($launchMail[1],'недействителен') &&
+    str_starts_with($launchMail[2],'%PDF-'), 'launch email includes the regular PDF ticket without a control notice');
+$app->c['public_control_price']=false;
+check($app->publicPrice()===\StatusTeam\App::PRICE && $app->admit($launchToken,1)['status']==='admitted',
+    'the paid 1 RUB launch ticket remains admissible at the standard price');
 echo 'TOTAL '.$count." passed\n";

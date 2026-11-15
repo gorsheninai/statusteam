@@ -1,0 +1,1 @@
+ALTER TABLE orders ADD COLUMN launch_ticket TINYINT(1) NOT NULL DEFAULT 0;

@@ -10,10 +10,10 @@ final class TicketPdf
 {
     // The precompiled theme contains the approved artwork, static text, embedded
     // font subsets, and PDF objects. No recipient or order data is stored in it.
-    public static function render(string $number, string $token, bool $test, int $amount, string $orderId): string
+    public static function render(string $number, string $token, bool $test, int $amount, string $orderId, bool $launchTicket = false): string
     {
         $theme = json_decode(file_get_contents(__DIR__.'/TicketTheme.json'), true, flags: JSON_THROW_ON_ERROR);
-        $control = $amount === App::CONTROL_PRICE;
+        $control = App::controlTicket($amount, $launchTicket);
         $type = $control ? 'КОНТРОЛЬНЫЙ БИЛЕТ' : ($test ? 'ТЕСТОВЫЙ БИЛЕТ' : 'ЭЛЕКТРОННЫЙ БИЛЕТ');
         $content = base64_decode($theme['content'], true)."\n";
         $content .= self::label($theme['fonts']['Body'], $type, 30, 521, 8, '0.820 0.749 0.761', 1.35);
