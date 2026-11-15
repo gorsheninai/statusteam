@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { TICKET, CHECKOUT_ENABLED } from '../src/content/ticket.ts';
-import { ticketTotalKopecks, formatRubles } from '../src/features/forms/ticket-order.ts';
+import { TICKET } from '../src/content/ticket.ts';
+import { ticketTotalKopecks, formatRubles, checkoutMatchesPublication } from '../src/features/forms/ticket-order.ts';
 import { retryKey } from '../src/features/forms/api.ts';
 
 test('confirmed price and integer order total are in kopecks', () => {
@@ -17,8 +17,18 @@ test('zero, fractions, overselling and unsafe amounts are rejected', () => {
   }
   assert.equal(ticketTotalKopecks(2, Number.MAX_SAFE_INTEGER, 100), null);
 });
-test('moderation storefront cannot accept real money', () => {
-  assert.equal(CHECKOUT_ENABLED, false);
+test('enable payment only after the server confirms the published terms and price', () => {
+  const docs = [{ id: 'terms', version: 'v2', href: '/documents/files/terms-v2.pdf' }];
+  const matching = { amountKopecks: TICKET.priceKopecks, documents: docs };
+  assert.equal(checkoutMatchesPublication(matching, TICKET.priceKopecks, docs), true);
+  assert.equal(checkoutMatchesPublication(null, TICKET.priceKopecks, docs), false);
+  assert.equal(checkoutMatchesPublication({ ...matching, amountKopecks: 100 }, TICKET.priceKopecks, docs), false);
+  assert.equal(checkoutMatchesPublication({
+    ...matching, documents: [{ ...docs[0], version: 'v1' }],
+  }, TICKET.priceKopecks, docs), false);
+  assert.equal(checkoutMatchesPublication({
+    ...matching, documents: [{ ...docs[0], href: '/documents/files/terms-v1.pdf' }],
+  }, TICKET.priceKopecks, docs), false);
 });
 test('changing payment method keeps the order key until the buyer starts a new order', async () => {
   const entries = new Map();

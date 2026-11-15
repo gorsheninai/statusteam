@@ -2,7 +2,7 @@
 export const TICKET = {
   id: "pulse-continent-2026",
   title: "Билет на шоу «Пульс Континента»",
-  description: "Посещение fashion-шоу STATUS TEAM. Один билет — один гость, один проход на мероприятие. Без выбора мест.",
+  description: "Посещение fashion-шоу STATUS TEAM. Один билет — один гость, один проход на мероприятие. Без закреплённого места.",
   priceKopecks: 3_000_000,
   currency: "RUB",
   capacity: 100,
@@ -17,6 +17,3 @@ export const TICKET = {
   delivery: "QR-билет придёт на e-mail в течение часа после успешной оплаты.",
   receipt: "Кассовый чек направляется на e-mail, указанный при оформлении заказа.",
 };
-
-/** Moderation preparation only. Real payment integration is not configured. */
-export const CHECKOUT_ENABLED = false;
