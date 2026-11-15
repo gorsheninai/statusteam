@@ -1,4 +1,3 @@
-import Link from "next/link";
 import PulseBeat from "@/components/ui/PulseBeat";
 import { TICKET } from "@/content/ticket";
 import TicketPurchase from "@/features/forms/TicketPurchase";
@@ -41,7 +40,7 @@ export default function Tickets() {
         <TicketPurchase />
         <div className="ticket-fulfillment">
           <p>{TICKET.delivery} Оплата через ЮKassa.</p>
-          <p><Link href="/contacts/">Контакты и вопросы о билетах</Link></p>
+          <p><a href="#faq">Контакты и вопросы о билетах</a></p>
         </div>
       </div>
     </div>

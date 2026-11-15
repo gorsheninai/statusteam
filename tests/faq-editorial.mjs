@@ -11,14 +11,16 @@ const expectedQuestions = [
   "С какого возраста вход?",
   "Какой предусмотрен дресс-код?",
   "Где и во сколько проходит показ?",
+  "Не пришёл билет?",
   "Как оформить возврат или передать билет?",
   "Разрешена ли профессиональная фотосъёмка?",
 ];
 const expectedAnswers = [
   "Показ 18+. На входе потребуется документ, удостоверяющий личность.",
   "Evening / Cocktail attire. Главное — соответствовать эстетике вечера.",
-  "Показ пройдёт в Москве. Точные дата, площадка и время будут объявлены позже.",
-  "Возврат осуществляется по правилам билетного оператора до даты проведения шоу.",
+  "30 ноября 2026 года, LOTTE HOTEL MOSCOW: Москва, Новинский бульвар, д. 8, стр. 2. Сбор гостей — 18:30, начало шоу — 20:00 по московскому времени.",
+  "QR-билет приходит на почту, указанную при покупке, в течение часа после оплаты. Проверьте папку «Спам». Если письмо с билетом там, откройте его и нажмите «Не спам!». Письмо переместится во «Входящие». Если прошло больше часа и письма нет даже в «Спаме», напишите нам в Telegram через кнопку «Служба заботы». Укажите e-mail, который использовали при покупке.",
+  "Условия возврата, отмены и переноса изложены в разделе 7 Пользовательского соглашения. По вопросам билетов и возвратов: mandel@status-team.com.",
   "Съемка на смартфоны приветствуется. Профессиональная техника — строго по аккредитации для СМИ.",
 ];
 const failures = [];
@@ -34,7 +36,9 @@ for (const [name, width, height] of viewports) {
     reducedMotion: "reduce",
   });
   const page = await context.newPage();
-  await page.goto(`${URL}/#faq`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${URL}/#tickets`, { waitUntil: "domcontentloaded" });
+  await page.getByRole("link", { name: "Контакты и вопросы о билетах" }).click();
+  await page.waitForURL(`${URL}/#faq`);
   const heading = page.locator(".faq-h");
   const faq = page.locator(".faq");
   const state = await page.evaluate(() => {
@@ -66,8 +70,8 @@ for (const [name, width, height] of viewports) {
 
   const questions = (await page.locator(".faq-q > span:first-child").allTextContents()).map((q) => q.trim());
   const answers = (await page.locator(".panel-inner p").allTextContents()).map((a) => a.trim());
-  expect(JSON.stringify(questions) === JSON.stringify(expectedQuestions), `[${name}] FAQ uses the approved five questions`);
-  expect(JSON.stringify(answers) === JSON.stringify(expectedAnswers), `[${name}] FAQ uses the approved five answers`);
+  expect(JSON.stringify(questions) === JSON.stringify(expectedQuestions), `[${name}] FAQ uses the approved six questions`);
+  expect(JSON.stringify(answers) === JSON.stringify(expectedAnswers), `[${name}] FAQ uses the approved six answers`);
   expect(state.paddingTop === (width >= 768 ? 112 : 80), `[${name}] section top padding follows the editorial rhythm`, `${state.paddingTop}px`);
   expect(state.paddingBottom === (width >= 768 ? 112 : 80), `[${name}] section bottom padding follows the editorial rhythm`, `${state.paddingBottom}px`);
   expect(width >= 768 ? state.introRight < state.listLeft : state.listTop > state.introBottom, `[${name}] editorial layout switches cleanly`);
@@ -76,12 +80,12 @@ for (const [name, width, height] of viewports) {
   expect(state.listWidth <= 720, `[${name}] accordion stays within the editorial measure`, `${state.listWidth}px`);
   expect(state.overflow <= 1, `[${name}] FAQ creates no horizontal overflow`, `${state.overflow}px`);
 
-  expect((await heading.textContent())?.trim() === "Что нужно знать", `[${name}] heading text is preserved`);
+  expect((await heading.textContent())?.trim() === "Частые вопросы", `[${name}] heading text is preserved`);
   expect((await page.locator(".faq-copy").textContent())?.replace(/\s+/g, " ").trim() === "Ответы на главные вопросы о шоу, дресс-коде и билетах. Остались вопросы?", `[${name}] supporting copy is present`);
   expect((await page.locator(".faq-contact").textContent())?.replace(/\s+/g, " ").trim() === "Служба заботы / Telegram ↗", `[${name}] concierge link is present`);
   expect((await page.locator(".faq-contact").getAttribute("href")) === "https://t.me/statusteamru", `[${name}] concierge link opens STATUS TEAM Telegram`);
 
-  const row = page.locator(".faq-row").nth(1);
+  const row = faq.locator(".faq-row").filter({ hasText: "Не пришёл билет?" });
   const button = row.locator(".faq-q");
   expect((await button.evaluate((el) => el.getBoundingClientRect().height)) >= 44, `[${name}] question has a touch-safe target`);
   await button.click();
