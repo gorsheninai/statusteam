@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { TICKET } from '../src/content/ticket.ts';
-import { ticketTotalKopecks, formatRubles, checkoutMatchesPublication } from '../src/features/forms/ticket-order.ts';
+import { ticketTotalKopecks, formatRubles, checkoutMatchesPublication, checkoutErrorMessage } from '../src/features/forms/ticket-order.ts';
 import { retryKey } from '../src/features/forms/api.ts';
 
 test('confirmed price and integer order total are in kopecks', () => {
@@ -45,4 +45,30 @@ test('changing payment method keeps the order key until the buyer starts a new o
   assert.equal(await retryKey('purchase', sbp, true), first);
   entries.delete('status-request-purchase');
   assert.notEqual(await retryKey('purchase', sbp, true), first);
+});
+
+test('checkout retries use the same random key when mobile storage writes fail', async () => {
+  Object.defineProperty(globalThis, 'sessionStorage', {
+    configurable: true,
+    value: { getItem: () => null, setItem() { throw new Error('storage unavailable'); } },
+  });
+  const original = globalThis.crypto;
+  Object.defineProperty(globalThis, 'crypto', {
+    configurable: true,
+    value: { getRandomValues: array => original.getRandomValues(array) },
+  });
+  try {
+    const first = await retryKey('mobile-fixture', { device: 'phone' }, true);
+    assert.equal(await retryKey('mobile-fixture', { device: 'phone' }, true), first);
+    assert.notEqual(await retryKey('other-device-fixture', { device: 'laptop' }, true), first);
+    assert.match(first, /^[a-f0-9]{64}$/);
+  } finally {
+    Object.defineProperty(globalThis, 'crypto', { configurable: true, value: original });
+  }
+});
+
+test('checkout reports field errors and shared throttling', () => {
+  assert.match(checkoutErrorMessage(422, 'invalid_phone'), /телефона/);
+  assert.match(checkoutErrorMessage(429, 'rate_limited'), /Слишком много попыток/);
+  assert.match(checkoutErrorMessage(503, null), /недоступен/);
 });

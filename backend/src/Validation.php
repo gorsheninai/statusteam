@@ -8,7 +8,13 @@ final class Validation {
         return trim($v);
     }
     public static function email(string $v): string { if(!filter_var($v,FILTER_VALIDATE_EMAIL) || strlen($v)>254) throw new Problem(422,'invalid_email'); return $v; }
-    public static function phone(string $v): string { if(!preg_match('/^\+?[0-9 ()-]{7,32}$/D',$v) || strlen(preg_replace('/\D/','',$v))<7) throw new Problem(422,'invalid_phone');return $v; }
+    public static function phone(string $v): string {
+        $v=trim(strtr($v, ["\u{00A0}"=>' ', "\u{202F}"=>' ', "\u{2009}"=>' ',
+            "\u{2010}"=>'-', "\u{2011}"=>'-', "\u{2013}"=>'-', "\u{2212}"=>'-']));
+        if(!preg_match('/^\+?[0-9 ()-]{7,32}$/D',$v) || strlen(preg_replace('/\D/','',$v))<7)
+            throw new Problem(422,'invalid_phone');
+        return $v;
+    }
     public static function key(array $d): string { $k=self::text($d,'requestKey',64); if(!preg_match('/^[a-f0-9]{64}$/D',$k)) throw new Problem(422,'invalid_request_key'); return $k; }
     public static function contact(string $v): string {
         if(filter_var($v,FILTER_VALIDATE_EMAIL) || preg_match('/^@?[a-zA-Z0-9_]{5,32}$/D',$v) || preg_match('~^https://t\.me/[a-zA-Z0-9_]{5,32}$~D',$v)) return $v;
