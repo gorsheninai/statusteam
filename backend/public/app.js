@@ -16,6 +16,42 @@ function clearPurchaseKeys() {
  } catch { /* browser storage may be disabled */ }
 }
 
+async function openTicket(ticketToken) {
+ const v=await api('ticket-data',{token:ticketToken});
+ const ticket=$('ticket');
+ $('number').textContent=v.number;
+ $('ticket-price').textContent=v.price;
+ $('control-ticket').hidden=!v.control;
+ $('ticket-order').textContent='Заказ '+v.orderId;
+ $('qr').src=v.qr;
+ const canEnter=v.status==='valid'&&!v.control&&ticket.dataset.test!=='yes';
+ $('ticket-status').textContent=canEnter?'Действителен для прохода':
+  (v.status==='valid'?'Для прохода недействителен':labels[v.status]||v.status);
+ $('support').textContent='Поддержка: '+v.support;
+ $('return-actions').hidden=true;
+ message('');
+ ticket.hidden=false;
+ const fitAge=()=>{
+  const age=$('ticket-age');
+  const {width,height}=ticket.getBoundingClientRect();
+  const target=Math.ceil(Math.sqrt(width*height*0.052));
+  if(Math.abs(age.offsetWidth-target)>1) age.style.setProperty('--age-size',target+'px');
+ };
+ fitAge();
+ if(typeof ResizeObserver==='function')new ResizeObserver(fitAge).observe(ticket);
+ bind('print',()=>window.print());
+}
+async function openLinkedTicket() {
+ $('return-actions').hidden=true;
+ try {
+  await openTicket(token());
+ } catch(e) {
+  message(e.message==='ticket_not_found'?'Билет не найден. Откройте ссылку из письма.':'Не удалось загрузить билет. Попробуйте ещё раз.');
+  $('refresh').hidden=false;
+  $('return-actions').hidden=false;
+ }
+}
+
 let statusTimer;
 let checkingStatus=false;
 const maxStatusRetries=10;
@@ -25,22 +61,23 @@ async function status() {
  clearTimeout(statusTimer);
  checkingStatus=true;
  $('return-actions').hidden=true;
- message('Открываем билет…');
  let shouldRetry=false;
  try {
   const verifyPayment=(maxStatusRetries-checksRemaining)%3===0;
   const v=await api('order-status',{token:orderToken,verifyPayment});
   if(v.status==='paid' && v.ticketUrl) {
    const url=new URL(v.ticketUrl,location.origin);
-   if(url.origin!==location.origin || !/^\/api(?:-test)?\/index\.php$/.test(url.pathname) ||
+   if(url.origin!==location.origin || url.pathname!==location.pathname ||
       url.search!=='?r=ticket' || !/^#[a-f0-9]{64}$/.test(url.hash)) throw Error('Не удалось открыть билет.');
+   await openTicket(url.hash.slice(1));
+   history.replaceState(null,'',url.href);
    clearPurchaseKeys();
-   location.replace(url.href);
    return;
   }
   shouldRetry=v.status==='reserved'||v.status==='paid';
   const retrying=shouldRetry&&checksRemaining>0;
-  if(!retrying) message(v.status==='paid'?'Билет ещё готовится. Попробуйте открыть его ещё раз.':labels[v.status]||'Статус заказа уточняется.');
+  if(retrying) message('Открываем билет…');
+  else message(v.status==='paid'?'Билет ещё готовится. Попробуйте открыть его ещё раз.':labels[v.status]||'Статус заказа уточняется.');
   $('pay').hidden=retrying||!v.confirmationUrl;
   if(v.confirmationUrl) $('pay').href=v.confirmationUrl;
   $('new-order').hidden=!['canceled','refunded','expired'].includes(v.status);
@@ -53,6 +90,7 @@ async function status() {
   checksRemaining--;
   statusTimer=setTimeout(status,2000);
  } else {
+  $('refresh').hidden=false;
   $('return-actions').hidden=false;
  }
 }
@@ -135,7 +173,11 @@ async function init(){
   await status();
   return;
  }
- if(page==='ticket'){const v=await api('ticket-data',{token:token()});$('number').textContent=v.number;$('ticket-price').textContent=v.price;$('control-ticket').hidden=!v.control;$('ticket-order').textContent='Заказ '+v.orderId;$('qr').src=v.qr;$('ticket-status').textContent=labels[v.status]||v.status;$('support').textContent='Поддержка: '+v.support;$('ticket').hidden=false;const fitAge=()=>{const ticket=$('ticket'),age=$('ticket-age');const {width,height}=ticket.getBoundingClientRect();const target=Math.ceil(Math.sqrt(width*height*0.052));if(Math.abs(age.offsetWidth-target)>1) age.style.setProperty('--age-size',target+'px');};fitAge();if(typeof ResizeObserver==='function')new ResizeObserver(fitAge).observe($('ticket'));bind('print',()=>window.print());return;}
+ if(page==='ticket'){
+  bind('refresh',openLinkedTicket);
+  await openLinkedTicket();
+  return;
+ }
  csrf=(await api('session')).csrf;
  try{await staff();}catch{ /* show login */ }
  form('login',async d=>{const v=await api('login',d);csrf=v.csrf;$('login').reset();await staff();message('Вход выполнен');});
