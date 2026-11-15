@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- Use document navigation on the static host. */
 import type { Metadata } from "next";
 import { COMPANY } from "@/content/company";
 import { TICKET } from "@/content/ticket";
