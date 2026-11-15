@@ -2,9 +2,21 @@
   min-width: 0;
   padding-bottom: var(--pad-chapter);
 }
-.ticket-shop-heading { margin-bottom: var(--space-5); text-align: center; }
+.ticket-shop-heading { margin-bottom: clamp(2.75rem, 5vw, 6rem); text-align: center; }
 .ticket-shop-heading h2 { font-size: var(--fs-h2); line-height: 1.15; }
 .ticket-shop-grid { display: grid; gap: var(--space-4); min-width: 0; }
+.ticket-pulse-divider {
+  justify-self: center;
+  inline-size: 100%;
+  min-inline-size: 0;
+  margin-block: clamp(0.5rem, 1.4vw, 1.25rem);
+}
+.ticket-pulse-divider .pulse-beat {
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  inline-size: 100vw;
+  margin: 0;
+}
 .ticket-product,
 .ticket-purchase { min-width: 0; }
 .ticket-facts,
@@ -38,7 +50,7 @@
 .ticket-payment-method legend { margin-bottom: var(--space-1); }
 .ticket-payment-method label { display: flex; align-items: center; gap: 0.6em; min-height: 44px; cursor: pointer; }
 .ticket-payment-method input { accent-color: var(--champagne); }
-.ticket-purchase .btn-buy { width: 100%; min-width: 0; min-height: 48px; white-space: normal; }
+.ticket-purchase .btn-buy { grid-column: 1 / -1; width: 100%; justify-content: center; min-width: 0; min-height: 48px; white-space: normal; }
 .ticket-purchase .form-grid .field { min-width: 0; align-content: start; }
 .ticket-purchase .form-grid .field input:focus {
   outline: none !important;
@@ -60,4 +72,30 @@
 }
 @media (min-width: 900px) {
   .company-details > div { grid-template-columns: minmax(8rem, 0.45fr) minmax(0, 1fr); gap: var(--space-3); }
+}
+
+.ticket-facts-mobile { display: none; }
+
+@media (max-width: 640px) {
+  .ticket-shop-heading h2 {
+    font-size: clamp(1.7rem, min(11.1vw, calc(23.5vw - 48px)), 4.3rem);
+    letter-spacing: -0.035em;
+  }
+  .ticket-facts-desktop { display: none; }
+  .ticket-facts-mobile { display: grid; gap: 1.25rem; }
+  .ticket-mobile-date { display: flex; align-items: baseline; gap: 0.8rem; }
+  .ticket-mobile-date time { font-size: clamp(1.25rem, 5.5vw, 1.6rem); }
+  .ticket-mobile-date span { color: var(--champagne); font-size: var(--fs-small); }
+  .ticket-mobile-venue { display: grid; gap: 0.25rem; }
+  .ticket-mobile-venue strong { font-weight: 500; }
+  .ticket-mobile-venue span,
+  .ticket-mobile-timezone { font-size: var(--fs-small); opacity: 0.8; }
+  .ticket-mobile-times {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .ticket-mobile-times dt { font-size: var(--fs-small); opacity: 0.8; }
+  .ticket-mobile-times dd { font-size: 1.25rem; margin-top: 0.25rem; }
+  .ticket-mobile-timezone { margin-top: -0.75rem; }
 }
