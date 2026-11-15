@@ -83,7 +83,7 @@ try {
                 throw new Problem(503,'documents_pending');
             }
         }
-        Http::output(['documents'=>$docs,'amountKopecks'=>\StatusTeam\App::PRICE]);
+        Http::output(['documents'=>$docs,'amountKopecks'=>$app->publicPrice()]);
     }
     if($route==='forms' || $route==='orders') {
         $app->rate('submission:'.$ip,15);
@@ -96,7 +96,7 @@ try {
     if($route==='ticket-data') {
         $token=Validation::text($d,'token',64);$t=$app->ticket($token);
         $order=$app->db->one('SELECT amount FROM orders WHERE id=?',[$t['order_id']]);
-        $qr=new Endroid\QrCode\QrCode(data:$token,size:320,margin:16);
+        $qr=new Endroid\QrCode\QrCode(data:$token,size:320,margin:40);
         $uri=(new Endroid\QrCode\Writer\SvgWriter())->write($qr)->getDataUri();
         Http::output(['number'=>$t['number'],'price'=>\StatusTeam\TicketDetails::price((int)$order['amount']),'orderId'=>$t['order_id'],'control'=>(int)$order['amount']===\StatusTeam\App::CONTROL_PRICE,'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status'],'qr'=>$uri,'support'=>$app->c['support']]);
     }
