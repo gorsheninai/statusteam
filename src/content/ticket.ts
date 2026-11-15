@@ -10,6 +10,8 @@ export const TICKET = {
   dateISO: "2026-11-30",
   venue: "LOTTE HOTEL MOSCOW / «Лотте Отель Москва»",
   address: "121099, г. Москва, Новинский бульвар, д. 8, стр. 2",
+  venueShort: "LOTTE HOTEL MOSCOW",
+  addressShort: "Москва, Новинский бульвар, 8, стр. 2",
   doors: "18:30",
   start: "20:00",
   timezone: "Московское время",
