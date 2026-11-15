@@ -87,7 +87,7 @@ HTML;
             try {
                 $attachment=null;
                 if($job['kind']==='ticket') {
-                    $t=$db->one("SELECT t.token_cipher,t.number,o.amount FROM tickets t JOIN orders o ON o.id=t.order_id WHERE t.order_id=? AND o.status='paid' AND t.status IN ('valid','used')",[$job['reference_id']]);
+                    $t=$db->one("SELECT t.token_cipher,t.number,o.amount,o.launch_ticket FROM tickets t JOIN orders o ON o.id=t.order_id WHERE t.order_id=? AND o.status='paid' AND t.status IN ('valid','used')",[$job['reference_id']]);
                     if(!$t) {
                         $db->run("UPDATE mail_queue SET status='canceled',lock_token=NULL WHERE id=? AND lock_token=?",[$job['id'],$job['lock_token']]);continue;
                     }
@@ -95,15 +95,16 @@ HTML;
                     $url=$this->app->ticketUrl($token);
                     $amount=(int)$t['amount'];
                     $test=$this->app->c['environment']==='test';
-                    $notice=$amount===App::CONTROL_PRICE
+                    $control=App::controlTicket($amount,(bool)$t['launch_ticket']);
+                    $notice=$control
                         ? 'Контрольный билет. Для прохода недействителен.'
                         : ($test ? 'Тестовый билет. Для прохода недействителен.' : '');
                     $subject=($notice === ''
                         ? 'Ваш билет на «'.TicketDetails::EVENT.'»'
-                        : ($amount===App::CONTROL_PRICE ? 'Контрольный билет · ' : 'Тестовый билет · ').TicketDetails::EVENT);
+                        : ($control ? 'Контрольный билет · ' : 'Тестовый билет · ').TicketDetails::EVENT);
                     [$body,$html]=self::ticketMessage($t['number'],$url,$notice);
                     $attachment=[
-                        'pdf'=>TicketPdf::render($t['number'],$token,$test,$amount,$job['reference_id']),
+                        'pdf'=>TicketPdf::render($t['number'],$token,$test,$amount,$job['reference_id'],(bool)$t['launch_ticket']),
                         'name'=>$t['number'].'.pdf',
                         'html'=>$html,
                     ];
