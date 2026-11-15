@@ -27,6 +27,7 @@ export default function ApplyForm({
   const [advertising, setAdvertising] = useState(false);
   const minor = kind === "casting" && isMinorAge(age);
   const published = documentsPublished(consentDocuments(kind));
+  const noteId = kind === "subscribe" ? "newsletter-note" : !published ? "documents-note" : undefined;
   const accepted = terms && personalData && (kind !== "subscribe" || advertising)
     && (kind !== "casting" || validCastingAge(age));
   const locked = state === "sending" || state === "sent";
@@ -132,10 +133,10 @@ export default function ApplyForm({
       </div>
 
       <div className="form-foot">
-        {kind === "subscribe" && <p className="form-note">Подписка на рассылку временно отключена.</p>}
-        {!published && <p className="form-note" id={fid("documents-note")}>Документы готовятся к публикации. Отправка формы станет доступна после их размещения.</p>}
+        {kind === "subscribe" && <p className="form-note" id={fid("newsletter-note")}>Подписка на рассылку временно отключена.</p>}
+        {kind !== "subscribe" && !published && <p className="form-note" id={fid("documents-note")}>Документы готовятся к публикации. Отправка формы станет доступна после их размещения.</p>}
         <button className="btn btn-solid" type="submit" disabled={kind === "subscribe" || locked || !accepted || !published}
-          aria-describedby={!published ? fid("documents-note") : undefined}>
+          aria-describedby={noteId ? fid(noteId) : undefined}>
           {state === "sending" ? "Отправляем…" : state === "sent" ? "Отправлено" : submitLabel ?? SUBMIT[kind]}
           <span className="arrow" aria-hidden="true">↗</span>
         </button>
