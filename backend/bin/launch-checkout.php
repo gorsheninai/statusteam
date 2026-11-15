@@ -14,7 +14,7 @@ try {
         $order=$app->db->one("SELECT o.id,o.status,p.provider_id FROM orders o JOIN payments p ON p.order_id=o.id
             WHERE o.launch_ticket=1 ORDER BY o.status IN ('canceled','expired'),o.created_at DESC LIMIT 1");
         if (!$order) {
-            echo "Проверочный заказ ещё не создан.\n";
+            echo "Заказ с действительным билетом за 1 ₽ ещё не создан.\n";
             exit;
         }
         if ($order['provider_id']!==null) {
@@ -37,45 +37,8 @@ try {
     if (!in_array($command,['1','30000'],true)) {
         throw new RuntimeException('Использование: php launch-checkout.php 1|status|30000');
     }
-    $email='';
-    if ($command==='1') {
-        echo "Email для единственной покупки за 1 ₽: ";
-        $email=trim((string)fgets(STDIN));
-        if (!filter_var($email,FILTER_VALIDATE_EMAIL) || strlen($email)>254) {
-            throw new RuntimeException('Введите корректный email.');
-        }
-    }
-    umask(0077);
-    $path=realpath(getenv('STATUS_CONFIG') ?: dirname(__DIR__).'/config.php');
-    if (!$path) throw new RuntimeException('Конфиг не найден.');
-    $temp=tempnam(dirname($path),'.launch-checkout.');
-    if (!$temp) throw new RuntimeException('Не удалось подготовить конфиг.');
-    try {
-        stagePublicPrice($path,$temp,$command==='1',false);
-        $expected=require $temp;
-        $source=file_get_contents($temp);
-        $source=preg_replace('~^[ \t]*\x27launch_checkout_email\x27\s*=>[^\r\n]*,\r?\n~m','',$source);
-        unset($expected['launch_checkout_email']);
-        if ($email!=='') {
-            $source=preg_replace_callback("~(['\"]public_control_price['\"]\s*=>\s*true\s*,)~",
-                fn($match)=>$match[1]."\n    'launch_checkout_email' => ".var_export($email,true).',',$source,1);
-            $expected['launch_checkout_email']=$email;
-        }
-        if (!is_string($source) || file_put_contents($temp,$source)!==strlen($source)) {
-            throw new RuntimeException('Не удалось подготовить конфиг.');
-        }
-        $actual=require $temp;
-        ksort($actual);
-        ksort($expected);
-        if ($actual!==$expected) throw new RuntimeException('Проверка конфига не прошла.');
-        $backup=tempnam(dirname($path),'config.launch-backup.');
-        if (!$backup || !copy($path,$backup) || !rename($temp,$path)) {
-            throw new RuntimeException('Не удалось записать конфиг.');
-        }
-        echo $command==='1' ? "Включена покупка одного действительного билета за 1 ₽.\n" : "Открыта продажа за 30 000 ₽.\n";
-    } finally {
-        if (is_file($temp)) unlink($temp);
-    }
+    installPublicPrice($command==='1');
+    echo $command==='1' ? "Открыта публичная продажа за 1 ₽.\n" : "Открыта продажа за 30 000 ₽.\n";
 } catch (\StatusTeam\Problem $error) {
     fwrite(STDERR,"Ошибка проверки статуса: ".$error->getMessage().PHP_EOL);
     exit(1);

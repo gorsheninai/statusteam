@@ -206,7 +206,7 @@ $mobile=array_replace($desktop,['requestKey'=>bin2hex(random_bytes(32)),'phone'=
 $desktopOrder=$app->order($desktop,'127.0.0.1');
 $mobileOrder=$app->order($mobile,'127.0.0.1');
 check($desktopOrder['orderId']!==$mobileOrder['orderId'] && $desktopOrder['confirmationUrl'] &&
-    $mobileOrder['confirmationUrl'], 'two devices sharing an IP and email receive independent public control orders');
+    $mobileOrder['confirmationUrl'], 'two devices sharing an IP and email receive independent public orders at 1 RUB');
 $newBuyer=array_replace($mobile,['name'=>'Second Buyer','email'=>'second@example.invalid']);
 reject(fn()=>$app->order($newBuyer,'127.0.0.1'),409,'changing the buyer cannot retrieve the previous checkout with its key');
 $newBuyer['requestKey']=bin2hex(random_bytes(32));
@@ -216,14 +216,14 @@ check($newBuyerOrder['accessToken']!==$mobileOrder['accessToken'] &&
     'a new buyer on the same device gets a distinct order and payment');
 check($app->order($mobile,'127.0.0.1')['orderId']===$mobileOrder['orderId'],
     'retrying the mobile request reuses its original payment');
-check((int)$db->one('SELECT held FROM inventory WHERE id=1')['held']===$held,
-    'public control orders do not consume ticket inventory');
-$app->c['launch_checkout_email']='launch@example.invalid';
-reject(fn()=>$app->order(purchase()+['expectedAmountKopecks'=>100,'paymentMethod'=>'smart'],'127.0.0.1'),403,'launch checkout restricts purchases to the configured organizer');
+check((int)$db->one('SELECT held FROM inventory WHERE id=1')['held']===$held+3,
+    'public 1 RUB purchases reserve the same inventory as standard tickets');
+$db->run('UPDATE orders SET launch_ticket=0 WHERE id=?',[$desktopOrder['orderId']]);
+reject(fn()=>$app->order($desktop,'127.0.0.1'),409,'legacy control checkout cannot be reused as a valid public ticket');
+$app->c['launch_checkout_email']='old-restriction@example.invalid';
 $purchase=array_replace(purchase(),['email'=>'launch@example.invalid','expectedAmountKopecks'=>100,'paymentMethod'=>'smart']);
 $launch=$app->order($purchase,'127.0.0.1');
-check($app->order($purchase,'127.0.0.1')['orderId']===$launch['orderId'],'retries keep the same launch order');
-reject(fn()=>$app->order(array_replace($purchase,['requestKey'=>bin2hex(random_bytes(32))]),'127.0.0.1'),409,'only one active launch order can be issued');
+check($app->order($purchase,'127.0.0.1')['orderId']===$launch['orderId'],'retries keep the same public 1 RUB order');
 $launchId=$launch['orderId'];
 $gateway->overrides[$launchId]=['status'=>'succeeded','paid'=>true];
 $launchStatus=$app->orderStatus($launch['accessToken'],true);

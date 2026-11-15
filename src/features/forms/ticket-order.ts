@@ -31,8 +31,6 @@ const checkoutErrors: Readonly<Record<string, string>> = {
   invalid_email: "Проверьте адрес электронной почты.",
   invalid_phone: "Проверьте номер телефона. Например: +7 900 123-45-67.",
   consent_required: "Подтвердите условия покупки и проверьте поля формы.",
-  launch_checkout_restricted: "Продажа скоро откроется.",
-  launch_ticket_exists: "Проверочный заказ уже создан.",
   sold_out: "На данный момент все билеты куплены или забронированы.",
   checkout_disabled: "Онлайн-оплата сейчас недоступна.",
 };

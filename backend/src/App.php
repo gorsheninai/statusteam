@@ -82,9 +82,6 @@ final class App {
         if(!$y['test'] && (!$this->c['live_approved'] || !$f['approved'] || $f['payment_mode']!=='full_payment')) throw new Problem(503,'live_not_approved');
         if(!in_array($f['integration'],['payment_with_receipt','yoo_receipt'],true) || ($f['integration']==='payment_with_receipt' && (!is_int($f['tax_system_code']??null) || $f['tax_system_code']<1 || $f['tax_system_code']>6)) || !is_int($f['vat_code']) || $f['vat_code']<1 || $f['vat_code']>12 || !$f['payment_subject'] || !$f['payment_mode'] || !$f['refund_payment_mode']) throw new Problem(503,'fiscal_configuration_pending');
     }
-    public function launchCheckoutEmail(): string {
-        return $this->publicPrice()===self::CONTROL_PRICE ? (string)($this->c['launch_checkout_email']??'') : '';
-    }
     public static function controlTicket(int $amount, bool $launchTicket): bool {
         return $amount===self::CONTROL_PRICE && !$launchTicket;
     }
@@ -112,14 +109,13 @@ final class App {
             throw new Problem(422,'invalid_payment_method');
         $buyer=['name'=>Validation::text($d,'name'),'email'=>Validation::email(Validation::text($d,'email',254)),'phone'=>Validation::phone(Validation::text($d,'phone',32))];
         if(count(preg_split('/\s+/u',$buyer['name']))<2) throw new Problem(422,'name_and_surname_required');
-        $launchEmail=$control?'':$this->launchCheckoutEmail();
-        if($launchEmail!=='' && strcasecmp($buyer['email'],$launchEmail)!==0) throw new Problem(403,'launch_checkout_restricted');
+        $launchTicket=!$control && $amount===self::CONTROL_PRICE;
         $hash=$this->fingerprint($control?['control'=>true,'checkout'=>'smart-v1']+$d:$d);
         $access=$this->crypto->capability($key);
-        $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access,$method,$amount,$control,$launchEmail) {
+        $id=$this->db->tx(function() use($d,$ip,$key,$hash,$buyer,$access,$method,$amount,$control,$launchTicket) {
             $this->expireReservations();
             $inventory=$this->db->one('SELECT * FROM inventory WHERE id=1 FOR UPDATE');
-            $old=$this->db->one('SELECT id,request_hash FROM orders WHERE request_key=?',[$key]);
+            $old=$this->db->one('SELECT id,request_hash,launch_ticket FROM orders WHERE request_key=?',[$key]);
             if($old) {
                 if($control) {
                     $previous=$this->db->one('SELECT request_body FROM payments WHERE order_id=?',[$old['id']]);
@@ -127,12 +123,9 @@ final class App {
                     if(isset($previousBody['payment_method_data']) || ($previousBody['capture']??null)!==true)
                         throw new Problem(409,'control_checkout_upgraded');
                 }
-                if($old['request_hash']!==$hash) throw new Problem(409,'retry_payload_changed');
+                if($old['request_hash']!==$hash || ($launchTicket && !(bool)$old['launch_ticket']))
+                    throw new Problem(409,'retry_payload_changed');
                 return $old['id'];
-            }
-            $launchTicket=$launchEmail!=='';
-            if($launchTicket && $this->db->one("SELECT id FROM orders WHERE launch_ticket=1 AND status NOT IN ('canceled','expired') LIMIT 1")) {
-                throw new Problem(409,'launch_ticket_exists');
             }
             $docs=$this->documents($d,['terms','buyers','privacy']);
             if(!self::controlTicket($amount,$launchTicket) && $inventory['held']>=$inventory['capacity']) throw new Problem(409,'sold_out');

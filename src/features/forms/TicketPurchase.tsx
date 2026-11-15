@@ -45,7 +45,6 @@ export default function TicketPurchase({ test = false, control: forceControl = f
     ? `${restrictedPath}?r=${control && route === "orders" ? "control-order" : route}`
     : apiEndpoint(route);
   const published = documentsPublished(PURCHASE_DOCUMENTS);
-  const [launchCheckout, setLaunchCheckout] = useState(false);
   const [publicPrice, setPublicPrice] = useState<number | null>(null);
   useEffect(() => {
     const endpoint = apiEndpoint("public-checkout");
@@ -64,10 +63,7 @@ export default function TicketPurchase({ test = false, control: forceControl = f
         const amount = result?.amountKopecks;
         const matches = (amount === TICKET.priceKopecks || amount === 100) &&
           checkoutMatchesPublication(result, amount, PURCHASE_DOCUMENTS.map(id => ({ id, ...LEGAL_DOCUMENTS[id] })));
-        if (!controller.signal.aborted) {
-          setPublicPrice(matches ? amount : null);
-          setLaunchCheckout(matches && result.launchCheckout === true);
-        }
+        if (!controller.signal.aborted) setPublicPrice(matches ? amount : null);
       } catch { /* The server must confirm availability before enabling payment. */ }
     }
     void check();
@@ -159,10 +155,6 @@ export default function TicketPurchase({ test = false, control: forceControl = f
     <form className="form ticket-purchase" data-form="purchase" aria-label="Оформление билета"
       method="post" onSubmit={checkout} onInput={clearPaymentLink}
       onReset={() => { setAccepted(false); clearPaymentLink(); }}>
-      {((control && testSession?.amountKopecks === 100) || (!restricted && publicPrice === 100 && !launchCheckout)) &&
-        <p className="form-note">Контрольная оплата · реальное списание 1 ₽. Билет недействителен для входа.</p>}
-      {!restricted && publicPrice === 100 && launchCheckout &&
-        <p className="form-note">Проверочная покупка за 1 ₽ доступна организатору.</p>}
       <input name="website" type="hidden" value="" />
       <input name="quantity" type="hidden" value="1" />
       <div className="form-grid">
