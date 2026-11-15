@@ -91,7 +91,7 @@ try {
     }
     if($route==='order-status') {
         if(array_key_exists('requestKey',$d)) Http::output($app->resumeOrder(Validation::key($d)));
-        Http::output($app->orderStatus(Validation::text($d,'token',64)));
+        Http::output($app->orderStatus(Validation::text($d,'token',64),($d['verifyPayment']??false)===true));
     }
     if($route==='ticket-data') {
         $token=Validation::text($d,'token',64);$t=$app->ticket($token);

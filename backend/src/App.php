@@ -175,7 +175,7 @@ final class App {
             $body=[
                 'amount'=>['value'=>sprintf('%d.%02d',intdiv($amount,100),$amount%100),'currency'=>'RUB'],
                 'capture'=>in_array($method,['sbp','smart'],true),
-                'confirmation'=>['type'=>'redirect','return_url'=>$this->c['base_url'].'/index.php?r=return#'.$access],
+                'confirmation'=>['type'=>'redirect','return_url'=>$this->ticketUrl('order-'.$access)],
                 'metadata'=>['order_id'=>$id],
                 'description'=>'STATUS TEAM '.$id,
                 'receipt'=>$this->receipt($buyer,$amount),
@@ -309,12 +309,21 @@ final class App {
         $updated=$this->gateway->call('POST','/payments/'.$v['id'].'/'.$action,null,$key);
         $this->applyPayment($updated,$id,false);
     }
-    public function orderStatus(string $token): array {
+    public function orderStatus(string $token, bool $verifyPayment=false): array {
         $o=$this->db->one('SELECT o.id,o.status,p.confirmation_url,p.status payment_status,
-            p.capture_requested_at,
+            p.capture_requested_at,p.provider_id,
             (o.reserve_until<=UTC_TIMESTAMP(6) AND p.capture_requested_at IS NULL) AS overdue
             FROM orders o JOIN payments p ON p.order_id=o.id WHERE access_hash=?',[Crypto::hash($token)]);
         if(!$o) throw new Problem(404,'order_not_found');
+        if($verifyPayment && $o['status']==='reserved' && $o['provider_id']!==null
+            && in_array($o['payment_status'],['pending','waiting_for_capture'],true)) {
+            try {
+                $this->syncPayment($o['provider_id']);
+                return $this->orderStatus($token);
+            } catch(Problem $e) {
+                if($e->status!==503) throw $e;
+            }
+        }
         $status=$o['status']==='reserved' && $o['overdue']?'expired':$o['status'];
         $canPay=$status==='reserved' && $o['capture_requested_at']===null && $o['payment_status']==='pending';
         $result=['orderId'=>$o['id'],'status'=>$status,'paymentStatus'=>$o['payment_status'],'confirmationUrl'=>$canPay?$o['confirmation_url']:null];
