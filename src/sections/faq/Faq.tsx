@@ -1,5 +1,6 @@
 "use client";
 import { QA } from "@/content/faq";
+import { TICKET } from "@/content/ticket";
 
 import { useState } from "react";
 
@@ -36,7 +37,9 @@ export default function Faq() {
               aria-hidden={!isOpen}
             >
               <div className="panel-inner">
-                <p>{a}</p>
+                <p>{typeof a === "string" ? a : (
+                  <>{a.beforeEmail}<a href={`mailto:${TICKET.supportEmail}`}>{TICKET.supportEmail}</a>{a.afterEmail}</>
+                )}</p>
               </div>
             </div>
           </li>

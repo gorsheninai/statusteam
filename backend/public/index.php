@@ -96,7 +96,7 @@ try {
         $token=Validation::text($d,'token',64);$t=$app->ticket($token);
         $qr=new Endroid\QrCode\QrCode(data:$token,size:320,margin:40);
         $uri=(new Endroid\QrCode\Writer\SvgWriter())->write($qr)->getDataUri();
-        Http::output(['number'=>$t['number'],'price'=>\StatusTeam\TicketDetails::price((int)$t['amount']),'orderId'=>$t['order_id'],'control'=>\StatusTeam\App::controlTicket((int)$t['amount'],(bool)$t['launch_ticket']),'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status'],'qr'=>$uri,'support'=>$app->c['support']]);
+        Http::output(['number'=>$t['number'],'price'=>\StatusTeam\TicketDetails::price((int)$t['amount']),'orderId'=>$t['order_id'],'control'=>\StatusTeam\App::controlTicket((int)$t['amount'],(bool)$t['launch_ticket']),'status'=>$t['order_status']==='refund_pending'?'refund_pending':$t['status'],'qr'=>$uri,'support'=>\StatusTeam\TicketDetails::SUPPORT_EMAIL]);
     }
     Http::session($sessionPath);
     if($route==='session') Http::output(['csrf'=>$_SESSION['csrf']]);
