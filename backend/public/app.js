@@ -27,7 +27,6 @@ async function openTicket(ticketToken) {
  const canEnter=v.status==='valid'&&!v.control&&ticket.dataset.test!=='yes';
  $('ticket-status').textContent=canEnter?'Действителен для прохода':
   (v.status==='valid'?'Для прохода недействителен':labels[v.status]||v.status);
- $('support').textContent='Поддержка: '+v.support;
  $('return-actions').hidden=true;
  message('');
  ticket.hidden=false;

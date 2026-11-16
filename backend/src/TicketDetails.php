@@ -16,7 +16,7 @@ final class TicketDetails
     public const AGE = '18+';
     public const ADMISSION = 'Один гость · один проход · без закреплённого места';
     public const TERMS_URL = 'https://statusteam-official.ru/documents/terms/';
-    public const REFUNDS_EMAIL = 'mandel@status-team.com';
+    public const SUPPORT_EMAIL = 'status.team.tickets@mail.ru';
 
     public static function price(int $kopecks): string
     {

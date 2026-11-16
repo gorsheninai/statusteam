@@ -233,10 +233,15 @@ $launchBody=$app->decode($db->one('SELECT request_body FROM payments WHERE order
 check(str_starts_with($launchBody['receipt']['items'][0]['description'],'Билет на шоу'), '1 RUB fiscal item is a regular ticket');
 $launchMail=null;
 (new Mailer($app))->work(function($recipient,$subject,$body,$messageId,$attachment) use(&$launchMail) {
-    if($recipient==='launch@example.invalid') $launchMail=[$subject,$body,$attachment['pdf']];
+    if($recipient==='launch@example.invalid') $launchMail=[$subject,$body,$attachment['pdf'],$attachment['html']];
 });
 check($launchMail && str_starts_with($launchMail[0],'Ваш билет') && !str_contains($launchMail[1],'недействителен') &&
     str_starts_with($launchMail[2],'%PDF-'), 'launch email includes the regular PDF ticket without a control notice');
+$support=\StatusTeam\TicketDetails::SUPPORT_EMAIL;
+check(str_contains($launchMail[1],'Вопросы по билету: '.$support) &&
+    str_contains($launchMail[3],'href="mailto:'.$support.'"') &&
+    str_contains($launchMail[2],'/URI (mailto:'.$support.')'),
+    'the ticket email and PDF point to the same support inbox');
 $app->c['public_control_price']=false;
 check($app->publicPrice()===\StatusTeam\App::PRICE && $app->admit($launchToken,1)['status']==='admitted',
     'the paid 1 RUB launch ticket remains admissible at the standard price');

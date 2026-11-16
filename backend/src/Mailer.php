@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace StatusTeam;
 use PHPMailer\PHPMailer\PHPMailer;
 final class Mailer {
-    private const TICKET_SUPPORT = 'tickets@statusteam-official.ru';
     public function __construct(private App $app) {}
     public function send(string $to,string $subject,string $body,string $messageId, ?array $attachment=null): void {
         $c=$this->app->c['smtp'];
@@ -16,7 +15,7 @@ final class Mailer {
                 $m->isHTML(true);
                 $m->Body=$attachment['html'];
                 $m->AltBody=$body;
-                $m->addReplyTo(self::TICKET_SUPPORT,'STATUS TEAM');
+                $m->addReplyTo(TicketDetails::SUPPORT_EMAIL,'STATUS TEAM');
             }
             $m->addStringAttachment($attachment['pdf'], $attachment['name'], 'base64', 'application/pdf');
         }
@@ -29,7 +28,7 @@ final class Mailer {
         $venue=TicketDetails::VENUE;
         $address=TicketDetails::VENUE_ADDRESS;
         $event=TicketDetails::EVENT;
-        $support=self::TICKET_SUPPORT;
+        $support=TicketDetails::SUPPORT_EMAIL;
         $access='18+ · Один билет — один гость · Без закреплённого места';
         $entry='На входе покажите QR-код с телефона или из распечатанного PDF во вложении.';
         $help='Вопросы по билету';

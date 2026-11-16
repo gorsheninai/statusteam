@@ -40,6 +40,7 @@ export default function Tickets() {
         <TicketPurchase />
         <div className="ticket-fulfillment">
           <p>{TICKET.delivery} Оплата через ЮKassa.</p>
+          <p>После покупки проверьте папки «Входящие» и «Спам».</p>
           <p><a href="#faq">Контакты и вопросы о билетах</a></p>
         </div>
       </div>

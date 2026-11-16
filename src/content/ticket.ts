@@ -5,6 +5,7 @@ export const TICKET = {
   description: "Посещение fashion-шоу STATUS TEAM. Один билет — один гость, один проход на мероприятие. Без закреплённого места.",
   priceKopecks: 3_000_000,
   currency: "RUB",
+  supportEmail: "status.team.tickets@mail.ru",
   capacity: 100,
   date: "30 ноября 2026",
   dateISO: "2026-11-30",
